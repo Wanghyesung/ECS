@@ -17,7 +17,7 @@ MonoBehaviour:
   AttackPower: 0
   Cooldown: 0.5
   HitCount: 1
-  Speed: 12
+  Speed: 20
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0

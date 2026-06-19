@@ -31,7 +31,6 @@ public class Monster : MonoBehaviour, IDamageable
     private Coroutine m_CoFindPlayer = null;
 
 
-
     private void Awake()
     {
         if (m_SOMonsterInfo == null)
@@ -57,7 +56,6 @@ public class Monster : MonoBehaviour, IDamageable
     //// Update is called once per frame
     //private void Update()
     //{
-
     //}
 
     public void TakeDamage(in tAttackInfo _refAttackInfo)
@@ -70,6 +68,7 @@ public class Monster : MonoBehaviour, IDamageable
             StopCoroutine(m_CoNockback);
 
          m_CoNockback = StartCoroutine(KnockbackCoroutine(_refAttackInfo));
+
     }
 
     private IEnumerator KnockbackCoroutine(tAttackInfo _tAttackInfo)
