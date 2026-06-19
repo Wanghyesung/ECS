@@ -5,19 +5,6 @@ using UnityEngine;
 
 
 //동적 스탯
-[Serializable]
-public class AttackState
-{
-    public int AttackDamage;
-    public int AttackPower;
-
-    public float StunTime;
-
-    public float MoveSpeed;
-
-    public Vector3 
-}
-
 
 
 [System.Flags]
@@ -42,7 +29,7 @@ public class Weapon : MonoBehaviour
     }
 
     [SerializeField] private eWeaponType m_eWeaponType;
-    [SerializeField] private AttackState m_refAttackState = new AttackState();
+    [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
     [SerializeField] private Transform m_refFireTr = null;
     [SerializeField] private ParticleSystem m_refEffectObject;
@@ -52,15 +39,6 @@ public class Weapon : MonoBehaviour
 
     private bool m_bFireReady = false;
 
-    public AttackState GetAttackState() => m_refAttackState;
-    public void SetAttackInfo(int _iAttackDamage, int _iAttackPower, float _fStunTime)
-    {
-        m_refAttackState.AttackDamage = _iAttackDamage;
-        m_refAttackState.AttackPower = _iAttackPower;
-        m_refAttackState.StunTime = _fStunTime;
-    }
-
-  
     public virtual void Fire()
     {
         if (CheckTime() == false)
@@ -75,7 +53,7 @@ public class Weapon : MonoBehaviour
             return;
 
         //공격력 전달
-        refAttackObj.SetAttack(m_refAttackState);
+        refAttackObj.SetAttack(m_SOAttackInfo);
 
         //각 무기에 맞는 파티클 실행
         Vector3 vFirePos = m_refFireTr.transform.position;

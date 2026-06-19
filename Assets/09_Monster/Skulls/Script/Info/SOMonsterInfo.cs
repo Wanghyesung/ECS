@@ -16,4 +16,26 @@ public class SOMonsterInfo : ScriptableObject
     public float Speed = 3f;
     public float AttackRange = 1.5f;
 
+
+    [Header("Attack")]
+    public SOAttackInfo AttackInfo = null;
+}
+
+public enum eEntityState
+{
+    None,
+    Idle,
+    Move,
+    Attack,
+    Hit,
+    Dead,
+    End,
+}
+
+public class MonsterInfo
+{
+    public int HP;
+    public float Speed;
+
+    public eEntityState State;
 }
