@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
     private Animator m_refAnimator = null;
     [SerializeField] private Weapon m_refWeapon = null;
-
+    [SerializeField] private AnimationTable m_refAnimTable = null;
 
     private void Awake()
     {
@@ -39,24 +39,24 @@ public class Player : MonoBehaviour
     {
     }
 
-    public void UpdateOnAnimation(string _strAnimName, bool _bOn)
+    public void UpdateOnAnimation(eEntityState _eState, bool _bOn)
     {
-        m_refAnimator.SetBool(_strAnimName, _bOn);
+        m_refAnimTable.SetBool(_eState, _bOn);
     }
 
-    public void UpdateOnTriggerAnimation(string _strAnimName)
+    public void UpdateOnTriggerAnimation(eEntityState _eState)
     {
-        m_refAnimator.SetTrigger(_strAnimName);
+        m_refAnimTable.SetTrigger(_eState);
     }
 
     private void Fire()
     {
         //내 총의 상태값
-        UpdateOnAnimation("bAttack", true);
+        m_refAnimTable.SetBool(eEntityState.Attack, true);
         m_refWeapon.Fire();
     }
     private void Cansle()
     {
-        UpdateOnAnimation("bAttack", false);
+        m_refAnimTable.SetBool(eEntityState.Attack, false);
     }
 }

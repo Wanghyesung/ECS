@@ -38,12 +38,13 @@ public class PlayerMovement : MonoBehaviour
             m_vLookDir = Vector3.zero;
 
             //Todo : 이것도 나중에 애니메이션 테이블로 바꾸기 enum으로 접근해서
-            m_refOwner.UpdateOnAnimation("bMove", false);
+            m_refOwner.UpdateOnAnimation(eEntityState.Move, false);
+
         }
         else
         {
             m_vLookDir = new Vector3(m_vInput.x, 0.0f, m_vInput.y).normalized;
-            m_refOwner.UpdateOnAnimation("bMove", true);
+            m_refOwner.UpdateOnAnimation(eEntityState.Move, true);
         }
     }   
 
@@ -51,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 vMove = new Vector3(m_vInput.x, 0.0f, m_vInput.y);
         if (vMove.sqrMagnitude > 1f)
-            vMove = vMove.normalized; 
+            vMove = vMove.normalized;   
 
         Vector3 vNewPos = m_refRigidbody.position + vMove * m_fMoveSpeed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNewPos);

@@ -9302,6 +9302,7 @@ GameObject:
   - component: {fileID: 5206313039786338680}
   - component: {fileID: 5206313039786338681}
   - component: {fileID: 1841904467}
+  - component: {fileID: 5206313039786338682}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -9636,6 +9637,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refWeapon: {fileID: 2939591942253650432}
+  m_refAnimTable: {fileID: 5206313039786338682}
+--- !u!114 &5206313039786338682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4831054584896205773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b54a6fe04f7d640b09a16f015deb2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_listAnimationList:
+  - State: 2
+    ParamType: 1
+    ParamName: bMove
+    Bool: 0
+    Int: 0
+    Float: 0
+  - State: 3
+    ParamType: 1
+    ParamName: bAttack
+    Bool: 0
+    Int: 0
+    Float: 0
 --- !u!1 &5226003015454998914
 GameObject:
   m_ObjectHideFlags: 0
