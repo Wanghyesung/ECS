@@ -21,6 +21,7 @@ public class SOMonsterInfo : ScriptableObject
     public SOAttackInfo AttackInfo = null;
 }
 
+
 public enum eEntityState
 {
     None,
@@ -32,10 +33,3 @@ public enum eEntityState
     End,
 }
 
-public class MonsterInfo
-{
-    public int HP;
-    public float Speed;
-
-    public eEntityState State;
-}

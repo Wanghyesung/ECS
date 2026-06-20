@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public enum eNodeState
@@ -11,80 +14,44 @@ public enum eNodeState
 }
 
 
-public abstract class Node : ScriptableObject
-{
-    public abstract eNodeState Execute(BlackBoard _refBB);
-
-}
-
 /*///////////////////////////////////////////
-                ListNode
+                  SONode
+설명 : 가장 최상위 노드 (어떠한 행동을 실행하는 역할)
  *///////////////////////////////////////////
-public abstract class ListNode : ScriptableObject
+public abstract class SONode : ScriptableObject
 {
-    protected List<Node> listNode = new List<Node>();
-
     public abstract eNodeState Execute(BlackBoard _refBB);
 }
 
-
-public class SelectNode : ListNode
+// SOList도 그냥 SONode 취급
+public abstract class SOListNode : SONode
 {
-    private int iCurrentIdx = 0;
-    public override eNodeState Execute(BlackBoard _refBB)
-    {
-        for(int i = iCurrentIdx; i < listNode.Count; ++i)
-        {
-            eNodeState eState = listNode[iCurrentIdx].Execute(_refBB);
-
-            if (eState == eNodeState.Success)
-            {
-                iCurrentIdx = 0;
-                return eNodeState.Success;
-            }
-
-
-            //만약 시도중이라면 현제 구간 기억
-            else if(eState == eNodeState.Running) 
-            {
-                iCurrentIdx = i;
-                return eNodeState.Running;
-            }
-        }
-
-        return eNodeState.Failure;
-    }
+    [SerializeField] protected List<SONode> listNode = new List<SONode>();
 }
 
 
-public class Sequence : ListNode
+[Serializable]
+public class BlackBoard
 {
+    [Header("Component")]
+    public Monster Owner;
+    public Transform TargetTr;
+    public Animator m_refAnimator;
+    public NavMeshAgent m_refAgent;
 
-    private int iCurrentIdx = 0;
-    public override eNodeState Execute(BlackBoard _refBB)
-    {
-        for (int i = iCurrentIdx; i < listNode.Count; ++i)
-        {
-            eNodeState eState = listNode[iCurrentIdx].Execute(_refBB);
+    [Header("EntityInfo")]
+    public eEntityState State;
+    public float CurrentHP;
+    public float Speed;
 
-            if (eState == eNodeState.Failure)
-            {
-                iCurrentIdx = 0;
-                return eNodeState.Failure;
-            }
 
-            else if (eState == eNodeState.Running)
-            {
-                iCurrentIdx = i;
-                return eNodeState.Running;
-            }
-        }
-
-        return eNodeState.Success;
-    }
-
+    [Header("Trace")]
+    public float CurrentTime;
+    public float TraceTime;
+    public float TraceMaxDistance;
+    public float TraceMinDistance;
+    public float POV;
 }
-
 
 /*///////////////////////////////////////////
               BehaviorTree
@@ -92,14 +59,25 @@ public class Sequence : ListNode
 
 public class BehaviorTree : MonoBehaviour
 {
-    [SerializeField] private BlackBoard m_refBB = new BlackBoard();
-    
+    [SerializeField] private SONode m_refRootNode = null;
 
-    private void Awake()
+    [SerializeField] private Monster m_refOwner;
+
+    private bool m_bRunning = true;
+
+    public void Awake()
     {
-                
-
+        if(m_refOwner == null)
+            m_refOwner = GetComponent<Monster>();
     }
 
+    public bool StopBT() => m_bRunning = false;
+    public bool StartBT() => m_bRunning = true;
 
+    public void Evaluate(BlackBoard _refBB)
+    {
+        if (m_bRunning == true)
+            m_refRootNode?.Execute(_refBB);
+    }
+    
 }

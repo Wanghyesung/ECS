@@ -1878,6 +1878,7 @@ GameObject:
   - component: {fileID: 6362778826029847712}
   - component: {fileID: 6362778826029847713}
   - component: {fileID: 6362778826029847714}
+  - component: {fileID: 6362778826029847715}
   m_Layer: 0
   m_Name: Monster
   m_TagString: Untagged
@@ -20071,7 +20072,7 @@ NavMeshAgent:
   m_Speed: 5
   m_Acceleration: 1
   avoidancePriority: 50
-  m_AngularSpeed: 180
+  m_AngularSpeed: 720
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -20094,7 +20095,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refTargetPlayer: {fileID: 4831054584896205773}
   m_SOMonsterInfo: {fileID: 11400000, guid: bff9c7d4d81c2904d8c97ecfca8a996c, type: 2}
-  m_fFindTime: 0.25
+  m_refBlackBoard:
+    Owner: {fileID: 6362778826029847714}
+    TargetTr: {fileID: 5206313039786338679}
+    m_refAnimator: {fileID: 5684318658326207436}
+    m_refAgent: {fileID: 6362778826029847713}
+    State: 0
+    CurrentHP: 0
+    Speed: 0
+    CurrentTime: 0
+    TraceTime: 0
+    TraceMaxDistance: 10
+    TraceMinDistance: 2
+    POV: 60
+  m_refBT: {fileID: 6362778826029847715}
+--- !u!114 &6362778826029847715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599793450082550949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c1f1edaf5d5dd428a7eee4b87789bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refRootNode: {fileID: 11400000, guid: c8592023e4183894080f22e6dd99ff17, type: 2}
+  m_refOwner: {fileID: 6362778826029847714}
 --- !u!1 &6377683562717911516
 GameObject:
   m_ObjectHideFlags: 0

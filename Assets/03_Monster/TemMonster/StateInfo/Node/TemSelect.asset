@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dedf900647741b4896e14adca319cb7, type: 3}
-  m_Name: SO_TemMonster
+  m_Script: {fileID: 11500000, guid: d815742291ec3c14a8040a0340ea1213, type: 3}
+  m_Name: TemSelect
   m_EditorClassIdentifier: 
-  MonsterName: New Monster
-  Description: 
-  MaxHP: 40
-  Speed: 4
-  AttackRange: 4
-  AttackInfo: {fileID: 11400000, guid: 00e00c83df8f06742a319688034768c9, type: 2}
+  listNode:
+  - {fileID: 11400000, guid: be0ff56b27e447e48aeeafa6de7a6832, type: 2}
