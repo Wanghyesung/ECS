@@ -37,14 +37,12 @@ public class PlayerMovement : MonoBehaviour
             m_vInput = Vector2.zero;
             m_vLookDir = Vector3.zero;
 
-            //Todo : 이것도 나중에 애니메이션 테이블로 바꾸기 enum으로 접근해서
-            m_refOwner.UpdateOnAnimation(eEntityState.Move, false);
-
+            //m_refOwner.UpdateOnAnimation(eEntityState.Move, false);
         }
         else
         {
             m_vLookDir = new Vector3(m_vInput.x, 0.0f, m_vInput.y).normalized;
-            m_refOwner.UpdateOnAnimation(eEntityState.Move, true);
+            //m_refOwner.UpdateOnAnimation(eEntityState.Move, true);
         }
     }   
 

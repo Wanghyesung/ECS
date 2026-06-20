@@ -29,16 +29,6 @@ public class Player : MonoBehaviour
         
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        
-    }
-
-
-    private void OnTriggerExit(Collider other)
-    {
-    }
-
     public void UpdateOnAnimation(eEntityState _eState, bool _bOn)
     {
         m_refAnimTable.SetBool(_eState, _bOn);
@@ -52,11 +42,11 @@ public class Player : MonoBehaviour
     private void Fire()
     {
         //내 총의 상태값
-        m_refAnimTable.SetBool(eEntityState.Attack, true);
+        //m_refAnimTable.SetBool(eEntityState.Attack, true);
         m_refWeapon.Fire();
     }
     private void Cansle()
     {
-        m_refAnimTable.SetBool(eEntityState.Attack, false);
+        //m_refAnimTable.SetBool(eEntityState.Attack, false);
     }
 }
