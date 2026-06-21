@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,9 +18,14 @@ public class PlayerMovement : MonoBehaviour
 
     //private bool m_bMove;
     
-    private const float MOVE_OFFSET = 10.0f;
-    [SerializeField] private float m_fAngleSpeed = 12.0f;
     [SerializeField] private float m_fMoveSpeed = 5.0f;
+
+    [SerializeField] private float m_fMaxRollAngle = 45f;
+    [SerializeField] private float m_fRollSpeed = 5f;
+    private float m_fCurrentRoll;
+    private float m_fTargetRoll;
+
+    //[SerializeField] private float m_fAngleSpeed = 12.0f;
 
     private void Awake()
     {
@@ -30,9 +37,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        m_vInput.x = Input.GetAxisRaw("Horizontal");
-        m_vInput.y = Input.GetAxisRaw("Vertical");
-        if (m_vInput.sqrMagnitude <= 0.01f)
+        m_vInput = InputManager.m_Instance.InputInfo.MoveDir;
+
+        // Debug.Log(m_vInput);
+        // Debug.Log(m_vInput.sqrMagnitude);
+
+        if (m_vInput.sqrMagnitude <= 0.001f)
         {
             m_vInput = Vector2.zero;
             m_vLookDir = Vector3.zero;
@@ -44,23 +54,32 @@ public class PlayerMovement : MonoBehaviour
             m_vLookDir = new Vector3(m_vInput.x, 0.0f, m_vInput.y).normalized;
             //m_refOwner.UpdateOnAnimation(eEntityState.Move, true);
         }
+
+        float fTargetRoll = m_vInput.x * m_fMaxRollAngle;
+        m_fCurrentRoll = Mathf.Lerp(
+            m_fCurrentRoll,
+            fTargetRoll,
+            m_fRollSpeed * Time.deltaTime
+        );
+
+        transform.localRotation = Quaternion.Euler(0f, 0f, -m_fCurrentRoll);
     }   
 
     private void FixedUpdate()
     {
-        Vector3 vMove = new Vector3(m_vInput.x, 0.0f, m_vInput.y);
+        Vector3 vMove = transform.forward * m_vInput.y + transform.right * m_vInput.x;
         if (vMove.sqrMagnitude > 1f)
             vMove = vMove.normalized;   
 
         Vector3 vNewPos = m_refRigidbody.position + vMove * m_fMoveSpeed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNewPos);
 
-        if (m_vLookDir.sqrMagnitude > 0.001f)
-        {
-            Quaternion m_qTarget = Quaternion.LookRotation(m_vLookDir);
-            Quaternion m_qNext = Quaternion.Slerp(m_refRigidbody.rotation, m_qTarget, m_fAngleSpeed * Time.fixedDeltaTime);
-            m_refRigidbody.MoveRotation(m_qNext);
-        }
+        //if (m_vLookDir.sqrMagnitude > 0.001f)
+        //{
+        //    Quaternion m_qTarget = Quaternion.LookRotation(m_vLookDir);
+        //    Quaternion m_qNext = Quaternion.Slerp(m_refRigidbody.rotation, m_qTarget, m_fAngleSpeed * Time.fixedDeltaTime);
+        //    m_refRigidbody.MoveRotation(m_qNext);
+        //}
     }
 
 }
