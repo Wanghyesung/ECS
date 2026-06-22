@@ -10,17 +10,17 @@ using UnityEngine.InputSystem;
 기능 : 연결된 액션의 값을 가져와서 해당 값 셋팅
  *///////////////////////////////////////////
 
-public class InputInfo
+public struct tInputInfo
 {
-    public Vector2 MoveDir = Vector2.zero; //X, Z
-    public Vector2 ScreenPos = Vector2.zero; //X Y
-    public Vector2 Delta = Vector2.zero;
+    public Vector2 MoveDir;
+    public Vector2 ScreenPos;
+    public Vector2 Delta;
 }
 
 public class InputManager : MonoBehaviour
 {
-    private InputInfo m_refInputInfo = new InputInfo();
-    public InputInfo InputInfo => m_refInputInfo;
+    private tInputInfo m_tInputInfo = new tInputInfo();
+    public tInputInfo InputInfo => m_tInputInfo;
 
     public static InputManager m_Instance = null;
 
@@ -71,7 +71,7 @@ public class InputManager : MonoBehaviour
         for (int i = 0; i < m_listMoveAction.Count; ++i)
         {
             Vector2 vMoveValue = m_listMoveAction[i].action.ReadValue<Vector2>();
-            m_refInputInfo.MoveDir = vMoveValue.normalized;
+            m_tInputInfo.MoveDir = vMoveValue.normalized;
         }
     }
 
@@ -80,7 +80,7 @@ public class InputManager : MonoBehaviour
         for (int i = 0; i < m_listScreenAction.Count; ++i)
         {
             Vector2 vScreenPos = m_listScreenAction[i].action.ReadValue<Vector2>();
-            m_refInputInfo.ScreenPos = vScreenPos;
+            m_tInputInfo.ScreenPos = vScreenPos;
         }
     }
 
@@ -94,13 +94,13 @@ public class InputManager : MonoBehaviour
             {
                 if (vDelta.sqrMagnitude > 0f)
                 {
-                    m_refInputInfo.Delta = Vector2.zero; // 튀는 첫 값은 강제로 0 처리
+                    m_tInputInfo.Delta = Vector2.zero; // 튀는 첫 값은 강제로 0 처리
                     m_isDeltaInitialized = true;        // 다음 프레임부터는 정상 작동
                     continue;
                 }
             }
 
-            m_refInputInfo.Delta = vDelta;
+            m_tInputInfo.Delta = vDelta;
         }
 
     }

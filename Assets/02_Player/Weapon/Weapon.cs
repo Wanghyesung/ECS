@@ -33,7 +33,7 @@ public class Weapon : MonoBehaviour
     private float m_fCurTime = 0.0f;
 
 
-    public virtual void Fire()
+    public virtual void Fire(Vector3 _vTargetPos)
     {
         if (CheckTime() == false)
             return;
@@ -46,15 +46,18 @@ public class Weapon : MonoBehaviour
         if (refAttackObj == null)
             return;
 
-        //공격력 전달
-        refAttackObj.SetAttack(m_SOAttackInfo);
-
         //각 무기에 맞는 파티클 실행
         Vector3 vFirePos = m_refFireTr.transform.position;
         refObj.transform.position = vFirePos;
         refAttackObj.transform.rotation = m_refFireTr.transform.rotation;
-
         m_refEffectObject.Play();
+
+
+        //방향 설정
+        refObj.transform.LookAt(_vTargetPos);
+
+        //공격력 전달
+        refAttackObj.SetAttack(m_SOAttackInfo);
     }
 
     private void Update()

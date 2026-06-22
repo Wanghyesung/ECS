@@ -6,13 +6,12 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    private Animator m_refAnimator = null;
-    [SerializeField] private Weapon m_refWeapon = null;
+    [SerializeField] private List<Weapon> m_listWeapon = null;
     [SerializeField] private AnimationTable m_refAnimTable = null;
+    [SerializeField] private Aim m_refAim= null;
 
     private void Awake()
     {
-        m_refAnimator = GetComponent<Animator>();   
     }
 
     private void Update()
@@ -43,7 +42,11 @@ public class Player : MonoBehaviour
     {
         //내 총의 상태값
         //m_refAnimTable.SetBool(eEntityState.Attack, true);
-        m_refWeapon.Fire();
+
+
+        Vector3 vTargetPos = m_refAim.TargetPosition;
+        for(int i = 0; i< m_listWeapon.Count; ++i)
+            m_listWeapon[i].Fire(vTargetPos);
     }
     private void Cansle()
     {
