@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static PoolObject;
 [CreateAssetMenu(fileName = "SO_Attack_Info", menuName = "Game/Attack Info")]
 
 public class SOAttackInfo : ScriptableObject
@@ -10,6 +11,7 @@ public class SOAttackInfo : ScriptableObject
     public string Description;
 
     [Header("Stats")]
+    public ePoolType PoolType;
     public int Damage = 10;
     public int AttackPower = 0;
     public float Cooldown = 0.5f;

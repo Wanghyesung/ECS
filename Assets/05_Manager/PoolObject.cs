@@ -34,6 +34,7 @@ public class PoolObject : MonoBehaviour, IPoolable
         BaseBullet,
         BaseHitEffect,
         MidBullet,
+        MidHitEffect,
     }
 
     private void Update()

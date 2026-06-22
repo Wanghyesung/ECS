@@ -19,7 +19,7 @@ public class Weapon : MonoBehaviour
     public enum eWeaponType
     {
         None,
-        Base,
+        Bullet,
         End,
     }
 
@@ -38,7 +38,7 @@ public class Weapon : MonoBehaviour
         if (CheckTime() == false)
             return;
 
-        GameObject refObj = ObjectPool.m_Instance.GetObject(PoolObject.ePoolType.BaseBullet);
+        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolType);
         if (refObj == null) 
             return;
 
@@ -81,7 +81,6 @@ public class Weapon : MonoBehaviour
         return false;
     }
     
-
     private void SetAttack(SOAttackInfo _refAttackInfo)
     {
         m_fFireTime = _refAttackInfo.Cooldown;
