@@ -57,6 +57,7 @@ public class Weapon : MonoBehaviour
         refObj.transform.LookAt(_vTargetPos);
 
         //공격력 전달
+        SetAttack(m_SOAttackInfo);
         refAttackObj.SetAttack(m_SOAttackInfo);
     }
 
@@ -79,5 +80,11 @@ public class Weapon : MonoBehaviour
 
         return false;
     }
+    
 
+    private void SetAttack(SOAttackInfo _refAttackInfo)
+    {
+        m_fFireTime = _refAttackInfo.Cooldown;
+    }
 }
+

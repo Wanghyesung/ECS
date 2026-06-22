@@ -71,14 +71,16 @@ public class ObjectPool : MonoBehaviour
         GameObject refObject = queValue.Dequeue();
         IPoolable iPool = refObject.GetComponent<IPoolable>();
         if (iPool == null)
+        {
+            Debug.Log("오브젝트 풀에 이상한 값이 들어감");
             return null;
+        }
 
         refObject.transform.SetParent(null);
 
         iPool.Pop();
         refObject.gameObject.SetActive(true);
 
-        queValue.Dequeue();
         return refObject;
     }
 
@@ -99,9 +101,12 @@ public class ObjectPool : MonoBehaviour
         if (m_hashPool.TryGetValue(iPool.PoolType, out var queValue) == false)
             return;
 
-        _refGameObj.transform.SetParent(transform);
+        //이미 푸쉬 요청된 오브젝트
+        if (iPool.PushCount > 0)
+            return;
 
         iPool.Push();
+        _refGameObj.transform.SetParent(transform);
         _refGameObj.gameObject.SetActive(false);
 
         queValue.Enqueue(_refGameObj);

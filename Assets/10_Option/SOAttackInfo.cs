@@ -14,12 +14,14 @@ public class SOAttackInfo : ScriptableObject
     public int AttackPower = 0;
     public float Cooldown = 0.5f;
     public int HitCount = 1;
-    public float Speed = 12;
+    public float Speed = 12.0f;
+    public float AliveTime = 0.2f;
 
     [Header("Knockback / Stun")]
     public float KnockbackForce = 3f;
     public float KnockbackDuration = 0.2f;
     public float StunDuration = 0f;
+
 
     [Header("Critical / Misc")]
     [Range(0f, 1f)]

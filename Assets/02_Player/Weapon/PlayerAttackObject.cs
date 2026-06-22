@@ -4,19 +4,28 @@ using UnityEngine;
 
 public class PlayerAttackObject : MonoBehaviour
 {
+    private Rigidbody m_refRigidbody;
     private SOAttackInfo m_refAttackInfo;
     [SerializeField] eAttackOptionFlag m_eAttackOptFlag = eAttackOptionFlag.Base;
 
-    
-    // Update is called once per frame
-    void Update()
+    float m_fCurTime = 0.0f;
+    private void Awake()
     {
-        transform.Translate(Vector3.forward * m_refAttackInfo.Speed * Time.deltaTime);
-
-
-        Vector3 vPos = transform.position;
+        m_refRigidbody = GetComponent<Rigidbody>();
     }
 
+    private void Update()
+    {
+        m_fCurTime -= Time.deltaTime;
+        if(m_fCurTime <= 0.0f)
+            ObjectPool.m_Instance.PushObject(gameObject);
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.Speed * Time.fixedDeltaTime;
+        m_refRigidbody.MovePosition(vNextPos);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -33,6 +42,7 @@ public class PlayerAttackObject : MonoBehaviour
 
     public void SetAttack(SOAttackInfo _refAttackInfo)
     {
+        m_fCurTime = _refAttackInfo.AliveTime;
         m_refAttackInfo = _refAttackInfo;
     }
 
