@@ -32,6 +32,8 @@ public class PoolObject : MonoBehaviour, IPoolable
     public enum ePoolType
     {
         BaseBullet,
+        BaseHitEffect,
+        MidBullet,
     }
 
     private void Update()

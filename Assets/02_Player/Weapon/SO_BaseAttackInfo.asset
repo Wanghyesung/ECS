@@ -18,6 +18,7 @@ MonoBehaviour:
   Cooldown: 0.1
   HitCount: 1
   Speed: 240
+  AliveTime: 2
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
@@ -25,6 +26,4 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 256
-  HitEffect: {fileID: 0}
   HitSound: {fileID: 0}
-  AnimationTrigger: 

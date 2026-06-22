@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        
+        int a = 10;    
     }
 
     public void UpdateOnAnimation(eEntityState _eState, bool _bOn)

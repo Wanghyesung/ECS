@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2953915167681310839}
   - component: {fileID: 6422328822851379970}
   - component: {fileID: -722618633470855186}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BaseBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,6 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_eAttackOptFlag: 0
+  m_eHitEffectType: 1
 --- !u!114 &2953915167681310839
 MonoBehaviour:
   m_ObjectHideFlags: 0

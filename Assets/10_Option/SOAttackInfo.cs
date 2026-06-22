@@ -30,10 +30,8 @@ public class SOAttackInfo : ScriptableObject
     [Header("Targeting")]
     public LayerMask HitLayers = ~0;
 
-    [Header("Visuals / Audio")]
-    public ParticleSystem HitEffect;
+    [Header("Audio")]
     public AudioClip HitSound;
-    public string AnimationTrigger;
 }
 
 

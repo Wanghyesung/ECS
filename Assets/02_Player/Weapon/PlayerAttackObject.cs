@@ -1,12 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PoolObject;
 
 public class PlayerAttackObject : MonoBehaviour
 {
     private Rigidbody m_refRigidbody;
+
     private SOAttackInfo m_refAttackInfo;
     [SerializeField] eAttackOptionFlag m_eAttackOptFlag = eAttackOptionFlag.Base;
+    [SerializeField] ePoolType m_eHitEffectType;
+
+    //[SerializeField] private ParticleSystem m_refHitEffect = null;
 
     float m_fCurTime = 0.0f;
     private void Awake()
@@ -34,10 +40,18 @@ public class PlayerAttackObject : MonoBehaviour
             var iDamageable = other.GetComponent<IDamageable>();
             if (iDamageable != null)
             {
+                //m_refHitEffect.Play();
+
                 MakeAttackInfo(out var attack); 
-                iDamageable.TakeDamage(attack); // TakeDamage가 tAttackInfo를 받도록 정의되어 있어야 함
+                iDamageable.TakeDamage(attack);
             }
+
+            ObjectPool.m_Instance.PushObject(gameObject);
+
+            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
+            refHitEffect.transform.position = transform.position;
         }
+
     }
 
     public void SetAttack(SOAttackInfo _refAttackInfo)
@@ -45,6 +59,7 @@ public class PlayerAttackObject : MonoBehaviour
         m_fCurTime = _refAttackInfo.AliveTime;
         m_refAttackInfo = _refAttackInfo;
     }
+
 
 
     private void MakeAttackInfo(out tAttackInfo _tAttackInfo)
