@@ -12,8 +12,9 @@ using UnityEngine.InputSystem;
 
 public class InputInfo
 {
-    public Vector2 MoveDir; //X, Z
-    public Vector2 ScreenMoveDir; //X Y
+    public Vector2 MoveDir = Vector2.zero; //X, Z
+    public Vector2 ScreenPos = Vector2.zero; //X Y
+    public Vector2 Delta = Vector2.zero;
 }
 
 public class InputManager : MonoBehaviour
@@ -25,10 +26,9 @@ public class InputManager : MonoBehaviour
 
     [SerializeField] private List<InputActionReference> m_listMoveAction;
     [SerializeField] private List<InputActionReference> m_listScreenAction;
+    [SerializeField] private List<InputActionReference> m_listDeltaAction;
 
-    private Vector2 m_vStartPosition = Vector2.zero;
-    private Vector2 m_vCurPosition = Vector2.zero;
-
+    private bool m_isDeltaInitialized = false;
     private void Awake()
     {
         if (m_Instance != null)
@@ -45,19 +45,30 @@ public class InputManager : MonoBehaviour
 
         for (int i = 0; i < m_listScreenAction.Count; ++i)
             m_listScreenAction[i].action.Enable();
+
+        for (int i = 0; i < m_listDeltaAction.Count; ++i)
+            m_listDeltaAction[i].action.Enable();
+
     }
 
+    private void Start()
+    {
+
+    }
 
     private void Update()
     {
         UpdateMoveValue();
 
         UpdateScreenMoveValue();
+
+        UpdateDeltaValue();
+
     }
 
     private void UpdateMoveValue()
     {
-        for(int i = 0; i<m_listMoveAction.Count; ++i)
+        for (int i = 0; i < m_listMoveAction.Count; ++i)
         {
             Vector2 vMoveValue = m_listMoveAction[i].action.ReadValue<Vector2>();
             m_refInputInfo.MoveDir = vMoveValue.normalized;
@@ -68,17 +79,29 @@ public class InputManager : MonoBehaviour
     {
         for (int i = 0; i < m_listScreenAction.Count; ++i)
         {
-            Vector2 vScreenMoveValue = m_listScreenAction[i].action.ReadValue<Vector2>();
-
-            m_vCurPosition = vScreenMoveValue;
-
-            if (vScreenMoveValue == Vector2.zero)
-                m_vStartPosition = m_vCurPosition;
-          
-            Vector2 vDrag = m_vCurPosition - m_vStartPosition;
-            m_refInputInfo.ScreenMoveDir = vDrag.normalized;
-                
+            Vector2 vScreenPos = m_listScreenAction[i].action.ReadValue<Vector2>();
+            m_refInputInfo.ScreenPos = vScreenPos;
         }
     }
 
+    private void UpdateDeltaValue()
+    {
+        for (int i = 0; i < m_listDeltaAction.Count; ++i)
+        {
+            Vector2 vDelta = m_listDeltaAction[i].action.ReadValue<Vector2>();
+
+            if (!m_isDeltaInitialized)
+            {
+                if (vDelta.sqrMagnitude > 0f)
+                {
+                    m_refInputInfo.Delta = Vector2.zero; // 튀는 첫 값은 강제로 0 처리
+                    m_isDeltaInitialized = true;        // 다음 프레임부터는 정상 작동
+                    continue;
+                }
+            }
+
+            m_refInputInfo.Delta = vDelta;
+        }
+
+    }
 }
