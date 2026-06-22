@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 974b33ccbd786464a825203eb88b8dab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -88,7 +88,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5082388106658570055}
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 4300000, guid: d7bd1c1682ee18e4498d7e9af8d4956d, type: 2}
 --- !u!114 &3097948489159929952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_lineColor: {r: 0.7363515, g: 0, b: 1, a: 1}
   m_lineWidth: 10
   m_lightSaberFactor: 0.8
+  mesh: {fileID: 4300000, guid: d7bd1c1682ee18e4498d7e9af8d4956d, type: 2}
 --- !u!96 &6032339163371132709
 TrailRenderer:
   serializedVersion: 3

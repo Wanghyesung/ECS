@@ -58,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 4df8448980639b04f96dce65b2b8bd95, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,7 +87,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6690671260121293282}
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 4300000, guid: d7bd1c1682ee18e4498d7e9af8d4956d, type: 2}
 --- !u!114 &8690356503583763474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ MonoBehaviour:
   m_lineColor: {r: 0, g: 1, b: 1, a: 1}
   m_lineWidth: 10
   m_lightSaberFactor: 0.8
+  mesh: {fileID: 0}
 --- !u!114 &1012453920687979021
 MonoBehaviour:
   m_ObjectHideFlags: 0
