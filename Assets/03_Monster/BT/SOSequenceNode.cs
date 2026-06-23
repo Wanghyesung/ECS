@@ -4,6 +4,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 Sequence
+기능 : 연결된 액션을 하나씩 순서대로 실행, 만약 하나라도 실패하면 실패로 간주
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_SequenceNode", menuName = "Game/Monster/SequenceNode")]

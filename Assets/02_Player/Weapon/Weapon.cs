@@ -7,23 +7,19 @@ using UnityEngine;
 //동적 스탯
 
 
-[System.Flags]
-public enum eAttackOptionFlag
-{
-    Base = 0,
-    Random = 1 << 0,
-}
 
 public class Weapon : MonoBehaviour
 {
+    
     public enum eWeaponType
     {
         None,
-        Base,
+        Bullet,
+        Trace,
         End,
     }
 
-    [SerializeField] private eWeaponType m_eWeaponType;
+    
     [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
     [SerializeField] private Transform m_refFireTr = null;
@@ -33,28 +29,29 @@ public class Weapon : MonoBehaviour
     private float m_fCurTime = 0.0f;
 
 
-    public virtual void Fire()
+    public virtual void Fire(Vector3 _vTargetPos)
     {
         if (CheckTime() == false)
             return;
 
-        GameObject refObj = ObjectPool.m_Instance.GetObject(PoolObject.ePoolType.BaseBullet);
+        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolType);
         if (refObj == null) 
             return;
 
-        PlayerAttackObject refAttackObj = refObj.GetComponent<PlayerAttackObject>();
+       Bullet refAttackObj = refObj.GetComponent<Bullet>();
         if (refAttackObj == null)
             return;
-
-        //공격력 전달
-        refAttackObj.SetAttack(m_SOAttackInfo);
 
         //각 무기에 맞는 파티클 실행
         Vector3 vFirePos = m_refFireTr.transform.position;
         refObj.transform.position = vFirePos;
         refAttackObj.transform.rotation = m_refFireTr.transform.rotation;
-
         m_refEffectObject.Play();
+
+
+        //공격력 전달, 방향 설정
+        m_fFireTime = m_SOAttackInfo.Cooldown;
+        refAttackObj.SetAttack(m_SOAttackInfo, _vTargetPos);
     }
 
     private void Update()
@@ -76,5 +73,7 @@ public class Weapon : MonoBehaviour
 
         return false;
     }
-
+    
+ 
 }
+
