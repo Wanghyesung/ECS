@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SO_MidAttackInfo 1
   m_EditorClassIdentifier: 
   Description: 
+  WeaponType: 1
   PoolType: 2
   Damage: 20
   AttackPower: 0
@@ -23,6 +24,8 @@ MonoBehaviour:
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
+  BaseRotationSpeed: 90
+  HomingRaius: 1000
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static PoolObject;
+using static Weapon;
+
 [CreateAssetMenu(fileName = "SO_Attack_Info", menuName = "Game/Attack Info")]
 
 public class SOAttackInfo : ScriptableObject
@@ -11,6 +13,7 @@ public class SOAttackInfo : ScriptableObject
     public string Description;
 
     [Header("Stats")]
+    public eWeaponType WeaponType;
     public ePoolType PoolType;
     public int Damage = 10;
     public int AttackPower = 0;
@@ -24,6 +27,9 @@ public class SOAttackInfo : ScriptableObject
     public float KnockbackDuration = 0.2f;
     public float StunDuration = 0f;
 
+    [Header("Homing")]
+    public float BaseRotationSpeed = 90f;
+    public float HomingRaius = 1000.0f;
 
     [Header("Critical / Misc")]
     [Range(0f, 1f)]

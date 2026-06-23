@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,32 +9,32 @@ public class PlayerAttackObject : MonoBehaviour
 {
     private Rigidbody m_refRigidbody;
 
-    private SOAttackInfo m_refAttackInfo;
-    [SerializeField] eAttackOptionFlag m_eAttackOptFlag = eAttackOptionFlag.Base;
+    protected SOAttackInfo m_refAttackInfo;
+    private PoolObject m_refPoolObj;
+
     [SerializeField] ePoolType m_eHitEffectType;
 
-    //[SerializeField] private ParticleSystem m_refHitEffect = null;
-
-    float m_fCurTime = 0.0f;
-    private void Awake()
+    private float m_fCurTime = 0.0f;
+    protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
+        m_refPoolObj = GetComponent<PoolObject>();
     }
 
-    private void Update()
+ 
+    protected virtual void Update()
     {
-        m_fCurTime -= Time.deltaTime;
-        if(m_fCurTime <= 0.0f)
-            ObjectPool.m_Instance.PushObject(gameObject);
+        
     }
 
-    private void FixedUpdate()
+
+    protected virtual void FixedUpdate()
     {
         Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.Speed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if ((m_refAttackInfo.HitLayers.value & (1 << other.gameObject.layer)) != 0)
         {
@@ -47,22 +48,32 @@ public class PlayerAttackObject : MonoBehaviour
             }
 
             ObjectPool.m_Instance.PushObject(gameObject);
-
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
-            refHitEffect.transform.position = transform.position;
+                
+            //나중에 EffectSO까지 따로 만들어서 확인하는걸로
+            if (m_eHitEffectType != ePoolType.None)
+            {
+                GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
+                refHitEffect.transform.position = transform.position;
+            }
         }
 
     }
 
-    public void SetAttack(SOAttackInfo _refAttackInfo)
+    public virtual void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vDir)
     {
         m_fCurTime = _refAttackInfo.AliveTime;
         m_refAttackInfo = _refAttackInfo;
+        m_refPoolObj?.SetPushTime(_refAttackInfo.AliveTime);
+
+        SetOption(_vDir);
     }
 
+    protected virtual void SetOption(Vector3 _vDir)
+    {
+        transform.LookAt(_vDir);
+    }
 
-
-    private void MakeAttackInfo(out tAttackInfo _tAttackInfo)
+    protected void MakeAttackInfo(out tAttackInfo _tAttackInfo)
     {
         _tAttackInfo = new tAttackInfo();
 

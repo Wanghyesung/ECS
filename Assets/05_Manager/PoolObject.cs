@@ -24,29 +24,30 @@ public class PoolObject : MonoBehaviour, IPoolable
     public PoolObject.ePoolType PoolType { get { return m_ePoolType; } }
 
     [SerializeField] private float m_fAliveTime = 3.0f;
-    [SerializeField] private float m_fCurAliveTime = 0.0f;
     private float m_fReturnTime = 0.0f;
     public float ReturnTime { get { return m_fReturnTime; } }
 
     [Serializable]
     public enum ePoolType
     {
+        None,
         BaseBullet,
         BaseHitEffect,
         MidBullet,
         MidHitEffect,
+        Missiles,
+        LargeHitEffect,
     }
 
     private void Update()
     {
         //이거 바꾸기 <- 우선순위 큐를 사용해서 가장 시간이 적은 얘만 확인하기
-        m_fCurAliveTime += Time.deltaTime;  
-        if(m_fCurAliveTime > m_fAliveTime)
+        m_fAliveTime -= Time.deltaTime;  
+        if(m_fAliveTime <= 0.0f)
             ObjectPool.m_Instance.PushObject(gameObject);
     }
     public virtual void Push()
     {
-        m_fCurAliveTime = 0.0f;
         m_iPushCount = 1;
     }
     public virtual void Pop()
@@ -54,6 +55,11 @@ public class PoolObject : MonoBehaviour, IPoolable
         m_iPushCount = 0;
 
         //TODO : 이거 나중에 우선순위큐를 사용해서 가장 시간이 작은 얘만 검사하기
-        m_fReturnTime = Time.time + m_fAliveTime;
+        //m_fReturnTime = Time.time + m_fAliveTime;
+    }
+    
+    public void SetPushTime(float _fPushTime)
+    {
+        m_fAliveTime = _fPushTime;
     }
 }

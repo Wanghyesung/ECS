@@ -7,23 +7,19 @@ using UnityEngine;
 //동적 스탯
 
 
-[System.Flags]
-public enum eAttackOptionFlag
-{
-    Base = 0,
-    Random = 1 << 0,
-}
 
 public class Weapon : MonoBehaviour
 {
+    
     public enum eWeaponType
     {
         None,
         Bullet,
+        Trace,
         End,
     }
 
-    [SerializeField] private eWeaponType m_eWeaponType;
+    
     [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
     [SerializeField] private Transform m_refFireTr = null;
@@ -53,12 +49,9 @@ public class Weapon : MonoBehaviour
         m_refEffectObject.Play();
 
 
-        //방향 설정
-        refObj.transform.LookAt(_vTargetPos);
-
-        //공격력 전달
-        SetAttack(m_SOAttackInfo);
-        refAttackObj.SetAttack(m_SOAttackInfo);
+        //공격력 전달, 방향 설정
+        m_fFireTime = m_SOAttackInfo.Cooldown;
+        refAttackObj.SetAttack(m_SOAttackInfo, _vTargetPos);
     }
 
     private void Update()
@@ -81,9 +74,6 @@ public class Weapon : MonoBehaviour
         return false;
     }
     
-    private void SetAttack(SOAttackInfo _refAttackInfo)
-    {
-        m_fFireTime = _refAttackInfo.Cooldown;
-    }
+ 
 }
 

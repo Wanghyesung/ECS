@@ -182,7 +182,7 @@ namespace VolumetricLines
                 else Mesh.DestroyImmediate(m_meshFilter.sharedMesh);
                 m_meshFilter.sharedMesh = null;
             }
-            // clone 안 만들었으니 DestroyMaterial() 불필요
+            
         }
 
         void Update()
