@@ -28,43 +28,55 @@ public class Missiles : PlayerAttackObject
 
     protected override void Update()
     {
-        base.Update();
 
-        if (m_refTarget != null)
+        Vector3 vToTarget = m_vTargetPosition - transform.position;
+        float fDist = vToTarget.magnitude;
+
+        if (fDist > 0.1f)
         {
-            Vector3 vToTarget = m_vTargetPosition - transform.position;
-            float fDist = vToTarget.magnitude;
-            if (fDist > 0.01f)
-            {
-                Vector3 vDir = vToTarget / fDist;
+            Vector3 vDir = vToTarget / fDist; // 정규화
+           
+            // 내적 및 각도 계산 
+            float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
+            float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
 
-                float fRatio = (1- vToTarget.magnitude / m_fTargetLength);
-                float fRotSpeed = m_refAttackInfo.Speed * fRatio;
+            float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.BaseRotationSpeed * 0.5f;
+            float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.BaseRotationSpeed;
 
-                // compute angle between forward and desired dir
-                float fDot = Vector3.Dot(transform.forward.normalized, vDir.normalized);
-                fDot = Mathf.Clamp(fDot, -1f, 1f);
-                float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
+            float fStep = fRotateSpeed * Time.deltaTime;
+            float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
 
-                float fStep = fRotSpeed * Time.deltaTime;
-                float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
-
-                Vector3 newForward = Vector3.Slerp(transform.forward, vDir, t);
-                transform.rotation = Quaternion.LookRotation(newForward);
-            }
+            Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
+            transform.rotation = Quaternion.LookRotation(vNewForward);
         }
-        else if (m_vTargetPosition.sqrMagnitude > 0.001f)
+        else
         {
-            //여기서 공격 오브젝트 생성   
+            Debug.Log("도착함");
+            return;
         }
     }
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+    }
 
+    protected override void OnTriggerEnter(Collider other)
+    {
+        base.OnTriggerEnter(other);
+    }
+
+    
     protected override void SetOption(Vector3 _vDir)
     {
-        m_vTargetPosition = _vDir.normalized;
+        FindNearestTarget();
+
+        if (m_refTarget == null)
+            return;
+
+        m_vTargetPosition = m_refTarget.transform.position;
+
         m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
 
-        FindNearestTarget();
     }
 
     private void FindNearestTarget()
@@ -72,7 +84,7 @@ public class Missiles : PlayerAttackObject
         Physics.OverlapSphereNonAlloc(transform.position, m_refAttackInfo.HomingRaius, m_arrNearCollider, m_refAttackInfo.HitLayers);
 
         GameObject refTarget = null;
-        float fBestDist = float.MinValue;
+        float fBestDist = float.MaxValue;
         Vector3 vPos = transform.position;
         foreach (var refMon in m_arrNearCollider)
         {
@@ -90,14 +102,11 @@ public class Missiles : PlayerAttackObject
         m_refTarget = refTarget;
     }
 
-
-    protected override void FixedUpdate()
+    private void CalculateSpeedRatio()
     {
-        base.FixedUpdate();       
+
     }
 
-    protected override void OnTriggerEnter(Collider other)
-    {
-        base.OnTriggerEnter(other);
-    }
+
+
 }

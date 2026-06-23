@@ -14,7 +14,9 @@ public class PlayerAttackObject : MonoBehaviour
 
     [SerializeField] ePoolType m_eHitEffectType;
 
-    private float m_fCurTime = 0.0f;
+
+    protected float m_fMoveSpeed = 0.0f;  //µ¿Àû
+  
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
@@ -30,7 +32,7 @@ public class PlayerAttackObject : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.Speed * Time.fixedDeltaTime;
+        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_fMoveSpeed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
     }
 
@@ -56,13 +58,12 @@ public class PlayerAttackObject : MonoBehaviour
                 refHitEffect.transform.position = transform.position;
             }
         }
-
     }
 
     public virtual void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vDir)
     {
-        m_fCurTime = _refAttackInfo.AliveTime;
         m_refAttackInfo = _refAttackInfo;
+        m_fMoveSpeed = _refAttackInfo.Speed;
         m_refPoolObj?.SetPushTime(_refAttackInfo.AliveTime);
 
         SetOption(_vDir);
@@ -72,6 +73,7 @@ public class PlayerAttackObject : MonoBehaviour
     {
         transform.LookAt(_vDir);
     }
+
 
     protected void MakeAttackInfo(out tAttackInfo _tAttackInfo)
     {

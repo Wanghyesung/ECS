@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: 
   WeaponType: 2
-  PoolType: 6
+  PoolType: 5
   Damage: 20
   AttackPower: 0
   Cooldown: 1.5
@@ -24,7 +24,7 @@ MonoBehaviour:
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
-  BaseRotationSpeed: 90
+  BaseRotationSpeed: 180
   HomingRaius: 1000
   CriticalChance: 0
   HitLayers:

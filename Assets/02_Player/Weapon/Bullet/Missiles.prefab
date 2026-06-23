@@ -30,14 +30,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493568331743266066}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.13721582, w: 0.9905412}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13721976, w: 0.9905407}
   m_LocalPosition: {x: 7.1334515, y: 0.0000009536743, z: -8.028448}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3957653121974841941}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15.774}
 --- !u!33 &8622143515275916842
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -115,7 +115,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ePoolType: 5
   m_fAliveTime: 3
-  m_fCurAliveTime: 0
 --- !u!65 &262128102816122980
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -238,7 +237,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.5
+  m_Time: 1.2
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
