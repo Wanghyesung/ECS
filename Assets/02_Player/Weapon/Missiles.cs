@@ -8,7 +8,7 @@ using static PoolObject;
 기능 : 몬스터를 자동으로 추격해주는 클래스
  *///////////////////////////////////////////
 
-public class Missiles : PlayerAttackObject
+public class Missiles : Bullet
 {
     private GameObject m_refTarget; //Monster
 
@@ -17,18 +17,14 @@ public class Missiles : PlayerAttackObject
     private Vector3 m_vTargetPosition;
     private float m_fTargetLength;
 
-
-
     protected override void Awake()
     {
         base.Awake();
     }
-
  
 
     protected override void Update()
     {
-
         Vector3 vToTarget = m_vTargetPosition - transform.position;
         float fDist = vToTarget.magnitude;
 
@@ -49,22 +45,11 @@ public class Missiles : PlayerAttackObject
             Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
             transform.rotation = Quaternion.LookRotation(vNewForward);
         }
-        else
-        {
-            Debug.Log("도착함");
-            return;
-        }
     }
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
     }
-
-    protected override void OnTriggerEnter(Collider other)
-    {
-        base.OnTriggerEnter(other);
-    }
-
     
     protected override void SetOption(Vector3 _vDir)
     {
@@ -77,6 +62,11 @@ public class Missiles : PlayerAttackObject
 
         m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
 
+    }
+
+    protected override void AttackMonster(Collider other)
+    {
+        base.AttackMonster(other);
     }
 
     private void FindNearestTarget()
@@ -101,12 +91,5 @@ public class Missiles : PlayerAttackObject
 
         m_refTarget = refTarget;
     }
-
-    private void CalculateSpeedRatio()
-    {
-
-    }
-
-
 
 }

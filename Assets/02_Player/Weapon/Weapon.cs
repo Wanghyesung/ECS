@@ -38,7 +38,7 @@ public class Weapon : MonoBehaviour
         if (refObj == null) 
             return;
 
-        PlayerAttackObject refAttackObj = refObj.GetComponent<PlayerAttackObject>();
+       Bullet refAttackObj = refObj.GetComponent<Bullet>();
         if (refAttackObj == null)
             return;
 

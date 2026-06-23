@@ -4907,9 +4907,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 1
+  m_ePoolType: 2
   m_fAliveTime: 3
-  m_fCurAliveTime: 0
 --- !u!114 &5907750735583649490
 MonoBehaviour:
   m_ObjectHideFlags: 0

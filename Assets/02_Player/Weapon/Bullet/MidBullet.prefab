@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 453848223203154846}
   - component: {fileID: -7398542338301981515}
   - component: {fileID: 8472377594057605179}
+  - component: {fileID: -6107177459045942003}
   m_Layer: 10
   m_Name: MidBullet
   m_TagString: Untagged
@@ -108,7 +109,6 @@ MonoBehaviour:
   m_lineColor: {r: 0.7363515, g: 0, b: 1, a: 1}
   m_lineWidth: 10
   m_lightSaberFactor: 0.8
-  mesh: {fileID: 4300000, guid: d7bd1c1682ee18e4498d7e9af8d4956d, type: 2}
 --- !u!96 &6032339163371132709
 TrailRenderer:
   serializedVersion: 3
@@ -234,9 +234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 2
+  m_ePoolType: 3
   m_fAliveTime: 2
-  m_fCurAliveTime: 0
 --- !u!114 &453848223203154846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,8 +248,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eAttackOptFlag: 0
-  m_eHitEffectType: 3
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!54 &-7398542338301981515
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -299,3 +299,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 6}
   m_Center: {x: 0, y: 0, z: 2}
+--- !u!114 &-6107177459045942003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082388106658570055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_eHitEffectType: 4

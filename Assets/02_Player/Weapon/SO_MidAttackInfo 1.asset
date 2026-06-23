@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: 
   WeaponType: 1
-  PoolType: 2
+  PoolType: 3
   Damage: 20
   AttackPower: 0
   Cooldown: 0.1

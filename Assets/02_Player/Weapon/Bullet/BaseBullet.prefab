@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2953915167681310839}
   - component: {fileID: 6422328822851379970}
   - component: {fileID: -722618633470855186}
+  - component: {fileID: 4923494700222406655}
   m_Layer: 10
   m_Name: BaseBullet
   m_TagString: Untagged
@@ -107,7 +108,6 @@ MonoBehaviour:
   m_lineColor: {r: 0, g: 1, b: 1, a: 1}
   m_lineWidth: 10
   m_lightSaberFactor: 0.8
-  mesh: {fileID: 0}
 --- !u!114 &1012453920687979021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,8 +120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eAttackOptFlag: 0
-  m_eHitEffectType: 1
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &2953915167681310839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,9 +135,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 0
+  m_ePoolType: 1
   m_fAliveTime: 3
-  m_fCurAliveTime: 0
 --- !u!54 &6422328822851379970
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -185,3 +185,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 7, y: 0.5, z: 15}
   m_Center: {x: 0, y: 0, z: 5.83}
+--- !u!114 &4923494700222406655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6690671260121293282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_eHitEffectType: 2

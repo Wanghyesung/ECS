@@ -4917,9 +4917,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 3
+  m_ePoolType: 4
   m_fAliveTime: 2
-  m_fCurAliveTime: 0
 --- !u!1 &4649911793862043994
 GameObject:
   m_ObjectHideFlags: 0
