@@ -13,7 +13,7 @@ public class SOCheckPOVNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (_refBB.TargetTr == null || _refBB.m_refAgent == null || _refBB.Owner == null)
+        if (_refBB.TargetTr == null || _refBB.Agent == null || _refBB.Owner == null)
             return eNodeState.Failure;
 
         Vector3 vOwnerPos = _refBB.Owner.transform.position;

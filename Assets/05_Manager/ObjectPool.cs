@@ -6,6 +6,7 @@ using UnityEngine;
 using static PoolObject;
 
 
+//해당 데이터에 접근하여 수정할 일이 없다면 struct로 교체
 [Serializable]
 public class PoolInfo
 {
@@ -13,6 +14,10 @@ public class PoolInfo
     public GameObject refGameObject;
 }
 
+/*///////////////////////////////////////////
+               ObjectPool
+기능 : 객체를 미리 로드해두고 필요할 때 꺼내고 다 사용하면 반납할 수 있게 하는 기능
+ *///////////////////////////////////////////
 
 public class ObjectPool : MonoBehaviour
 {
@@ -112,4 +117,11 @@ public class ObjectPool : MonoBehaviour
         queValue.Enqueue(_refGameObj);
     }
 
+    public int GetObjectCount(ePoolType _eType)
+    {
+        if (m_hashPool.TryGetValue(_eType, out var queValue) == false)
+            return -1;
+
+        return queValue.Count;
+    }
 }

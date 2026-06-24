@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 428428616ca63674db6320bf362344af, type: 3}
+  m_Name: SO_SeqSpawnBall
+  m_EditorClassIdentifier: 
+  listNode:
+  - {fileID: 11400000, guid: 8bce22a0c457e89419d0faf4015d63a1, type: 2}
+  - {fileID: 11400000, guid: 2219ca393196cb14f9cc960e27029399, type: 2}
+  - {fileID: 11400000, guid: aeef66a78d561e94aa0a36d4e77cc0c2, type: 2}
+  - {fileID: 11400000, guid: b63ea95658708384ca0ffc519b917c83, type: 2}

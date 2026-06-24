@@ -30,6 +30,7 @@ public class PoolObject : MonoBehaviour, IPoolable
     [Serializable]
     public enum ePoolType
     {
+        /*Player*/
         None,
         BaseBullet,
         BaseHitEffect,
@@ -37,6 +38,10 @@ public class PoolObject : MonoBehaviour, IPoolable
         MidHitEffect,
         Missiles,
         LargeHitEffect,
+
+        /*Monster*/
+        GBossBall,
+        GBossBallEx,
     }
 
     private void Update()

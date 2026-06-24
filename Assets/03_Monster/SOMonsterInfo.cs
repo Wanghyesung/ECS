@@ -15,10 +15,6 @@ public class SOMonsterInfo : ScriptableObject
     public int MaxHP = 10;
     public float Speed = 3f;
     public float AttackRange = 1.5f;
-
-
-    [Header("Attack")]
-    public SOAttackInfo AttackInfo = null;
 }
 
 

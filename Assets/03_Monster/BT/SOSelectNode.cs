@@ -5,6 +5,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 SelectNode
+기능 : 자식 노드 중에서 성공할 수 있는 노드를 찾는 기능
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_SelectNode", menuName = "Game/Monster/SelectNode")]

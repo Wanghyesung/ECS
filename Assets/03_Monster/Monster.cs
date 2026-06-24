@@ -54,6 +54,9 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        // DeleteTem
+        m_refTargetPlayer = FindObjectOfType<Player>().gameObject;
+
         foreach(var refSpawnInfo in m_listSpawnObject)
         {
             for(int i = 0; i<refSpawnInfo.SpawnCount; ++i)
@@ -70,6 +73,8 @@ public class Monster : MonoBehaviour, IDamageable
         if (iCount > 0)
         {
             m_refBlackBoard.ListCurAttackTime = new List<float>(iCount);
+            m_refBlackBoard.ListCurAttackObject = new List<GameObject>();
+
             for(int i = 0; i< iCount; ++i)
                 m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnTime;
         }
