@@ -1,14 +1,25 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI;
 using UnityEngine.AI;
 
+
+[Serializable]
+public class ObjectInfo
+{
+    public eEntityState State;
+    public long CurrentHP;
+    public float Speed;
+}
 public class Player : MonoBehaviour
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
+
+    [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
 
     private void Awake()
     {

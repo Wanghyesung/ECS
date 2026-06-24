@@ -36,14 +36,11 @@ public class BlackBoard
     [Header("Component")]
     public Monster Owner;
     public Transform TargetTr;
-    public Animator m_refAnimator;
-    public NavMeshAgent m_refAgent;
+    public Animator Animator;
+    public NavMeshAgent Agent;
 
     [Header("EntityInfo")]
-    public eEntityState State;
-    public float CurrentHP;
-    public float Speed;
-
+    public ObjectInfo ObjInfo;
 
     [Header("Trace")]
     public float CurrentTime;
@@ -51,6 +48,11 @@ public class BlackBoard
     public float TraceMaxDistance;
     public float TraceMinDistance;
     public float POV;
+
+    [Header("Attack")]
+    public List<float> ListCurAttackTime;
+    public int CurrentAttackIdx;
+    public double CurrentAttackTime;
 }
 
 /*///////////////////////////////////////////
@@ -79,5 +81,5 @@ public class BehaviorTree : MonoBehaviour
         if (m_bRunning == true)
             m_refRootNode?.Execute(_refBB);
     }
-    
+
 }

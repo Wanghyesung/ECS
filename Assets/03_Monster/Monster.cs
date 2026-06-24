@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,10 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
 
+    [SerializeField] private readonly List<SOSpawnObjectInfo> m_listSpawnObject = new List<SOSpawnObjectInfo>();
+    public List<SOSpawnObjectInfo> ListSpawnObject => m_listSpawnObject;
+
+
     private Coroutine m_CoNockback = null;
     private WaitForSeconds m_refWaitHitTime;
 
@@ -36,27 +41,49 @@ public class Monster : MonoBehaviour, IDamageable
         if (m_SOMonsterInfo == null)
         {
             Debug.Log("몬스터 정보를 체워야함");
-            
             return;
         }
 
         if(m_refBT == null)
             m_refBT = GetComponent<BehaviorTree>(); 
 
-        m_refBlackBoard.State = eEntityState.Idle;
-        m_refBlackBoard.Speed = m_SOMonsterInfo.Speed;
-        m_refBlackBoard.CurrentHP = m_SOMonsterInfo.MaxHP;
+        m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
+        m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.Speed;
+        m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
+    }
 
+    private void Start()
+    {
+        foreach(var refSpawnInfo in m_listSpawnObject)
+        {
+            for(int i = 0; i<refSpawnInfo.SpawnCount; ++i)
+            {
+                ObjectPool.m_Instance.PushObject(refSpawnInfo.AttackObject.gameObject);
+            }
+        }
+    }
+
+
+    private void OnEnable()
+    {
+        int iCount = m_listSpawnObject.Count;
+        if (iCount > 0)
+        {
+            m_refBlackBoard.ListCurAttackTime = new List<float>(iCount);
+            for(int i = 0; i< iCount; ++i)
+                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnTime;
+        }
     }
 
     private void Update()
     {
+        m_refBlackBoard.CurrentAttackTime += Time.time;
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
     public void TakeDamage(in tAttackInfo _refAttackInfo)
     {
-        if (m_refBlackBoard.State == eEntityState.Hit)
+        if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
             return;
 
         if(m_CoNockback !=null)
@@ -83,6 +110,14 @@ public class Monster : MonoBehaviour, IDamageable
         }
     
         m_CoNockback = null;
+    }
+
+    public SOSpawnObjectInfo GetSpawnObject(int _iIdx)
+    {
+        if (m_listSpawnObject.Count >= _iIdx)
+            return null;
+
+        return m_listSpawnObject[_iIdx];
     }
 
 }
