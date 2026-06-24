@@ -5,11 +5,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using static PoolObject;
 
+/*///////////////////////////////////////////
+                SelectNode
+기능 : 몬스터, 플레이어가 쏘는 기본 공격 오브젝트
+ *///////////////////////////////////////////
+
 public class Bullet : MonoBehaviour
 {
     private Rigidbody m_refRigidbody;
 
-    protected SOAttackInfo m_refAttackInfo;
+    [SerializeField] protected SOAttackInfo m_refAttackInfo;
     private PoolObject m_refPoolObj;
     private TriggerObject m_refTriggerObject;
 
@@ -26,11 +31,13 @@ public class Bullet : MonoBehaviour
 
     private void OnEnable()
     {
-        m_refTriggerObject.OnHitTargetEnter += AttackMonster;
+        if(m_refTriggerObject != null)
+            m_refTriggerObject.OnHitTargetEnter += AttackMonster;
     }
     private void OnDisable()
     {
-        m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
+        if(m_refTriggerObject != null)
+            m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
     }
 
     protected virtual void Update()
@@ -59,7 +66,6 @@ public class Bullet : MonoBehaviour
         if (m_eHitEffectType != ePoolType.None)
         {
             GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
-            Debug.Log($"타겟 위치 : {transform.position}");
             refHitEffect.transform.position = transform.position;
         }
 
@@ -70,10 +76,18 @@ public class Bullet : MonoBehaviour
     {
         m_refAttackInfo = _refAttackInfo;
         m_fMoveSpeed = _refAttackInfo.Speed;
-        m_refPoolObj?.SetPushTime(_refAttackInfo.AliveTime);
+        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
 
         SetOption(_vDir);
     }
+
+    public virtual void SetAttack(SOAttackInfo _refAttackInfo)
+    {
+        m_refAttackInfo = _refAttackInfo;
+        m_fMoveSpeed = _refAttackInfo.Speed;
+        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
+    }
+
 
     protected virtual void SetOption(Vector3 _vDir)
     {

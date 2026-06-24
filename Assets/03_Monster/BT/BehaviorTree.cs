@@ -50,7 +50,7 @@ public class BlackBoard
     public float POV;
 
     [Header("Attack")]
-    public List<float> ListCurAttackTime;
+    public List<float> ListCurAttackTime; //현재 공격 오브젝트 시간 체크용
     public List<GameObject> ListCurAttackObject; //나중에 해제하거나 내 공격 오브젝트에 접근할 수 있기 때문에 관리
     public int CurrentAttackIdx;
     public double CurrentAttackTime;

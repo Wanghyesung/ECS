@@ -21,7 +21,7 @@ public class PoolObject : MonoBehaviour, IPoolable
     //만약 이번 프레임에서 2번 이상 오브젝트를 Push할 수 있기 때문에
     private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
-    public PoolObject.ePoolType PoolType { get { return m_ePoolType; } }
+    public ePoolType PoolType { get { return m_ePoolType; } }
 
     [SerializeField] private float m_fAliveTime = 3.0f;
     private float m_fReturnTime = 0.0f;
@@ -63,7 +63,7 @@ public class PoolObject : MonoBehaviour, IPoolable
         //m_fReturnTime = Time.time + m_fAliveTime;
     }
     
-    public void SetPushTime(float _fPushTime)
+    public void SetAliveTime(float _fPushTime)
     {
         m_fAliveTime = _fPushTime;
     }

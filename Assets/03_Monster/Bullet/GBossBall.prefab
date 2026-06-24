@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8433322635266207651}
   - component: {fileID: 3002193888518471271}
   - component: {fileID: 5997298268083073932}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4853,7 +4853,7 @@ GameObject:
   - component: {fileID: 1250218700005265084}
   - component: {fileID: 6194529928318768689}
   - component: {fileID: 804090912661250843}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Core2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9697,17 +9697,16 @@ GameObject:
   - component: {fileID: 6260129206335529814}
   - component: {fileID: 8464619574724396953}
   - component: {fileID: 856771050238163266}
-  - component: {fileID: 2338019574348575538}
   - component: {fileID: 5469615507277076676}
   - component: {fileID: 3167203205081735591}
   - component: {fileID: 2747596931255988514}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: GBossBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8927683583331880757
 Transform:
   m_ObjectHideFlags: 0
@@ -14535,7 +14534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eHitEffectType: 7
+  m_refAttackInfo: {fileID: 0}
+  m_eHitEffectType: 8
 --- !u!114 &856771050238163266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14550,19 +14550,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ePoolType: 7
   m_fAliveTime: 3
---- !u!114 &2338019574348575538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3270864465402891538}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_eHitEffectType: 8
 --- !u!114 &5469615507277076676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14639,7 +14626,7 @@ GameObject:
   - component: {fileID: 945020907164261057}
   - component: {fileID: 2872269080015149972}
   - component: {fileID: 4882884759369856698}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ParticleTail
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,22 +12,24 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SpawnObjectNode", menuName = "Game/Monster/ActionNode/SpawnObjectNode")]
 public class SOSpawnObjectNode : SONode
 {
-    [SerializeField] private int m_iSpawnCount;
     public override eNodeState Execute(BlackBoard _refBB)
     {
         var listSpawn = _refBB.Owner.ListSpawnObject;
         if (listSpawn == null || listSpawn[_refBB.CurrentAttackIdx] == null)
             return eNodeState.Failure;
 
-        PoolObject refPoolObj = listSpawn[_refBB.CurrentAttackIdx].AttackObject;
-        int iCurCount = ObjectPool.m_Instance.GetObjectCount(refPoolObj.PoolType);
+        SpawnInfo refSpawnInfo = listSpawn[_refBB.CurrentAttackIdx];
+        SOSpawnObjectInfo SOSpawnInfo = refSpawnInfo.SpawnObjectInfo;
 
-        if (iCurCount < m_iSpawnCount)
+        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(SOSpawnInfo.AttackInfo.PoolType);
+
+        int iSpawnCount = refSpawnInfo.SpawnObjectInfo.SpawnCount;
+        if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
 
-        for(int i = 0; i< m_iSpawnCount; ++i)
+        for(int i = 0; i< iSpawnCount; ++i)
         {
-            GameObject refObject = ObjectPool.m_Instance.GetObject(refPoolObj.PoolType);
+            GameObject refObject = ObjectPool.m_Instance.GetObject(SOSpawnInfo.AttackInfo.PoolType);
             _refBB.ListCurAttackObject.Add(refObject);
         }
 

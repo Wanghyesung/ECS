@@ -22,9 +22,10 @@ public class SOCheckAttackTimeNode : SONode
             {
                 _refBB.CurrentAttackIdx = i;
                 
-                float fSpawnTime = _refBB.Owner.ListSpawnObject[i].SpawnTime;
+                float fSpawnTime = _refBB.Owner.ListSpawnObject[i].SpawnObjectInfo.SpawnTime;
                 listTime[i] = Time.time + fSpawnTime;
 
+                _refBB.ListCurAttackObject.Clear();
                 return eNodeState.Success;
             }
         }

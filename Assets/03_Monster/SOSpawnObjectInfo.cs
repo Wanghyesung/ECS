@@ -12,11 +12,13 @@ using UnityEngine;
 
 public class SOSpawnObjectInfo : ScriptableObject
 {
-    [Header("오브젝트 옵션")]
-    public SOAttackInfo SOAttackInfo;
-    public PoolObject AttackObject;
+    [Header("Origin Prefab")]
+    public PoolObject PoolObject;
 
-    [Header("스폰 옵션")]
+    [Header("Object Attack Info")]
+    public SOAttackInfo AttackInfo;
+
+    [Header("Spawn Option")]
     public int SpawnCount;
     public float SpawnTime;
 }

@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: SO_GBossBallInfo
   m_EditorClassIdentifier: 
   Description: 
-  WeaponType: 0
-  PoolType: 0
+  WeaponType: 1
+  PoolType: 7
   Damage: 10
   AttackPower: 0
   Cooldown: 0.5
   HitCount: 1
-  Speed: 12
-  AliveTime: 0.2
+  Speed: 20
+  AliveTime: 10
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
-  BaseRotationSpeed: 90
-  HomingRaius: 1000
+  BaseRotationSpeed: 0
+  HomingRaius: 0
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   HitSound: {fileID: 0}

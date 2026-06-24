@@ -10,12 +10,21 @@ public interface IDamageable
 }
 
 
+[Serializable]
+public class SpawnInfo
+{
+    public SOSpawnObjectInfo SpawnObjectInfo;
+
+    [Header("Spawn Option")]
+    public float SpawnOffset;
+    public float AliveTime;
+}
+
 /*///////////////////////////////////////////
                  Monster
 
 기능 : BT행동 제어, 몬스터 상태 관리
  *///////////////////////////////////////////
-
 
 public class Monster : MonoBehaviour, IDamageable
 {
@@ -29,9 +38,8 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
 
-    [SerializeField] private readonly List<SOSpawnObjectInfo> m_listSpawnObject = new List<SOSpawnObjectInfo>();
-    public List<SOSpawnObjectInfo> ListSpawnObject => m_listSpawnObject;
-
+    [SerializeField] private List<SpawnInfo> m_listSpawnObject = new List<SpawnInfo>();
+    public List<SpawnInfo> ListSpawnObject => m_listSpawnObject;
 
     private Coroutine m_CoNockback = null;
     private WaitForSeconds m_refWaitHitTime;
@@ -59,9 +67,9 @@ public class Monster : MonoBehaviour, IDamageable
 
         foreach(var refSpawnInfo in m_listSpawnObject)
         {
-            for(int i = 0; i<refSpawnInfo.SpawnCount; ++i)
+            for(int i = 0; i<refSpawnInfo.SpawnObjectInfo.SpawnCount; ++i)
             {
-                ObjectPool.m_Instance.PushObject(refSpawnInfo.AttackObject.gameObject);
+                ObjectPool.m_Instance.PushObject(refSpawnInfo.SpawnObjectInfo.PoolObject.gameObject);
             }
         }
     }
@@ -76,13 +84,16 @@ public class Monster : MonoBehaviour, IDamageable
             m_refBlackBoard.ListCurAttackObject = new List<GameObject>();
 
             for(int i = 0; i< iCount; ++i)
-                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnTime;
+            {
+                m_refBlackBoard.ListCurAttackTime.Add(0.0f);
+                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnObjectInfo.SpawnTime;
+            }
         }
     }
 
     private void Update()
     {
-        m_refBlackBoard.CurrentAttackTime += Time.time;
+        m_refBlackBoard.CurrentAttackTime += Time.deltaTime;
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
@@ -122,7 +133,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (m_listSpawnObject.Count >= _iIdx)
             return null;
 
-        return m_listSpawnObject[_iIdx];
+        return m_listSpawnObject[_iIdx].SpawnObjectInfo;
     }
 
 }

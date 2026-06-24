@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//µ¿Àû ½ºÅÈ
-
-
 
 public class Weapon : MonoBehaviour
 {

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 
@@ -11,13 +12,15 @@ using UnityEngine;
 public class SOSetRadialDirNode : SONode
 {
     private readonly float GOLDEN_RATIO = ((1f + Mathf.Sqrt(5f)) / 2f);
+
+    [SerializeField] private bool OnOffset;
     public override eNodeState Execute(BlackBoard _refBB)
     {
         var listObjs = _refBB.ListCurAttackObject;
         if (listObjs == null || listObjs.Count == 0) 
             return eNodeState.Failure;
 
-        int iTotalCount = listObjs.Count; 
+        int iTotalCount = listObjs.Count;
         for (int i = 0; i < iTotalCount; ++i)
         {
             // 인덱스를 기반으로 -1~1 사이의 Y값(높이) 계산
@@ -35,7 +38,19 @@ public class SOSetRadialDirNode : SONode
 
             // 최종 방향 벡터 (normalized 상태)
             Vector3 vDir = new Vector3(x, y, z);
-            listObjs[i].transform.rotation = Quaternion.Euler(vDir); 
+
+            listObjs[i].transform.rotation = Quaternion.LookRotation(vDir);
+
+            //만약 offset 옵션이 켜져있다면 offset만큼 위치 조정
+            if (OnOffset == true)
+            {
+                var listSpawnObj = _refBB.Owner.ListSpawnObject;
+
+                Vector3 vOwnerPos = _refBB.Owner.transform.position;
+                vOwnerPos += (vDir * listSpawnObj[_refBB.CurrentAttackIdx].SpawnOffset);
+
+                listObjs[i].transform.position = vOwnerPos;
+            }
         }
 
         return eNodeState.Success;

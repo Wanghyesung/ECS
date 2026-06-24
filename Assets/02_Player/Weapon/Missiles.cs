@@ -25,6 +25,9 @@ public class Missiles : Bullet
 
     protected override void Update()
     {
+        if (m_refTarget == null)
+            return;
+
         Vector3 vToTarget = m_vTargetPosition - transform.position;
         float fDist = vToTarget.magnitude;
 
