@@ -31,6 +31,7 @@ public class SOSequenceNode : SOListNode
             }
         }
 
+        iCurrentIdx = 0;
         return eNodeState.Success;
     }
 

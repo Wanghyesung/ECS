@@ -18,14 +18,3 @@ public class SOMonsterInfo : ScriptableObject
 }
 
 
-public enum eEntityState
-{
-    None,
-    Idle,
-    Move,
-    Attack,
-    Hit,
-    Dead,
-    End,
-}
-

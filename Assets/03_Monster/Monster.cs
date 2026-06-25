@@ -21,11 +21,9 @@ public class SpawnInfo
 
 
     [Header("Charge Option")]
-    public ParticleSystem ParticleSys;
+    public ParticleSystem ChargeParticle;
     public Transform SpawnParticleTransform;
     public float SpawnWaitTime; //Charge
-
-
 }
 
 /*///////////////////////////////////////////
@@ -73,7 +71,6 @@ public class Monster : MonoBehaviour, IDamageable
         // DeleteTem
         m_refTargetPlayer = FindObjectOfType<Player>().gameObject;
     }
-
 
     private void OnEnable()
     {
@@ -127,13 +124,34 @@ public class Monster : MonoBehaviour, IDamageable
     
         m_CoNockback = null;
     }
-
     public SOSpawnObjectInfo GetSpawnObject(int _iIdx)
     {
         if (m_listSpawnObject.Count >= _iIdx)
             return null;
 
         return m_listSpawnObject[_iIdx].SpawnObjectInfo;
+    }
+
+    public void StartStateEffect(eStatusEffect _eState, float _fTime)
+    {
+        //상태 중복 허용
+        m_refBlackBoard.ObjInfo.CurrentEffects = 
+            (ushort)(m_refBlackBoard.ObjInfo.CurrentEffects | (1 << (ushort)_eState));
+
+        m_refBlackBoard.ObjInfo.EffectTimes[(int)_eState] = Time.time + _fTime;
+    }
+
+    public bool CheckStateEffect(eStatusEffect _eState)
+    {
+        float fStartTime = m_refBlackBoard.ObjInfo.EffectTimes[(int)_eState];
+        if(fStartTime <= Time.time)
+        {
+            m_refBlackBoard.ObjInfo.CurrentEffects =
+                (ushort)(m_refBlackBoard.ObjInfo.CurrentEffects & ~(1 << (ushort)_eState));
+
+            return true;
+        }
+        return false;
     }
 
 }

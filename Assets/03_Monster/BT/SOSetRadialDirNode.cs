@@ -7,7 +7,7 @@ using UnityEngine;
 기능 : 360도 범위로 생성된 오브젝트 방향 설정
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_SetRadialDirNode", menuName = "Game/Monster/ActionNode/SOSetRadialDirNode")]
+[CreateAssetMenu(fileName = "SO_SetRadialDirNode", menuName = "Game/Monster/ActionNode/SetRadialDirNode")]
 
 public class SOSetRadialDirNode : SONode
 {

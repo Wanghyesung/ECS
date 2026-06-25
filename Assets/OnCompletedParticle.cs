@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class OnColpetedParticle : MonoBehaviour
 {
     [SerializeField] private ParticleSystem m_refParticle;
-    [SerializeField] private event Action m_refCompletedAction;
+    [SerializeField] private UnityEvent m_refCompletedAction;
 
     private void Awake()
     {

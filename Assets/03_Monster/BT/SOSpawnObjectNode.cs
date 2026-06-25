@@ -35,6 +35,8 @@ public class SOSpawnObjectNode : SONode
             _refBB.ListCurAttackObject.Add(refObject);
         }
 
+        Debug.Log(_refBB.ListCurAttackObject.Count);
+
         return eNodeState.Success;
     }
 }

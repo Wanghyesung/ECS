@@ -13,25 +13,25 @@ public class SOTraceNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (_refBB.TargetTr == null || _refBB.Agent == null || _refBB.Owner == null)
-            return eNodeState.Failure;
-
-        Vector3 vOwnerPos = _refBB.Owner.transform.position;
-        float fDistance = Vector3.Distance(vOwnerPos, _refBB.TargetTr.position);
-
-        
-        if (fDistance > _refBB.TraceMaxDistance)
-            return eNodeState.Failure;
-
-        if (fDistance <= _refBB.TraceMinDistance)
-        {
-            if (_refBB.Agent.hasPath)
-                _refBB.Agent.ResetPath();
-
-            return eNodeState.Success;
-        }
-
-        _refBB.Agent.SetDestination(_refBB.TargetTr.position);
+        //if (_refBB.TargetTr == null || _refBB.Agent == null || _refBB.Owner == null)
+        //    return eNodeState.Failure;
+        //
+        //Vector3 vOwnerPos = _refBB.Owner.transform.position;
+        //float fDistance = Vector3.Distance(vOwnerPos, _refBB.TargetTr.position);
+        //
+        //
+        //if (fDistance > _refBB.TraceMaxDistance)
+        //    return eNodeState.Failure;
+        //
+        //if (fDistance <= _refBB.TraceMinDistance)
+        //{
+        //    if (_refBB.Agent.hasPath)
+        //        _refBB.Agent.ResetPath();
+        //
+        //    return eNodeState.Success;
+        //}
+        //
+        //_refBB.Agent.SetDestination(_refBB.TargetTr.position);
         return eNodeState.Running;
     }
 }

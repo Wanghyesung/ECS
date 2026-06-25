@@ -6,12 +6,38 @@ using Unity.AI;
 using UnityEngine.AI;
 
 
+//상태이상 표현
+public enum eStatusEffect
+{
+    Wait,
+    Lock, 
+    Stun, 
+    End,  
+}
+
+public enum eEntityState
+{
+    None,
+    Idle,
+    Move,
+    Attack,
+    Hit,
+    Lock,
+    Dead,
+    End,
+}
+
 [Serializable]
 public class ObjectInfo
 {
     public eEntityState State;
+    public ushort CurrentEffects; //16비트로 전체 상태이상 표현
+
     public long CurrentHP;
     public float Speed;
+
+    //상태이상 체크 타이머
+    public float[] EffectTimes = new float[(int)eStatusEffect.End];
 }
 public class Player : MonoBehaviour
 {
