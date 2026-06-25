@@ -16,8 +16,16 @@ public class SpawnInfo
     public SOSpawnObjectInfo SpawnObjectInfo;
 
     [Header("Spawn Option")]
+    public Transform SpawnTransform;
     public float SpawnOffset;
-    public float AliveTime;
+
+
+    [Header("Charge Option")]
+    public ParticleSystem ParticleSys;
+    public Transform SpawnParticleTransform;
+    public float SpawnWaitTime; //Charge
+
+
 }
 
 /*///////////////////////////////////////////
@@ -64,14 +72,6 @@ public class Monster : MonoBehaviour, IDamageable
     {
         // DeleteTem
         m_refTargetPlayer = FindObjectOfType<Player>().gameObject;
-
-        foreach(var refSpawnInfo in m_listSpawnObject)
-        {
-            for(int i = 0; i<refSpawnInfo.SpawnObjectInfo.SpawnCount; ++i)
-            {
-                ObjectPool.m_Instance.PushObject(refSpawnInfo.SpawnObjectInfo.PoolObject.gameObject);
-            }
-        }
     }
 
 

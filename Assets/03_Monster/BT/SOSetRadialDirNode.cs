@@ -20,6 +20,7 @@ public class SOSetRadialDirNode : SONode
         if (listObjs == null || listObjs.Count == 0) 
             return eNodeState.Failure;
 
+        var listSpawnObj = _refBB.Owner.ListSpawnObject;
         int iTotalCount = listObjs.Count;
         for (int i = 0; i < iTotalCount; ++i)
         {
@@ -44,12 +45,8 @@ public class SOSetRadialDirNode : SONode
             //만약 offset 옵션이 켜져있다면 offset만큼 위치 조정
             if (OnOffset == true)
             {
-                var listSpawnObj = _refBB.Owner.ListSpawnObject;
-
-                Vector3 vOwnerPos = _refBB.Owner.transform.position;
-                vOwnerPos += (vDir * listSpawnObj[_refBB.CurrentAttackIdx].SpawnOffset);
-
-                listObjs[i].transform.position = vOwnerPos;
+                Vector3 vOffset = (vDir * listSpawnObj[_refBB.CurrentAttackIdx].SpawnOffset);
+                listObjs[i].transform.position += vOffset;
             }
         }
 

@@ -10,11 +10,9 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "SO_SpawnObject", menuName = "Game/Spawn/SpawnObject")]
 
+//TODO : 플레이러 로직과 맞추기
 public class SOSpawnObjectInfo : ScriptableObject
 {
-    [Header("Origin Prefab")]
-    public PoolObject PoolObject;
-
     [Header("Object Attack Info")]
     public SOAttackInfo AttackInfo;
 

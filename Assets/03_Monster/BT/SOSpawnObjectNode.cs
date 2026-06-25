@@ -27,9 +27,11 @@ public class SOSpawnObjectNode : SONode
         if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
 
-        for(int i = 0; i< iSpawnCount; ++i)
+       
+        for (int i = 0; i< iSpawnCount; ++i)
         {
             GameObject refObject = ObjectPool.m_Instance.GetObject(SOSpawnInfo.AttackInfo.PoolType);
+            refObject.transform.position = refSpawnInfo.SpawnTransform.position;
             _refBB.ListCurAttackObject.Add(refObject);
         }
 
