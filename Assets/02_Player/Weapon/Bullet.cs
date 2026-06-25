@@ -40,10 +40,6 @@ public class Bullet : MonoBehaviour
             m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
     }
 
-    protected virtual void Update()
-    {
-
-    }
 
     protected virtual void FixedUpdate()
     {
@@ -72,13 +68,10 @@ public class Bullet : MonoBehaviour
         ObjectPool.m_Instance.PushObject(gameObject);
     }
 
-    public virtual void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vDir)
+    public void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vTargetPos)
     {
-        m_refAttackInfo = _refAttackInfo;
-        m_fMoveSpeed = _refAttackInfo.Speed;
-        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
-
-        SetOption(_vDir);
+        SetAttack(_refAttackInfo);
+        transform.LookAt(_vTargetPos);
     }
 
     public virtual void SetAttack(SOAttackInfo _refAttackInfo)
@@ -87,13 +80,6 @@ public class Bullet : MonoBehaviour
         m_fMoveSpeed = _refAttackInfo.Speed;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
     }
-
-
-    protected virtual void SetOption(Vector3 _vDir)
-    {
-        transform.LookAt(_vDir);
-    }
-
 
     protected void MakeAttackInfo(out tAttackInfo _tAttackInfo)
     {

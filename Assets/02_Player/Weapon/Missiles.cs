@@ -21,9 +21,9 @@ public class Missiles : Bullet
     {
         base.Awake();
     }
- 
 
-    protected override void Update()
+
+    protected  void Update()
     {
         if (m_refTarget == null)
             return;
@@ -54,23 +54,25 @@ public class Missiles : Bullet
         base.FixedUpdate();
     }
     
-    protected override void SetOption(Vector3 _vDir)
+  
+    protected override void AttackMonster(Collider other)
     {
+        base.AttackMonster(other);
+    }
+
+    public override void SetAttack(SOAttackInfo _refAttackInfo)
+    {
+        base.SetAttack(_refAttackInfo);
+
         FindNearestTarget();
 
         if (m_refTarget == null)
             return;
 
         m_vTargetPosition = m_refTarget.transform.position;
-
         m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
-
     }
 
-    protected override void AttackMonster(Collider other)
-    {
-        base.AttackMonster(other);
-    }
 
     private void FindNearestTarget()
     {
