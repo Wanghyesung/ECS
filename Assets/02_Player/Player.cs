@@ -10,9 +10,11 @@ using UnityEngine.AI;
 public enum eStatusEffect
 {
     Wait,
-    Lock, 
-    Stun, 
-    End,  
+    Lock,
+    Stun,
+    Poison,
+    Burn,
+    End,
 }
 
 public enum eEntityState
@@ -27,17 +29,26 @@ public enum eEntityState
     End,
 }
 
+
+[Serializable]
+public struct EffectEntry
+{
+    public float EndTime;
+    public float TickInterval;
+    public float NextTickTime;
+    public long  TickDamage;
+}
+
 [Serializable]
 public class ObjectInfo
 {
     public eEntityState State;
-    public ushort CurrentEffects; //16비트로 전체 상태이상 표현
 
     public long CurrentHP;
     public float Speed;
 
-    //상태이상 체크 타이머
-    public float[] EffectTimes = new float[(int)eStatusEffect.End];
+    public ushort CurrentEffects; //16비트로 전체 상태이상 표현
+    public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
 public class Player : MonoBehaviour
 {

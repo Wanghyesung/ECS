@@ -25,7 +25,7 @@ public class SOSetRadialDirNode : SONode
         for (int i = 0; i < iTotalCount; ++i)
         {
             // 인덱스를 기반으로 -1~1 사이의 Y값(높이) 계산
-            float y = 1f - (i / (float)(iTotalCount - 1)) * 2f;
+            float y = 1f - (i / (float)iTotalCount) * 2f;
 
             // 해당 높이에서의 반지름 계산
             float fRadiusAtY = Mathf.Sqrt(1f - y * y);

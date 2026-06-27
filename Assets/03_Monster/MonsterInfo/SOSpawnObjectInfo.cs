@@ -18,5 +18,4 @@ public class SOSpawnObjectInfo : ScriptableObject
 
     [Header("Spawn Option")]
     public int SpawnCount;
-    public float SpawnTime;
 }

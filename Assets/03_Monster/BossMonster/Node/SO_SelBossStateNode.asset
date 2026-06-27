@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d815742291ec3c14a8040a0340ea1213, type: 3}
-  m_Name: SelRootBossNode
+  m_Name: SO_SelBossStateNode
   m_EditorClassIdentifier: 
   listNode:
   - {fileID: 11400000, guid: 5cf93ad5f9676f448a63cfc192c2b65e, type: 2}

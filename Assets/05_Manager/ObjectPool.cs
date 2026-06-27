@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 using static PoolObject;
 
@@ -14,10 +13,31 @@ public class PoolInfo
     public GameObject refGameObject;
 }
 
+[Serializable]
+public enum ePoolType
+{
+    /*Player*/
+    None,
+    BaseBullet,
+    BaseHitEffect,
+    MidBullet,
+    MidHitEffect,
+    Missiles,
+    LargeHitEffect,
+
+    /*Monster*/
+    GBossBall,
+    GBossBallEx,
+
+    LightBall,
+    LightBallEx,
+}
+
 /*///////////////////////////////////////////
                ObjectPool
 기능 : 객체를 미리 로드해두고 필요할 때 꺼내고 다 사용하면 반납할 수 있게 하는 기능
  *///////////////////////////////////////////
+
 
 public class ObjectPool : MonoBehaviour
 {

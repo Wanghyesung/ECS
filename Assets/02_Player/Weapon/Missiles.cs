@@ -22,6 +22,10 @@ public class Missiles : Bullet
         base.Awake();
     }
 
+    private void OnDisable()
+    {
+        System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
+    }
 
     protected  void Update()
     {

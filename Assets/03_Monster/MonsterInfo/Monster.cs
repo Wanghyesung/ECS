@@ -29,18 +29,16 @@ public class SpawnInfo
 /*///////////////////////////////////////////
                  Monster
 
-±â´É : BTÇàµ¿ Á¦¾î, ¸ó½ºÅÍ »óÅÂ °ü¸®
+ê¸°ëŠ¥ : BTì— ë”°ë¼ ëª¬ìŠ¤í„° í–‰ë™ ì¡°ì‘, ê³µê²© ì˜¤ë¸Œì íŠ¸ ê´€ë¦¬
  *///////////////////////////////////////////
 
 public class Monster : MonoBehaviour, IDamageable
 {
-    //TODO : ³ªÁß¿¡ °ÔÀÓ ¸Å´ÏÀú³ª ´Ù¸¥°÷¿¡¼­ Àü¿ªÀ¸·Î ¹ŞÀ» ¼ö ÀÖ°Ô
+  
     [SerializeField] private GameObject m_refTargetPlayer;
     
-    //Á¤Àû µ¥ÀÌÅÍ ÂüÁ¶
     [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
 
-    //³» µ¿Àû µ¥ÀÌÅÍ 
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
 
@@ -54,13 +52,14 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (m_SOMonsterInfo == null)
         {
-            Debug.Log("¸ó½ºÅÍ Á¤º¸¸¦ Ã¼¿ö¾ßÇÔ");
+            Debug.Log("ëª¬ìŠ¤í„° ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤");
             return;
         }
 
         if(m_refBT == null)
-            m_refBT = GetComponent<BehaviorTree>(); 
+            m_refBT = GetComponent<BehaviorTree>();
 
+        m_refBlackBoard.Owner = this;
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.Speed;
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
@@ -69,7 +68,11 @@ public class Monster : MonoBehaviour, IDamageable
     private void Start()
     {
         // DeleteTem
-        m_refTargetPlayer = FindObjectOfType<Player>().gameObject;
+        var player = FindObjectOfType<Player>();
+        if (player == null) return;
+
+        m_refTargetPlayer = player.gameObject;
+        m_refBlackBoard.TargetTr = player.transform;
     }
 
     private void OnEnable()
@@ -83,14 +86,14 @@ public class Monster : MonoBehaviour, IDamageable
             for(int i = 0; i< iCount; ++i)
             {
                 m_refBlackBoard.ListCurAttackTime.Add(0.0f);
-                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnObjectInfo.SpawnTime;
+                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
             }
         }
     }
 
     private void Update()
     {
-        m_refBlackBoard.CurrentAttackTime += Time.deltaTime;
+        m_refBlackBoard.CurrentAttackTime = Time.time;
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
@@ -117,7 +120,7 @@ public class Monster : MonoBehaviour, IDamageable
     
             transform.position += vDelta;
     
-            fElapsed += Time.fixedDeltaTime;
+            fElapsed += Time.deltaTime;
     
             yield return null;
         }
@@ -126,29 +129,34 @@ public class Monster : MonoBehaviour, IDamageable
     }
     public SOSpawnObjectInfo GetSpawnObject(int _iIdx)
     {
-        if (m_listSpawnObject.Count >= _iIdx)
+        if (m_listSpawnObject.Count < _iIdx)
             return null;
 
         return m_listSpawnObject[_iIdx].SpawnObjectInfo;
     }
 
-    public void StartStateEffect(eStatusEffect _eState, float _fTime)
+    // _fTickInterval > 0 ì´ë©´ DoT íš¨ê³¼ (ë…, í™”ìƒ ë“±), 0ì´ë©´ ë‹¨ìˆœ ìƒíƒœ ì´ìƒ
+    public void StartStateEffect(eStatusEffect _eState, float _fDuration,
+                                  float _fTickInterval = 0f, long _lTickDamage = 0)
     {
-        //»óÅÂ Áßº¹ Çã¿ë
-        m_refBlackBoard.ObjInfo.CurrentEffects = 
+        m_refBlackBoard.ObjInfo.CurrentEffects =
             (ushort)(m_refBlackBoard.ObjInfo.CurrentEffects | (1 << (ushort)_eState));
 
-        m_refBlackBoard.ObjInfo.EffectTimes[(int)_eState] = Time.time + _fTime;
+        int idx = (int)_eState;
+        m_refBlackBoard.ObjInfo.Effects[idx].EndTime      = Time.time + _fDuration;
+        m_refBlackBoard.ObjInfo.Effects[idx].TickInterval = _fTickInterval;
+        m_refBlackBoard.ObjInfo.Effects[idx].TickDamage   = _lTickDamage;
+        m_refBlackBoard.ObjInfo.Effects[idx].NextTickTime =
+            _fTickInterval > 0f ? Time.time + _fTickInterval : float.MaxValue;
     }
 
+    // íš¨ê³¼ê°€ ë§Œë£Œëìœ¼ë©´ true (SOWaitStatusEffectNodeì—ì„œ ì‚¬ìš©)
     public bool CheckStateEffect(eStatusEffect _eState)
     {
-        float fStartTime = m_refBlackBoard.ObjInfo.EffectTimes[(int)_eState];
-        if(fStartTime <= Time.time)
+        if (m_refBlackBoard.ObjInfo.Effects[(int)_eState].EndTime <= Time.time)
         {
             m_refBlackBoard.ObjInfo.CurrentEffects =
                 (ushort)(m_refBlackBoard.ObjInfo.CurrentEffects & ~(1 << (ushort)_eState));
-
             return true;
         }
         return false;

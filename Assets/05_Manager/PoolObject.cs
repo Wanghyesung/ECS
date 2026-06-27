@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
+using static ObjectPool;
 
 public interface IPoolable
 {
-    public PoolObject.ePoolType PoolType { get; }
+    public ePoolType PoolType { get; }
     public int PushCount { get; }
 
     public void Push();
@@ -16,37 +15,20 @@ public interface IPoolable
 
 public class PoolObject : MonoBehaviour, IPoolable
 {
-    [SerializeField] ePoolType m_ePoolType;
+    [SerializeField] private ePoolType m_ePoolType;
 
-    //¸¸¾à ÀÌ¹ø ÇÁ·¹ÀÓ¿¡¼­ 2¹ø ÀÌ»ó ¿ÀºêÁ§Æ®¸¦ PushÇÒ ¼ö ÀÖ±â ¶§¹®¿¡
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ 2ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Pushï¿½ï¿½ ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
     public ePoolType PoolType { get { return m_ePoolType; } }
 
+    
+    
     [SerializeField] private float m_fAliveTime = 3.0f;
-    private float m_fReturnTime = 0.0f;
-    public float ReturnTime { get { return m_fReturnTime; } }
-
-    [Serializable]
-    public enum ePoolType
-    {
-        /*Player*/
-        None,
-        BaseBullet,
-        BaseHitEffect,
-        MidBullet,
-        MidHitEffect,
-        Missiles,
-        LargeHitEffect,
-
-        /*Monster*/
-        GBossBall,
-        GBossBallEx,
-    }
-
+    private float m_fSettingAliveTime = 0.0f;
     private void Update()
     {
-        //ÀÌ°Å ¹Ù²Ù±â <- ¿ì¼±¼øÀ§ Å¥¸¦ »ç¿ëÇØ¼­ °¡Àå ½Ã°£ÀÌ ÀûÀº ¾ê¸¸ È®ÀÎÇÏ±â
+      
         m_fAliveTime -= Time.deltaTime;  
         if(m_fAliveTime <= 0.0f)
             ObjectPool.m_Instance.PushObject(gameObject);
@@ -58,13 +40,14 @@ public class PoolObject : MonoBehaviour, IPoolable
     public virtual void Pop()
     {
         m_iPushCount = 0;
-
-        //TODO : ÀÌ°Å ³ªÁß¿¡ ¿ì¼±¼øÀ§Å¥¸¦ »ç¿ëÇØ¼­ °¡Àå ½Ã°£ÀÌ ÀÛÀº ¾ê¸¸ °Ë»çÇÏ±â
-        //m_fReturnTime = Time.time + m_fAliveTime;
+        // í˜¸ì¶œëœ ì  ì—†ìœ¼ë©´(ížˆíŠ¸ ì´íŽ™íŠ¸ ë“±) float.MaxValueë¡œ íƒ€ì´ë¨¸ë¥¼ ë¬´ë ¥í™”í•´
+        // OnParticleSystemStopped ê°™ì€ ìžì²´ ë°˜ë‚© ì½œë°±ì— ë§¡ê¸´ë‹¤.
+        m_fAliveTime = m_fSettingAliveTime > 0f ? m_fSettingAliveTime : float.MaxValue;
     }
     
     public void SetAliveTime(float _fPushTime)
     {
         m_fAliveTime = _fPushTime;
+        m_fSettingAliveTime = m_fAliveTime;
     }
 }

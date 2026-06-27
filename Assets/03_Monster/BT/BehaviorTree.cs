@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,14 +15,14 @@ public enum eNodeState
 
 /*///////////////////////////////////////////
                   SONode
-¼³¸í : °¡Àå ÃÖ»óÀ§ ³ëµå (¾î¶°ÇÑ Çàµ¿À» ½ÇÇàÇÏ´Â ¿ªÇÒ)
+ê¸°ëŠ¥ : ë…¸ë“œ ìµœìƒìœ„ í´ë˜ìŠ¤ (ëª¨ë“  ì•¡ì…˜ì„ ì²˜ë¦¬í•˜ëŠ” ë‹¨ìœ„)
  *///////////////////////////////////////////
 public abstract class SONode : ScriptableObject
 {
     public abstract eNodeState Execute(BlackBoard _refBB);
 }
 
-// SOListµµ ±×³É SONode Ãë±Ş
+// SOListëŠ” ê·¸ëƒ¥ SONode ëª¨ìŒ
 public abstract class SOListNode : SONode
 {
     [SerializeField] protected List<SONode> listNode = new List<SONode>();
@@ -48,10 +47,15 @@ public class BlackBoard
     public float POV;
 
     [Header("Attack")]
-    public List<float> ListCurAttackTime;           //ÇöÀç °ø°İ ¿ÀºêÁ§Æ® ½Ã°£ Ã¼Å©¿ë
-    public List<GameObject> ListCurAttackObject;    //³ªÁß¿¡ ÇØÁ¦ÇÏ°Å³ª ³» °ø°İ ¿ÀºêÁ§Æ®¿¡ Á¢±ÙÇÒ ¼ö ÀÖ±â ¶§¹®¿¡ °ü¸®
+    public List<float> ListCurAttackTime;           //ê³µê²© ì¤€ë¹„ ì˜¤ë¸Œì íŠ¸ ì‹œê°„ ì²´í¬ìš©
+    public List<GameObject> ListCurAttackObject;    //ë‚˜ì¤‘ì— ì°¸ì¡°í•˜ê±°ë‚˜ ì“¸ ê³µê²© ì˜¤ë¸Œì íŠ¸ë¥¼ ì €ì¥í•  ìˆ˜ ìˆê¸° ìœ„í•´ì„œ ì‚¬ìš©
     public int CurrentAttackIdx;
     public double CurrentAttackTime;
+
+    [Header("Burst State")]
+    public bool IsBursting;
+    public float BurstEndTime;
+    public float BurstNextSpawnTime;
 }
 
 

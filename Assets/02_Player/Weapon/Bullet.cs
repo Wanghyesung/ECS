@@ -62,6 +62,9 @@ public class Bullet : MonoBehaviour
         if (m_eHitEffectType != ePoolType.None)
         {
             GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
+            if (refHitEffect == null)
+                return;
+
             refHitEffect.transform.position = transform.position;
         }
 

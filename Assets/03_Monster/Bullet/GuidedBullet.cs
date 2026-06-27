@@ -5,20 +5,23 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
               GuidedBullet
-±â´É : Å¸°ÙÀ» µû¶ó°¡´Â ÃÑ¾Ë
+ê¸°ëŠ¥ : íƒ€ê²Ÿì„ í–¥í•´ê°€ëŠ” ì´ì•Œ
  *///////////////////////////////////////////
 
 public class GuidedBullet : Bullet
 {
-    private GameObject m_refTarget;
-    private void SetTarget(Player _refPlayer) { m_refTarget = _refPlayer.gameObject; }
+    private Transform m_refTargetTr;
+
+    public void SetTarget(Transform _refTargetTr)
+    {
+        m_refTargetTr = _refTargetTr;
+    }
 
     protected override void Awake()
     {
         base.Awake();
     }
 
-    
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
@@ -26,22 +29,19 @@ public class GuidedBullet : Bullet
 
     private void Update()
     {
-        //m_refTarget ¹æÇâÀ¸·Î Ãß°İ
-        if (m_refTarget == null)
+        if (m_refTargetTr == null)
             return;
 
-        transform.LookAt(m_refTarget.transform.position);
+        transform.LookAt(m_refTargetTr.position);
     }
+
     public override void SetAttack(SOAttackInfo _refAttackInfo)
     {
         base.SetAttack(_refAttackInfo);
     }
 
-    //Trigger
     protected override void AttackMonster(Collider other)
     {
         base.AttackMonster(other);
     }
-
-  
 }

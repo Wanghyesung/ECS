@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class OnColpetedParticle : MonoBehaviour
+public class OnCompletedParticle: MonoBehaviour
 {
     [SerializeField] private ParticleSystem m_refParticle;
     [SerializeField] private UnityEvent m_refCompletedAction;
