@@ -33,13 +33,13 @@ public class Charge : MonoBehaviour
         if (m_refParticleSystem == null)
             return;
 
-        m_bCompleted = false;
+            m_bCompleted = false;
         m_fStartEventTime = _fDuration;
         m_fStartEventTime += m_fStartEventOffset;
         m_fCurTime = m_fStartEventTime;
 
-        var mainModule = m_refParticleSystem.main;
-        mainModule.startLifetime = new ParticleSystem.MinMaxCurve(_fDuration);
+        //var mainModule = m_refParticleSystem.main;
+        //mainModule.startLifetime = new ParticleSystem.MinMaxCurve(_fDuration);
 
         m_refParticleSystem.Play();
     }

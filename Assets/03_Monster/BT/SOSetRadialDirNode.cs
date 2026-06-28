@@ -20,7 +20,7 @@ public class SOSetRadialDirNode : SONode
         if (listObjs == null || listObjs.Count == 0) 
             return eNodeState.Failure;
 
-        var listSpawnObj = _refBB.Owner.ListSpawnObject;
+        var listSpawnObj = _refBB.Owner.ListAttackObject;
         int iTotalCount = listObjs.Count;
         for (int i = 0; i < iTotalCount; ++i)
         {

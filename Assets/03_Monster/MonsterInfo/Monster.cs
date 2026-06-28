@@ -42,8 +42,8 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
 
-    [SerializeField] private List<SpawnInfo> m_listSpawnObject = new List<SpawnInfo>();
-    public List<SpawnInfo> ListSpawnObject => m_listSpawnObject;
+    [SerializeField] private List<SpawnInfo> m_listAttackObject = new List<SpawnInfo>();
+    public List<SpawnInfo> ListAttackObject => m_listAttackObject;
 
     private Coroutine m_CoNockback = null;
     private WaitForSeconds m_refWaitHitTime;
@@ -77,7 +77,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
-        int iCount = m_listSpawnObject.Count;
+        int iCount = m_listAttackObject.Count;
         if (iCount > 0)
         {
             m_refBlackBoard.ListCurAttackTime = new List<float>(iCount);
@@ -86,7 +86,7 @@ public class Monster : MonoBehaviour, IDamageable
             for(int i = 0; i< iCount; ++i)
             {
                 m_refBlackBoard.ListCurAttackTime.Add(0.0f);
-                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listSpawnObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
+                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listAttackObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
             }
         }
     }
@@ -129,10 +129,10 @@ public class Monster : MonoBehaviour, IDamageable
     }
     public SOSpawnObjectInfo GetSpawnObject(int _iIdx)
     {
-        if (m_listSpawnObject.Count < _iIdx)
+        if (m_listAttackObject.Count < _iIdx)
             return null;
 
-        return m_listSpawnObject[_iIdx].SpawnObjectInfo;
+        return m_listAttackObject[_iIdx].SpawnObjectInfo;
     }
 
     // _fTickInterval > 0 이면 DoT 효과 (독, 화상 등), 0이면 단순 상태 이상

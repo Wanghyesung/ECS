@@ -18,7 +18,7 @@ public class SOSetBulletInfoNode : SONode
         {
             if(listAttackObj[i].TryGetComponent<Bullet>(out var refBullet) == true)
             {
-                var listSpawnObj = _refBB.Owner.ListSpawnObject;
+                var listSpawnObj = _refBB.Owner.ListAttackObject;
                 SOSpawnObjectInfo SOSpawnObjInfo = listSpawnObj[_refBB.CurrentAttackIdx].SpawnObjectInfo;
 
                 if(SetDirection == false)

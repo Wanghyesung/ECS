@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
   m_Name: SO_GBossBallInfo
   m_EditorClassIdentifier: 
-  Description: 
+  Description: "\uBAAC\uC2A4\uD130\uB97C \uC911\uC2EC\uC73C\uB85C \uC0AC\uBC29\uC73C\uB85C
+    \uACF5\uACA9"
   WeaponType: 1
   PoolType: 7
   Damage: 10

@@ -7,8 +7,8 @@ using UnityEngine;
 기능 : 현재 몬스터 공격 가능한 기술이 있는지 체크
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_CheckAttackTimeNode", menuName = "Game/Monster/ActionNode/CheckAttackTimeNode")]
-public class SOCheckAttackTimeNode : SONode
+[CreateAssetMenu(fileName = "SO_CheckAllAttackTimeNode", menuName = "Game/Monster/ActionNode/CheckAllAttackTimeNode")]
+public class SOCheckAllAttackTimeNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
@@ -22,7 +22,7 @@ public class SOCheckAttackTimeNode : SONode
             {
                 _refBB.CurrentAttackIdx = i;
                 
-                float fSpawnTime = _refBB.Owner.ListSpawnObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
+                float fSpawnTime = _refBB.Owner.ListAttackObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
                 listTime[i] = Time.time + fSpawnTime;
 
                 _refBB.ListCurAttackObject.Clear();

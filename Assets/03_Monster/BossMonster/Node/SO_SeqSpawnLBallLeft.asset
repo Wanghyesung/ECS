@@ -10,13 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 428428616ca63674db6320bf362344af, type: 3}
-  m_Name: SO_SeqSpawnBall
+  m_Name: SO_SeqSpawnLBallLeft
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: 8bce22a0c457e89419d0faf4015d63a1, type: 2}
-  - {fileID: 11400000, guid: 6b8f03e685c85ec4e80c64bce3a175ce, type: 2}
-  - {fileID: 11400000, guid: 1e2e3a44606bd6b4990887696183b05f, type: 2}
-  - {fileID: 11400000, guid: ef090c299e0b274499ba072b03340af7, type: 2}
+  - {fileID: 11400000, guid: 762029db049a9274baad71554579fec3, type: 2}
   - {fileID: 11400000, guid: aeef66a78d561e94aa0a36d4e77cc0c2, type: 2}
-  - {fileID: 11400000, guid: b63ea95658708384ca0ffc519b917c83, type: 2}
   - {fileID: 11400000, guid: 4d5ccab2da5c0e94199f66195e115b4a, type: 2}
+  - {fileID: 11400000, guid: 81c61d9d59a0a2b45972fadc7c983cde, type: 2}

@@ -16,7 +16,7 @@ public class SOSetSpawnOffset : SONode
         if (iCurAttackIdx == -1)
             return eNodeState.Failure;
 
-        SpawnInfo refSpawnInfo = _refBB.Owner.ListSpawnObject[iCurAttackIdx];
+        SpawnInfo refSpawnInfo = _refBB.Owner.ListAttackObject[iCurAttackIdx];
         if (refSpawnInfo == null)
             return eNodeState.Failure;
 

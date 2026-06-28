@@ -17,7 +17,6 @@ public class PoolObject : MonoBehaviour, IPoolable
 {
     [SerializeField] private ePoolType m_ePoolType;
 
-    //���� �̹� �����ӿ��� 2�� �̻� ������Ʈ�� Push�� �� �ֱ� ������
     private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
     public ePoolType PoolType { get { return m_ePoolType; } }

@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf8422e80204ee4da90c473b3234b34, type: 3}
-  m_Name: SO_SpawnGBossLBall
+  m_Name: SO_SpawnLBossBall
   m_EditorClassIdentifier: 
-  AttackInfo: {fileID: 11400000, guid: a23818708285e094780c043ab02cb2a6, type: 2}
-  SpawnCount: 100
-  SpawnTime: 10
+  AttackInfo: {fileID: 11400000, guid: 37164d75ba5734a4c9ed2fe0557f9463, type: 2}
+  SpawnCount: 1

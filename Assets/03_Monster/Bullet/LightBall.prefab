@@ -50,7 +50,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -4838,7 +4838,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -9626,7 +9626,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -14378,6 +14378,7 @@ GameObject:
   - component: {fileID: 2196477257383221072}
   - component: {fileID: 537172212668676843}
   - component: {fileID: 4813924074177353454}
+  - component: {fileID: -817209721816472325}
   m_Layer: 0
   m_Name: LightBall
   m_TagString: Untagged
@@ -14421,7 +14422,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -19215,6 +19216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refAttackInfo: {fileID: 0}
   m_eHitEffectType: 10
+  m_refTargetTr: {fileID: 0}
 --- !u!54 &537172212668676843
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -19256,6 +19258,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ePoolType: 9
   m_fAliveTime: 3
+--- !u!136 &-817209721816472325
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8854180982353188001}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 7
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8862786846838705675
 GameObject:
   m_ObjectHideFlags: 0
@@ -19306,7 +19331,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

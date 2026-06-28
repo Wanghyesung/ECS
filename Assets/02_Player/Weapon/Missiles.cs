@@ -27,7 +27,13 @@ public class Missiles : Bullet
         System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
     }
 
-    protected  void Update()
+    protected override void FixedUpdate()
+    {
+        UpdateDirMissile();
+        base.FixedUpdate();
+    }
+
+    private void UpdateDirMissile()
     {
         if (m_refTarget == null)
             return;
@@ -38,7 +44,7 @@ public class Missiles : Bullet
         if (fDist > 0.1f)
         {
             Vector3 vDir = vToTarget / fDist; // 정규화
-           
+
             // 내적 및 각도 계산 
             float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
             float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
@@ -50,14 +56,12 @@ public class Missiles : Bullet
             float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
 
             Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
-            transform.rotation = Quaternion.LookRotation(vNewForward);
+            m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
+
+            //transform.rotation = Quaternion.LookRotation(vNewForward);
         }
     }
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-    }
-    
+
   
     protected override void AttackMonster(Collider other)
     {

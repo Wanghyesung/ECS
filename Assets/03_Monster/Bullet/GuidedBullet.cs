@@ -10,12 +10,13 @@ using UnityEngine;
 
 public class GuidedBullet : Bullet
 {
-    private Transform m_refTargetTr;
+    [SerializeField] private Transform m_refTargetTr;
 
     public void SetTarget(Transform _refTargetTr)
     {
         m_refTargetTr = _refTargetTr;
     }
+
 
     protected override void Awake()
     {
@@ -24,17 +25,17 @@ public class GuidedBullet : Bullet
 
     protected override void FixedUpdate()
     {
+        if (m_refTargetTr != null)
+        {
+            Vector3 vDir = (m_refTargetTr.position - transform.position).normalized;
+            Quaternion qTargetRot = Quaternion.LookRotation(vDir);
+            m_refRigidbody.MoveRotation(qTargetRot);
+        }
+
         base.FixedUpdate();
     }
 
-    private void Update()
-    {
-        if (m_refTargetTr == null)
-            return;
-
-        transform.LookAt(m_refTargetTr.position);
-    }
-
+  
     public override void SetAttack(SOAttackInfo _refAttackInfo)
     {
         base.SetAttack(_refAttackInfo);

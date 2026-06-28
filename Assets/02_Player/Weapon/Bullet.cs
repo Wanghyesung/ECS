@@ -12,7 +12,7 @@ using static PoolObject;
 
 public class Bullet : MonoBehaviour
 {
-    private Rigidbody m_refRigidbody;
+    protected Rigidbody m_refRigidbody;
 
     [SerializeField] protected SOAttackInfo m_refAttackInfo;
     private PoolObject m_refPoolObj;

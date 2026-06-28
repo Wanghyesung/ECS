@@ -14,7 +14,7 @@ public class SOSpawnObjectNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        var listSpawn = _refBB.Owner.ListSpawnObject;
+        var listSpawn = _refBB.Owner.ListAttackObject;
         if (listSpawn == null || listSpawn[_refBB.CurrentAttackIdx] == null)
             return eNodeState.Failure;
 
