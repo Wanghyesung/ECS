@@ -10,21 +10,12 @@ using static PoolObject;
 
 public class Missiles : Bullet
 {
-    private GameObject m_refTarget; //Monster
-
-    private Collider[] m_arrNearCollider = new Collider[20];
-
     private Vector3 m_vTargetPosition;
     private float m_fTargetLength;
 
     protected override void Awake()
     {
         base.Awake();
-    }
-
-    private void OnDisable()
-    {
-        System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
     }
 
     protected override void FixedUpdate()
@@ -35,7 +26,7 @@ public class Missiles : Bullet
 
     private void UpdateDirMissile()
     {
-        if (m_refTarget == null)
+        if (m_refAttackInfo.TargetTrasnform == null)
             return;
 
         Vector3 vToTarget = m_vTargetPosition - transform.position;
@@ -49,8 +40,8 @@ public class Missiles : Bullet
             float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
             float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
 
-            float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.BaseRotationSpeed * 0.5f;
-            float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.BaseRotationSpeed;
+            float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.RotationSpeed * 0.5f;
+            float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.RotationSpeed;
 
             float fStep = fRotateSpeed * Time.deltaTime;
             float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
@@ -58,7 +49,6 @@ public class Missiles : Bullet
             Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
             m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
 
-            //transform.rotation = Quaternion.LookRotation(vNewForward);
         }
     }
 
@@ -68,41 +58,19 @@ public class Missiles : Bullet
         base.AttackMonster(other);
     }
 
-    public override void SetAttack(SOAttackInfo _refAttackInfo)
+    public override void SetAttack(AttackInfo _refAttackInfo)
     {
         base.SetAttack(_refAttackInfo);
 
-        FindNearestTarget();
 
-        if (m_refTarget == null)
-            return;
+        if (_refAttackInfo.TargetTrasnform == null)
+            m_vTargetPosition = _refAttackInfo.TargetPos;
+        else
+            m_vTargetPosition = _refAttackInfo.TargetTrasnform.position;
 
-        m_vTargetPosition = m_refTarget.transform.position;
         m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
     }
 
 
-    private void FindNearestTarget()
-    {
-        Physics.OverlapSphereNonAlloc(transform.position, m_refAttackInfo.HomingRaius, m_arrNearCollider, m_refAttackInfo.HitLayers);
-
-        GameObject refTarget = null;
-        float fBestDist = float.MaxValue;
-        Vector3 vPos = transform.position;
-        foreach (var refMon in m_arrNearCollider)
-        {
-            if (refMon == null)
-                continue;
-
-            float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
-            if (fDist < fBestDist)
-            {
-                fBestDist = fDist;
-                refTarget = refMon.gameObject;
-            }
-        }
-
-        m_refTarget = refTarget;
-    }
 
 }

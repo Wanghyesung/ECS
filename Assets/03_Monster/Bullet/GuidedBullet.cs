@@ -10,14 +10,6 @@ using UnityEngine;
 
 public class GuidedBullet : Bullet
 {
-    [SerializeField] private Transform m_refTargetTr;
-
-    public void SetTarget(Transform _refTargetTr)
-    {
-        m_refTargetTr = _refTargetTr;
-    }
-
-
     protected override void Awake()
     {
         base.Awake();
@@ -25,9 +17,9 @@ public class GuidedBullet : Bullet
 
     protected override void FixedUpdate()
     {
-        if (m_refTargetTr != null)
+        if (m_refAttackInfo.TargetTrasnform != null)
         {
-            Vector3 vDir = (m_refTargetTr.position - transform.position).normalized;
+            Vector3 vDir = (m_refAttackInfo.TargetTrasnform.position - transform.position).normalized;
             Quaternion qTargetRot = Quaternion.LookRotation(vDir);
             m_refRigidbody.MoveRotation(qTargetRot);
         }
@@ -36,7 +28,7 @@ public class GuidedBullet : Bullet
     }
 
   
-    public override void SetAttack(SOAttackInfo _refAttackInfo)
+    public override void SetAttack(AttackInfo _refAttackInfo)
     {
         base.SetAttack(_refAttackInfo);
     }

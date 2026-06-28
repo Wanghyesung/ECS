@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,6 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Homing")]
     public float BaseRotationSpeed = 90f;
-    public float HomingRaius = 1000.0f;
 
     [Header("Critical / Misc")]
     [Range(0f, 1f)]
@@ -40,17 +40,52 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Audio")]
     public AudioClip HitSound;
+
+    public AttackInfo MakeAttackInfo()
+    {
+        AttackInfo refAttackInfo = new AttackInfo();
+
+        refAttackInfo.AttackPower = AttackPower;
+        refAttackInfo.AttackSpeed = Speed;
+        refAttackInfo.Damage = Damage;
+        refAttackInfo.AliveTime = AliveTime;
+        refAttackInfo.CoolDown = Cooldown;
+
+        refAttackInfo.RotationSpeed = BaseRotationSpeed;
+       
+        refAttackInfo.HitLayers = HitLayers;
+        return refAttackInfo;
+    }
 }
 
 
-//동적 영역 
-public struct tAttackInfo
+
+/*///////////////////////////////////////////
+                AttackInfo
+기능 : SOAttackInfo 정보에서 동적으로 데이터 변경하는 데이터
+ *///////////////////////////////////////////
+
+[Serializable]
+public class AttackInfo
 {
+    [Header("Dynamic Info")]
     public int Damage;
     public int AttackPower;
-    public float KnockbackForce;
-    public float KnockbackDuration;
-    public float StunDuration;
 
+    public float AliveTime;
+    public float AttackSpeed;
+    public float CoolDown;
+
+
+    [Header("Homing")]
+    public float RotationSpeed = 90f;
+
+    [Header("Target")]
+    public Vector3 TargetPos;
+    public Transform TargetTrasnform = null;
     public Vector3 HitPosition;
+
+
+    [Header("Tem")]
+    public LayerMask HitLayers = ~0;
 }

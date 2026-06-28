@@ -20,8 +20,8 @@ public class SOSetTargetDirNode : SONode
 
         foreach(var refBullet in listCurAttackObj)
         {
-            if (refBullet.TryGetComponent<GuidedBullet>(out var refGuide))
-                refGuide.SetTarget(_refBB.TargetTr);
+            //if (refBullet.TryGetComponent<GuidedBullet>(out var refGuide))
+            //    refGuide.SetTarget(_refBB.TargetTr);
         }
 
         return eNodeState.Success;

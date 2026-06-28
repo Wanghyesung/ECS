@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public interface IDamageable
 {
-    public void TakeDamage(in tAttackInfo _refAttackInfo);
+    public void TakeDamage(AttackInfo _refAttackInfo);
 }
 
 
@@ -97,7 +97,7 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
-    public void TakeDamage(in tAttackInfo _refAttackInfo)
+    public void TakeDamage(AttackInfo _refAttackInfo)
     {
         if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
             return;
@@ -107,7 +107,7 @@ public class Monster : MonoBehaviour, IDamageable
         m_CoNockback = StartCoroutine(KnockbackCoroutine(_refAttackInfo));
     }
 
-    private IEnumerator KnockbackCoroutine(tAttackInfo _tAttackInfo)
+    private IEnumerator KnockbackCoroutine(AttackInfo _tAttackInfo)
     {
         float fElapsed = 0f;
     

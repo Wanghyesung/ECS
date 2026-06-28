@@ -58,8 +58,15 @@ public class Player : MonoBehaviour
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
 
+
+    [SerializeField] LayerMask m_tAttackLayer;
+    private Transform m_refNearTargetTr = null; 
+    private Collider[] m_arrNearCollider = new Collider[20];
+    [SerializeField] private float m_fAttackRaius;
+
     private void Awake()
     {
+
     }
 
     private void Update()
@@ -73,7 +80,11 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        int a = 10;    
+    }
+
+    private void OnDisable()
+    {
+        System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
     }
 
     public void UpdateOnAnimation(eEntityState _eState, bool _bOn)
@@ -91,13 +102,38 @@ public class Player : MonoBehaviour
         //내 총의 상태값
         //m_refAnimTable.SetBool(eEntityState.Attack, true);
 
-
+        FindNearestTarget();
         Vector3 vTargetPos = m_refAim.TargetPosition;
+
         for(int i = 0; i< m_listWeapon.Count; ++i)
-            m_listWeapon[i].Fire(vTargetPos);
+            m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
     }
     private void Cansle()
     {
         //m_refAnimTable.SetBool(eEntityState.Attack, false);
     }
+
+    private void FindNearestTarget()
+    {
+        Physics.OverlapSphereNonAlloc(transform.position, m_fAttackRaius, m_arrNearCollider, m_tAttackLayer);
+
+        Transform refTarget = null;
+        float fBestDist = float.MaxValue;
+        Vector3 vPos = transform.position;
+        foreach (var refMon in m_arrNearCollider)
+        {
+            if (refMon == null)
+                continue;
+
+            float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
+            if (fDist < fBestDist)
+            {
+                fBestDist = fDist;
+                refTarget = refMon.transform;
+            }
+        }
+
+        m_refNearTargetTr = refTarget;
+    }
+
 }

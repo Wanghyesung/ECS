@@ -14,13 +14,13 @@ public class Bullet : MonoBehaviour
 {
     protected Rigidbody m_refRigidbody;
 
-    [SerializeField] protected SOAttackInfo m_refAttackInfo;
+    [SerializeField] protected AttackInfo m_refAttackInfo;
+
     private PoolObject m_refPoolObj;
     private TriggerObject m_refTriggerObject;
 
     [SerializeField] ePoolType m_eHitEffectType;
 
-    protected float m_fMoveSpeed = 0.0f;  //동적
 
     protected virtual void Awake()
     {
@@ -43,7 +43,7 @@ public class Bullet : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_fMoveSpeed * Time.fixedDeltaTime;
+        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
     }
 
@@ -54,8 +54,7 @@ public class Bullet : MonoBehaviour
         var iDamageable = other.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
-            MakeAttackInfo(out var attack);
-            iDamageable.TakeDamage(attack);
+            //iDamageable.TakeDamage(1);
         }
 
         //TODO : 나중에 EffectSO까지 따로 만들어서 확인하는걸로
@@ -71,27 +70,10 @@ public class Bullet : MonoBehaviour
         ObjectPool.m_Instance.PushObject(gameObject);
     }
 
-    public void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vTargetPos)
-    {
-        SetAttack(_refAttackInfo);
-        transform.LookAt(_vTargetPos);
-    }
-
-    public virtual void SetAttack(SOAttackInfo _refAttackInfo)
+    public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;
-        m_fMoveSpeed = _refAttackInfo.Speed;
+        transform.LookAt(_refAttackInfo.TargetPos);
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
-    }
-
-    protected void MakeAttackInfo(out tAttackInfo _tAttackInfo)
-    {
-        _tAttackInfo = new tAttackInfo();
-
-        _tAttackInfo.AttackPower = m_refAttackInfo.AttackPower;
-        _tAttackInfo.Damage = m_refAttackInfo.Damage;
-        _tAttackInfo.KnockbackForce = m_refAttackInfo.KnockbackForce;
-        _tAttackInfo.KnockbackDuration = m_refAttackInfo.KnockbackDuration;
-        _tAttackInfo.StunDuration = m_refAttackInfo.StunDuration;
     }
 }

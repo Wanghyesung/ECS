@@ -21,8 +21,8 @@ public class SOSetBulletInfoNode : SONode
                 var listSpawnObj = _refBB.Owner.ListAttackObject;
                 SOSpawnObjectInfo SOSpawnObjInfo = listSpawnObj[_refBB.CurrentAttackIdx].SpawnObjectInfo;
 
-                if(SetDirection == false)
-                    refBullet.SetAttack(SOSpawnObjInfo.AttackInfo);
+                //if(SetDirection == false)
+                //    refBullet.SetAttack(SOSpawnObjInfo.AttackInfo);
             }
             else
             {
