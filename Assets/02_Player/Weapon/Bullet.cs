@@ -73,7 +73,6 @@ public class Bullet : MonoBehaviour
     public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;
-        transform.LookAt(_refAttackInfo.TargetPos);
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
     }
 }

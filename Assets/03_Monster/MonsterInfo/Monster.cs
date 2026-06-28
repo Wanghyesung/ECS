@@ -3,22 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static Weapon;
 
 public interface IDamageable
 {
     public void TakeDamage(AttackInfo _refAttackInfo);
 }
 
+/*///////////////////////////////////////////
+                 SpawnInfo
+
+기능 : 몬스터 사용할 공격 오브젝트 및 스폰 관리
+ *///////////////////////////////////////////
 
 [Serializable]
 public class SpawnInfo
 {
-    public SOSpawnObjectInfo SpawnObjectInfo;
+    public Weapon Weapon;
 
     [Header("Spawn Option")]
-    public Transform SpawnTransform;
-    public float SpawnOffset;
-
+    public float SpawnFowardOffset;
+    public int SpawnCount;
 
     [Header("Charge Option")]
     public ParticleSystem ChargeParticle;
@@ -42,8 +47,12 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
 
-    [SerializeField] private List<SpawnInfo> m_listAttackObject = new List<SpawnInfo>();
-    public List<SpawnInfo> ListAttackObject => m_listAttackObject;
+    [SerializeField] private List<SpawnInfo> m_listSpawn = new List<SpawnInfo>();
+ 
+
+    //같은 웨폰이 여러개일 수 있기 때문에 List
+    private Dictionary<eWeaponType, List<SpawnInfo>> m_hashSpawn = new Dictionary<eWeaponType, List<SpawnInfo>>();
+    public Dictionary<eWeaponType, List<SpawnInfo>> HashSpawn => m_hashSpawn;
 
     private Coroutine m_CoNockback = null;
     private WaitForSeconds m_refWaitHitTime;
@@ -69,31 +78,31 @@ public class Monster : MonoBehaviour, IDamageable
     {
         // DeleteTem
         var player = FindObjectOfType<Player>();
-        if (player == null) return;
+        if (player == null) 
+            return;
 
         m_refTargetPlayer = player.gameObject;
         m_refBlackBoard.TargetTr = player.transform;
-    }
 
-    private void OnEnable()
-    {
-        int iCount = m_listAttackObject.Count;
+        int iCount = m_listSpawn.Count;
         if (iCount > 0)
         {
-            m_refBlackBoard.ListCurAttackTime = new List<float>(iCount);
-            m_refBlackBoard.ListCurAttackObject = new List<GameObject>();
-
-            for(int i = 0; i< iCount; ++i)
+            for (int i = 0; i < iCount; ++i)
             {
-                m_refBlackBoard.ListCurAttackTime.Add(0.0f);
-                m_refBlackBoard.ListCurAttackTime[i] = Time.time + m_listAttackObject[i].SpawnObjectInfo.AttackInfo.Cooldown;
+                Weapon refWeapon = m_listSpawn[i].Weapon;
+                
+                if (m_hashSpawn.TryGetValue(refWeapon.WeaponType,out var listWeapon) == false)
+                {
+                    var listSpawn = new List<SpawnInfo>();
+                    m_hashSpawn.Add(refWeapon.WeaponType, listSpawn);
+                }
+                m_hashSpawn[refWeapon.WeaponType].Add(m_listSpawn[i]);
             }
         }
     }
 
     private void Update()
     {
-        m_refBlackBoard.CurrentAttackTime = Time.time;
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
@@ -127,13 +136,7 @@ public class Monster : MonoBehaviour, IDamageable
     
         m_CoNockback = null;
     }
-    public SOSpawnObjectInfo GetSpawnObject(int _iIdx)
-    {
-        if (m_listAttackObject.Count < _iIdx)
-            return null;
-
-        return m_listAttackObject[_iIdx].SpawnObjectInfo;
-    }
+   
 
     // _fTickInterval > 0 이면 DoT 효과 (독, 화상 등), 0이면 단순 상태 이상
     public void StartStateEffect(eStatusEffect _eState, float _fDuration,

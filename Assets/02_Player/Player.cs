@@ -105,8 +105,11 @@ public class Player : MonoBehaviour
         FindNearestTarget();
         Vector3 vTargetPos = m_refAim.TargetPosition;
 
-        for(int i = 0; i< m_listWeapon.Count; ++i)
-            m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
+        for (int i = 0; i< m_listWeapon.Count; ++i)
+        {
+            if(m_listWeapon[i].CheckTime() == true)
+                m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
+        }
     }
     private void Cansle()
     {

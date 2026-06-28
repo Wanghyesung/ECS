@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static Weapon;
 
 
 public enum eNodeState
@@ -47,15 +48,9 @@ public class BlackBoard
     public float POV;
 
     [Header("Attack")]
-    public List<float> ListCurAttackTime;           //공격 준비 오브젝트 시간 체크용
-    public List<GameObject> ListCurAttackObject;    //나중에 참조하거나 쓸 공격 오브젝트를 저장할 수 있기 위해서 사용
-    public int CurrentAttackIdx;
-    public double CurrentAttackTime;
+    //public List<GameObject> ListCurAttackObject;    //나중에 참조하거나 쓸 공격 오브젝트를 저장할 수 있기 위해서 사용
+    public SpawnInfo CurrentAttackSpawn;
 
-    [Header("Burst State")]
-    public bool IsBursting;
-    public float BurstEndTime;
-    public float BurstNextSpawnTime;
 }
 
 

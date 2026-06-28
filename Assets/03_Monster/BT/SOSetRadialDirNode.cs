@@ -12,16 +12,23 @@ using UnityEngine;
 public class SOSetRadialDirNode : SONode
 {
     private readonly float GOLDEN_RATIO = ((1f + Mathf.Sqrt(5f)) / 2f);
-
-    [SerializeField] private bool OnOffset;
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        var listObjs = _refBB.ListCurAttackObject;
-        if (listObjs == null || listObjs.Count == 0) 
+        if(_refBB.TargetTr == null)
             return eNodeState.Failure;
 
-        var listSpawnObj = _refBB.Owner.ListAttackObject;
-        int iTotalCount = listObjs.Count;
+        SpawnInfo refSpawnInfo = _refBB.CurrentAttackSpawn;
+        if (refSpawnInfo == null)
+            return eNodeState.Failure;
+
+        Weapon refAttackWeapon = refSpawnInfo.Weapon;
+        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletType);
+        int iTotalCount = refSpawnInfo.SpawnCount;
+
+
+        if (iPoolCount < iTotalCount)
+            return eNodeState.Failure;
+
         for (int i = 0; i < iTotalCount; ++i)
         {
             // 인덱스를 기반으로 -1~1 사이의 Y값(높이) 계산
@@ -40,14 +47,7 @@ public class SOSetRadialDirNode : SONode
             // 최종 방향 벡터 (normalized 상태)
             Vector3 vDir = new Vector3(x, y, z);
 
-            listObjs[i].transform.rotation = Quaternion.LookRotation(vDir);
-
-            //만약 offset 옵션이 켜져있다면 offset만큼 위치 조정
-            if (OnOffset == true)
-            {
-                Vector3 vOffset = (vDir * listSpawnObj[_refBB.CurrentAttackIdx].SpawnOffset);
-                listObjs[i].transform.position += vOffset;
-            }
+            refAttackWeapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr, vDir, refSpawnInfo.SpawnFowardOffset);  
         }
 
         return eNodeState.Success;

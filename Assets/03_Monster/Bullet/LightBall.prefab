@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4472764274091519970}
   - component: {fileID: 5401782716194290176}
   - component: {fileID: 2143245342178745698}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: LightningRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4799,7 +4799,7 @@ GameObject:
   - component: {fileID: 5348586641118670583}
   - component: {fileID: 4344034237573024140}
   - component: {fileID: 1434770454331715644}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Flash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9587,7 +9587,7 @@ GameObject:
   - component: {fileID: 6960632336826006271}
   - component: {fileID: 135815391677909176}
   - component: {fileID: 2801093310805943840}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14379,7 +14379,8 @@ GameObject:
   - component: {fileID: 537172212668676843}
   - component: {fileID: 4813924074177353454}
   - component: {fileID: -817209721816472325}
-  m_Layer: 0
+  - component: {fileID: 6874582215060016840}
+  m_Layer: 11
   m_Name: LightBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19214,9 +19215,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca1690944aca6d74cb36e9494f545c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refAttackInfo: {fileID: 0}
+  m_refAttackInfo:
+    Damage: 0
+    AttackPower: 0
+    AliveTime: 0
+    AttackSpeed: 0
+    CoolDown: 0
+    RotationSpeed: 90
+    TargetPos: {x: 0, y: 0, z: 0}
+    TargetTrasnform: {fileID: 0}
+    HitPosition: {x: 0, y: 0, z: 0}
+    HitLayers:
+      serializedVersion: 2
+      m_Bits: 4294967295
   m_eHitEffectType: 10
-  m_refTargetTr: {fileID: 0}
 --- !u!54 &537172212668676843
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -19281,6 +19293,21 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6874582215060016840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8854180982353188001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &8862786846838705675
 GameObject:
   m_ObjectHideFlags: 0
@@ -19292,7 +19319,7 @@ GameObject:
   - component: {fileID: 8228173207205035206}
   - component: {fileID: 6929161121510058571}
   - component: {fileID: 1725536623851207134}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}

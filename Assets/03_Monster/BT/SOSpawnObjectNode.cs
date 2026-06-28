@@ -14,26 +14,20 @@ public class SOSpawnObjectNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        var listSpawn = _refBB.Owner.ListAttackObject;
-        if (listSpawn == null || listSpawn[_refBB.CurrentAttackIdx] == null)
+        SpawnInfo refSpawnInfo = _refBB.CurrentAttackSpawn;
+        if (refSpawnInfo == null || _refBB.TargetTr == null)
             return eNodeState.Failure;
 
-        SpawnInfo refSpawnInfo = listSpawn[_refBB.CurrentAttackIdx];
-        SOSpawnObjectInfo SOSpawnInfo = refSpawnInfo.SpawnObjectInfo;
 
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(SOSpawnInfo.AttackInfo.PoolType);
+        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletType);
+        int iSpawnCount = refSpawnInfo.SpawnCount;
 
-        int iSpawnCount = refSpawnInfo.SpawnObjectInfo.SpawnCount;
         if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
 
        
         for (int i = 0; i< iSpawnCount; ++i)
-        {
-            GameObject refObject = ObjectPool.m_Instance.GetObject(SOSpawnInfo.AttackInfo.PoolType);
-            refObject.transform.position = refSpawnInfo.SpawnTransform.position;
-            _refBB.ListCurAttackObject.Add(refObject);
-        }
+            refSpawnInfo.Weapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr);
 
         return eNodeState.Success;
     }

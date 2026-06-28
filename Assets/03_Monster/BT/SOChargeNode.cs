@@ -12,7 +12,7 @@ public class SOChargeNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        SpawnInfo refSpawnInfo = _refBB.Owner.ListAttackObject[_refBB.CurrentAttackIdx];
+        SpawnInfo refSpawnInfo = _refBB.CurrentAttackSpawn;
         var refParticleSystem = refSpawnInfo.ChargeParticle; 
         if (refParticleSystem == null)
             return eNodeState.Failure;
