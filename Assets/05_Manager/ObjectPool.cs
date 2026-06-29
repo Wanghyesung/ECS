@@ -31,6 +31,9 @@ public enum ePoolType
 
     LightBall,
     LightBallEx,
+
+    MonBullet,
+    SparkEx,
 }
 
 /*///////////////////////////////////////////

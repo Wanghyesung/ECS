@@ -26,7 +26,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private ParticleSystem m_refEffectObject;
 
     private float m_fFireTime = 0.2f;
-    private float m_fCurTime = 0.0f;
+    private float m_fLastFireTime = -Mathf.Infinity;
 
     private eWeaponType m_eWeapoonType = eWeaponType.None;
     public eWeaponType WeaponType => m_eWeapoonType;
@@ -35,26 +35,18 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
-        //µ¿Àû µ¥ÀÌÅÍ »ý¼º
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_fFireTime = m_refAttackInfo.CoolDown;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
+        m_fLastFireTime = Time.time;
 
 #if UNITY_EDITOR
         if (m_refAttackInfo == null)
-            Debug.Log("¹«±â¿¡ °ø°Ý ¿É¼ÇSO¸¦ ¼³Á¤ÇÏ¼¼¿ä");
+            Debug.Log("ê³µê²© SO ì—ì…‹ì„¤ì •");
         //UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
-    }
-
-    private void Update()
-    {
-        if (m_fCurTime >= m_fFireTime)
-            return;
-
-        m_fCurTime += Time.deltaTime;
     }
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
@@ -64,7 +56,7 @@ public class Weapon : MonoBehaviour
         refBuulet.transform.LookAt(_vTargetPos);
         refBuulet.transform.position = m_refFireTr.position;
 
-        //°ø°Ý·Â Àü´Þ, ¹æÇâ ¼³Á¤
+       
         m_refAttackInfo.TargetPos = _vTargetPos;
         m_refAttackInfo.TargetTrasnform = _refTargetTr;
         refBuulet.SetAttack(m_refAttackInfo);
@@ -96,27 +88,20 @@ public class Weapon : MonoBehaviour
         if (refAttackObj == null)
             return null;
 
-        //°¢ ¹«±â¿¡ ¸Â´Â ÆÄÆ¼Å¬ ½ÇÇà
+       
         if(m_refEffectObject != null)
             m_refEffectObject.Play();
 
-        //ÃÑ ¹ß»ç ½Ã°£ ¼³Á¤
+        m_fLastFireTime = Time.time;
         m_fFireTime = m_refAttackInfo.CoolDown;
 
         return refAttackObj;
     }
 
-  
+
     public bool CheckTime()
     {
-        if(m_fCurTime > m_fFireTime)
-        {
-            m_fCurTime = 0;
-            return true;
-        }
-        
-
-        return false;
+        return (Time.time - m_fLastFireTime) > m_fFireTime;
     }
 }
 

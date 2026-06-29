@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 428428616ca63674db6320bf362344af, type: 3}
-  m_Name: SO_SeqSpawnLBallLeft
+  m_Name: SO_SeqBossBaseBullet
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: 762029db049a9274baad71554579fec3, type: 2}
+  - {fileID: 11400000, guid: 605bd34f40b85394ea5ff6d5bd607a41, type: 2}
   - {fileID: 11400000, guid: aeef66a78d561e94aa0a36d4e77cc0c2, type: 2}

@@ -32,24 +32,26 @@ public class Missiles : Bullet
         Vector3 vToTarget = m_vTargetPosition - transform.position;
         float fDist = vToTarget.magnitude;
 
-        if (fDist > 0.1f)
+        if(fDist < 0.1f)
         {
-            Vector3 vDir = vToTarget / fDist; // 정규화
-
-            // 내적 및 각도 계산 
-            float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
-            float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
-
-            float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.RotationSpeed * 0.5f;
-            float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.RotationSpeed;
-
-            float fStep = fRotateSpeed * Time.deltaTime;
-            float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
-
-            Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
-            m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
-
+            m_refPoolObj.SetAliveTime(0.0f);
+            return;
         }
+
+        Vector3 vDir = vToTarget / fDist; // 정규화
+
+        // 내적 및 각도 계산 
+        float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
+        float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
+
+        float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.RotationSpeed * 0.5f;
+        float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.RotationSpeed;
+
+        float fStep = fRotateSpeed * Time.deltaTime;
+        float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
+
+        Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
+        m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
     }
 
   

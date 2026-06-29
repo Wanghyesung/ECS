@@ -5,7 +5,7 @@ using static Weapon;
 
 /*///////////////////////////////////////////
              SOCheckAttackTimeNode
-±â´É : ÇöÀç ¸ó½ºÅÍ ¹«±â°¡ °ø°İÇÒ ¼ö ÀÖ´ÂÁö Ã¼Å©
+ê¸°ëŠ¥ : ëª¬ìŠ¤í„° weaponì´ ê³µê²© ê°€ëŠ¥í•œì§€ ì²´í¬
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_CheckAttackTimeNode", menuName = "Game/Monster/ActionNode/CheckAttackTimeNode")]
@@ -14,8 +14,9 @@ public class SOCheckAttackTimeNode : SONode
     [SerializeField] private eWeaponType m_eWeaponType = eWeaponType.None;
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        var listWeapon = _refBB.Owner.HashSpawn[m_eWeaponType];
-        
+        if (!_refBB.Owner.HashSpawn.TryGetValue(m_eWeaponType, out var listWeapon))
+            return eNodeState.Failure;
+
         for(int i = 0; i<listWeapon.Count; ++i)
         {
             if (listWeapon[i].Weapon.CheckTime() == true)

@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour
 
     [SerializeField] protected AttackInfo m_refAttackInfo;
 
-    private PoolObject m_refPoolObj;
+    protected PoolObject m_refPoolObj;
     private TriggerObject m_refTriggerObject;
 
     [SerializeField] ePoolType m_eHitEffectType;
