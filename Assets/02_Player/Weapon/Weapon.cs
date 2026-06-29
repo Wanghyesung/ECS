@@ -14,6 +14,7 @@ public class Weapon : MonoBehaviour
         Bullet,
         Trace,
         Missile,
+        Laser,
         End,
     }
 
@@ -33,6 +34,9 @@ public class Weapon : MonoBehaviour
 
     public ePoolType FireBulletType => m_SOAttackInfo.PoolType;
 
+    [SerializeField] private bool m_bNeedsTarget = false;
+    public bool NeeadNearTarget => m_bNeedsTarget;
+
     private void Start()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
@@ -42,50 +46,69 @@ public class Weapon : MonoBehaviour
 
 #if UNITY_EDITOR
         if (m_refAttackInfo == null)
-            Debug.Log("공격 SO 에셋설정");
+            Debug.Log("공격 SO 에셋설정을 안 함");
         //UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
     }
 
+    //바라는 방향으로 쏘지 않고 지정된 위치에만 소환
+    public void Spawn()
+    {
+        GameObject refObj = CreateBullet();
+
+        if (refObj == null)
+            return;
+
+        refObj.transform.position = m_refFireTr.position;
+
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+        refAttackObj.SetAttack(m_refAttackInfo);
+    }
+
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {
-        Bullet refBuulet = CreateBullet();
+        GameObject refObj = CreateBullet();
 
-        refBuulet.transform.LookAt(_vTargetPos);
-        refBuulet.transform.position = m_refFireTr.position;
+        if (refObj == null) 
+            return;
 
-       
+        refObj.transform.position = m_refFireTr.position;
+        refObj.transform.LookAt(_vTargetPos);
+
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
         m_refAttackInfo.TargetPos = _vTargetPos;
         m_refAttackInfo.TargetTrasnform = _refTargetTr;
-        refBuulet.SetAttack(m_refAttackInfo);
+        refAttackObj.SetAttack(m_refAttackInfo);
     }
+
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr, Vector3 _vDir, float _fFowardOffset)
     {
-        Bullet refBuulet = CreateBullet();
+        GameObject refObj = CreateBullet();
+
+        if (refObj == null)
+            return;
 
         Quaternion qRoation = Quaternion.LookRotation(_vDir);
-        refBuulet.transform.rotation = qRoation;
+        refObj.transform.rotation = qRoation;
      
         Vector3 vSpawnPos = m_refFireTr.position + (_vDir * _fFowardOffset);
-        refBuulet.transform.position = vSpawnPos;
+        refObj.transform.position = vSpawnPos;
 
+
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
         m_refAttackInfo.TargetPos = _vTargetPos;
         m_refAttackInfo.TargetTrasnform = _refTargetTr;
-        refBuulet.SetAttack(m_refAttackInfo);
+        refAttackObj.SetAttack(m_refAttackInfo);
     }
 
 
-    private Bullet CreateBullet()
+    private GameObject CreateBullet()
     {
         GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolType);
         if (refObj == null)
-            return null;
-
-        Bullet refAttackObj = refObj.GetComponent<Bullet>();
-        if (refAttackObj == null)
             return null;
 
        
@@ -95,7 +118,7 @@ public class Weapon : MonoBehaviour
         m_fLastFireTime = Time.time;
         m_fFireTime = m_refAttackInfo.CoolDown;
 
-        return refAttackObj;
+        return refObj;
     }
 
 

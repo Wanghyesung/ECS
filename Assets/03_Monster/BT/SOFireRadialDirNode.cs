@@ -3,13 +3,13 @@ using UnityEngine;
 
 
 /*///////////////////////////////////////////
-           SetRadialDirectionNode
+           SOFireRadialDirNode
 기능 : 360도 범위로 생성된 오브젝트 방향 설정
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_SetRadialDirNode", menuName = "Game/Monster/ActionNode/SetRadialDirNode")]
+[CreateAssetMenu(fileName = "SO)FireRadialDirNode", menuName = "Game/Monster/ActionNode/FireRadialDirNode")]
 
-public class SOSetRadialDirNode : SONode
+public class SOFireRadialDirNode : SONode
 {
     private readonly float GOLDEN_RATIO = ((1f + Mathf.Sqrt(5f)) / 2f);
     public override eNodeState Execute(BlackBoard _refBB)

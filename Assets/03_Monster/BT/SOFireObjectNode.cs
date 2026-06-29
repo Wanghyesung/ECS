@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 /*///////////////////////////////////////////
-             SOSpawnObjectNode
-기능 : 몬스터가 공격 오브젝트를 소환하는 기능
+             SOFireObjectNode
+기능 : 몬스터가 공격 총알을 쏘는 기능
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_SpawnObjectNode", menuName = "Game/Monster/ActionNode/SpawnObjectNode")]
-public class SOSpawnObjectNode : SONode
+[CreateAssetMenu(fileName = "SO_FireObjectNode", menuName = "Game/Monster/ActionNode/FireObjectNode")]
+public class SOFireObjectNode : SONode
 {
     public override eNodeState Execute(BlackBoard _refBB)
     {
@@ -23,9 +25,11 @@ public class SOSpawnObjectNode : SONode
         if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
 
-        for (int i = 0; i < iSpawnCount; ++i)
-            refSpawnInfo.Weapon.Spawn();
+       
+        for (int i = 0; i< iSpawnCount; ++i)
+            refSpawnInfo.Weapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr);
 
         return eNodeState.Success;
     }
 }
+

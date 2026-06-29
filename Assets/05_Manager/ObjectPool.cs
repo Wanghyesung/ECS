@@ -18,6 +18,7 @@ public enum ePoolType
 {
     /*Player*/
     None,
+
     BaseBullet,
     BaseHitEffect,
     MidBullet,
@@ -34,6 +35,8 @@ public enum ePoolType
 
     MonBullet,
     SparkEx,
+
+    BossLaser,
 }
 
 /*///////////////////////////////////////////

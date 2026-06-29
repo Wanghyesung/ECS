@@ -53,6 +53,8 @@ public class ObjectInfo
 public class Player : MonoBehaviour
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
+    private List<Weapon> m_listFireWeapon = null; //현재 공격할 무기
+
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
 
@@ -67,6 +69,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
+
+        m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
     }
 
     private void Update()
@@ -80,6 +84,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
     }
 
     private void OnDisable()
@@ -99,21 +104,34 @@ public class Player : MonoBehaviour
 
     private void Fire()
     {
-        //내 총의 상태값
-        //m_refAnimTable.SetBool(eEntityState.Attack, true);
+        bool bFindNearTarget = false;
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].CheckTime() == true)
+            {
+                if (m_listWeapon[i].NeeadNearTarget == true)
+                    bFindNearTarget = true;
 
-        FindNearestTarget();
+                m_listFireWeapon.Add(m_listWeapon[i]);
+            }
+        }
+
+
+        if(bFindNearTarget == true)
+            FindNearestTarget();
+
         Vector3 vTargetPos = m_refAim.TargetPosition;
 
-        for (int i = 0; i< m_listWeapon.Count; ++i)
-        {
-            if(m_listWeapon[i].CheckTime() == true)
-                m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
-        }
+        for (int i = 0; i < m_listFireWeapon.Count; ++i)
+            m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
+
+
+        m_listFireWeapon.Clear();
+        m_refNearTargetTr = null;
     }
     private void Cansle()
     {
-        //m_refAnimTable.SetBool(eEntityState.Attack, false);
+       
     }
 
     private void FindNearestTarget()
