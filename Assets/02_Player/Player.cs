@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-
+        UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
     }
 
     private void Update()

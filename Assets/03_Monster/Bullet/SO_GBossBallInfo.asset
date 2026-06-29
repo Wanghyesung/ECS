@@ -21,12 +21,12 @@ MonoBehaviour:
   Cooldown: 10
   HitCount: 1
   Speed: 20
+  SpeedOffset: 8
   AliveTime: 10
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
   BaseRotationSpeed: 0
-  HomingRaius: 0
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

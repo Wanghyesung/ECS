@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7186507121873938622}
   - component: {fileID: 6070284455114687456}
   - component: {fileID: 7456299042294715824}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,12 +116,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3197306706063380986}
-  - component: {fileID: 4600829707956016705}
   - component: {fileID: 7651597174796160425}
   - component: {fileID: 4956137766544052621}
   - component: {fileID: 3279630798467702793}
   - component: {fileID: 4057737550011718064}
-  m_Layer: 0
+  - component: {fileID: 2776694687007666598}
+  m_Layer: 11
   m_Name: BossBaseBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,32 +144,6 @@ Transform:
   - {fileID: 8249812632718546119}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4600829707956016705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9179064186966730555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_refAttackInfo:
-    Damage: 0
-    AttackPower: 0
-    AliveTime: 0
-    AttackSpeed: 0
-    CoolDown: 0
-    RotationSpeed: 90
-    TargetPos: {x: 0, y: 0, z: 0}
-    TargetTrasnform: {fileID: 0}
-    HitPosition: {x: 0, y: 0, z: 0}
-    HitLayers:
-      serializedVersion: 2
-      m_Bits: 4294967295
-  m_eHitEffectType: 12
 --- !u!114 &7651597174796160425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,3 +221,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ePoolType: 11
   m_fAliveTime: 3
+--- !u!114 &2776694687007666598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9179064186966730555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3e31ce016b8fd048b75caba502cd067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refAttackInfo:
+    Damage: 0
+    AttackPower: 0
+    AliveTime: 0
+    AttackSpeed: 0
+    CoolDown: 0
+    RotationSpeed: 90
+    TargetPos: {x: 0, y: 0, z: 0}
+    TargetTrasnform: {fileID: 0}
+    HitPosition: {x: 0, y: 0, z: 0}
+    HitLayers:
+      serializedVersion: 2
+      m_Bits: 8
+  m_eHitEffectType: 12

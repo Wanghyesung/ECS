@@ -5,13 +5,14 @@ using static PoolObject;
 
 /*///////////////////////////////////////////
                 Missiles
-±â´É : ÁöÁ¤µÈ À§Ä¡¿¡ µû¶ó È¸ÀüÇÏ¿© ÀÌµ¿
+ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ìµï¿½
  *///////////////////////////////////////////
 
 public class Missiles : Bullet
 {
     private Vector3 m_vTargetPosition;
     private float m_fTargetLength;
+    private float m_fElapsedTime;
 
     protected override void Awake()
     {
@@ -29,25 +30,29 @@ public class Missiles : Bullet
         if (m_refAttackInfo.TargetTrasnform == null)
             return;
 
+        m_fElapsedTime += Time.fixedDeltaTime;
+
         Vector3 vToTarget = m_vTargetPosition - transform.position;
         float fDist = vToTarget.magnitude;
 
-        if(fDist < 0.1f)
+        if(fDist < 1.0f)
         {
             m_refPoolObj.SetAliveTime(0.0f);
             return;
         }
 
-        Vector3 vDir = vToTarget / fDist; // Á¤±ÔÈ­
+        Vector3 vDir = vToTarget / fDist;
 
-        // ³»Àû ¹× °¢µµ °è»ê 
         float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
         float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
 
-        float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.RotationSpeed * 0.5f;
-        float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.RotationSpeed;
+        // ì‹œê°„ ê¸°ë°˜ ê°€ì† + ê±°ë¦¬ ê¸°ë°˜ ê°€ì† í•©ì‚°, MaxRotationSpeedë¡œ ìƒí•œ
+        float fTimeAccel = m_refAttackInfo.RotateSpeedRate * m_fElapsedTime;
+        float fBaseSpeed = Mathf.Min(m_refAttackInfo.RotationSpeed + fTimeAccel, m_refAttackInfo.MaxRotationSpeed);
+        float fDistAccel = (m_fTargetLength / fDist) * fBaseSpeed * 0.5f;
+        float fRotateSpeed = fBaseSpeed + fDistAccel;
 
-        float fStep = fRotateSpeed * Time.deltaTime;
+        float fStep = fRotateSpeed * Time.fixedDeltaTime;
         float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
 
         Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
@@ -64,6 +69,7 @@ public class Missiles : Bullet
     {
         base.SetAttack(_refAttackInfo);
 
+        m_fElapsedTime = 0f;
 
         if (_refAttackInfo.TargetTrasnform == null)
             m_vTargetPosition = _refAttackInfo.TargetPos;

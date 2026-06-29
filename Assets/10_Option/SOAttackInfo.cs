@@ -21,6 +21,8 @@ public class SOAttackInfo : ScriptableObject
     public float Cooldown = 0.5f;
     public int HitCount = 1;
     public float Speed = 12.0f;
+    public float SpeedOffset = 4.0f;
+
     public float AliveTime = 0.2f;
 
     [Header("Knockback / Stun")]
@@ -30,6 +32,9 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Homing")]
     public float BaseRotationSpeed = 90f;
+    public float MaxRotationSpeed = 180f;
+    public float RotationAccelRate = 0f;
+    
 
     [Header("Critical / Misc")]
     [Range(0f, 1f)]
@@ -46,13 +51,15 @@ public class SOAttackInfo : ScriptableObject
         AttackInfo refAttackInfo = new AttackInfo();
 
         refAttackInfo.AttackPower = AttackPower;
-        refAttackInfo.AttackSpeed = Speed;
+        refAttackInfo.AttackSpeed = UnityEngine.Random.Range(Speed - SpeedOffset, Speed + SpeedOffset);
         refAttackInfo.Damage = Damage;
         refAttackInfo.AliveTime = AliveTime;
         refAttackInfo.CoolDown = Cooldown;
 
         refAttackInfo.RotationSpeed = BaseRotationSpeed;
-       
+        refAttackInfo.MaxRotationSpeed = MaxRotationSpeed;
+        refAttackInfo.RotateSpeedRate = RotationAccelRate;
+
         refAttackInfo.HitLayers = HitLayers;
         return refAttackInfo;
     }
@@ -62,7 +69,7 @@ public class SOAttackInfo : ScriptableObject
 
 /*///////////////////////////////////////////
                 AttackInfo
-±‚¥… : SOAttackInfo ¡§∫∏ø°º≠ µø¿˚¿∏∑Œ µ•¿Ã≈Õ ∫Ø∞Ê«œ¥¬ µ•¿Ã≈Õ
+Í∏∞Îä• : SO Ï†ÅÏ†ï Îç∞Ïù¥ÌÑ∞Î•º Í∏∞Î∞òÏúºÎ°ú ÎèôÏ†Å Îç∞Ïù¥ÌÑ∞Î•º Í¥ÄÎ¶¨
  *///////////////////////////////////////////
 
 [Serializable]
@@ -79,6 +86,9 @@ public class AttackInfo
 
     [Header("Homing")]
     public float RotationSpeed = 90f;
+    public float MaxRotationSpeed = 180f;
+    public float RotateSpeedRate = 0f;
+
 
     [Header("Target")]
     public Vector3 TargetPos;
