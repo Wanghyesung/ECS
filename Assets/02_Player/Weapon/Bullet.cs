@@ -24,12 +24,12 @@ public class Bullet : MonoBehaviour, IAttackObject
 {
     protected Rigidbody m_refRigidbody;
 
-    [SerializeField] protected AttackInfo m_refAttackInfo;
+    protected AttackInfo m_refAttackInfo;
 
     protected PoolObject m_refPoolObj;
-    private TriggerObject m_refTriggerObject;
+    protected TriggerObject m_refTriggerObject;
 
-    [SerializeField] ePoolType m_eHitEffectType;
+    [SerializeField] private ePoolType m_eHitEffectType;
 
 
     protected virtual void Awake()
@@ -39,12 +39,12 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refTriggerObject = GetComponent<TriggerObject>();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         if(m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter += AttackMonster;
     }
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         if(m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
@@ -84,5 +84,8 @@ public class Bullet : MonoBehaviour, IAttackObject
     {
         m_refAttackInfo = _refAttackInfo;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
+        m_refTriggerObject.SetTriggerMask(_refAttackInfo.HitLayers);
+
+        transform.LookAt(_refAttackInfo.TargetPos);
     }
 }

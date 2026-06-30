@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SO_SelBossAttack
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: 891c0db1de01a0b4e81ed204315c82a4, type: 2}
   - {fileID: 11400000, guid: 8f3430adb0b347342b5111cadd45283b, type: 2}
+  - {fileID: 11400000, guid: 891c0db1de01a0b4e81ed204315c82a4, type: 2}
   - {fileID: 11400000, guid: e839769ab41fd394da3ffe6f22cac779, type: 2}

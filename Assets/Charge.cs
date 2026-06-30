@@ -33,7 +33,7 @@ public class Charge : MonoBehaviour
         if (m_refParticleSystem == null)
             return;
 
-            m_bCompleted = false;
+        m_bCompleted = false;
         m_fStartEventTime = _fDuration;
         m_fStartEventTime += m_fStartEventOffset;
         m_fCurTime = m_fStartEventTime;

@@ -5,7 +5,10 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 SelectNode
-��� : �ڽ� ��� �߿��� ������ �� �ִ� ��带 ã�� ���
+기능 : 지정된 노드를 순차적으로 실행
+       Success가능한지 검사
+       Success를 반환한 자식은 바로 종료.
+       
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_SelectNode", menuName = "Game/Monster/SelectNode")]

@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: "\uB0B4\uAC00 \uBC14\uB77C\uBCF4\uB294 \uBC29\uD5A5\uC73C\uB85C \uB808\uC774\uC800\uB97C
     \uC18C\uD658"
-  WeaponType: 4
+  WeaponType: 5
   PoolType: 13
   Damage: 10
   AttackPower: 2
-  Cooldown: 1
+  Cooldown: 5
   HitCount: 1
   Speed: 0
   SpeedOffset: 0
-  AliveTime: 2
+  AliveTime: 1.5
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0

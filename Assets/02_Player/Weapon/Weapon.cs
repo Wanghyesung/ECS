@@ -13,6 +13,7 @@ public class Weapon : MonoBehaviour
         None,
         Bullet,
         Trace,
+        MissileBullet,
         Missile,
         Laser,
         End,
@@ -37,7 +38,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private bool m_bNeedsTarget = false;
     public bool NeeadNearTarget => m_bNeedsTarget;
 
-    private void Start()
+    private void Awake()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_fFireTime = m_refAttackInfo.CoolDown;
@@ -54,18 +55,19 @@ public class Weapon : MonoBehaviour
     }
 
     //바라는 방향으로 쏘지 않고 지정된 위치에만 소환
-    public void Spawn()
-    {
-        GameObject refObj = CreateBullet();
+    //public void Spawn()
+    //{
+    //    GameObject refObj = CreateBullet();
 
-        if (refObj == null)
-            return;
+    //    if (refObj == null)
+    //        return;
 
-        refObj.transform.position = m_refFireTr.position;
+    //    refObj.transform.position = m_refFireTr.position;
+    //    //refObj.transform.rotation = m_refFireTr.rotation;
 
-        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo);
-    }
+    //    IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+    //    refAttackObj.SetAttack(m_refAttackInfo);
+    //}
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {

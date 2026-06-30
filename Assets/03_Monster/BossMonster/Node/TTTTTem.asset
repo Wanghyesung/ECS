@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf8422e80204ee4da90c473b3234b34, type: 3}
-  m_Name: SO_SpawnGBossBall
+  m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
+  m_Name: TTTTTem
   m_EditorClassIdentifier: 
-  AttackInfo: {fileID: 11400000, guid: a23818708285e094780c043ab02cb2a6, type: 2}
-  SpawnCount: 100
-  SpawnTime: 10
+  listNode:
+  - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
+  - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}

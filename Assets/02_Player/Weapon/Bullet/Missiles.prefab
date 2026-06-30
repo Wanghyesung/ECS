@@ -101,7 +101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e31ce016b8fd048b75caba502cd067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eHitEffectType: 6
+  m_eHitEffectType: 0
+  m_eExplosionType: 6
 --- !u!114 &4552152582649686416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +161,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -176,6 +177,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -232,7 +236,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 16bd1dce3aeef714dbef5208e3b6d24d, type: 2}
+  - {fileID: 2100000, guid: f940dca823d60dc40bcee8a269fdd641, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

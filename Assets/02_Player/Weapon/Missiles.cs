@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using static PoolObject;
 
 /*///////////////////////////////////////////
                 Missiles
-��� : ������ ��ġ�� ���� ȸ���Ͽ� �̵�
+기능 : 지정된 위치로 회전하면서 목적지로 이동 후 공격
  *///////////////////////////////////////////
 
 public class Missiles : Bullet
@@ -13,6 +14,8 @@ public class Missiles : Bullet
     private Vector3 m_vTargetPosition;
     private float m_fTargetLength;
     private float m_fElapsedTime;
+
+    [SerializeField] private ePoolType m_eExplosionType = ePoolType.None;
 
     protected override void Awake()
     {
@@ -23,6 +26,18 @@ public class Missiles : Bullet
     {
         UpdateDirMissile();
         base.FixedUpdate();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        m_refPoolObj.OnPush += SpawnExplosion;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        m_refPoolObj.OnPush -= SpawnExplosion;
     }
 
     private void UpdateDirMissile()
@@ -67,7 +82,8 @@ public class Missiles : Bullet
 
     public override void SetAttack(AttackInfo _refAttackInfo)
     {
-        base.SetAttack(_refAttackInfo);
+       base.SetAttack(_refAttackInfo);  
+
 
         m_fElapsedTime = 0f;
 
@@ -79,6 +95,15 @@ public class Missiles : Bullet
         m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
     }
 
+    private void SpawnExplosion()
+    {
+        if(m_eExplosionType != ePoolType.None)
+        {
+            //현재 위치에서 소환
+            GameObject refExObject = ObjectPool.m_Instance.GetObject(m_eExplosionType);
+            refExObject.transform.position = transform.position;
+        }
+    }
 
 
 }

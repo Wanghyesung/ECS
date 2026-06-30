@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: SO_ParBossPassiveAttack
   m_EditorClassIdentifier: 
   listNode:
+  - {fileID: 11400000, guid: 43cf01c18563a6a458fefe88f3641412, type: 2}
+  - {fileID: 11400000, guid: 43cf01c18563a6a458fefe88f3641412, type: 2}
   - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
   - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
   - {fileID: 11400000, guid: c0f4f293f9fbf0a40b0f0fe39185edbc, type: 2}

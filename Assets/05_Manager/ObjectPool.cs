@@ -23,20 +23,23 @@ public enum ePoolType
     BaseHitEffect,
     MidBullet,
     MidHitEffect,
-    Missiles,
-    LargeHitEffect,
+    Missile,
+    LargeAttackEx,
 
     /*Monster*/
     GBossBall,
-    GBossBallEx,
+    GBossBallEffect,
 
     LightBall,
-    LightBallEx,
+    LightBallEffect,
 
     MonBullet,
     SparkEx,
 
     BossLaser,
+
+    BossMissile,
+    BossMissileEx,
 }
 
 /*///////////////////////////////////////////

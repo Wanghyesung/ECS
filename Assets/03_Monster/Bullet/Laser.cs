@@ -55,5 +55,7 @@ public class Laser : MonoBehaviour, IAttackObject
         m_refAttackInfo = _refAttackInfo;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         m_refTriggerObject?.SetTriggerMask(_refAttackInfo.HitLayers);
+
+        transform.LookAt(_refAttackInfo.TargetPos);
     }
 }
