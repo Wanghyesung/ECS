@@ -35,6 +35,7 @@ public class Weapon : MonoBehaviour
 
     public ePoolType FireBulletType => m_SOAttackInfo.PoolType;
 
+    [SerializeField] private bool m_bLookTarget = true;
     [SerializeField] private bool m_bNeedsTarget = false;
     public bool NeeadNearTarget => m_bNeedsTarget;
 
@@ -77,7 +78,10 @@ public class Weapon : MonoBehaviour
             return;
 
         refObj.transform.position = m_refFireTr.position;
-        refObj.transform.LookAt(_vTargetPos);
+        if (m_bLookTarget == true)
+            refObj.transform.LookAt(_vTargetPos);
+        else
+            refObj.transform.rotation = m_refFireTr.rotation;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
         m_refAttackInfo.TargetPos = _vTargetPos;
@@ -86,23 +90,20 @@ public class Weapon : MonoBehaviour
     }
 
 
-    public void Fire(Vector3 _vTargetPos, Transform _refTargetTr, Vector3 _vDir, float _fFowardOffset)
+    public void FireAndRotate(Vector3 _vDir, float _fFowardOffset)
     {
         GameObject refObj = CreateBullet();
 
         if (refObj == null)
             return;
 
-        Quaternion qRoation = Quaternion.LookRotation(_vDir);
-        refObj.transform.rotation = qRoation;
-     
         Vector3 vSpawnPos = m_refFireTr.position + (_vDir * _fFowardOffset);
         refObj.transform.position = vSpawnPos;
 
+        Quaternion qRoation = Quaternion.LookRotation(_vDir);
+        refObj.transform.rotation = qRoation;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        m_refAttackInfo.TargetPos = _vTargetPos;
-        m_refAttackInfo.TargetTrasnform = _refTargetTr;
         refAttackObj.SetAttack(m_refAttackInfo);
     }
 

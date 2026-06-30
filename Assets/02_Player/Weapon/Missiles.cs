@@ -84,7 +84,6 @@ public class Missiles : Bullet
     {
        base.SetAttack(_refAttackInfo);  
 
-
         m_fElapsedTime = 0f;
 
         if (_refAttackInfo.TargetTrasnform == null)

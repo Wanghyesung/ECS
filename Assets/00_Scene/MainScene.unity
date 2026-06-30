@@ -248,6 +248,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: a23818708285e094780c043ab02cb2a6, type: 2}
   m_refFireTr: {fileID: 67716699}
   m_refEffectObject: {fileID: 0}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!1 &86218941
 GameObject:
@@ -390,6 +391,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 97f23895d54edbf49807f01d5ae38c17, type: 2}
   m_refFireTr: {fileID: 220804232}
   m_refEffectObject: {fileID: 1717914309}
+  m_bLookTarget: 0
   m_bNeedsTarget: 1
 --- !u!1001 &230817949
 PrefabInstance:
@@ -653,6 +655,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 97f23895d54edbf49807f01d5ae38c17, type: 2}
   m_refFireTr: {fileID: 288770762}
   m_refEffectObject: {fileID: 1730738809}
+  m_bLookTarget: 0
   m_bNeedsTarget: 1
 --- !u!1001 &435208579
 PrefabInstance:
@@ -1253,6 +1256,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
+  m_bLookTarget: 1
   m_bNeedsTarget: 0
 --- !u!1 &795575401
 GameObject:
@@ -1302,6 +1306,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 795575402}
   m_refEffectObject: {fileID: 5585671605873680693}
+  m_bLookTarget: 0
   m_bNeedsTarget: 1
 --- !u!1 &887771510
 GameObject:
@@ -1351,6 +1356,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
+  m_bLookTarget: 1
   m_bNeedsTarget: 0
 --- !u!1 &936170814
 GameObject:
@@ -1434,6 +1440,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
+  m_bLookTarget: 1
   m_bNeedsTarget: 0
 --- !u!1 &963194225
 GameObject:
@@ -1769,6 +1776,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
+  m_bLookTarget: 1
   m_bNeedsTarget: 0
 --- !u!1 &1344935220
 GameObject:
@@ -1867,6 +1875,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 277580606}
+  m_bLookTarget: 0
   m_bNeedsTarget: 1
 --- !u!1 &1503696906
 GameObject:
@@ -1915,6 +1924,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 37164d75ba5734a4c9ed2fe0557f9463, type: 2}
   m_refFireTr: {fileID: 1503696907}
   m_refEffectObject: {fileID: 0}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!1001 &1531859314
 PrefabInstance:
@@ -2350,6 +2360,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 37164d75ba5734a4c9ed2fe0557f9463, type: 2}
   m_refFireTr: {fileID: 1834517434}
   m_refEffectObject: {fileID: 0}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!1 &1858015921
 GameObject:
@@ -2799,6 +2810,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 0acca8f774dc1a64a8d42c551873c284, type: 2}
   m_refFireTr: {fileID: 3204437611446338172}
   m_refEffectObject: {fileID: 0}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!1 &475613448330417303
 GameObject:
@@ -23955,6 +23967,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 9d153aacb1a7eb84b866d020dafbd259, type: 2}
   m_refFireTr: {fileID: 643748883}
   m_refEffectObject: {fileID: 1531859316}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!199 &4847184648105315216
 ParticleSystemRenderer:
@@ -39444,6 +39457,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 9d153aacb1a7eb84b866d020dafbd259, type: 2}
   m_refFireTr: {fileID: 1123841347}
   m_refEffectObject: {fileID: 51880715}
+  m_bLookTarget: 0
   m_bNeedsTarget: 0
 --- !u!1 &7367123405109491702
 GameObject:

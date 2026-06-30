@@ -14,9 +14,7 @@ public class SOFireRadialDirNode : SONode
     private readonly float GOLDEN_RATIO = ((1f + Mathf.Sqrt(5f)) / 2f);
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if(_refBB.TargetTr == null)
-            return eNodeState.Failure;
-
+     
         SpawnInfo refSpawnInfo = _refBB.CurrentAttackSpawn;
         if (refSpawnInfo == null)
             return eNodeState.Failure;
@@ -47,7 +45,7 @@ public class SOFireRadialDirNode : SONode
             // 최종 방향 벡터 (normalized 상태)
             Vector3 vDir = new Vector3(x, y, z);
 
-            refAttackWeapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr, vDir, refSpawnInfo.SpawnFowardOffset);  
+            refAttackWeapon.FireAndRotate(vDir, refSpawnInfo.SpawnFowardOffset);  
         }
 
         return eNodeState.Success;
