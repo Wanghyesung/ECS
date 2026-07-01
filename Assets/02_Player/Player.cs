@@ -50,6 +50,7 @@ public class ObjectInfo
     public ushort CurrentEffects; //16비트로 전체 상태이상 표현
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
+
 public class Player : MonoBehaviour
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;

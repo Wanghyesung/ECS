@@ -1,16 +1,14 @@
 using UnityEngine;
 
 /*///////////////////////////////////////////
-            SOLookAtTargetNode
-ê¸°ëŠ¥ : ì¼ì • ì†ë„ë¡œ íƒ€ê²Ÿ ë°©í–¥ì„ ë°”ë¼ë³´ëŠ” ë…¸ë“œ
-       ë°”ë¼ë³´ëŠ” ì¤‘ â†’ Running, ì™„ë£Œ â†’ Success
+            SOLookAtLoopNode
+±â´É : ÀÏÁ¤ ¼Óµµ·Î Å¸°Ù ¹æÇâÀ» °è¼Ó ¹Ù¶óº¸´Â ³ëµå       
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_LookAtTargetNode", menuName = "Game/Monster/ActionNode/LookAtTargetNode")]
-public class SOLookAtTargetNode : SONode
+[CreateAssetMenu(fileName = "SO_LookAtLoopNode", menuName = "Game/Monster/ActionNode/LookAtLoopNode")]
+public class SOLookAtLoopNode : SONode
 {
-    [SerializeField] private float m_fRotateSpeed = 90f;   // ì´ˆë‹¹ íšŒì „ ê°ë„ (degree/s)
-    [SerializeField] private float m_fAngleThreshold = 2f; // ì´ ê°ë„ ì´ë‚´ë©´ Success
+    [SerializeField] private float m_fRotateSpeed = 90f;   // ÃÊ´ç È¸Àü °¢µµ (degree/s)
 
     public override eNodeState Execute(BlackBoard _refBB)
     {
@@ -22,9 +20,6 @@ public class SOLookAtTargetNode : SONode
 
         Quaternion qTargetRot = Quaternion.LookRotation(vDir.normalized);
         refOwnerTr.rotation = Quaternion.RotateTowards(refOwnerTr.rotation, qTargetRot, m_fRotateSpeed * Time.deltaTime);
-
-        if (Quaternion.Angle(refOwnerTr.rotation, qTargetRot) < m_fAngleThreshold)
-            return eNodeState.Success;
 
         return eNodeState.Running;
     }

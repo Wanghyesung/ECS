@@ -8335,7 +8335,7 @@ MonoBehaviour:
     ObjInfo:
       State: 1
       CurrentHP: 0
-      Speed: 10
+      Speed: 20
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -8432,7 +8432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c1f1edaf5d5dd428a7eee4b87789bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refRootNode: {fileID: 11400000, guid: 5b693beefcdee2e44ab32900b6a9a5ec, type: 2}
+  m_refRootNode: {fileID: 11400000, guid: ddef41eddcad7ea43abea72b304f42e6, type: 2}
   m_refOwner: {fileID: 2282185483145181148}
 --- !u!65 &2282185483145181150
 BoxCollider:
