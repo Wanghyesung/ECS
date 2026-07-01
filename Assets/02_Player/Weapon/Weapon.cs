@@ -33,7 +33,7 @@ public class Weapon : MonoBehaviour
     private eWeaponType m_eWeapoonType = eWeaponType.None;
     public eWeaponType WeaponType => m_eWeapoonType;
 
-    public ePoolType FireBulletType => m_SOAttackInfo.PoolType;
+    public PoolObject FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
 
     [SerializeField] private bool m_bLookTarget = true;
     [SerializeField] private bool m_bNeedsTarget = false;
@@ -110,7 +110,7 @@ public class Weapon : MonoBehaviour
 
     private GameObject CreateBullet()
     {
-        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolType);
+        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
         if (refObj == null)
             return null;
 

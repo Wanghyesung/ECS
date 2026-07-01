@@ -6,7 +6,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
              SOFireObjectNode
-±â´É : ¸ó½ºÅÍ°¡ °ø°Ý ÃÑ¾ËÀ» ½î´Â ±â´É
+ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_FireObjectNode", menuName = "Game/Monster/ActionNode/FireObjectNode")]
@@ -19,7 +19,7 @@ public class SOFireObjectNode : SONode
             return eNodeState.Failure;
 
 
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletType);
+        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletPrefab);
         int iSpawnCount = refSpawnInfo.SpawnCount;
 
         if (iPoolCount < iSpawnCount)

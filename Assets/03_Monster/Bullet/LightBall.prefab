@@ -19215,20 +19215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca1690944aca6d74cb36e9494f545c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refAttackInfo:
-    Damage: 0
-    AttackPower: 0
-    AliveTime: 0
-    AttackSpeed: 0
-    CoolDown: 0
-    RotationSpeed: 90
-    TargetPos: {x: 0, y: 0, z: 0}
-    TargetTrasnform: {fileID: 0}
-    HitPosition: {x: 0, y: 0, z: 0}
-    HitLayers:
-      serializedVersion: 2
-      m_Bits: 4294967295
-  m_eHitEffectType: 10
+  m_refHitEffectObj: {fileID: 1537050859280269764, guid: 7b3ad5ff946adff4ebaf658f0419778c, type: 3}
 --- !u!54 &537172212668676843
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -19268,7 +19255,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 9
   m_fAliveTime: 3
 --- !u!136 &-817209721816472325
 CapsuleCollider:
@@ -19305,6 +19291,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
     m_Bits: 8

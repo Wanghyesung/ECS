@@ -101,8 +101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e31ce016b8fd048b75caba502cd067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eHitEffectType: 0
-  m_eExplosionType: 6
+  m_refHitEffectObj: {fileID: 0}
+  m_refExplodeObj: {fileID: 5394758280639574103, guid: 798ac151bda9db64fa023b68a135e690, type: 3}
 --- !u!114 &4552152582649686416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +115,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 5
   m_fAliveTime: 3
 --- !u!65 &262128102816122980
 BoxCollider:

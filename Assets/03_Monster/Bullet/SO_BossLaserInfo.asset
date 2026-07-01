@@ -15,7 +15,7 @@ MonoBehaviour:
   Description: "\uB0B4\uAC00 \uBC14\uB77C\uBCF4\uB294 \uBC29\uD5A5\uC73C\uB85C \uB808\uC774\uC800\uB97C
     \uC18C\uD658"
   WeaponType: 5
-  PoolType: 13
+  PoolPrefab: {fileID: 4236619912756461124, guid: b67281d5587a1bd41950cd4c87f2847e, type: 3}
   Damage: 10
   AttackPower: 2
   Cooldown: 5

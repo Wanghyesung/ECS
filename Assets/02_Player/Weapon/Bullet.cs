@@ -3,12 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PoolObject;
-
 
 /*///////////////////////////////////////////
                 IAttackObject
-±â´É : °ø°İ ¿ÀºêÁ§ÀÇ °ø°İÁ¤º¸¸¦ ¼ÂÆÃÇØ¾ßÇÑ´Ù´Â ±Ô¾à
+ëª©ì  : ê³µê²© ì˜¤ë¸Œì íŠ¸ë¼ë©´ ë°˜ë“œì‹œ êµ¬í˜„í•´ì•¼í•œë‹¤ëŠ” ì•½ì†
  *///////////////////////////////////////////
 public interface IAttackObject
 {
@@ -17,7 +15,7 @@ public interface IAttackObject
 
 /*///////////////////////////////////////////
                   Bullet
-±â´É : ¸ó½ºÅÍ, ÇÃ·¹ÀÌ¾î°¡ ½î´Â ±âº» °ø°İ ¿ÀºêÁ§Æ®
+ëª©ì  : ëª¬ìŠ¤í„°, í”Œë ˆì´ì–´ ë“±ì˜ ê¸°ë³¸ ë°œì‚¬ ì˜¤ë¸Œì íŠ¸
  *///////////////////////////////////////////
 
 public class Bullet : MonoBehaviour, IAttackObject
@@ -29,7 +27,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected PoolObject m_refPoolObj;
     protected TriggerObject m_refTriggerObject;
 
-    [SerializeField] private ePoolType m_eHitEffectType;
+    [SerializeField] private PoolObject m_refHitEffectObj;
 
 
     protected virtual void Awake()
@@ -57,8 +55,6 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refRigidbody.MovePosition(vNextPos);
     }
 
-    
-    //Äİ¶óÀÌ´õ¿¡ °É·ÈÀ» ¶§ È£Ãâ
     protected virtual void AttackMonster(Collider other)
     {
         var iDamageable = other.GetComponent<IDamageable>();
@@ -67,10 +63,9 @@ public class Bullet : MonoBehaviour, IAttackObject
             //iDamageable.TakeDamage(1);
         }
 
-        //TODO : ³ªÁß¿¡ EffectSO±îÁö µû·Î ¸¸µé¾î¼­ È®ÀÎÇÏ´Â°É·Î
-        if (m_eHitEffectType != ePoolType.None)
+        if (m_refHitEffectObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
+            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
             if (refHitEffect == null)
                 return;
 

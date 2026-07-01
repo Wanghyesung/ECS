@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PoolObject;
 
-
-//ÇØ´ç µ¥ÀÌÅÍ¿¡ Á¢±ÙÇÏ¿© ¼öÁ¤ÇÒ ÀÏÀÌ ¾ø´Ù¸é struct·Î ±³Ã¼
 [Serializable]
 public class PoolInfo
 {
@@ -13,49 +9,18 @@ public class PoolInfo
     public GameObject refGameObject;
 }
 
-[Serializable]
-public enum ePoolType
-{
-    /*Player*/
-    None,
-
-    BaseBullet,
-    BaseHitEffect,
-    MidBullet,
-    MidHitEffect,
-    Missile,
-    LargeAttackEx,
-
-    /*Monster*/
-    GBossBall,
-    GBossBallEffect,
-
-    LightBall,
-    LightBallEffect,
-
-    MonBullet,
-    SparkEx,
-
-    BossLaser,
-
-    BossMissile,
-    BossMissileEx,
-}
-
 /*///////////////////////////////////////////
                ObjectPool
-±â´É : °´Ã¼¸¦ ¹Ì¸® ·ÎµåÇØµÎ°í ÇÊ¿äÇÒ ¶§ ²¨³»°í ´Ù »ç¿ëÇÏ¸é ¹İ³³ÇÒ ¼ö ÀÖ°Ô ÇÏ´Â ±â´É
+ëª©ì  : ì˜¤ë¸Œì íŠ¸ë¥¼ ë¯¸ë¦¬ ë¡œë“œí•´ë‘ê³  í•„ìš”í•  ë•Œ êº¼ë‚´ì–´ ì“°ë©´ ë°˜ë‚©í•  ìˆ˜ ìˆê²Œ í•˜ëŠ” í´ë˜ìŠ¤
  *///////////////////////////////////////////
-
 
 public class ObjectPool : MonoBehaviour
 {
-    public static ObjectPool m_Instance = null; 
-    private Dictionary<ePoolType, Queue<GameObject>> m_hashPool = new Dictionary<ePoolType, Queue<GameObject>>();
+    public static ObjectPool m_Instance = null;
+    private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new Dictionary<PoolObject, Queue<GameObject>>();
 
-    //ÀÓ½Ã·Î ³ÖÀº °ÔÀÓ ¿ÀºêÁ§Æ®
     [SerializeField] private List<PoolInfo> m_listPoolObject = new List<PoolInfo>();
-    
+
     private void Awake()
     {
         if (m_Instance != null)
@@ -65,38 +30,38 @@ public class ObjectPool : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-
     private void Start()
     {
-        //todo : Áßº¹Ã¼Å©
-        for(int i = 0; i<m_listPoolObject.Count; ++i)
+        for (int i = 0; i < m_listPoolObject.Count; ++i)
         {
             PoolInfo refPool = m_listPoolObject[i];
+            PoolObject refPrefabPoolObj = refPool.refGameObject.GetComponent<PoolObject>();
 
-            GameObject refObj = refPool.refGameObject;
-            IPoolable iPoolAble = refObj.GetComponent<IPoolable>();
-            if(iPoolAble == null)
+            if (refPrefabPoolObj == null)
             {
-                Debug.Log("ÀÌ»óÇÑ °ªÀÌ µé¾î¿È : ObjectPool");
+                Debug.Log("í’€ í”„ë¦¬íŒ¹ ë¯¸ì„¤ì • : ObjectPool");
                 return;
             }
 
-            
             Queue<GameObject> queGameObject = new Queue<GameObject>();
-            //°°Àº °ª µé¾î¿À¸é ÅÍÆ®¸®±â
-            m_hashPool.Add(iPoolAble.PoolType, queGameObject);
+            m_hashPool.Add(refPrefabPoolObj, queGameObject);
 
-            for (int j = 0; j<refPool.iPoolCount; ++j)
+            for (int j = 0; j < refPool.iPoolCount; ++j)
             {
-                GameObject refInstance = Instantiate(refObj);
+                GameObject refInstance = Instantiate(refPrefabPoolObj.gameObject);
+                PoolObject instancePoolObj = refInstance.GetComponent<PoolObject>();
+                instancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
                 PushObject(refInstance);
             }
         }
     }
 
-    public GameObject GetObject(ePoolType _ePoolType)
+    public GameObject GetObject(PoolObject _refPrefabPoolObj)
     {
-        if (m_hashPool.TryGetValue(_ePoolType, out var queValue) == false)
+        if (_refPrefabPoolObj == null)
+            return null;
+
+        if (m_hashPool.TryGetValue(_refPrefabPoolObj, out var queValue) == false)
             return null;
 
         if (queValue.Count == 0)
@@ -106,49 +71,39 @@ public class ObjectPool : MonoBehaviour
         IPoolable iPool = refObject.GetComponent<IPoolable>();
         if (iPool == null)
         {
-            Debug.Log("¿ÀºêÁ§Æ® Ç®¿¡ ÀÌ»óÇÑ °ªÀÌ µé¾î°¨");
+            Debug.Log("ì˜¤ë¸Œì íŠ¸ í’€ì— ì´ìƒí•œ ì˜¤ë¥˜ ìˆìŒ");
             return null;
         }
 
         refObject.transform.SetParent(null);
-
         iPool.Pop();
         refObject.gameObject.SetActive(true);
 
         return refObject;
     }
 
-
-    //public GameObject GetObject(ePoolType _ePoolType, in Vector3 _vWorldPos, in Quaternion _qRotate)
-    //{
-    //    GameObject refObj = GetObject(_ePoolType);
-    //
-    //    //¿©±â¼­ ¹Ù²Ù±â
-    //}
-
     public void PushObject(GameObject _refGameObj)
     {
-        IPoolable iPool = _refGameObj.GetComponent<IPoolable>();
-        if (iPool == null)
+        PoolObject refPoolObj = _refGameObj.GetComponent<PoolObject>();
+        if (refPoolObj == null)
             return;
 
-        if (m_hashPool.TryGetValue(iPool.PoolType, out var queValue) == false)
+        if (m_hashPool.TryGetValue(refPoolObj.PoolKey, out var queValue) == false)
             return;
 
-        //ÀÌ¹Ì Çª½¬ ¿äÃ»µÈ ¿ÀºêÁ§Æ®
-        if (iPool.PushCount > 0)
+        if (refPoolObj.PushCount > 0)
             return;
 
-        iPool.Push();
+        refPoolObj.Push();
         _refGameObj.transform.SetParent(transform);
         _refGameObj.gameObject.SetActive(false);
 
         queValue.Enqueue(_refGameObj);
     }
 
-    public int GetObjectCount(ePoolType _eType)
+    public int GetObjectCount(PoolObject _refPrefabPoolObj)
     {
-        if (m_hashPool.TryGetValue(_eType, out var queValue) == false)
+        if (m_hashPool.TryGetValue(_refPrefabPoolObj, out var queValue) == false)
             return -1;
 
         return queValue.Count;

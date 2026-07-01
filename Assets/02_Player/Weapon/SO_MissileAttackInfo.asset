@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: "\uD50C\uB808\uC774\uC5B4 \uBBF8\uC0AC\uC77C"
   WeaponType: 4
-  PoolType: 5
+  PoolPrefab: {fileID: 4552152582649686416, guid: 462843f48a9bb4246bb3d06f2733a0ab, type: 3}
   Damage: 20
   AttackPower: 0
   Cooldown: 1.5

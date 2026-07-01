@@ -156,6 +156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -219,7 +222,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 11
   m_fAliveTime: 3
 --- !u!114 &2776694687007666598
 MonoBehaviour:
@@ -233,17 +235,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e31ce016b8fd048b75caba502cd067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refAttackInfo:
-    Damage: 0
-    AttackPower: 0
-    AliveTime: 0
-    AttackSpeed: 0
-    CoolDown: 0
-    RotationSpeed: 90
-    TargetPos: {x: 0, y: 0, z: 0}
-    TargetTrasnform: {fileID: 0}
-    HitPosition: {x: 0, y: 0, z: 0}
-    HitLayers:
-      serializedVersion: 2
-      m_Bits: 8
-  m_eHitEffectType: 12
+  m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
+  m_refExplodeObj: {fileID: 0}

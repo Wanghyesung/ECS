@@ -4,7 +4,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
            SOFireRadialDirNode
-±â´É : 360µµ ¹üÀ§·Î »ý¼ºµÈ ¿ÀºêÁ§Æ® ¹æÇâ ¼³Á¤
+ï¿½ï¿½ï¿½ : 360ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO)FireRadialDirNode", menuName = "Game/Monster/ActionNode/FireRadialDirNode")]
@@ -20,7 +20,7 @@ public class SOFireRadialDirNode : SONode
             return eNodeState.Failure;
 
         Weapon refAttackWeapon = refSpawnInfo.Weapon;
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletType);
+        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
         int iTotalCount = refSpawnInfo.SpawnCount;
 
 
@@ -29,20 +29,20 @@ public class SOFireRadialDirNode : SONode
 
         for (int i = 0; i < iTotalCount; ++i)
         {
-            // ÀÎµ¦½º¸¦ ±â¹ÝÀ¸·Î -1~1 »çÀÌÀÇ Y°ª(³ôÀÌ) °è»ê
+            // ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -1~1 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Yï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½
             float y = 1f - (i / (float)iTotalCount) * 2f;
 
-            // ÇØ´ç ³ôÀÌ¿¡¼­ÀÇ ¹ÝÁö¸§ °è»ê
+            // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½Ì¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             float fRadiusAtY = Mathf.Sqrt(1f - y * y);
 
-            // È²±Ýºñ¸¦ ÀÌ¿ëÇÑ °¢µµ(theta) °è»ê
+            // È²ï¿½Ýºï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(theta) ï¿½ï¿½ï¿½
             float fTheta = 2f * Mathf.PI * GOLDEN_RATIO * i;
 
-            // ±¸ Ç¥¸éÀÇ X, Z ÁÂÇ¥ °è»ê
+            // ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ X, Z ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½
             float x = Mathf.Cos(fTheta) * fRadiusAtY;
             float z = Mathf.Sin(fTheta) * fRadiusAtY;
 
-            // ÃÖÁ¾ ¹æÇâ º¤ÅÍ (normalized »óÅÂ)
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (normalized ï¿½ï¿½ï¿½ï¿½)
             Vector3 vDir = new Vector3(x, y, z);
 
             refAttackWeapon.FireAndRotate(vDir, refSpawnInfo.SpawnFowardOffset);  

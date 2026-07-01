@@ -9,7 +9,7 @@ public class Laser : MonoBehaviour, IAttackObject
     protected PoolObject m_refPoolObj;
     private TriggerObject m_refTriggerObject;
 
-    [SerializeField] ePoolType m_eHitEffectType;
+    [SerializeField] private PoolObject m_refHitEffectPoolObj;
 
 
     protected virtual void Awake()
@@ -29,8 +29,6 @@ public class Laser : MonoBehaviour, IAttackObject
             m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
     }
 
-
-    //콜라이더에 걸렸을 때 호출
     protected virtual void AttackMonster(Collider other)
     {
         var iDamageable = other.GetComponent<IDamageable>();
@@ -39,15 +37,14 @@ public class Laser : MonoBehaviour, IAttackObject
             //iDamageable.TakeDamage(1);
         }
 
-        if (m_eHitEffectType != ePoolType.None)
+        if (m_refHitEffectPoolObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
+            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectPoolObj);
             if (refHitEffect == null)
                 return;
 
             refHitEffect.transform.position = transform.position;
         }
-
     }
 
     public virtual void SetAttack(AttackInfo _refAttackInfo)
