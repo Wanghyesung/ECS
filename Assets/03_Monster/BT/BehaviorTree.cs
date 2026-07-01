@@ -71,12 +71,7 @@ public class BlackBoard
     public Vector3 StrafeDir;
     public float StrafeTimer;
 
-    [Header("RandomMove")]
-    public int iRandomMoveIdx;
-    public float RandomMoveTimer;
 }
-
-
 
 
 /*///////////////////////////////////////////
@@ -110,11 +105,12 @@ public class BehaviorTree : MonoBehaviour
     {
         foreach (SOListNode node in m_listClonedNodes)
         {
-            if (node != null) Destroy(node);
+            if (node != null) 
+                Destroy(node);
         }
         m_listClonedNodes.Clear();
     }
-
+     
     public bool StopBT() => m_bRunning = false;
     public bool StartBT() => m_bRunning = true;
 

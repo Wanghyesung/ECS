@@ -10,7 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
-  m_Name: SO_ParBossRoot
+  m_Name: SO_ParBossOriMove
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: f217524b22e72e241af4eee58c180c7f, type: 2}
+  - {fileID: 11400000, guid: ab5f3bb24bdf1cc44a6f84c28d050a9e, type: 2}
+  - {fileID: 11400000, guid: fdac404e3427c1f4690c9741bc0d5dc6, type: 2}
+  - {fileID: 11400000, guid: 8e4e74511cd515c4eb53e4f0d6df3f2a, type: 2}

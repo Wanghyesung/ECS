@@ -184,11 +184,12 @@ public class BlackBoard
 ```
 ScriptableObject
   └── SONode (abstract)              ← Execute(BlackBoard) → eNodeState
-        ├── SOListNode (abstract)    ← 자식 노드 List<SONode> 보유
-        │     ├── SOSequenceNode     ← AND 로직 (하나 실패 → 전체 실패)
-        │     ├── SOSelectNode       ← OR 로직 (하나 성공 → 전체 성공)
-        │     ├── SOParallelNode     ← 모든 자식 매 프레임 실행 (루트 패시브용)
-        │     └── SOParallelWaitNode ← 모든 자식 동시 실행 + 완료 대기
+        ├── SOListNode (abstract)    ← 자식 노드 List<SONode> 보유 / BT 초기화 시 인스턴스별 클론
+        │     ├── SOSequenceNode       ← AND 로직 (하나 실패 → 전체 실패)
+        │     ├── SOSelectNode         ← OR 로직 (하나 성공 → 전체 성공)
+        │     ├── SOParallelNode       ← 모든 자식 매 프레임 실행 (루트 패시브용)
+        │     ├── SOParallelWaitNode   ← 모든 자식 동시 실행 + 완료 대기
+        │     └── SORandomSelectNode   ← 자식 중 하나를 랜덤 선택, 타이머 만료 시 재선택
         └── [Action 노드들]          ← 실제 동작 수행 (섹션 3 참고)
 ```
 
@@ -440,6 +441,9 @@ SOChargeNode.Execute()
 | `SOSelectNode` | 자식을 순서대로 실행. 하나라도 Success → 전체 Success | 여러 행동 중 가능한 것 선택 |
 | `SOParallelNode` | 모든 자식을 매 프레임 실행 (결과 무관) | 루트에 배치, 패시브 효과와 메인 BT 병행 |
 | `SOParallelWaitNode` | 모든 자식 동시 실행. 완료된 자식은 대기, 전부 Success 시 종료 | 차지(Charge) + 방향 조준(LookAt) 병행 |
+| `SORandomSelectNode` | 자식 중 하나를 랜덤 선택해 실행. 타이머(`MinDuration`~`MaxDuration`) 만료 시 새 자식 재선택. 자식이 Failure 반환 시 즉시 재선택 | 몬스터 이동 패턴 랜덤화 |
+
+> **SOListNode 클론 규칙**: `SOListNode` 계열은 `BehaviorTree.Awake()`에서 `CloneChildren()`으로 인스턴스별 복사본을 생성합니다. 덕분에 `SOSelectNode`의 `iCurrentIdx`, `SORandomSelectNode`의 `m_iCurrentIdx`·`m_fTimer` 등 런타임 상태를 노드 필드에 직접 저장해도 SO 데이터 오염이 없습니다. 반면 **단순 `SONode`(클론 안 됨)** 는 여전히 상태를 BlackBoard에 저장해야 합니다.
 
 ### 조건 노드 (체크만 함)
 

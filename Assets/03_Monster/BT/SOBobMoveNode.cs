@@ -4,7 +4,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
             SOBobMoveNode
-±â´É : ¸ó½ºÅÍÀÇ ÀÚ¿¬½º·¯¿î ¿òÁ÷ÀÓÀ» À§ÇØ¼­ À§¾Æ·¡·Î ÀÚ¿¬½º·¯¿î ¿òÁ÷ÀÓ ¿¬Ãâ
+ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_BobMoveNode", menuName = "Game/Monster/ActionNode/BobMoveNode")]
@@ -13,10 +13,11 @@ public class SOBobMoveNode : SONode
     [SerializeField] private float m_fBobSpeed = 0.0f;
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        float yOffset = Mathf.Sin(Time.time) * m_fBobSpeed;
+        float fYOffset = Mathf.Sin(Time.time) * m_fBobSpeed;
 
         Transform refOwnerTr = _refBB.Owner.transform;
-        refOwnerTr.position += refOwnerTr.up * yOffset * Time.deltaTime;
+        // ë¡œì»¬ upì´ ì•„ë‹Œ ì›”ë“œ Y ì‚¬ìš© â€” LookAtìœ¼ë¡œ ëª¬ìŠ¤í„°ê°€ ê¸°ìš¸ì–´ë„ ìƒí•˜ ë¶€ìœ  ìœ ì§€
+        refOwnerTr.position += Vector3.up * fYOffset * Time.deltaTime;
 
         return eNodeState.Success;
     }

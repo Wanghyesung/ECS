@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948ea08c1f1b9db49b03dc0fe9be7590, type: 3}
   m_Name: SO_StrafeVerticalNode
   m_EditorClassIdentifier: 
-  m_fMinTime: 1
-  m_fMaxTime: 3
+  m_bHorizontaol: 0
+  m_fMinTime: 3
+  m_fMaxTime: 6

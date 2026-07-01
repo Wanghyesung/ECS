@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
-  m_Name: SO_ParBossRoot
+  m_Script: {fileID: 11500000, guid: c4f0e692e3f53e9479657a0b5f4b6fbd, type: 3}
+  m_Name: SO_BossOrbitNode
   m_EditorClassIdentifier: 
-  listNode:
-  - {fileID: 11400000, guid: f217524b22e72e241af4eee58c180c7f, type: 2}
+  m_fOrbitSpeed: 10
