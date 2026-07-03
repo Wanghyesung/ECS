@@ -16,6 +16,9 @@ public class SOStrafeNode : SONode
    
     public override eNodeState Execute(BlackBoard _refBB)
     {
+        if (_refBB.ObjInfo.State != eEntityState.Idle)
+            return eNodeState.Failure;
+
         if (_refBB.StrafeTimer <= 0f)
             UpdateDir(_refBB);
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
             SOBobMoveNode
-��� : ������ �ڿ������� �������� ���ؼ� ���Ʒ��� �ڿ������� ������ ����
+기능 : 몬스터가 부유 효과를 보여줄 수 있게 y축 이동 효과
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_BobMoveNode", menuName = "Game/Monster/ActionNode/BobMoveNode")]

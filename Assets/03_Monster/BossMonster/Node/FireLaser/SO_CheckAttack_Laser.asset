@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a91fcb6c85bfdd48a2650054476b5ef, type: 3}
   m_Name: SO_CheckAttack_Laser
   m_EditorClassIdentifier: 
-  m_eWeaponType: 4
+  m_eWeaponType: 5

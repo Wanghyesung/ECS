@@ -89,6 +89,7 @@ public class BehaviorTree : MonoBehaviour
 
     public void Awake()
     {
+        //리스트 형태의 노드들은 현재 인덱스를 고유하게 가져야하기 때문에 깊은 복사를 진행
         if (m_refOwner == null)
             m_refOwner = GetComponent<Monster>();
 

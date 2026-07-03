@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
-  m_Name: TTTTTem
+  m_Script: {fileID: 11500000, guid: b5d7a834dfa4a3d46862692a8c683f42, type: 3}
+  m_Name: SO_StartWaitEffectNode_2
   m_EditorClassIdentifier: 
-  listNode:
-  - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
-  - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
+  m_eState: 0
+  m_fDuration: 2

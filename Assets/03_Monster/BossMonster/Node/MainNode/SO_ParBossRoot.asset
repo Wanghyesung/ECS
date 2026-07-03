@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: SO_ParBossRoot
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: f217524b22e72e241af4eee58c180c7f, type: 2}
+  - {fileID: 11400000, guid: e839769ab41fd394da3ffe6f22cac779, type: 2}
+  - {fileID: 11400000, guid: 8e949a36f6da1ba41b6349c6eb8f5b37, type: 2}

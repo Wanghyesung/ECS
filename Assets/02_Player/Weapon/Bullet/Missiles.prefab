@@ -103,6 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 0}
   m_refExplodeObj: {fileID: 5394758280639574103, guid: 798ac151bda9db64fa023b68a135e690, type: 3}
+  m_bTraceTarget: 1
 --- !u!114 &4552152582649686416
 MonoBehaviour:
   m_ObjectHideFlags: 0

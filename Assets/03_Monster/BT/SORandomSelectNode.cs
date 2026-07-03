@@ -19,9 +19,6 @@ public class SORandomSelectNode : SOListNode
 
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (listNode.Count == 0)
-            return eNodeState.Failure;
-
         if (m_fTimer <= 0f)
         {
             m_iCurrentIdx = Random.Range(0, listNode.Count);

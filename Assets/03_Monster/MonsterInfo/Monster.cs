@@ -165,5 +165,14 @@ public class Monster : MonoBehaviour, IDamageable
         return false;
     }
 
+
+    public void ChangeState(eEntityState _eState)
+    {
+        if (m_refBlackBoard.ObjInfo.State == _eState)
+            return;
+
+        m_refBlackBoard.ObjInfo.State = _eState;
+    }
+
 }
 

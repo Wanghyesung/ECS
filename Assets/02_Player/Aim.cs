@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 /*///////////////////////////////////////////
                    Aim
-기능 : ray, 플레이어가 쏠 방향을 제공하는 클래스
+기능 : ray, claude플레이어가 쏠 방향을 제공하는 클래스
  *///////////////////////////////////////////
 
 public class Aim : MonoBehaviour 
@@ -18,7 +18,7 @@ public class Aim : MonoBehaviour
     [SerializeField] private Image m_refAimImage;
     private Vector3 m_tTargetPosition = Vector3.zero;
     public Vector3 TargetPosition => m_tTargetPosition;
-
+    
     private void Update()
     {
         m_tTargetPosition = RayCast();

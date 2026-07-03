@@ -2749,7 +2749,7 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 0acca8f774dc1a64a8d42c551873c284, type: 2}
   m_refFireTr: {fileID: 3204437611446338172}
   m_refEffectObject: {fileID: 0}
-  m_bLookTarget: 0
+  m_bLookTarget: 1
   m_bNeedsTarget: 0
 --- !u!1 &475613448330417303
 GameObject:
@@ -8370,6 +8370,8 @@ MonoBehaviour:
       ChargeParticle: {fileID: 3364341559832813076}
       SpawnParticleTransform: {fileID: 2282185483145181147}
       SpawnWaitTime: 3
+    StrafeDir: {x: 0, y: 0, z: 0}
+    StrafeTimer: 0
   m_refBT: {fileID: 2282185483145181149}
   m_listSpawn:
   - Weapon: {fileID: 67716700}

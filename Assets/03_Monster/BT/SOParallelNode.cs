@@ -15,12 +15,18 @@ public class SOParallelNode : SOListNode
     public override eNodeState Execute(BlackBoard _refBB)
     {
         bool bAnyRunning = false;
+        bool bAnyFailure = false;
         for (int i = 0; i < listNode.Count; i++)
         {
             eNodeState state = listNode[i].Execute(_refBB);
             if (state == eNodeState.Running)
                 bAnyRunning = true;
+            else if(state == eNodeState.Failure)
+                bAnyFailure = true;
         }
+        if (bAnyFailure == true)
+            return eNodeState.Failure;
+
         return bAnyRunning ? eNodeState.Running : eNodeState.Success;
     }
 }

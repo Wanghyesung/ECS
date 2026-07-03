@@ -2,11 +2,11 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
             SOLookAtLoopNode
-기능 : 일정 속도로 타겟 방향을 계속 바라보는 노드       
+기능 : 일정 속도로 타겟 방향을 바라보는 노드       
  *///////////////////////////////////////////
 
-[CreateAssetMenu(fileName = "SO_LookAtLoopNode", menuName = "Game/Monster/ActionNode/LookAtLoopNode")]
-public class SOLookAtLoopNode : SONode
+[CreateAssetMenu(fileName = "SO_LookAtNode", menuName = "Game/Monster/ActionNode/LookAtNode")]
+public class SOLookAtNode : SONode
 {
     [SerializeField] private float m_fRotateSpeed = 90f;   // 초당 회전 각도 (degree/s)
 
@@ -21,6 +21,6 @@ public class SOLookAtLoopNode : SONode
         Quaternion qTargetRot = Quaternion.LookRotation(vDir.normalized);
         refOwnerTr.rotation = Quaternion.RotateTowards(refOwnerTr.rotation, qTargetRot, m_fRotateSpeed * Time.deltaTime);
 
-        return eNodeState.Running;
+        return eNodeState.Success;
     }
 }

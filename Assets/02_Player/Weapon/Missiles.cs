@@ -10,11 +10,9 @@ using UnityEngine.Events;
 
 public class Missiles : Bullet
 {
-    private Vector3 m_vTargetPosition;
-    private float m_fTargetLength;
     private float m_fElapsedTime;
-
     [SerializeField] private PoolObject m_refExplodeObj;
+    [SerializeField] private bool m_bTraceTarget = false;
 
     protected override void Awake()
     {
@@ -45,13 +43,21 @@ public class Missiles : Bullet
             return;
 
         m_fElapsedTime += Time.fixedDeltaTime;
+        Vector3 vTargetPos = Vector3.zero;
+   
+        if (m_bTraceTarget == true)
+            vTargetPos = m_refAttackInfo.TargetTrasnform.position;
+        else
+            vTargetPos = m_refAttackInfo.TargetPos;
 
-        Vector3 vToTarget = m_vTargetPosition - transform.position;
+        Vector3 vToTarget = vTargetPos - transform.position;
         float fDist = vToTarget.magnitude;
 
-        if(fDist < 1.0f)
+        
+        if (fDist < 1.0f)
         {
             m_refPoolObj.SetAliveTime(0.0f);
+            Debug.Log("걸림");
             return;
         }
 
@@ -63,7 +69,7 @@ public class Missiles : Bullet
         // 시간 기반 가속 + 거리 기반 가속 합산, MaxRotationSpeed로 상한
         float fTimeAccel = m_refAttackInfo.RotateSpeedRate * m_fElapsedTime;
         float fBaseSpeed = Mathf.Min(m_refAttackInfo.RotationSpeed + fTimeAccel, m_refAttackInfo.MaxRotationSpeed);
-        float fDistAccel = (m_fTargetLength / fDist) * fBaseSpeed * 0.5f;
+        float fDistAccel = /*(fTargetLength / fDist) * */fBaseSpeed * 0.5f;
         float fRotateSpeed = fBaseSpeed + fDistAccel;
 
         float fStep = fRotateSpeed * Time.fixedDeltaTime;
@@ -84,13 +90,6 @@ public class Missiles : Bullet
        base.SetAttack(_refAttackInfo);
 
         m_fElapsedTime = 0f;
-
-        if (_refAttackInfo.TargetTrasnform == null)
-            m_vTargetPosition = _refAttackInfo.TargetPos;
-        else
-            m_vTargetPosition = _refAttackInfo.TargetTrasnform.position;
-
-        m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
     }
 
     private void SpawnExplosion()

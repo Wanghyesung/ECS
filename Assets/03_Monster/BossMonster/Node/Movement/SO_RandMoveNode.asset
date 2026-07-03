@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: SO_RandMoveNode
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: f76f76324f5134048bd02d0797c4b977, type: 2}
+  - {fileID: 11400000, guid: 641dcfacabbd4104887d0a6ee5dce800, type: 2}
+  - {fileID: 11400000, guid: 326b09030ef518341b5a2a7c7c64bb21, type: 2}
+  - {fileID: 11400000, guid: f0951647d83768d488ad117889b8134f, type: 2}
   m_fMinDuration: 3
   m_fMaxDuration: 7
