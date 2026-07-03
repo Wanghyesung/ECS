@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 4057737550011718064}
   - component: {fileID: 2776694687007666598}
   m_Layer: 11
-  m_Name: BossBaseBullet
+  m_Name: MonBaseBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

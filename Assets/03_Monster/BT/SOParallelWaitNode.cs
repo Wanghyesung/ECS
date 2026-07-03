@@ -19,14 +19,12 @@ public class SOParallelWaitNode : SOListNode
 
     private void OnEnable()
     {
-        m_arrDone = null;
+        if (m_arrDone == null || m_arrDone.Length != listNode.Count)
+            m_arrDone = new bool[listNode.Count];
     }
 
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (m_arrDone == null || m_arrDone.Length != listNode.Count)
-            m_arrDone = new bool[listNode.Count];
-
         bool bAllDone = true;
         for (int i = 0; i < listNode.Count; ++i)
         {
@@ -57,7 +55,9 @@ public class SOParallelWaitNode : SOListNode
 
     private void Reset()
     {
-        if (m_arrDone != null)
-            System.Array.Clear(m_arrDone, 0, m_arrDone.Length);
+        for(int i = 0; i<m_arrDone.Length; ++i)
+        {
+            m_arrDone[i] = false;
+        }
     }
 }
