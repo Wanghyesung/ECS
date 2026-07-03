@@ -30,9 +30,7 @@ public abstract class SOListNode : SONode
 
     //SO는 공유 메모리이기 때문에 리프 노드가 들고 있는 캐시(예: SOChargeNode)까지
     //몬스터 인스턴스마다 독립적이어야 한다 → 리스트의 자식은 전부 복제해서 사용
-    //같은 리스트 안에서 SOChargeNode 다음에 오는 IChargeConsumer는 자동으로 그 복제본과 연결됨
-    //SO는 공유 메모리이기 때문에 List의 현재 인덱스가 공유될 수 있다
-    //때문에 List형태의 노드는 복사하여 사용
+ 
     public void CloneChildren(List<SOListNode> _ListTracker)
     {
         for (int i = 0; i < listNode.Count; i++)
@@ -55,6 +53,7 @@ public class BlackBoard
 {
     [Header("Component")]
     public Monster Owner;
+    public Transform OwnerOffset;
     public Transform TargetTr;
 
     [Header("EntityInfo")]

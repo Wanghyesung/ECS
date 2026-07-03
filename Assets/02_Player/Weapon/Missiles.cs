@@ -53,11 +53,12 @@ public class Missiles : Bullet
         Vector3 vToTarget = vTargetPos - transform.position;
         float fDist = vToTarget.magnitude;
 
-        
-        if (fDist < 1.0f)
+        // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
+        // (고정 임계값만 쓰면 스텝이 임계값보다 커지는 순간 목표를 터널링해서 영원히 도착 판정이 안 남)
+        float fMoveDist = m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
+        if (fDist <= Mathf.Max(fMoveDist, 1.0f))
         {
             m_refPoolObj.SetAliveTime(0.0f);
-            Debug.Log("걸림");
             return;
         }
 

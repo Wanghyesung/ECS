@@ -15,11 +15,12 @@ public class SOLookAtNode : SONode
         if (_refBB.TargetTr == null)
             return eNodeState.Failure;
 
-        Transform refOwnerTr = _refBB.Owner.transform;
+        Transform refOwnerTr =  _refBB.OwnerOffset == null ? _refBB.Owner.transform : _refBB.OwnerOffset;
         Vector3 vDir = _refBB.TargetTr.position - refOwnerTr.position;
 
         Quaternion qTargetRot = Quaternion.LookRotation(vDir.normalized);
-        refOwnerTr.rotation = Quaternion.RotateTowards(refOwnerTr.rotation, qTargetRot, m_fRotateSpeed * Time.deltaTime);
+        _refBB.Owner.transform.rotation 
+            = Quaternion.RotateTowards(refOwnerTr.rotation, qTargetRot, m_fRotateSpeed * Time.deltaTime);
 
         return eNodeState.Success;
     }
