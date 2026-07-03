@@ -23,10 +23,19 @@ public class Charge : MonoBehaviour
     private float m_fCurTime = 0.0f;
 
     private bool m_bCompleted = false;
+
+    //차지가 끝ㄴ나면 소환할 오브젝트를 지정해주기 위해서
+    private SpawnInfo m_refSpawnInfo = null;
     private void Awake()
     {
         if(m_refParticleSystem == null)
             m_refParticleSystem = GetComponent<ParticleSystem>();
+    }
+
+    public SpawnInfo SpawnInfo
+    {
+        get => m_refSpawnInfo;
+        set => m_refSpawnInfo = value;
     }
     public void StartCharge(float _fDuration)
     {

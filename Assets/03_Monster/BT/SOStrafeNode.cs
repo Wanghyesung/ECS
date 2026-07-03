@@ -25,7 +25,7 @@ public class SOStrafeNode : SONode
         _refBB.StrafeTimer -= Time.deltaTime;
         _refBB.Owner.transform.position += _refBB.StrafeDir * _refBB.ObjInfo.Speed * Time.deltaTime;
 
-        return eNodeState.Running;
+        return eNodeState.Success;
     }
 
     private void UpdateDir(BlackBoard _refBB)

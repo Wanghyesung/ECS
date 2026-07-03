@@ -21,7 +21,11 @@ public class SOChargeNode : SONode
         {
             refParticleSystem.gameObject.SetActive(true);
             refParticleSystem.gameObject.transform.position = refSpawnInfo.SpawnParticleTransform.position;
+
+            //현재 차지 오브젝트 캐싱
             refCharge.StartCharge(refSpawnInfo.SpawnWaitTime);
+            refCharge.SpawnInfo = refSpawnInfo; //공격할 무기 캐싱
+            _refBB.CurrentCharge = refCharge;
 
             _refBB.Owner.StartStateEffect(eStatusEffect.Wait, refSpawnInfo.SpawnWaitTime);
         }

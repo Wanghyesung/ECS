@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 968bffab903ed9f4a979702147e175a1, type: 3}
-  m_Name: SO_LookAtTargetNode
+  m_Script: {fileID: 11500000, guid: d815742291ec3c14a8040a0340ea1213, type: 3}
+  m_Name: SO_SelBossAttackMove
   m_EditorClassIdentifier: 
-  m_fRotateSpeed: 20
-  m_fAngleThreshold: 2
+  listNode:
+  - {fileID: 11400000, guid: 5b693beefcdee2e44ab32900b6a9a5ec, type: 2}

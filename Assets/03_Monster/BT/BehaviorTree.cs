@@ -28,6 +28,9 @@ public abstract class SOListNode : SONode
 {
     [SerializeField] protected List<SONode> listNode = new List<SONode>();
 
+    //SO는 공유 메모리이기 때문에 리프 노드가 들고 있는 캐시(예: SOChargeNode)까지
+    //몬스터 인스턴스마다 독립적이어야 한다 → 리스트의 자식은 전부 복제해서 사용
+    //같은 리스트 안에서 SOChargeNode 다음에 오는 IChargeConsumer는 자동으로 그 복제본과 연결됨
     //SO는 공유 메모리이기 때문에 List의 현재 인덱스가 공유될 수 있다
     //때문에 List형태의 노드는 복사하여 사용
     public void CloneChildren(List<SOListNode> _ListTracker)
@@ -40,6 +43,7 @@ public abstract class SOListNode : SONode
                 _ListTracker.Add(clone);
                 listNode[i] = clone;
                 clone.CloneChildren(_ListTracker);
+
             }
         }
     }
@@ -65,6 +69,7 @@ public class BlackBoard
 
     [Header("Attack")]
     public SpawnInfo CurrentAttackSpawn;
+    public Charge CurrentCharge;
 
     //이동 타이머
     [Header("Strafe")]
@@ -85,28 +90,35 @@ public class BehaviorTree : MonoBehaviour
     [SerializeField] private Monster m_refOwner;
 
     private bool m_bRunning = true;
-    private readonly List<SOListNode> m_listClonedNodes = new List<SOListNode>();
+    private readonly List<SONode> m_listClonedNodes = new List<SONode>();
 
-    public void Awake()
+    public abstract class SOListNode : SONode
     {
-        //리스트 형태의 노드들은 현재 인덱스를 고유하게 가져야하기 때문에 깊은 복사를 진행
-        if (m_refOwner == null)
-            m_refOwner = GetComponent<Monster>();
+        [SerializeField] protected List<SONode> listNode = new List<SONode>();
 
-        if (m_refRootNode is SOListNode rootList)
+        //SO는 공유 메모리이기 때문에 List의 현재 인덱스가 공유될 수 있다
+        //때문에 List형태의 노드는 복사하여 사용
+        public void CloneChildren(List<SOListNode> _ListTracker)
         {
-            m_refRootNode = Instantiate(rootList);
-            SOListNode clonedRoot = (SOListNode)m_refRootNode;
-            m_listClonedNodes.Add(clonedRoot);
-            clonedRoot.CloneChildren(m_listClonedNodes);
+            for (int i = 0; i < listNode.Count; i++)
+            {
+                if (listNode[i] is SOListNode listChild)
+                {
+                    SOListNode clone = Instantiate(listChild);
+                    _ListTracker.Add(clone);
+                    listNode[i] = clone;
+                    clone.CloneChildren(_ListTracker);
+                }
+            }
         }
     }
 
+
     private void OnDestroy()
     {
-        foreach (SOListNode node in m_listClonedNodes)
+        foreach (SONode node in m_listClonedNodes)
         {
-            if (node != null) 
+            if (node != null)
                 Destroy(node);
         }
         m_listClonedNodes.Clear();

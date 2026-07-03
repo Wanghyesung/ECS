@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: SO_SeqBaseMove
   m_EditorClassIdentifier: 
   listNode:
-  - {fileID: 11400000, guid: 8bce22a0c457e89419d0faf4015d63a1, type: 2}
   - {fileID: 11400000, guid: ab5f3bb24bdf1cc44a6f84c28d050a9e, type: 2}
   - {fileID: 11400000, guid: 9561d547beba6324f8ee203e5047d920, type: 2}

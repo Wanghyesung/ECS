@@ -10,7 +10,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_RandomSelectNode", menuName = "Game/Monster/RandomSelectNode")]
 public class SORandomSelectNode : SOListNode
 {
-   
+
     [SerializeField] private float m_fMinDuration = 1.0f;
     [SerializeField] private float m_fMaxDuration = 3.0f;
 
@@ -32,6 +32,6 @@ public class SORandomSelectNode : SOListNode
         if (eState == eNodeState.Failure)
             m_fTimer = 0f;
 
-        return eNodeState.Running;
+        return eState;
     }
 }

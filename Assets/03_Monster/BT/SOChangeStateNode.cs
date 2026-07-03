@@ -15,10 +15,6 @@ public class SOChangeStateNode : SONode
     [SerializeField] private eEntityState m_eChangeState = eEntityState.Idle;
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if(m_eChangeState == eEntityState.Attack)
-        {
-            int a = 10;
-        }
         _refBB.Owner.ChangeState(m_eChangeState);
         return eNodeState.Success;
     }

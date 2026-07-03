@@ -14,9 +14,12 @@ public class SOOrbitNode : SONode
 
     public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (_refBB.TargetTr == null)
+        if (_refBB.ObjInfo.State != eEntityState.Idle)
             return eNodeState.Failure;
 
+        if (_refBB.TargetTr == null)
+            return eNodeState.Failure;
+        
         Transform refOwnerTr = _refBB.Owner.transform;
         Vector3 vTargetPos   = _refBB.TargetTr.position;
 
@@ -36,6 +39,6 @@ public class SOOrbitNode : SONode
 
         refOwnerTr.position = vNewPos;
 
-        return eNodeState.Running;
+        return eNodeState.Success;
     }
 }
