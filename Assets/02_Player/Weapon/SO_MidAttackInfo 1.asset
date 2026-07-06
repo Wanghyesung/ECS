@@ -14,18 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: 
   WeaponType: 1
-  PoolType: 3
+  PoolPrefab: {fileID: 6256924035152576670, guid: fba1f25a91a4948488941097bed386f8, type: 3}
   Damage: 20
   AttackPower: 0
   Cooldown: 0.1
   HitCount: 1
   Speed: 180
+  SpeedOffset: 40
   AliveTime: 2
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
   BaseRotationSpeed: 90
-  HomingRaius: 1000
+  MaxRotationSpeed: 180
+  RotationAccelRate: 0
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

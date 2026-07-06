@@ -1,95 +1,104 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PoolObject;
+using UnityEngine.Events;
 
 /*///////////////////////////////////////////
                 Missiles
-��� : ���͸� �ڵ����� �߰����ִ� Ŭ����
+기능 : 지정된 위치로 회전하면서 목적지로 이동 후 공격
  *///////////////////////////////////////////
 
 public class Missiles : Bullet
 {
-    private GameObject m_refTarget; //Monster
-
-    private Collider[] m_arrNearCollider = new Collider[20];
-
-    private Vector3 m_vTargetPosition;
-    private float m_fTargetLength;
+    private float m_fElapsedTime;
+    [SerializeField] private PoolObject m_refExplodeObj;
+    [SerializeField] private bool m_bTraceTarget = false;
 
     protected override void Awake()
     {
         base.Awake();
     }
- 
 
-    protected override void Update()
-    {
-        Vector3 vToTarget = m_vTargetPosition - transform.position;
-        float fDist = vToTarget.magnitude;
-
-        if (fDist > 0.1f)
-        {
-            Vector3 vDir = vToTarget / fDist; // ����ȭ
-           
-            // ���� �� ���� ��� 
-            float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
-            float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
-
-            float fAccRoateSpeed = (m_fTargetLength / fDist) * m_refAttackInfo.BaseRotationSpeed * 0.5f;
-            float fRotateSpeed = fAccRoateSpeed + m_refAttackInfo.BaseRotationSpeed;
-
-            float fStep = fRotateSpeed * Time.deltaTime;
-            float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
-
-            Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
-            transform.rotation = Quaternion.LookRotation(vNewForward);
-        }
-    }
     protected override void FixedUpdate()
     {
+        UpdateDirMissile();
         base.FixedUpdate();
     }
-    
-    protected override void SetOption(Vector3 _vDir)
-    {
-        FindNearestTarget();
 
-        if (m_refTarget == null)
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        m_refPoolObj.OnPush += SpawnExplosion;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        m_refPoolObj.OnPush -= SpawnExplosion;
+    }
+
+    private void UpdateDirMissile()
+    {
+        if (m_refAttackInfo.TargetTrasnform == null)
             return;
 
-        m_vTargetPosition = m_refTarget.transform.position;
+        m_fElapsedTime += Time.fixedDeltaTime;
+        Vector3 vTargetPos = Vector3.zero;
+   
+        if (m_bTraceTarget == true)
+            vTargetPos = m_refAttackInfo.TargetTrasnform.position;
+        else
+            vTargetPos = m_refAttackInfo.TargetPos;
 
-        m_fTargetLength = (m_vTargetPosition - transform.position).magnitude;
+        Vector3 vToTarget = vTargetPos - transform.position;
+        float fDist = vToTarget.magnitude;
 
+        // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
+        // (고정 임계값만 쓰면 스텝이 임계값보다 커지는 순간 목표를 터널링해서 영원히 도착 판정이 안 남)
+        float fMoveDist = m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
+        if (fDist <= Mathf.Max(fMoveDist, 1.0f))
+        {
+            m_refPoolObj.SetAliveTime(0.0f);
+            return;
+        }
+
+        Vector3 vDir = vToTarget / fDist;
+
+        float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
+        float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
+
+        // 시간 기반 가속 + 거리 기반 가속 합산, MaxRotationSpeed로 상한
+        float fTimeAccel = m_refAttackInfo.RotateSpeedRate * m_fElapsedTime;
+        float fBaseSpeed = Mathf.Min(m_refAttackInfo.RotationSpeed + fTimeAccel, m_refAttackInfo.MaxRotationSpeed);
+        float fDistAccel = /*(fTargetLength / fDist) * */fBaseSpeed * 0.5f;
+        float fRotateSpeed = fBaseSpeed + fDistAccel;
+
+        float fStep = fRotateSpeed * Time.fixedDeltaTime;
+        float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
+
+        Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
+        m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
     }
+
 
     protected override void AttackMonster(Collider other)
     {
         base.AttackMonster(other);
     }
 
-    private void FindNearestTarget()
+    public override void SetAttack(AttackInfo _refAttackInfo)
     {
-        Physics.OverlapSphereNonAlloc(transform.position, m_refAttackInfo.HomingRaius, m_arrNearCollider, m_refAttackInfo.HitLayers);
+       base.SetAttack(_refAttackInfo);
 
-        GameObject refTarget = null;
-        float fBestDist = float.MaxValue;
-        Vector3 vPos = transform.position;
-        foreach (var refMon in m_arrNearCollider)
-        {
-            if (refMon == null)
-                continue;
-
-            float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
-            if (fDist < fBestDist)
-            {
-                fBestDist = fDist;
-                refTarget = refMon.gameObject;
-            }
-        }
-
-        m_refTarget = refTarget;
+        m_fElapsedTime = 0f;
     }
 
+    private void SpawnExplosion()
+    {
+        if (m_refExplodeObj != null)
+        {
+            GameObject refExObject = ObjectPool.m_Instance.GetObject(m_refExplodeObj);
+            refExObject.transform.position = transform.position;
+        }
+    }
 }

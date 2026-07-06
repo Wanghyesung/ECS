@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_BossMissileInfo
+  m_EditorClassIdentifier: 
+  Description: "\uCC98\uC74C \uC9C0\uC815\uB41C \uD50C\uB808\uC774\uC5B4 \uC704\uCE58\uB85C
+    \uACF5\uACA9 \uD6C4 \uD3ED\uBC1C"
+  WeaponType: 4
+  PoolPrefab: {fileID: 7100391378737244450, guid: f2bca78265770ce4d99d5e2c197b8597, type: 3}
+  Damage: 2
+  AttackPower: 1
+  Cooldown: 3
+  HitCount: 1
+  Speed: 100
+  SpeedOffset: 15
+  AliveTime: 6
+  KnockbackForce: 3
+  KnockbackDuration: 0.2
+  StunDuration: 0
+  BaseRotationSpeed: 20
+  MaxRotationSpeed: 360
+  RotationAccelRate: 30
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  HitSound: {fileID: 0}

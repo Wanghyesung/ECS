@@ -4,14 +4,22 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 Sequence
-±â´É : ¿¬°áµÈ ¾×¼ÇÀ» ÇÏ³ª¾¿ ¼ø¼­´ë·Î ½ÇÇà, ¸¸¾à ÇÏ³ª¶óµµ ½ÇÆĞÇÏ¸é ½ÇÆĞ·Î °£ÁÖ
+ê¸°ëŠ¥ : ì§€ì •ëœ ë…¸ë“œë¥¼ ìˆœì°¨ì ìœ¼ë¡œ ì‹¤í–‰
+       ì§€ì •ëœ ë…¸ë“œë“¤ì´ í•˜ë‚˜ì˜ í–‰ë™ìœ¼ë¡œ ëª¨ë‘ ì„±ê³µí•´ì•¼ì§€ ì„±ê³µ
+       í•˜ë‚˜ë¼ë„ ì‹¤íŒ¨í•˜ë©´ ì‹¤íŒ¨ë¡œ ì²˜ë¦¬
+        
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_SequenceNode", menuName = "Game/Monster/SequenceNode")]
 public class SOSequenceNode : SOListNode
 {
-
     private int iCurrentIdx = 0;
+
+    private void OnEnable()
+    {
+        iCurrentIdx = 0;
+    }
+
     public override eNodeState Execute(BlackBoard _refBB)
     {
         for (int i = iCurrentIdx; i < listNode.Count; ++i)
@@ -31,6 +39,7 @@ public class SOSequenceNode : SOListNode
             }
         }
 
+        iCurrentIdx = 0;
         return eNodeState.Success;
     }
 

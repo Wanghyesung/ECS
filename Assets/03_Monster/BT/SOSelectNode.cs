@@ -5,6 +5,10 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 SelectNode
+ê¸°ëŠ¥ : ì§€ì •ëœ ë…¸ë“œë¥¼ ìˆœì°¨ì ìœ¼ë¡œ ì‹¤í–‰
+       Successê°€ëŠ¥í•œì§€ ê²€ì‚¬
+       Successë¥¼ ë°˜í™˜í•œ ìì‹ì€ ë°”ë¡œ ì¢…ë£Œ.
+       
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_SelectNode", menuName = "Game/Monster/SelectNode")]
@@ -12,6 +16,12 @@ using UnityEngine;
 public class SOSelectNode : SOListNode
 {
     private int iCurrentIdx = 0;
+
+    private void OnEnable()
+    {
+        iCurrentIdx = 0;
+    }
+
     public override eNodeState Execute(BlackBoard _refBB)
     {
         for (int i = iCurrentIdx; i < listNode.Count; ++i)
@@ -25,7 +35,7 @@ public class SOSelectNode : SOListNode
             }
 
 
-            //¸¸¾à ½ÃµµÁßÀÌ¶ó¸é ÇöÁ¦ ±¸°£ ±â¾ï
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             else if (eState == eNodeState.Running)
             {
                 iCurrentIdx = i;
@@ -33,6 +43,7 @@ public class SOSelectNode : SOListNode
             }
         }
 
+        iCurrentIdx = 0;
         return eNodeState.Failure;
     }
 }
