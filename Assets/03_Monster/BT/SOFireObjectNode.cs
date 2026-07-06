@@ -18,7 +18,6 @@ public class SOFireObjectNode : SONode
         if (refSpawnInfo == null || _refBB.TargetTr == null)
             return eNodeState.Failure;
 
-
         int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletPrefab);
         int iSpawnCount = refSpawnInfo.SpawnCount;
 

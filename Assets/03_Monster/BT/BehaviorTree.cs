@@ -91,28 +91,6 @@ public class BehaviorTree : MonoBehaviour
     private bool m_bRunning = true;
     private readonly List<SONode> m_listClonedNodes = new List<SONode>();
 
-    public abstract class SOListNode : SONode
-    {
-        [SerializeField] protected List<SONode> listNode = new List<SONode>();
-
-        //SO는 공유 메모리이기 때문에 List의 현재 인덱스가 공유될 수 있다
-        //때문에 List형태의 노드는 복사하여 사용
-        public void CloneChildren(List<SOListNode> _ListTracker)
-        {
-            for (int i = 0; i < listNode.Count; i++)
-            {
-                if (listNode[i] is SOListNode listChild)
-                {
-                    SOListNode clone = Instantiate(listChild);
-                    _ListTracker.Add(clone);
-                    listNode[i] = clone;
-                    clone.CloneChildren(_ListTracker);
-                }
-            }
-        }
-    }
-
-
     private void OnDestroy()
     {
         foreach (SONode node in m_listClonedNodes)
@@ -122,7 +100,27 @@ public class BehaviorTree : MonoBehaviour
         }
         m_listClonedNodes.Clear();
     }
-     
+
+    private void Awake()
+    {
+        if (m_refOwner == null)
+            m_refOwner = GetComponent<Monster>();
+
+        // SO는 공유 메모리이므로, 인스턴스별 상태(iCurrentIdx, m_fTimer 등)를 갖는
+        // SOListNode 트리는 몬스터마다 복제해서 사용해야 함
+        if (m_refRootNode is SOListNode listRoot)
+        {
+            SOListNode cloneRoot = Instantiate(listRoot);
+            m_listClonedNodes.Add(cloneRoot);
+
+            List<SOListNode> listChildTracker = new List<SOListNode>();
+            cloneRoot.CloneChildren(listChildTracker);
+            m_listClonedNodes.AddRange(listChildTracker);
+
+            m_refRootNode = cloneRoot;
+        }
+    }
+
     public bool StopBT() => m_bRunning = false;
     public bool StartBT() => m_bRunning = true;
 

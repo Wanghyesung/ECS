@@ -83,7 +83,7 @@ public class Monster : MonoBehaviour, IDamageable
 
         m_refTargetPlayer = player.gameObject;
         m_refBlackBoard.TargetTr = player.transform;
-
+        
         int iCount = m_listSpawn.Count;
         if (iCount > 0)
         {
