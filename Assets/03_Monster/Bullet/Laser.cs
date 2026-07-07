@@ -50,6 +50,7 @@ public class Laser : MonoBehaviour, IAttackObject
     public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;
+        m_refAttackInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         m_refTriggerObject?.SetTriggerMask(_refAttackInfo.HitLayers);
     }

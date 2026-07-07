@@ -1585,6 +1585,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_fMaxRollAngle: 45
   m_fRollSpeed: 5
+  m_fHitShakeDuration: 0.35
+  m_fHitShakeFrequency: 30
+  m_fHitRollKick: 6
+  m_fHitPitchKick: 4
 --- !u!1 &708874599
 GameObject:
   m_ObjectHideFlags: 0
@@ -36232,6 +36236,7 @@ MonoBehaviour:
   - {fileID: 1412695964}
   m_refAnimTable: {fileID: 0}
   m_refAim: {fileID: 86218945}
+  m_refVisualPlayer: {fileID: 703703997}
   m_refObjectInfo:
     State: 0
     CurrentHP: 0

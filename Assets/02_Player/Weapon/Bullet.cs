@@ -60,7 +60,8 @@ public class Bullet : MonoBehaviour, IAttackObject
         var iDamageable = other.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
-            //iDamageable.TakeDamage(1);
+            m_refAttackInfo.HitPosition = transform.position;
+            iDamageable.TakeDamage(m_refAttackInfo);
         }
 
         if (m_refHitEffectObj != null)
@@ -74,10 +75,11 @@ public class Bullet : MonoBehaviour, IAttackObject
 
         ObjectPool.m_Instance.PushObject(gameObject);
     }
-
+    //방향따라 동적으로 방향 정해주기
     public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;
+        m_refAttackInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         m_refTriggerObject.SetTriggerMask(_refAttackInfo.HitLayers);
     }

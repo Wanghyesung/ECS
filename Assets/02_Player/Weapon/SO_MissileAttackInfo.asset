@@ -25,9 +25,9 @@ MonoBehaviour:
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
-  BaseRotationSpeed: 60
+  BaseRotationSpeed: 70
   MaxRotationSpeed: 720
-  RotationAccelRate: 30
+  RotationAccelRate: 40
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

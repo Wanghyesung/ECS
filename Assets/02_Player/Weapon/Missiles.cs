@@ -78,6 +78,7 @@ public class Missiles : Bullet
 
         Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
         m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
+        m_refAttackInfo.MoveDir = vNewForward;
     }
 
 

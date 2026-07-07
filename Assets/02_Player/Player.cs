@@ -6,7 +6,6 @@ using Unity.AI;
 using UnityEngine.AI;
 
 
-//상태이상 표현
 public enum eStatusEffect
 {
     Wait,
@@ -47,17 +46,19 @@ public class ObjectInfo
     public long CurrentHP;
     public float Speed;
 
-    public ushort CurrentEffects; //16비트로 전체 상태이상 표현
+    public ushort CurrentEffects; 
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
 
-public class Player : MonoBehaviour
+
+public class Player : MonoBehaviour, IDamageable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
-    private List<Weapon> m_listFireWeapon = null; //현재 공격할 무기
+    private List<Weapon> m_listFireWeapon = null; 
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
+    [SerializeField] private VisualPlayer m_refVisualPlayer = null;
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
 
@@ -67,16 +68,20 @@ public class Player : MonoBehaviour
     private Collider[] m_arrNearCollider = new Collider[20];
     [SerializeField] private float m_fAttackRaius;
 
+
+    private Coroutine m_CoNockback = null;
+    private Rigidbody m_refRigidbody = null;
     private void Awake()
     {
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
 
         m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
+        m_refRigidbody = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        //Todo : 나중에 InputManager에서 Fire키가 눌렸는지 받아오는 방식으로
+        
         if (Input.GetKey(KeyCode.Q))
             Fire();
         else
@@ -158,4 +163,40 @@ public class Player : MonoBehaviour
         m_refNearTargetTr = refTarget;
     }
 
+
+    public void TakeDamage(AttackInfo _refAttackInfo)
+    {
+        if (m_CoNockback != null)
+            StopCoroutine(m_CoNockback);
+
+        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
+    }
+
+    private IEnumerator CoNockback(AttackInfo _refAttackInfo)
+    {
+        Vector3 vDir = _refAttackInfo.MoveDir;
+        float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
+        float fPower = _refAttackInfo.AttackPower;
+        if (m_refVisualPlayer != null)
+            m_refVisualPlayer.PlayHitShake(vDir, fPower);
+
+
+        float fNockPower = _refAttackInfo.KnockbackForce;
+        float fElapsed = 0f;
+        while (fElapsed < fDuration)
+        {
+            float fRevElaps = 1.0f - (fElapsed / fDuration);
+            Vector3 vDelta = vDir * fNockPower * fRevElaps * Time.deltaTime;
+
+            m_refRigidbody.MovePosition(m_refRigidbody.position + vDelta);
+
+            fElapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        m_CoNockback = null;
+    }
+
+   
 }

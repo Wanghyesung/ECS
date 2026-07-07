@@ -108,12 +108,12 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void TakeDamage(AttackInfo _refAttackInfo)
     {
-        if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
-            return;
-
-        if(m_CoNockback !=null)
-            StopCoroutine(m_CoNockback);
-        m_CoNockback = StartCoroutine(KnockbackCoroutine(_refAttackInfo));
+        //if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
+        //    return;
+        //
+        //if(m_CoNockback !=null)
+        //    StopCoroutine(m_CoNockback);
+        //m_CoNockback = StartCoroutine(KnockbackCoroutine(_refAttackInfo));
     }
 
     private IEnumerator KnockbackCoroutine(AttackInfo _tAttackInfo)

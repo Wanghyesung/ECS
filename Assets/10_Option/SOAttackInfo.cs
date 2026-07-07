@@ -59,6 +59,9 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.MaxRotationSpeed = MaxRotationSpeed;
         refAttackInfo.RotateSpeedRate = RotationAccelRate;
 
+        refAttackInfo.KnockbackForce = KnockbackForce;
+        refAttackInfo.KnockbackDuration = KnockbackDuration;
+
         refAttackInfo.HitLayers = HitLayers;
         return refAttackInfo;
     }
@@ -89,11 +92,16 @@ public class AttackInfo
     public float RotateSpeedRate = 0f;
 
 
+    [Header("Knockback")]
+    public float KnockbackForce;
+    public float KnockbackDuration;
+
+
     [Header("Target")]
     public Vector3 TargetPos;
     public Transform TargetTrasnform = null;
     public Vector3 HitPosition;
-
+    public Vector3 MoveDir;
 
     [Header("Tem")]
     public LayerMask HitLayers = ~0;
