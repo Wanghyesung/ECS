@@ -183,8 +183,6 @@ public class Player : MonoBehaviour, IDamageable
             CameraManager.m_Instance.StartShakeCamera(_refAttackInfo.ShakeMagnitude, _refAttackInfo.ShakeDuration);
             m_refVisualPlayer.PlayHitShake(vDir, fPower);
         }
-            
-
 
         float fNockPower = _refAttackInfo.KnockbackForce;
         float fElapsed = 0f;

@@ -48,6 +48,8 @@ public class Laser : MonoBehaviour, IAttackObject
         }
     }
 
+
+
     public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;

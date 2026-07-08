@@ -108,35 +108,39 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void TakeDamage(AttackInfo _refAttackInfo)
     {
-        //if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
-        //    return;
-        //
-        //if(m_CoNockback !=null)
-        //    StopCoroutine(m_CoNockback);
-        //m_CoNockback = StartCoroutine(KnockbackCoroutine(_refAttackInfo));
+        if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
+            return;
+        
+        if(m_CoNockback !=null)
+            StopCoroutine(m_CoNockback);
+        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
     }
 
-    private IEnumerator KnockbackCoroutine(AttackInfo _tAttackInfo)
+    private IEnumerator CoNockback(AttackInfo _refAttackInfo)
     {
+        m_refBlackBoard.ObjInfo.State = eEntityState.Hit;
+
+        Vector3 vDir = _refAttackInfo.MoveDir;
+        float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
+        float fPower = _refAttackInfo.AttackPower;
+
+        float fNockPower = _refAttackInfo.KnockbackForce;
         float fElapsed = 0f;
-    
-        Vector3 vDir =  transform.position - _tAttackInfo.HitPosition;
-    
-        while (fElapsed <= 1.0f)
+
+        while (fElapsed < fDuration)
         {
-            float fRevElaps = 1.0f - fElapsed;
-            Vector3 vDelta = vDir.normalized * _tAttackInfo.AttackPower * fRevElaps * Time.deltaTime;
-    
+            float fRevElaps = 1.0f - (fElapsed / fDuration);
+            Vector3 vDelta = vDir * fNockPower * fRevElaps * Time.deltaTime;
+
             transform.position += vDelta;
-    
+
             fElapsed += Time.deltaTime;
-    
             yield return null;
         }
-    
+
         m_CoNockback = null;
     }
-   
+
 
     // _fTickInterval > 0 이면 DoT 효과 (독, 화상 등), 0이면 단순 상태 이상
     public void StartStateEffect(eStatusEffect _eState, float _fDuration,
