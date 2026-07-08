@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6fe99d83f9a6aa4799fbd73e93d52ab, type: 3}
   m_Name: SO_CheckNotHitNode
   m_EditorClassIdentifier: 
-  m_bSame: 0
+  m_bIsTrue: 0
   m_eCheckState: 4

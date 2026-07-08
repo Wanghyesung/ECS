@@ -14,7 +14,4 @@ public class SOMonsterInfo : ScriptableObject
     [Header("Stats")]
     public int MaxHP = 10;
     public float Speed = 3f;
-    public float AttackRange = 1.5f;
 }
-
-

@@ -22,7 +22,7 @@ MonoBehaviour:
   Speed: 40
   SpeedOffset: 10
   AliveTime: 7
-  KnockbackForce: 5
+  KnockbackForce: 10
   KnockbackDuration: 1
   StunDuration: 0
   ShakeMagnitude: 1.5

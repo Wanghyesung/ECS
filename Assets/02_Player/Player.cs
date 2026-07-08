@@ -58,7 +58,7 @@ public class Player : MonoBehaviour, IDamageable
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
-    [SerializeField] private VisualPlayer m_refVisualPlayer = null;
+    [SerializeField] private VisualObject m_refVisualPlayer = null;
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
 

@@ -111,6 +111,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
             return;
         
+        //TODO BossMonster과 차별점을 생각
         if(m_CoNockback !=null)
             StopCoroutine(m_CoNockback);
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
@@ -118,7 +119,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private IEnumerator CoNockback(AttackInfo _refAttackInfo)
     {
-        m_refBlackBoard.ObjInfo.State = eEntityState.Hit;
+        ChangeState(eEntityState.Hit);
 
         Vector3 vDir = _refAttackInfo.MoveDir;
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
@@ -138,6 +139,7 @@ public class Monster : MonoBehaviour, IDamageable
             yield return null;
         }
 
+        ChangeState(eEntityState.Idle);
         m_CoNockback = null;
     }
 

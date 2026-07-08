@@ -22,9 +22,11 @@ MonoBehaviour:
   Speed: 70
   SpeedOffset: 15
   AliveTime: 7
-  KnockbackForce: 3
-  KnockbackDuration: 0.2
+  KnockbackForce: 15
+  KnockbackDuration: 1
   StunDuration: 0
+  ShakeMagnitude: 0.3
+  ShakeDuration: 1
   BaseRotationSpeed: 40
   MaxRotationSpeed: 360
   RotationAccelRate: 10

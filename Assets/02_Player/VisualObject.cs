@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*///////////////////////////////////////////
-                VisualPlayer
-기능 : 플레이어의 물리적인 이동이 아닌, 플레이어의 보이는 연출을 담당
+                VisualObject
+기능 : 오브젝트의 물리적인 이동이 아닌, 오브젝트의 보이는 연출을 담당
 */
 
-
-public class VisualPlayer : MonoBehaviour
+public class VisualObject : MonoBehaviour
 {
     [SerializeField] private float m_fMaxRollAngle = 45f;
     [SerializeField] private float m_fRollSpeed = 5f;
