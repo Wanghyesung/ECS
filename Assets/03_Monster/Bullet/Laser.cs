@@ -16,6 +16,7 @@ public class Laser : MonoBehaviour, IAttackObject
     {
         m_refPoolObj = GetComponent<PoolObject>();
         m_refTriggerObject = GetComponent<TriggerObject>();
+
     }
 
     private void OnEnable()

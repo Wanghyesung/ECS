@@ -2,6 +2,7 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Camera m_refMainCamera;
     [SerializeField] private Transform m_refPlayer;
     [SerializeField] private Vector3 m_vOffset = new Vector3(0.0f, 5.0f, -10.0f);
+
+    [SerializeField] private Image m_refBloodScreen = null;
+    private Color m_tBloodColor = Color.white;
 
     private Vector3 m_vShakeOffset = Vector3.zero;
     private Coroutine m_CoShake = null;
@@ -23,6 +27,11 @@ public class CameraManager : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        m_tBloodColor = m_refBloodScreen.color;
     }
 
     private void LateUpdate()
@@ -47,10 +56,16 @@ public class CameraManager : MonoBehaviour
         float fElapsed = 0f;
         while (fElapsed < _fDuration)
         {
-            // 무작위로 파르르 떠는 좌표 계산 구두 설명:
             // Random.insideUnitSphere를 쓰면 사방으로 튀는 벡터를 줍니다.
             m_vShakeOffset = Random.insideUnitSphere * _fMagnitude;
 
+            if(m_refBloodScreen != null)
+            {
+                float fCurAlpha = Mathf.Lerp(1.0f, 0f, fElapsed / _fDuration);
+                m_tBloodColor.a = fCurAlpha;
+                m_refBloodScreen.color = m_tBloodColor;
+            }
+            
             fElapsed += Time.deltaTime;
             yield return null;
         }
