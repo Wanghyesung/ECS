@@ -15,6 +15,7 @@ public class SOAttackInfo : ScriptableObject
     [Header("Stats")]
     public eWeaponType WeaponType;
     public PoolObject PoolPrefab;
+
     public int Damage = 10;
     public int AttackPower = 0;
     public float Cooldown = 0.5f;
@@ -28,6 +29,10 @@ public class SOAttackInfo : ScriptableObject
     public float KnockbackForce = 3f;
     public float KnockbackDuration = 0.2f;
     public float StunDuration = 0f;
+
+    [Header("Camera Shake")]
+    public float ShakeMagnitude = 0.3f;
+    public float ShakeDuration = 0.4f;
 
     [Header("Homing")]
     public float BaseRotationSpeed = 90f;
@@ -61,6 +66,9 @@ public class SOAttackInfo : ScriptableObject
 
         refAttackInfo.KnockbackForce = KnockbackForce;
         refAttackInfo.KnockbackDuration = KnockbackDuration;
+
+        refAttackInfo.ShakeMagnitude = ShakeMagnitude;
+        refAttackInfo.ShakeDuration = ShakeDuration;
 
         refAttackInfo.HitLayers = HitLayers;
         return refAttackInfo;
@@ -96,6 +104,9 @@ public class AttackInfo
     public float KnockbackForce;
     public float KnockbackDuration;
 
+    [Header("Camera Shake")]
+    public float ShakeMagnitude = 0.3f;
+    public float ShakeDuration = 1.0f;
 
     [Header("Target")]
     public Vector3 TargetPos;

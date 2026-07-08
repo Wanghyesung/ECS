@@ -25,6 +25,8 @@ MonoBehaviour:
   KnockbackForce: 5
   KnockbackDuration: 1
   StunDuration: 0
+  ShakeMagnitude: 1.5
+  ShakeDuration: 0.1
   BaseRotationSpeed: 0
   MaxRotationSpeed: 0
   RotationAccelRate: 0

@@ -177,8 +177,13 @@ public class Player : MonoBehaviour, IDamageable
         Vector3 vDir = _refAttackInfo.MoveDir;
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
         float fPower = _refAttackInfo.AttackPower;
+
         if (m_refVisualPlayer != null)
+        {
+            CameraManager.m_Instance.StartShakeCamera(_refAttackInfo.ShakeMagnitude, _refAttackInfo.ShakeDuration);
             m_refVisualPlayer.PlayHitShake(vDir, fPower);
+        }
+            
 
 
         float fNockPower = _refAttackInfo.KnockbackForce;
