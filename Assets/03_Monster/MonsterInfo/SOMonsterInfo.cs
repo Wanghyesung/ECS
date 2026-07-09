@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SO_MonsterInfo", menuName = "Game/Monster Info")]
-public class SOMonsterInfo : ScriptableObject
+[CreateAssetMenu(fileName = "SO_ObjectInfo", menuName = "Game/ObjectInfo")]
+public class SOObjectInfo : ScriptableObject
 {
     [Header("Identity")]
-    public string MonsterName = "New Monster";
+    public string ObjectName = "New Monster";
 
     [TextArea]
     public string Description;
     
     [Header("Stats")]
     public int MaxHP = 10;
-    public float Speed = 3f;
+    public float MaxSpeed = 3f;
 }

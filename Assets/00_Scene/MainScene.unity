@@ -354,8 +354,9 @@ GameObject:
   - component: {fileID: 93696235}
   - component: {fileID: 93696237}
   - component: {fileID: 93696236}
+  - component: {fileID: 93696238}
   m_Layer: 5
-  m_Name: HealthImage
+  m_Name: PlayerHP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -418,6 +419,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 93696234}
   m_CullTransparentMesh: 1
+--- !u!114 &93696238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93696234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fCoSecond: 0.5
+  m_refImage: {fileID: 93696236}
 --- !u!1 &107442333
 GameObject:
   m_ObjectHideFlags: 0
@@ -613,7 +628,7 @@ GameObject:
   - component: {fileID: 258074449}
   - component: {fileID: 258074448}
   m_Layer: 5
-  m_Name: anjffhgkwl
+  m_Name: 'EngineHp '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1670,7 +1685,7 @@ Transform:
   m_GameObject: {fileID: 713414030}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.35154134, y: 0.10534985, z: -0.11260114}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1859,6 +1874,7 @@ Transform:
   - {fileID: 1771154732}
   - {fileID: 1172552258}
   - {fileID: 1886168159}
+  - {fileID: 1689528489}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &937248285
@@ -2634,6 +2650,7 @@ GameObject:
   - component: {fileID: 1468893268}
   - component: {fileID: 1468893270}
   - component: {fileID: 1468893269}
+  - component: {fileID: 1468893271}
   m_Layer: 5
   m_Name: TargetHealth
   m_TagString: Untagged
@@ -2698,6 +2715,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468893267}
   m_CullTransparentMesh: 1
+--- !u!114 &1468893271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468893267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fCoSecond: 0.5
+  m_refImage: {fileID: 1468893269}
 --- !u!1 &1503696906
 GameObject:
   m_ObjectHideFlags: 0
@@ -3086,6 +3117,53 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1689528488
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1689528489}
+  - component: {fileID: 1689528490}
+  m_Layer: 0
+  m_Name: MonsterHPManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1689528489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689528488}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 936170815}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1689528490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689528488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35409577c7cc1524280065928495c600, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refRoot: {fileID: 1468893267}
+  m_refSlider: {fileID: 1468893271}
+  m_fHideDelay: 2
 --- !u!1001 &1717914307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36465,6 +36543,8 @@ MonoBehaviour:
       TickInterval: 0
       NextTickTime: 0
       TickDamage: 0
+  m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
+  m_refSliderImage: {fileID: 93696238}
   m_tAttackLayer:
     serializedVersion: 2
     m_Bits: 256

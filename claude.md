@@ -1,5 +1,5 @@
 # Project
-- Unity 6 URP 기반 3D 우주선 슈팅 게임
+- Unity 2022.3.62f (URP) 기반 3D 우주선 슈팅 게임
 - 특징: 2D 종스크롤/횡스크롤 슈팅 게임의 직관적인 조작감과 규칙을 3D 그래픽 환경으로 구현 
 
 # Architecture & Systems

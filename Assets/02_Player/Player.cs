@@ -61,7 +61,9 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private VisualObject m_refVisualPlayer = null;
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
+    [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
+    [SerializeField] private SliderImage m_refSliderImage = null;
 
     [SerializeField] LayerMask m_tAttackLayer;
     private Transform m_refNearTargetTr = null; 
@@ -77,6 +79,14 @@ public class Player : MonoBehaviour, IDamageable
 
         m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
         m_refRigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+
+        m_refSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
+
     }
 
     private void Update()
@@ -169,6 +179,11 @@ public class Player : MonoBehaviour, IDamageable
         if (m_CoNockback != null)
             StopCoroutine(m_CoNockback);
 
+
+        m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
+        m_refSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP);
+
+
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
     }
 
@@ -179,6 +194,7 @@ public class Player : MonoBehaviour, IDamageable
         float fPower = _refAttackInfo.AttackPower;
 
         float fMagnitude = Mathf.Clamp(fPower / 50.0f, 0.0f, 2.0f);
+        
 
         if (m_refVisualPlayer != null)
         {

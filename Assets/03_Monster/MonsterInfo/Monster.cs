@@ -43,7 +43,7 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
     [SerializeField] private GameObject m_refTargetPlayer;
     [SerializeField] private VisualObject m_refVisualObj = null;
 
-    [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
+    [SerializeField] private SOObjectInfo m_SOMonsterInfo;
 
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
@@ -74,7 +74,7 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
 
         m_refBlackBoard.Owner = this;
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
-        m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.Speed;
+        m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
     }
 
@@ -114,11 +114,14 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
     {
         if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
             return;
-        
+
+        m_refBlackBoard.ObjInfo.CurrentHP -= _refAttackInfo.Damage;
+        MonsterHPBar.m_Instance?.ShowHp(this, m_refBlackBoard.ObjInfo.CurrentHP, m_SOMonsterInfo.MaxHP);
+
         //TODO BossMonster과 차별점을 생각
         if(m_CoNockback !=null)
             StopCoroutine(m_CoNockback);
-       
+
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
     }
 
