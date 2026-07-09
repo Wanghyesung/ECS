@@ -178,9 +178,11 @@ public class Player : MonoBehaviour, IDamageable
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
         float fPower = _refAttackInfo.AttackPower;
 
+        float fMagnitude = Mathf.Clamp(fPower / 50.0f, 0.0f, 2.0f);
+
         if (m_refVisualPlayer != null)
         {
-            CameraManager.m_Instance.StartShakeCamera(_refAttackInfo.ShakeMagnitude, _refAttackInfo.ShakeDuration);
+            CameraManager.m_Instance.StartShakeCamera(fMagnitude);
             m_refVisualPlayer.PlayHitShake(vDir, fPower);
         }
 

@@ -43,7 +43,7 @@ public class CameraManager : MonoBehaviour
     }
 
     //진폭, 흔들리는 속도
-    public void StartShakeCamera(float _fMagnitude, float _fDuration)
+    public void StartShakeCamera(float _fMagnitude, float _fDuration = 0.2f)
     {
         if(m_CoShake != null)
             StopCoroutine(m_CoShake);
