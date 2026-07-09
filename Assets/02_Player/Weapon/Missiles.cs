@@ -11,6 +11,7 @@ using UnityEngine.Events;
 public class Missiles : Bullet
 {
     private float m_fElapsedTime;
+    private float m_fTargetLength;
     [SerializeField] private PoolObject m_refExplodeObj;
     [SerializeField] private bool m_bTraceTarget = false;
 
@@ -54,9 +55,9 @@ public class Missiles : Bullet
         float fDist = vToTarget.magnitude;
 
         // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
-        // (고정 임계값만 쓰면 스텝이 임계값보다 커지는 순간 목표를 터널링해서 영원히 도착 판정이 안 남)
         float fMoveDist = m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
-        if (fDist <= Mathf.Max(fMoveDist, 1.0f))
+        float fArriveDist = Mathf.Max(fMoveDist, m_refAttackInfo.ProximityRadius);
+        if (fDist <= fArriveDist)
         {
             m_refPoolObj.SetAliveTime(0.0f);
             return;
@@ -70,7 +71,7 @@ public class Missiles : Bullet
         // 시간 기반 가속 + 거리 기반 가속 합산, MaxRotationSpeed로 상한
         float fTimeAccel = m_refAttackInfo.RotateSpeedRate * m_fElapsedTime;
         float fBaseSpeed = Mathf.Min(m_refAttackInfo.RotationSpeed + fTimeAccel, m_refAttackInfo.MaxRotationSpeed);
-        float fDistAccel = /*(fTargetLength / fDist) * */fBaseSpeed * 0.5f;
+        float fDistAccel = (m_fTargetLength / fDist) * fBaseSpeed * 0.5f;
         float fRotateSpeed = fBaseSpeed + fDistAccel;
 
         float fStep = fRotateSpeed * Time.fixedDeltaTime;
@@ -92,6 +93,11 @@ public class Missiles : Bullet
        base.SetAttack(_refAttackInfo);
 
         m_fElapsedTime = 0f;
+
+        Vector3 vTargetPos = (m_bTraceTarget == true && _refAttackInfo.TargetTrasnform != null)
+            ? _refAttackInfo.TargetTrasnform.position
+            : _refAttackInfo.TargetPos;
+        m_fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
     }
 
     private void SpawnExplosion()

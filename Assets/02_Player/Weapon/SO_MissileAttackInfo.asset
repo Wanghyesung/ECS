@@ -16,18 +16,21 @@ MonoBehaviour:
   WeaponType: 4
   PoolPrefab: {fileID: 4552152582649686416, guid: 462843f48a9bb4246bb3d06f2733a0ab, type: 3}
   Damage: 20
-  AttackPower: 0
+  AttackPower: 10
   Cooldown: 1.5
   HitCount: 1
   Speed: 100
   SpeedOffset: 20
   AliveTime: 5
-  KnockbackForce: 3
-  KnockbackDuration: 0.2
+  KnockbackForce: 12
+  KnockbackDuration: 0.5
   StunDuration: 0
+  ShakeMagnitude: 0
+  ShakeDuration: 0
   BaseRotationSpeed: 70
   MaxRotationSpeed: 720
   RotationAccelRate: 40
+  ProximityRadius: 1.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

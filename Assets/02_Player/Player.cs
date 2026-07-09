@@ -130,7 +130,7 @@ public class Player : MonoBehaviour, IDamageable
 
         for (int i = 0; i < m_listFireWeapon.Count; ++i)
             m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
-
+        
 
         m_listFireWeapon.Clear();
         m_refNearTargetTr = null;

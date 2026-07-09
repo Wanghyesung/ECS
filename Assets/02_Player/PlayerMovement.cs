@@ -6,7 +6,22 @@ using UnityEngine;
 using UnityEngine.AI;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
-public class PlayerMovement : MonoBehaviour
+
+
+
+//회전이 가능한 오브젝트의 회전방향 데이터
+public interface IRollable
+{
+    float RollDirX { get; }
+}
+
+
+/*///////////////////////////////////////////
+                PlayerMovement
+기능 : 플레이어의 실질적인 움직임을 담당하는 기능
+*////////////////////////////////////////////
+
+public class PlayerMovement : MonoBehaviour, IRollable
 {
 
     private Rigidbody m_refRigidbody = null;
@@ -20,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] private float m_fMoveSpeed = 5.0f;
     [SerializeField] private float m_fAngleSpeed = 12.0f;
+
+    public float RollDirX => m_vInput.x;
 
 
     private void Awake()

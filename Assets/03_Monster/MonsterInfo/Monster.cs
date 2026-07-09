@@ -37,11 +37,12 @@ public class SpawnInfo
 기능 : BT에 따라 몬스터 행동 조작, 공격 오브젝트 관리
  *///////////////////////////////////////////
 
-public class Monster : MonoBehaviour, IDamageable
-{
+public class Monster : MonoBehaviour, IDamageable , IRollable
+{ 
   
     [SerializeField] private GameObject m_refTargetPlayer;
-    
+    [SerializeField] private VisualObject m_refVisualObj = null;
+
     [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
 
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
@@ -53,6 +54,9 @@ public class Monster : MonoBehaviour, IDamageable
     //같은 웨폰이 여러개일 수 있기 때문에 List
     private Dictionary<eWeaponType, List<SpawnInfo>> m_hashSpawn = new Dictionary<eWeaponType, List<SpawnInfo>>();
     public Dictionary<eWeaponType, List<SpawnInfo>> HashSpawn => m_hashSpawn;
+
+    public float RollDirX => 0.0f;
+
 
     private Coroutine m_CoNockback = null;
     private WaitForSeconds m_refWaitHitTime;
@@ -114,6 +118,7 @@ public class Monster : MonoBehaviour, IDamageable
         //TODO BossMonster과 차별점을 생각
         if(m_CoNockback !=null)
             StopCoroutine(m_CoNockback);
+       
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
     }
 
@@ -121,10 +126,12 @@ public class Monster : MonoBehaviour, IDamageable
     {
         ChangeState(eEntityState.Hit);
 
-        Vector3 vDir = _refAttackInfo.MoveDir;
-        float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
-        float fPower = _refAttackInfo.AttackPower;
 
+        Vector3 vDir = _refAttackInfo.MoveDir;
+        float fPower = _refAttackInfo.AttackPower;
+        m_refVisualObj?.PlayHitShake(vDir, fPower);
+
+        float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
         float fNockPower = _refAttackInfo.KnockbackForce;
         float fElapsed = 0f;
 
@@ -132,6 +139,7 @@ public class Monster : MonoBehaviour, IDamageable
         {
             float fRevElaps = 1.0f - (fElapsed / fDuration);
             Vector3 vDelta = vDir * fNockPower * fRevElaps * Time.deltaTime;
+
 
             transform.position += vDelta;
 

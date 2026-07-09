@@ -38,7 +38,8 @@ public class SOAttackInfo : ScriptableObject
     public float BaseRotationSpeed = 90f;
     public float MaxRotationSpeed = 180f;
     public float RotationAccelRate = 0f;
-    
+    public float ProximityRadius = 1.5f;
+
 
     [Header("Critical / Misc")]
     [Range(0f, 1f)]
@@ -63,6 +64,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.RotationSpeed = BaseRotationSpeed;
         refAttackInfo.MaxRotationSpeed = MaxRotationSpeed;
         refAttackInfo.RotateSpeedRate = RotationAccelRate;
+        refAttackInfo.ProximityRadius = ProximityRadius;
 
         refAttackInfo.KnockbackForce = KnockbackForce;
         refAttackInfo.KnockbackDuration = KnockbackDuration;
@@ -98,6 +100,7 @@ public class AttackInfo
     public float RotationSpeed = 90f;
     public float MaxRotationSpeed = 180f;
     public float RotateSpeedRate = 0f;
+    public float ProximityRadius = 1.5f;
 
 
     [Header("Knockback")]

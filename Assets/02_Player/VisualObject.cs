@@ -5,10 +5,13 @@ using UnityEngine;
 /*///////////////////////////////////////////
                 VisualObject
 기능 : 오브젝트의 물리적인 이동이 아닌, 오브젝트의 보이는 연출을 담당
-*/
+*////////////////////////////////////////////
 
 public class VisualObject : MonoBehaviour
 {
+
+    private IRollable m_refRollProvider = null;
+
     [SerializeField] private float m_fMaxRollAngle = 45f;
     [SerializeField] private float m_fRollSpeed = 5f;
     private float m_fCurrentRoll;
@@ -23,9 +26,21 @@ public class VisualObject : MonoBehaviour
     private float m_fShakeRollKick;
     private float m_fShakePitchKick;
 
-    private void Update()
+
+    private void Awake()
     {
-        float fX = InputManager.m_Instance.InputInfo.MoveDir.x;
+        m_refRollProvider = GetComponentInParent<IRollable>();
+
+#if UNITY_EDITOR
+        if (m_refRollProvider == null)
+            Debug.Log("부모 오브젝트에서 IRollDirProvider를 찾지 못함");
+#endif
+    }
+
+    private void LateUpdate()
+    {
+        //만약 없다면 크래쉬나게
+        float fX = m_refRollProvider.RollDirX;
         float fTargetRoll = fX * m_fMaxRollAngle;
         
         m_fCurrentRoll = Mathf.Lerp(m_fCurrentRoll, fTargetRoll, m_fRollSpeed * Time.deltaTime);
