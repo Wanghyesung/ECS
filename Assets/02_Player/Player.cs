@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI;
 using UnityEngine.AI;
+using static Weapon;
 
 
 public enum eStatusEffect
@@ -70,9 +71,9 @@ public class Player : MonoBehaviour, IDamageable
     private Collider[] m_arrNearCollider = new Collider[20];
     [SerializeField] private float m_fAttackRaius;
 
-
     private Coroutine m_CoNockback = null;
     private Rigidbody m_refRigidbody = null;
+
     private void Awake()
     {
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
@@ -86,12 +87,10 @@ public class Player : MonoBehaviour, IDamageable
         m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
 
         m_refSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
-
     }
 
     private void Update()
     {
-        
         if (Input.GetKey(KeyCode.Q))
             Fire();
         else
@@ -123,6 +122,9 @@ public class Player : MonoBehaviour, IDamageable
         bool bFindNearTarget = false;
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
+            if (m_listWeapon[i].gameObject.activeSelf == false)
+                continue;
+
             if (m_listWeapon[i].CheckTime() == true)
             {
                 if (m_listWeapon[i].NeeadNearTarget == true)
@@ -140,11 +142,11 @@ public class Player : MonoBehaviour, IDamageable
 
         for (int i = 0; i < m_listFireWeapon.Count; ++i)
             m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
-        
 
         m_listFireWeapon.Clear();
         m_refNearTargetTr = null;
     }
+
     private void Cansle()
     {
        
@@ -157,6 +159,7 @@ public class Player : MonoBehaviour, IDamageable
         Transform refTarget = null;
         float fBestDist = float.MaxValue;
         Vector3 vPos = transform.position;
+
         foreach (var refMon in m_arrNearCollider)
         {
             if (refMon == null)
@@ -178,7 +181,6 @@ public class Player : MonoBehaviour, IDamageable
     {
         if (m_CoNockback != null)
             StopCoroutine(m_CoNockback);
-
 
         m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
         m_refSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP);
@@ -219,5 +221,24 @@ public class Player : MonoBehaviour, IDamageable
         m_CoNockback = null;
     }
 
-   
+    // FeatureSO.Apply()에서 무기 해금 기능(예: SOFeatureUnlockMissile)이 호출
+    // 씬에 미리 배치된 비활성 무기를 활성화하는 방식 (런타임 Instantiate 회피)
+    public void UnlockWeapon(eWeaponType _eType)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].gameObject.SetActive(true);
+        }
+    }
+
+    // FeatureSO.Apply()에서 공격속도 강화 기능(예: SOFeatureAttackSpeedUp)이 호출
+    public void ModifyWeaponCooldown(eWeaponType _eType, float _fMultiplier)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
+        }
+    }
 }

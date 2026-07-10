@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+
+/*///////////////////////////////////////////
+                 SliderImage
+
+기능 : UI의 Fill값을 조절하여 이미지를 표현하는 역할
+ *///////////////////////////////////////////
+
 public class SliderImage : MonoBehaviour
 {
     private float m_fMaxValue = 1.0f;

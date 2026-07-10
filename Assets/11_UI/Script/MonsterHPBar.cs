@@ -14,7 +14,7 @@ public class MonsterHPBar : MonoBehaviour
     [SerializeField] private GameObject m_refRoot;
     [SerializeField] private SliderImage m_refSlider;
     [SerializeField] private float m_fHideDelay = 2.0f;
-
+    
     private WaitForSeconds m_refWaitSecond = null; 
     private Monster m_refCurTarget = null;
     private Coroutine m_CoHide = null;

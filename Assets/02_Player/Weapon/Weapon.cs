@@ -28,6 +28,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private ParticleSystem m_refEffectObject;
 
     private float m_fFireTime = 0.2f;
+    private float m_fBaseCooldown = 0.2f;
     private float m_fLastFireTime = -Mathf.Infinity;
 
     private eWeaponType m_eWeapoonType = eWeaponType.None;
@@ -43,6 +44,7 @@ public class Weapon : MonoBehaviour
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fBaseCooldown = m_refAttackInfo.CoolDown;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
         m_fLastFireTime = Time.time;
 
@@ -128,6 +130,15 @@ public class Weapon : MonoBehaviour
     public bool CheckTime()
     {
         return (Time.time - m_fLastFireTime) > m_fFireTime;
+    }
+
+    // 기존 배율에 누적 곱하지 않고 매번 기본 쿨다운 기준으로 재계산 (Repeatable 기능 재적용 시 드리프트 방지)
+    public void SetCooldownMultiplier(float _fMultiplier)
+    {
+        float fClamped = Mathf.Max(_fMultiplier, 0.1f);
+
+        m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
+        m_fFireTime = m_refAttackInfo.CoolDown;
     }
 }
 
