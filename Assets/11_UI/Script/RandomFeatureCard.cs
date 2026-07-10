@@ -13,7 +13,7 @@ using UnityEngine.UI;
  *///////////////////////////////////////////
 
 
-public class RandomCard : MonoBehaviour
+public class RandomFeatureCard : MonoBehaviour
 {
     [SerializeField] private Image m_refTargetImage = null;
 

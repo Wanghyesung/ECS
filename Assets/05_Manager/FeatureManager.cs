@@ -5,7 +5,7 @@ using UnityEngine;
 /*///////////////////////////////////////////
                 FeatureManager
 기능 : 레벨업 등 특정 상황에서 플레이어에게 제시할 랜덤 기능(FeatureSO) 후보를 뽑고,
-      선택된 기능을 적용/추적하는 매니저.
+      선택된 기능을 적용/추적하는 매니저
       런타임 획득 상태(레벨)는 SO가 아닌 이 매니저의 배열이 전담 (SO 데이터 오염 방지)
       기능 목록은 고정이고 런타임 추가/삭제가 없어서 eFeatureID를 인덱스로 쓰는
       배열 접근 방식을 사용 (Dictionary의 해시/버킷 탐색 비용 회피)
@@ -40,7 +40,7 @@ public class FeatureManager : MonoBehaviour
     {
         int iCount = (int)eFeatureID.End;
         m_arrFeatureByID = new FeatureSO[iCount];
-        m_arrAcquiredLevel = new int[iCount];
+        m_arrAcquiredLevel = new int[iCount]; //해당 기능의 레벨이 현재 몇인지 체크하는 배열
 
         for (int i = 0; i < m_listAllFeatureSO.Count; ++i)
         {
