@@ -48,10 +48,10 @@ public class CameraManager : MonoBehaviour
         if(m_CoShake != null)
             StopCoroutine(m_CoShake);
 
-        m_CoShake = StartCoroutine(ShakeRoutine(_fMagnitude, _fDuration));
+        m_CoShake = StartCoroutine(COShakeRoutine(_fMagnitude, _fDuration));
     }
 
-    private IEnumerator ShakeRoutine(float _fMagnitude, float _fDuration)
+    private IEnumerator COShakeRoutine(float _fMagnitude, float _fDuration)
     {
         float fElapsed = 0f;
         while (fElapsed < _fDuration)

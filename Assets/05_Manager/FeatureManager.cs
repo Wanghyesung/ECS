@@ -14,16 +14,16 @@ public class FeatureManager : MonoBehaviour
 {
     public static FeatureManager m_Instance = null;
 
-    [SerializeField] private List<FeatureSO> m_listAllFeatureSO = new List<FeatureSO>();
+    [SerializeField] private List<SOFeature> m_listAllFeatureSO = new List<SOFeature>();
 
-    private FeatureSO[] m_arrFeatureByID;
+    private SOFeature[] m_arrFeatureByID;
     private int[] m_arrAcquiredLevel;
 
     // RequestFeatureChoices 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
-    private List<FeatureSO> m_listPoolBuffer = new List<FeatureSO>();
+    private List<SOFeature> m_listPoolBuffer = new List<SOFeature>();
 
-    public event Action<List<FeatureSO>> OnFeatureChoicesReady;
-    public event Action<FeatureSO, int> OnFeatureAcquired;
+    public event Action<List<SOFeature>> OnFeatureChoicesReady;
+    public event Action<SOFeature, int> OnFeatureAcquired;
 
     private void Awake()
     {
@@ -39,12 +39,12 @@ public class FeatureManager : MonoBehaviour
     private void BuildFeatureTable()
     {
         int iCount = (int)eFeatureID.End;
-        m_arrFeatureByID = new FeatureSO[iCount];
+        m_arrFeatureByID = new SOFeature[iCount];
         m_arrAcquiredLevel = new int[iCount]; //해당 기능의 레벨이 현재 몇인지 체크하는 배열
 
         for (int i = 0; i < m_listAllFeatureSO.Count; ++i)
         {
-            FeatureSO refFeature = m_listAllFeatureSO[i];
+            SOFeature refFeature = m_listAllFeatureSO[i];
             int iIndex = (int)refFeature.ID;
 
             if (iIndex <= (int)eFeatureID.None || iIndex >= iCount)
@@ -64,39 +64,29 @@ public class FeatureManager : MonoBehaviour
     }
 
     // _iCount : 이번에 보여줄 후보 개수 (상황에 따라 가변으로 호출부에서 결정)
-    public List<FeatureSO> RequestFeatureChoices(int _iCount)
+    public SOFeature RequestFeatureChoice()
     {
         m_listPoolBuffer.Clear();
 
         for (int i = 0; i < m_arrFeatureByID.Length; ++i)
         {
-            FeatureSO refFeature = m_arrFeatureByID[i];
+            SOFeature refFeature = m_arrFeatureByID[i];
             if (refFeature == null)
                 continue;
 
+            //한번만 나오는 카드고 이미 흭득했다면 무시
             if (refFeature.AcquireType == eAcquireType.OneTime && m_arrAcquiredLevel[i] > 0)
                 continue;
 
             m_listPoolBuffer.Add(refFeature);
         }
 
-        int iPickCount = Mathf.Min(_iCount, m_listPoolBuffer.Count);
 
-        // 결과 리스트는 호출부(UI)로 넘겨줘야 해서 매번 새로 생성.
-        // 레벨업처럼 드물게 발생하는 이벤트라 알록이 성능에 영향 없음 (매 프레임 호출 X)
-        List<FeatureSO> listResult = new List<FeatureSO>(iPickCount);
-        for (int i = 0; i < iPickCount; ++i)
-        {
-            FeatureSO refPicked = PickWeightedRandom(m_listPoolBuffer);
-            listResult.Add(refPicked);
-            m_listPoolBuffer.Remove(refPicked);
-        }
-
-        OnFeatureChoicesReady?.Invoke(listResult);
-        return listResult;
+        SOFeature refPicked = PickWeightedRandom(m_listPoolBuffer);
+        return refPicked;
     }
 
-    private FeatureSO PickWeightedRandom(List<FeatureSO> _listPool)
+    private SOFeature PickWeightedRandom(List<SOFeature> _listPool)
     {
         int iTotalWeight = 0;
         for (int i = 0; i < _listPool.Count; ++i)
@@ -115,7 +105,7 @@ public class FeatureManager : MonoBehaviour
         return _listPool[_listPool.Count - 1];
     }
 
-    public void SelectFeature(FeatureSO _refFeature, Player _refPlayer)
+    public void SelectFeature(SOFeature _refFeature, Player _refPlayer)
     {
         if (_refFeature == null || _refPlayer == null)
             return;

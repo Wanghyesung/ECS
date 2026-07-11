@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SO_Feature_AttackSpeedUp", menuName = "Game/Feature/Attack Speed Up")]
-public class SOFeatureAttackSpeedUp : FeatureSO
+public class SOFeatureAttackSpeedUp : SOFeature
 {
     [Header("Effect")]
     [SerializeField] private Weapon.eWeaponType m_eTargetWeaponType = Weapon.eWeaponType.Bullet;

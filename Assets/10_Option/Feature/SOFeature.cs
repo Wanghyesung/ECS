@@ -23,7 +23,7 @@ public enum eAcquireType
       런타임 획득 상태(레벨, 획득 여부)는 SO가 아닌 FeatureManager가 보유한다 (SO 데이터 오염 방지)
  *///////////////////////////////////////////
 
-public abstract class FeatureSO : ScriptableObject
+public abstract class SOFeature : ScriptableObject
 {
     [SerializeField] private eFeatureID m_eID = eFeatureID.None;
     public eFeatureID ID => m_eID;
