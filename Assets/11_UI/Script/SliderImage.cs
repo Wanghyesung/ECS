@@ -25,7 +25,9 @@ public class SliderImage : MonoBehaviour
     private WaitForSeconds m_refWaitSecond = null;
     [SerializeField] private Image m_refImage = null;
 
-    public event Action OnFillCompleted;
+    public event Action OnFillCompleted;   // 목표치가 0(빈 상태)이 되는 즉시 호출 (예: HP 소진 -> 사망)
+    public event Action OnFillMaxReached;  // 실제로 fill 애니메이션이 Max까지 다 찬 뒤에 호출 (예: EXP 만땅 -> 레벨업)
+
     private void Awake()
     {
         if(m_refImage == null)
@@ -44,7 +46,7 @@ public class SliderImage : MonoBehaviour
     }
 
     // 외부에서 새로운 현재값을 받아 슬라이더를 업데이트하는 함수
-    public void UpdateSlider(float _fNewValue)
+    public void UpdateSlider(float _fNewValue, float _fMaxValue)
     {
         if (m_CoLerpSlider != null)
             StopCoroutine(m_CoLerpSlider);
@@ -52,7 +54,7 @@ public class SliderImage : MonoBehaviour
         // 데이터 갱신
         m_fCurValue = _fNewValue;
 
-        float fTargetFill = _fNewValue / m_fMaxValue;
+        float fTargetFill = _fNewValue / _fMaxValue;
         if (fTargetFill <= 0.0f)
             OnFillCompleted?.Invoke();
 
@@ -77,8 +79,15 @@ public class SliderImage : MonoBehaviour
             yield return null;
         }
 
-        // 완전히 목표값에 도달하도록 보장
-        m_refImage.fillAmount = _fEndFill;
+        // 애니메이션이 실제로 Max까지 다 찬 시점에만 호출 (UpdateSlider 호출 즉시가 아님)
+        if (_fEndFill >= 1.0f)
+        {
+            OnFillMaxReached?.Invoke();
+            m_refImage.fillAmount = 0.0f;
+        }
+        else
+             m_refImage.fillAmount = _fEndFill;
+
         m_CoLerpSlider = null;
     }
 

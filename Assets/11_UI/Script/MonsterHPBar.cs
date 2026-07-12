@@ -43,7 +43,7 @@ public class MonsterHPBar : MonoBehaviour
         }
         else
         {
-            m_refSlider.UpdateSlider(_lCurrentHp);
+            m_refSlider.UpdateSlider(_lCurrentHp, _lMaxHp);
         }
 
         if (m_refRoot != null)

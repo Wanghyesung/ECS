@@ -93,14 +93,18 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refHPSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
 
         // EXP는 Player 소유가 아닌 BattleManager 소유 지표라 이벤트 구독으로만 UI 갱신
-       
+
         BattleManager.m_Instance.OnExpChanged += HandleExpChanged;
         m_refExSliderImage.SetRange(BattleManager.m_Instance.MaxExp, BattleManager.m_Instance.CurrentExp);
+
+        // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
+        m_refExSliderImage.OnFillMaxReached += HandleExpSliderFilled;
     }
 
     private void OnDestroy()
     {
         m_refHPSliderImage.OnFillCompleted -= Dead;
+        m_refExSliderImage.OnFillMaxReached -= HandleExpSliderFilled;
 
         if (BattleManager.m_Instance != null)
             BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
@@ -108,7 +112,12 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void HandleExpChanged(int _iCurrentExp, int _iMaxExp)
     {
-        m_refExSliderImage.UpdateSlider(_iCurrentExp);
+        m_refExSliderImage.UpdateSlider(_iCurrentExp, _iMaxExp);
+    }
+    
+    private void HandleExpSliderFilled()
+    {
+        BattleManager.m_Instance.LevelUp();
     }
 
     private void Update()
@@ -210,7 +219,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             StopCoroutine(m_CoNockback);
 
         m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
-        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP);
+        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_SOObjectInfo.MaxHP);
 
 
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));

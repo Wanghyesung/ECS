@@ -30,10 +30,9 @@ public class RandomFeatureCard : BaseButtonUI
         m_refImage.sprite = m_refOriginSprite;
         m_refImage.raycastTarget = false;
 
-        m_refImage.sprite = m_refOriginSprite;
         m_CORotate = StartCoroutine(CORotate());
     }
-
+    
     public void Setup(SOFeature _refFeature)
     {
         m_SOFeature = _refFeature;
@@ -57,17 +56,20 @@ public class RandomFeatureCard : BaseButtonUI
         // 복원 연출 트리거
     }
 
-
+    
     private IEnumerator CORotate()
     {
+        // 레벨업 시 Time.timeScale이 0이 되어도 카드 연출은 계속 움직여야 하므로 unscaledDeltaTime 사용
         float fElapsed = 0.0f;
         while (fElapsed < m_fShowTime)
         {
-            transform.Rotate(Vector3.up * 720f * Time.deltaTime);
-            fElapsed += Time.deltaTime;
+            transform.Rotate(Vector3.up * 720f * Time.unscaledDeltaTime);
+            fElapsed += Time.unscaledDeltaTime;
 
-            yield return null; 
+            yield return null;
         }
+
+        transform.Rotate(Vector3.zero);
 
         m_refImage.sprite = m_refTargetSprite;
         m_refImage.raycastTarget = true;

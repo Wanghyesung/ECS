@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -17,6 +18,7 @@ public class BattleManager : MonoBehaviour
 
     private int m_iCurrentExp = 0;
     private int m_iCurrentLevel = 1;
+    private int m_iPendingLevelUps = 0; // ExSlider가 다 찰 때까지 미뤄둔 레벨업 개수
 
     public int CurrentExp => m_iCurrentExp;
     public int MaxExp => m_iMaxExp;
@@ -25,6 +27,7 @@ public class BattleManager : MonoBehaviour
     public event Action<int, int> OnExpChanged; // (현재 Exp, Max Exp)
     public event Action<int> OnLevelUp;         // (새 레벨)
 
+    private Coroutine m_COLevelUp = null;
     private void Awake()
     {
         if (m_Instance != null)
@@ -57,20 +60,49 @@ public class BattleManager : MonoBehaviour
         m_iCurrentExp += _iAmount;
 
         // 한 번에 여러 레벨을 넘길 수도 있어 while로 처리 (초과분 이월)
+
         while (m_iCurrentExp >= m_iMaxExp)
         {
             m_iCurrentExp -= m_iMaxExp;
-            LevelUp();
+            ++m_iPendingLevelUps;
         }
 
-        OnExpChanged?.Invoke(m_iCurrentExp, m_iMaxExp);
+        // 이미 순차 처리 중이면 m_iPendingLevelUps만 늘려두고 코루틴은 그대로 두면
+        // 진행 중인 while 루프가 알아서 늘어난 만큼 이어서 처리함 (중복 실행 방지)
+        if (m_COLevelUp == null)
+            m_COLevelUp = StartCoroutine(CoLevelUP());
     }
 
-    private void LevelUp()
+    // ExSlider의 채우기 연출이 실제로 Max에 도달했을 때 Player가 호출
+    public void LevelUp()
     {
-        ++m_iCurrentLevel;
-        OnLevelUp?.Invoke(m_iCurrentLevel);
+        if (m_iPendingLevelUps <= 0)
+            return;
 
+        m_iCurrentLevel += 1;
+        m_iPendingLevelUps -= 1;
+
+        OnLevelUp?.Invoke(m_iCurrentLevel);
         m_refCardCreator?.ShowChoices();
+    }
+
+
+    // m_iPendingLevelUps 만큼 ExSlider를 Max까지 채우는 연출을 한 레벨씩 순차 재생
+    // (한 번에 10레벨을 올려도 카드가 10번 순서대로 뜨도록)
+    private IEnumerator CoLevelUP()
+    {
+        while (m_iPendingLevelUps > 0)
+        {
+            int iCountBefore = m_iPendingLevelUps;
+
+            OnExpChanged?.Invoke(m_iMaxExp, m_iMaxExp);
+
+            // ExSlider가 Max까지 다 차서 LevelUp()이 호출되어 보류 개수가 줄어들 때까지 대기
+            yield return new WaitUntil(() => m_iPendingLevelUps < iCountBefore);
+        }
+
+        // 보류된 레벨업을 모두 처리했으면 실제 잔여 경험치로 슬라이더를 되돌림
+        OnExpChanged?.Invoke(m_iCurrentExp, m_iMaxExp);
+        m_COLevelUp = null;
     }
 }
