@@ -10,6 +10,15 @@ public interface IDamageable
     public void TakeDamage(AttackInfo _refAttackInfo);
 }
 
+public interface IChangeInfoable
+{
+    public void ChangeHPRatio(float _fRatio);
+    public void UpHPRatio(float _fRatio);
+    public void UpHP(long _lValue);
+    public void ChangeSpeedRatio(float _fRatio);
+
+}
+
 /*///////////////////////////////////////////
                  SpawnInfo
 

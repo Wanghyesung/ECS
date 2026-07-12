@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SO_Feature_UnlockMissile", menuName = "Game/Feature/Unlock Missile")]
-public class SOFeatureUnlockMissile : SOFeature
+[CreateAssetMenu(fileName = "SO_FeatureUnlockWeapon", menuName = "Game/Feature/FeatureUnlockWeapon")]
+public class SOFeatureUnlockWeapon : SOFeature
 {
     [Header("Effect")]
     [SerializeField] private Weapon.eWeaponType m_eTargetWeaponType = Weapon.eWeaponType.Missile;

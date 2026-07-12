@@ -45,14 +45,16 @@ public class ObjectInfo
     public eEntityState State;
 
     public long CurrentHP;
+
     public float Speed;
 
     public ushort CurrentEffects; 
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
+
 }
 
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
     private List<Weapon> m_listFireWeapon = null; 
@@ -62,6 +64,8 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private VisualObject m_refVisualPlayer = null;
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
+    public ObjectInfo PlayerInfo => m_refObjectInfo;
+
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
     [SerializeField] private SliderImage m_refHPSliderImage = null;
@@ -84,6 +88,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+
         m_refHPSliderImage.OnFillCompleted += Dead;
         m_refHPSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
 
@@ -263,4 +268,35 @@ public class Player : MonoBehaviour, IDamageable
                 m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
         }
     }
+
+    public void ChangeHPRatio(float _fRatio)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpHPRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        long lAccValue = (long)fAccValue;
+
+        UpHP(lAccValue);
+    }
+
+    public void ChangeSpeedRatio(float _fRatio)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpHP(long _lValue)
+    {
+        m_refObjectInfo.CurrentHP += _lValue;
+        if (m_refObjectInfo.CurrentHP >= m_SOObjectInfo.MaxHP)
+            m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+    }
+
+
+    // IChangeInfoable 기능 구현
+
+
+
 }

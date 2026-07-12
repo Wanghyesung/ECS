@@ -21,6 +21,7 @@ public class FeatureManager : MonoBehaviour
 
     // RequestFeatureChoices 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
     private List<SOFeature> m_listPoolBuffer = new List<SOFeature>();
+    private List<SOFeature> m_listResultBuffer = new List<SOFeature>();
 
     public event Action<List<SOFeature>> OnFeatureChoicesReady;
     public event Action<SOFeature, int> OnFeatureAcquired;
@@ -66,7 +67,8 @@ public class FeatureManager : MonoBehaviour
     }
 
     // _iCount : 이번에 보여줄 후보 개수 (상황에 따라 가변으로 호출부에서 결정)
-    public SOFeature RequestFeatureChoice()
+    // 후보가 _iCount보다 적으면 있는 만큼만 반환 (호출부에서 남는 카드 슬롯 처리)
+    public List<SOFeature> RequestFeatureChoices(int _iCount)
     {
         m_listPoolBuffer.Clear();
 
@@ -82,13 +84,25 @@ public class FeatureManager : MonoBehaviour
 
             m_listPoolBuffer.Add(refFeature);
         }
-        
-        SOFeature refPicked = PickWeightedRandom(m_listPoolBuffer);
-        return refPicked;
 
+        m_listResultBuffer.Clear();
+        int iPickCount = Mathf.Min(_iCount, m_listPoolBuffer.Count);
+
+        for (int i = 0; i < iPickCount; ++i)
+        {
+            int iPickedIdx = PickWeightedIndex(m_listPoolBuffer);
+            m_listResultBuffer.Add(m_listPoolBuffer[iPickedIdx]);
+
+            // 순서 상관없으니 마지막 원소와 교체 후 마지막을 제거 (앞당김 셔프트 없이 O(1))
+            int iLastIdx = m_listPoolBuffer.Count - 1;
+            m_listPoolBuffer[iPickedIdx] = m_listPoolBuffer[iLastIdx];
+            m_listPoolBuffer.RemoveAt(iLastIdx);
+        }
+
+        return m_listResultBuffer;
     }
-    
-    private SOFeature PickWeightedRandom(List<SOFeature> _listPool)
+
+    private int PickWeightedIndex(List<SOFeature> _listPool)
     {
         int iTotalWeight = 0;
         for (int i = 0; i < _listPool.Count; ++i)
@@ -101,10 +115,10 @@ public class FeatureManager : MonoBehaviour
         {
             iAccum += _listPool[i].Weight;
             if (iRandomValue < iAccum)
-                return _listPool[i];
+                return i;
         }
 
-        return _listPool[_listPool.Count - 1];
+        return _listPool.Count - 1;
     }
 
     public void SelectFeature(SOFeature _refFeature, Player _refPlayer)

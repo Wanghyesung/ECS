@@ -23,10 +23,15 @@ public class CardCreator : MonoBehaviour
 
     public void ShowChoices()
     {
+        var listChoices = FeatureManager.m_Instance.RequestFeatureChoices(m_arrCard.Length);
+
         for (int i = 0; i < m_arrCard.Length; ++i)
         {
-            var SOFeat = FeatureManager.m_Instance.RequestFeatureChoice();
-            m_arrCard[i].Setup(SOFeat);
+            // 후보가 카드 수보다 적으면 남는 슬롯은 비활성화
+            if (i < listChoices.Count)
+                m_arrCard[i].Setup(listChoices[i]);
+            else
+                m_arrCard[i].gameObject.SetActive(false);
         }
     }
 

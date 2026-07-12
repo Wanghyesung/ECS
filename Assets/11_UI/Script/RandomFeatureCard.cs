@@ -27,7 +27,7 @@ public class RandomFeatureCard : BaseButtonUI
 
     private void OnEnable()
     {
-        m_refTargetSprite = null;
+        m_refImage.sprite = m_refOriginSprite;
         m_refImage.raycastTarget = false;
 
         m_refImage.sprite = m_refOriginSprite;
@@ -63,7 +63,7 @@ public class RandomFeatureCard : BaseButtonUI
         float fElapsed = 0.0f;
         while (fElapsed < m_fShowTime)
         {
-            transform.Rotate(Vector3.up * 90f * Time.deltaTime);
+            transform.Rotate(Vector3.up * 720f * Time.deltaTime);
             fElapsed += Time.deltaTime;
 
             yield return null; 
