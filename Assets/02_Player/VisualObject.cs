@@ -9,10 +9,18 @@ using UnityEngine;
 
 public class VisualObject : MonoBehaviour
 {
+    private Vector3 m_vRollDir = Vector3.zero;
+    public Vector3 RollDir
+    {
+        get { return m_vRollDir; }
+        set { m_vRollDir = value; }
+    }
 
-    private IRollable m_refRollProvider = null;
+    public float RollX{ set{m_vRollDir.z = value;}}
+    public float RollY{ set{m_vRollDir.z = value;}}
+    public float RollZ{ set{m_vRollDir.z = value;}}
 
-    [SerializeField] private float m_fMaxRollAngle = 45f;
+    [SerializeField] private float m_fMaxRollAngle = 180f;
     [SerializeField] private float m_fRollSpeed = 5f;
     private float m_fCurrentRoll;
 
@@ -26,22 +34,16 @@ public class VisualObject : MonoBehaviour
     private float m_fShakeRollKick;
     private float m_fShakePitchKick;
 
-
-    private void Awake()
+    private void OnEnable()
     {
-        m_refRollProvider = GetComponentInParent<IRollable>();
-
-#if UNITY_EDITOR
-        if (m_refRollProvider == null)
-            Debug.Log("부모 오브젝트에서 IRollDirProvider를 찾지 못함");
-#endif
+        m_vRollDir = Vector3.zero;
     }
 
     private void LateUpdate()
     {
         //만약 없다면 크래쉬나게
-        float fX = m_refRollProvider.RollDirX;
-        float fTargetRoll = fX * m_fMaxRollAngle;
+        float fZ = m_vRollDir.z;
+        float fTargetRoll = fZ * m_fMaxRollAngle;
         
         m_fCurrentRoll = Mathf.Lerp(m_fCurrentRoll, fTargetRoll, m_fRollSpeed * Time.deltaTime);
         Quaternion qRoll = Quaternion.Euler(0.0f, 0.0f, -m_fCurrentRoll);

@@ -36,6 +36,7 @@ public class Weapon : MonoBehaviour
 
     public PoolObject FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
 
+    
     [SerializeField] private bool m_bLookTarget = true;
     [SerializeField] private bool m_bNeedsTarget = false;
     public bool NeeadNearTarget => m_bNeedsTarget;
@@ -56,21 +57,6 @@ public class Weapon : MonoBehaviour
         Application.Quit();
 #endif
     }
-
-    //바라는 방향으로 쏘지 않고 지정된 위치에만 소환
-    //public void Spawn()
-    //{
-    //    GameObject refObj = CreateBullet();
-
-    //    if (refObj == null)
-    //        return;
-
-    //    refObj.transform.position = m_refFireTr.position;
-    //    //refObj.transform.rotation = m_refFireTr.rotation;
-
-    //    IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-    //    refAttackObj.SetAttack(m_refAttackInfo);
-    //}
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {

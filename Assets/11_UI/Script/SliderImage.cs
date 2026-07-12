@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ using UnityEngine.UI;
                  SliderImage
 
 기능 : UI의 Fill값을 조절하여 이미지를 표현하는 역할
+      목표치까지 이도하면 OnCompleted 콜백함수 호출
  *///////////////////////////////////////////
 
 public class SliderImage : MonoBehaviour
@@ -23,6 +25,7 @@ public class SliderImage : MonoBehaviour
     private WaitForSeconds m_refWaitSecond = null;
     [SerializeField] private Image m_refImage = null;
 
+    public event Action OnFillCompleted;
     private void Awake()
     {
         if(m_refImage == null)
@@ -46,11 +49,14 @@ public class SliderImage : MonoBehaviour
         if (m_CoLerpSlider != null)
             StopCoroutine(m_CoLerpSlider);
 
-        float fTargetFill = _fNewValue / m_fMaxValue;
-        m_CoLerpSlider = StartCoroutine(CoLerpSlider(m_refImage.fillAmount, fTargetFill));
-
         // 데이터 갱신
         m_fCurValue = _fNewValue;
+
+        float fTargetFill = _fNewValue / m_fMaxValue;
+        if (fTargetFill <= 0.0f)
+            OnFillCompleted?.Invoke();
+
+        m_CoLerpSlider = StartCoroutine(CoLerpSlider(m_refImage.fillAmount, fTargetFill));
     }
 
     // 실제 보간을 담당하는 코루틴

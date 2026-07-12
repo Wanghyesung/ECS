@@ -34,6 +34,8 @@ public class FeatureManager : MonoBehaviour
         DontDestroyOnLoad(this);
 
         BuildFeatureTable();
+
+        UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
     }
 
     private void BuildFeatureTable()
@@ -80,12 +82,12 @@ public class FeatureManager : MonoBehaviour
 
             m_listPoolBuffer.Add(refFeature);
         }
-
-
+        
         SOFeature refPicked = PickWeightedRandom(m_listPoolBuffer);
         return refPicked;
-    }
 
+    }
+    
     private SOFeature PickWeightedRandom(List<SOFeature> _listPool)
     {
         int iTotalWeight = 0;

@@ -4,6 +4,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/*///////////////////////////////////////////
+                RandomFeatureCard
+기능 : CardCreator가 전달한 SOFeat을 바탕으로 카드 이미지 설정,
+      해당 카드를 클릭시 OnCardClicked를 통해 구독한 이벤트에게 내 SOFeat전달
+ *///////////////////////////////////////////
+
 public class RandomFeatureCard : BaseButtonUI
 {
     [SerializeField] private Sprite m_refTargetSprite = null;
@@ -20,8 +27,10 @@ public class RandomFeatureCard : BaseButtonUI
 
     private void OnEnable()
     {
+        m_refTargetSprite = null;
         m_refImage.raycastTarget = false;
 
+        m_refImage.sprite = m_refOriginSprite;
         m_CORotate = StartCoroutine(CORotate());
     }
 
@@ -60,6 +69,7 @@ public class RandomFeatureCard : BaseButtonUI
             yield return null; 
         }
 
+        m_refImage.sprite = m_refTargetSprite;
         m_refImage.raycastTarget = true;
         m_CORotate = null;
     }

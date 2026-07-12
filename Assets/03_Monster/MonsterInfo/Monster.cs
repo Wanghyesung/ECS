@@ -37,13 +37,13 @@ public class SpawnInfo
 기능 : BT에 따라 몬스터 행동 조작, 공격 오브젝트 관리
  *///////////////////////////////////////////
 
-public class Monster : MonoBehaviour, IDamageable , IRollable
+public class Monster : MonoBehaviour, IDamageable
 { 
   
     [SerializeField] private GameObject m_refTargetPlayer;
     [SerializeField] private VisualObject m_refVisualObj = null;
 
-    [SerializeField] private SOObjectInfo m_SOMonsterInfo;
+    [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
 
     [SerializeField] private BlackBoard m_refBlackBoard = new BlackBoard();
     [SerializeField] private BehaviorTree m_refBT = null;
@@ -55,11 +55,10 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
     private Dictionary<eWeaponType, List<SpawnInfo>> m_hashSpawn = new Dictionary<eWeaponType, List<SpawnInfo>>();
     public Dictionary<eWeaponType, List<SpawnInfo>> HashSpawn => m_hashSpawn;
 
-    public float RollDirX => 0.0f;
-
-
     private Coroutine m_CoNockback = null;
-    private WaitForSeconds m_refWaitHitTime;
+
+    // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적 이벤트로 공유)
+    public static event Action<int> OnMonsterDied;
 
     private void Awake()
     {
@@ -73,6 +72,11 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
             m_refBT = GetComponent<BehaviorTree>();
 
         m_refBlackBoard.Owner = this;
+       
+    }
+
+    private void OnEnable()
+    {
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
@@ -107,22 +111,42 @@ public class Monster : MonoBehaviour, IDamageable , IRollable
 
     private void Update()
     {
+        if (m_refBlackBoard.ObjInfo.State == eEntityState.Dead)
+            return;
+
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
     public void TakeDamage(AttackInfo _refAttackInfo)
     {
-        if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit)
+        if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit || m_refBlackBoard.ObjInfo.State == eEntityState.Dead)
             return;
 
         m_refBlackBoard.ObjInfo.CurrentHP -= _refAttackInfo.Damage;
         MonsterHPBar.m_Instance?.ShowHp(this, m_refBlackBoard.ObjInfo.CurrentHP, m_SOMonsterInfo.MaxHP);
+
+        if (m_refBlackBoard.ObjInfo.CurrentHP <= 0)
+        {
+            Dead();
+            return;
+        }
 
         //TODO BossMonster과 차별점을 생각
         if(m_CoNockback !=null)
             StopCoroutine(m_CoNockback);
 
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
+    }
+
+    private void Dead()
+    {
+        m_refVisualObj.RollX = 1;
+
+        ChangeState(eEntityState.Dead);
+        OnMonsterDied?.Invoke(m_SOMonsterInfo.ExpReward);
+
+        //TODO 몬스터 Object Pool 도입 시 PushObject로 교체
+        gameObject.SetActive(false);
     }
 
     private IEnumerator CoNockback(AttackInfo _refAttackInfo)

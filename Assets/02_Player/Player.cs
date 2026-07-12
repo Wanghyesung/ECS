@@ -64,7 +64,8 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
-    [SerializeField] private SliderImage m_refSliderImage = null;
+    [SerializeField] private SliderImage m_refHPSliderImage = null;
+    [SerializeField] private SliderImage m_refExSliderImage = null;
 
     [SerializeField] LayerMask m_tAttackLayer;
     private Transform m_refNearTargetTr = null; 
@@ -76,8 +77,6 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
-
         m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
         m_refRigidbody = GetComponent<Rigidbody>();
     }
@@ -85,8 +84,26 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+        m_refHPSliderImage.OnFillCompleted += Dead;
+        m_refHPSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
 
-        m_refSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
+        // EXP는 Player 소유가 아닌 BattleManager 소유 지표라 이벤트 구독으로만 UI 갱신
+       
+        BattleManager.m_Instance.OnExpChanged += HandleExpChanged;
+        m_refExSliderImage.SetRange(BattleManager.m_Instance.MaxExp, BattleManager.m_Instance.CurrentExp);
+    }
+
+    private void OnDestroy()
+    {
+        m_refHPSliderImage.OnFillCompleted -= Dead;
+
+        if (BattleManager.m_Instance != null)
+            BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
+    }
+
+    private void HandleExpChanged(int _iCurrentExp, int _iMaxExp)
+    {
+        m_refExSliderImage.UpdateSlider(_iCurrentExp);
     }
 
     private void Update()
@@ -99,7 +116,7 @@ public class Player : MonoBehaviour, IDamageable
 
     private void OnTriggerEnter(Collider other)
     {
-
+        
     }
 
     private void OnDisable()
@@ -177,13 +194,18 @@ public class Player : MonoBehaviour, IDamageable
     }
 
 
+    private void Dead()
+    {
+        //플레이어가 죽었을 때
+    }
+
     public void TakeDamage(AttackInfo _refAttackInfo)
     {
         if (m_CoNockback != null)
             StopCoroutine(m_CoNockback);
 
         m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
-        m_refSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP);
+        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP);
 
 
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
