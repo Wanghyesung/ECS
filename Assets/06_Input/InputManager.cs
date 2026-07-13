@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 /*///////////////////////////////////////////
                 InputManager
-±â´É : ¿¬°áµÈ ¾×¼ÇÀÇ °ªÀ» °¡Á®¿Í¼­ ÇØ´ç °ª ¼ÂÆÃ
+ê¸°ëŠ¥ : ì—°ê²°ëœ ì•¡ì…˜ì˜ ê°’ì„ ê°€ì ¸ì™€ì„œ í•´ë‹¹ ê°’ ì…‹íŒ…
  *///////////////////////////////////////////
 
 public struct tInputInfo
@@ -15,6 +15,9 @@ public struct tInputInfo
     public Vector2 MoveDir;
     public Vector2 ScreenPos;
     public Vector2 Delta;
+
+    public bool OnSpace;
+    public bool OnLButon;
 }
 
 public class InputManager : MonoBehaviour
@@ -27,6 +30,8 @@ public class InputManager : MonoBehaviour
     [SerializeField] private List<InputActionReference> m_listMoveAction;
     [SerializeField] private List<InputActionReference> m_listScreenAction;
     [SerializeField] private List<InputActionReference> m_listDeltaAction;
+
+    [SerializeField] private List<InputActionReference> m_listMoveSpaceAction;
 
     private bool m_isDeltaInitialized = false;
     private void Awake()
@@ -49,6 +54,9 @@ public class InputManager : MonoBehaviour
         for (int i = 0; i < m_listDeltaAction.Count; ++i)
             m_listDeltaAction[i].action.Enable();
 
+        for (int i = 0; i < m_listMoveSpaceAction.Count; ++i)
+            m_listMoveSpaceAction[i].action.Enable();
+
     }
 
     private void Start()
@@ -64,6 +72,8 @@ public class InputManager : MonoBehaviour
 
         UpdateDeltaValue();
 
+        UpdateSpaceValue();
+
     }
 
     private void UpdateMoveValue()
@@ -72,6 +82,14 @@ public class InputManager : MonoBehaviour
         {
             Vector2 vMoveValue = m_listMoveAction[i].action.ReadValue<Vector2>();
             m_tInputInfo.MoveDir = vMoveValue.normalized;
+        }
+    }
+
+    private void UpdateSpaceValue()
+    {
+        for (int i = 0; i < m_listMoveSpaceAction.Count; ++i)
+        {
+            m_tInputInfo.OnSpace = m_listMoveSpaceAction[i].action.IsPressed();
         }
     }
 
@@ -94,14 +112,15 @@ public class InputManager : MonoBehaviour
             {
                 if (vDelta.sqrMagnitude > 0f)
                 {
-                    m_tInputInfo.Delta = Vector2.zero; // Æ¢´Â Ã¹ °ªÀº °­Á¦·Î 0 Ã³¸®
-                    m_isDeltaInitialized = true;        // ´ÙÀ½ ÇÁ·¹ÀÓºÎÅÍ´Â Á¤»ó ÀÛµ¿
+                    m_tInputInfo.Delta = Vector2.zero; // Æ¢ï¿½ï¿½ Ã¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0 Ã³ï¿½ï¿½
+                    m_isDeltaInitialized = true;        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Óºï¿½ï¿½Í´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ûµï¿½
                     continue;
                 }
             }
 
             m_tInputInfo.Delta = vDelta;
         }
-
     }
+
+
 }

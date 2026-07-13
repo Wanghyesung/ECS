@@ -62,6 +62,12 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
     [SerializeField] private VisualObject m_refVisualPlayer = null;
+    private PlayerMovement m_refMovement = null;
+
+    [Header("Max Roll")]
+    [SerializeField] private float m_fMaxRollDuration = 0.5f;
+    [SerializeField] private float m_fMaxRollSpeedBoost = 2.5f; // 부스트 시작 배율
+    [SerializeField] private float m_fMaxRollSpeedDecay = 3.0f; // 초당 배율 감소량
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
     public ObjectInfo PlayerInfo => m_refObjectInfo;
@@ -83,6 +89,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
         m_refRigidbody = GetComponent<Rigidbody>();
+        m_refMovement = GetComponent<PlayerMovement>();
     }
 
     private void Start()
@@ -98,13 +105,13 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refExSliderImage.SetRange(BattleManager.m_Instance.MaxExp, BattleManager.m_Instance.CurrentExp);
 
         // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
-        m_refExSliderImage.OnFillMaxReached += HandleExpSliderFilled;
+        m_refExSliderImage.OnFillMaxReached += MapExpSlider;
     }
 
     private void OnDestroy()
     {
         m_refHPSliderImage.OnFillCompleted -= Dead;
-        m_refExSliderImage.OnFillMaxReached -= HandleExpSliderFilled;
+        m_refExSliderImage.OnFillMaxReached -= MapExpSlider;
 
         if (BattleManager.m_Instance != null)
             BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
@@ -115,17 +122,21 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refExSliderImage.UpdateSlider(_iCurrentExp, _iMaxExp);
     }
     
-    private void HandleExpSliderFilled()
+    private void MapExpSlider()
     {
         BattleManager.m_Instance.LevelUp();
     }
 
     private void Update()
     {
+        bool bOnSpace = InputManager.m_Instance.InputInfo.OnSpace;
+
+        if (bOnSpace == true && m_refVisualPlayer.IsMaxRolling == false)
+            MoveRoll();
+
+
         if (Input.GetKey(KeyCode.Q))
             Fire();
-        else
-            Cansle();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -148,6 +159,19 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refAnimTable.SetTrigger(_eState);
     }
 
+    // 스페이스 입력 시 z축 기준 360도 배럴롤 연출과 함께 이동속도를 순간적으로 올렸다가 서서히 되돌림
+    private void MoveRoll()
+    {
+        float fRollDir = InputManager.m_Instance.InputInfo.MoveDir.x;
+        if (Mathf.Approximately(fRollDir, 0.0f) == true)
+            fRollDir = 1.0f;
+
+        m_refVisualPlayer.PlayMaxRoll(fRollDir, m_fMaxRollDuration);
+        m_refMovement.ApplySpeedBoost(m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
+    }
+
+    
+
     private void Fire()
     {
         bool bFindNearTarget = false;
@@ -158,7 +182,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
             if (m_listWeapon[i].CheckTime() == true)
             {
-                if (m_listWeapon[i].NeeadNearTarget == true)
+                if (m_listWeapon[i].WeaponType == eWeaponType.Missile)
                     bFindNearTarget = true;
 
                 m_listFireWeapon.Add(m_listWeapon[i]);
@@ -178,10 +202,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refNearTargetTr = null;
     }
 
-    private void Cansle()
-    {
-       
-    }
 
     private void FindNearestTarget()
     {
@@ -218,10 +238,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         if (m_CoNockback != null)
             StopCoroutine(m_CoNockback);
 
+        m_refObjectInfo.State = eEntityState.Hit;
+
         m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
         m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_SOObjectInfo.MaxHP);
-
-
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
     }
 
@@ -255,6 +275,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         }
 
         m_CoNockback = null;
+        m_refObjectInfo.State = eEntityState.Idle;
     }
 
     // FeatureSO.Apply()에서 무기 해금 기능(예: SOFeatureUnlockMissile)이 호출
@@ -277,6 +298,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
                 m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
         }
     }
+
+
 
     public void ChangeHPRatio(float _fRatio)
     {

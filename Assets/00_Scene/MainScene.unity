@@ -324,7 +324,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 67716699}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &86218941
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,7 +542,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 107442335}
   m_refEffectObject: {fileID: 634616086}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!4 &107442335
 Transform:
   m_ObjectHideFlags: 0
@@ -607,7 +609,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 220804232}
   m_refEffectObject: {fileID: 1717914309}
   m_bLookTarget: 0
-  m_bNeedsTarget: 1
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1001 &230817949
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -912,6 +915,57 @@ ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 4612302341086674683, guid: 27921daec3a798e4c84425a72618edb8, type: 3}
   m_PrefabInstance: {fileID: 277580604}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &280640785
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 280640786}
+  - component: {fileID: 280640787}
+  m_Layer: 3
+  m_Name: ' ShotgunWeapon'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &280640786
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280640785}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.41, z: 7.22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 961741911}
+  m_Father: {fileID: 580076940}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &280640787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280640785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SOAttackInfo: {fileID: 11400000, guid: 44345befe75704243ad800615e982a68, type: 2}
+  m_refFireTr: {fileID: 280640786}
+  m_refEffectObject: {fileID: 961741912}
+  m_bLookTarget: 0
+  m_iBulletCount: 30
+  m_fSpreadAngle: 10
 --- !u!1 &288770761
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,7 +1015,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 288770762}
   m_refEffectObject: {fileID: 1730738809}
   m_bLookTarget: 0
-  m_bNeedsTarget: 1
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &303747488
 GameObject:
   m_ObjectHideFlags: 0
@@ -1011,7 +1066,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 303747489}
   m_refEffectObject: {fileID: 955857830}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &375036488
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,6 +1408,7 @@ Transform:
   - {fileID: 3250488529306348922}
   - {fileID: 3250488528119683601}
   - {fileID: 3250488529428285678}
+  - {fileID: 280640786}
   m_Father: {fileID: 703703996}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &580076941
@@ -1945,7 +2002,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &738785219
 GameObject:
   m_ObjectHideFlags: 0
@@ -2089,7 +2147,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 795575402}
   m_refEffectObject: {fileID: 5585671605873680693}
   m_bLookTarget: 0
-  m_bNeedsTarget: 1
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &887771510
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,7 +2198,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &936170814
 GameObject:
   m_ObjectHideFlags: 0
@@ -2226,7 +2286,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1001 &955857828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2321,6 +2382,89 @@ Transform:
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 5138979351259946509, guid: c1871759f6289c543b950be918437565, type: 3}
   m_PrefabInstance: {fileID: 955857828}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &961741910
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 280640786}
+    m_Modifications:
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1199077392468368836, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4135103060810386844, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7269614798271665833, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7450703162887468926, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_Name
+      value: FowardShotParticle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7450703162887468926, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+--- !u!4 &961741911 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 83416959150971750, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+  m_PrefabInstance: {fileID: 961741910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &961741912 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2082725132941960476, guid: 5b3fc8b7a4f333d4985b22739e98ca36, type: 3}
+  m_PrefabInstance: {fileID: 961741910}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
@@ -2732,6 +2876,8 @@ MonoBehaviour:
   - {fileID: -6401907108130545138, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
   m_listDeltaAction:
   - {fileID: -4947440016848714923, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
+  m_listMoveSpaceAction:
+  - {fileID: 7181921023243160326, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
 --- !u!1 &1229306364
 GameObject:
   m_ObjectHideFlags: 0
@@ -2884,7 +3030,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &1344935220
 GameObject:
   m_ObjectHideFlags: 0
@@ -3058,7 +3205,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1373757150}
   m_refEffectObject: {fileID: 651751058}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &1412695962
 GameObject:
   m_ObjectHideFlags: 0
@@ -3108,7 +3256,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 277580606}
   m_bLookTarget: 0
-  m_bNeedsTarget: 1
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &1468893267
 GameObject:
   m_ObjectHideFlags: 0
@@ -3247,7 +3396,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1503696907}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1001 &1531859314
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3342,7 +3492,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1543788517
 Transform:
   m_ObjectHideFlags: 0
@@ -4016,6 +4166,8 @@ MonoBehaviour:
     refGameObject: {fileID: 1686826197364226317, guid: 4c7764eeb05ec9241bf92713c693c0c0, type: 3}
   - iPoolCount: 50
     refGameObject: {fileID: 1686826197364226317, guid: 622510a8d2da7904ca5457b2527e9727, type: 3}
+  - iPoolCount: 250
+    refGameObject: {fileID: 7651479878627869435, guid: bec734996cf01b34684603496a4b2b40, type: 3}
 --- !u!1 &1813928970
 GameObject:
   m_ObjectHideFlags: 0
@@ -4065,7 +4217,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1813928971}
   m_refEffectObject: {fileID: 1957169773}
   m_bLookTarget: 1
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &1834517433
 GameObject:
   m_ObjectHideFlags: 0
@@ -4114,7 +4267,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1834517434}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &1858015921
 GameObject:
   m_ObjectHideFlags: 0
@@ -4772,8 +4926,8 @@ Transform:
   m_GameObject: {fileID: 1040203498207506}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -31.477684, y: 2.0827794, z: 33.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -31.477684, y: 12.7, z: 33.3}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 466471417}
@@ -5079,8 +5233,8 @@ Transform:
   m_GameObject: {fileID: 4300629282889145761}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 30.14753, y: 3.5097055, z: 33.61361}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalPosition: {x: 30.14753, y: 14.18, z: 33.61361}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1104527052}
@@ -5201,7 +5355,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 3204437611446338172}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &475613448330417303
 GameObject:
   m_ObjectHideFlags: 0
@@ -37343,9 +37498,13 @@ MonoBehaviour:
   - {fileID: 1331114201}
   - {fileID: 795575403}
   - {fileID: 1412695964}
+  - {fileID: 280640787}
   m_refAnimTable: {fileID: 0}
   m_refAim: {fileID: 86218945}
   m_refVisualPlayer: {fileID: 703703997}
+  m_fMaxRollDuration: 0.5
+  m_fMaxRollSpeedBoost: 2.5
+  m_fMaxRollSpeedDecay: 3
   m_refObjectInfo:
     State: 0
     CurrentHP: 0
@@ -37998,7 +38157,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 643748883}
   m_refEffectObject: {fileID: 1531859316}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!199 &4847184648105315216
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -53786,7 +53946,8 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1123841347}
   m_refEffectObject: {fileID: 51880715}
   m_bLookTarget: 0
-  m_bNeedsTarget: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!23 &7353030594316137929
 MeshRenderer:
   m_ObjectHideFlags: 0

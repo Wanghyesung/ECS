@@ -16,6 +16,7 @@ public class Weapon : MonoBehaviour
         MissileBullet,
         Missile,
         Laser,
+        ShotGun,
         End,
     }
 
@@ -36,11 +37,16 @@ public class Weapon : MonoBehaviour
 
     public PoolObject FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
 
-    
+    [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
-    [SerializeField] private bool m_bNeedsTarget = false;
-    public bool NeeadNearTarget => m_bNeedsTarget;
+    
 
+    [Header("Circular Sector Shot")]
+    [SerializeField] private int m_iBulletCount = 1; // 1이면 기존처럼 단발
+    [SerializeField] private float m_fSpreadAngle = 30f; // 부채꼴(원뿔) 전체 각도
+
+    private const float GOLDEN_ANGLE_DEG = 137.50776f;
+    
     private void Awake()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
@@ -60,9 +66,18 @@ public class Weapon : MonoBehaviour
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {
+        m_refAttackInfo.TargetPos = _vTargetPos;
+        m_refAttackInfo.TargetTrasnform = _refTargetTr;
+
+        if (m_iBulletCount > 1)
+        {
+            FireCircularSector(_vTargetPos);
+            return;
+        }
+
         GameObject refObj = CreateBullet();
 
-        if (refObj == null) 
+        if (refObj == null)
             return;
 
         refObj.transform.position = m_refFireTr.position;
@@ -72,9 +87,40 @@ public class Weapon : MonoBehaviour
             refObj.transform.rotation = m_refFireTr.rotation;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        m_refAttackInfo.TargetPos = _vTargetPos;
-        m_refAttackInfo.TargetTrasnform = _refTargetTr;
         refAttackObj.SetAttack(m_refAttackInfo);
+    }
+
+    // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
+    // 골든 앵글 스파이럴로 균등 분포시켜 3D 부채꼴(샷건 콘) 형태로 발사
+    private void FireCircularSector(Vector3 _vTargetPos)
+    {
+        Vector3 vBaseDir = (_vTargetPos - m_refFireTr.position).normalized;
+        Vector3 vSpokeAxis = Vector3.Cross(vBaseDir, m_refFireTr.up);
+        vSpokeAxis.Normalize();
+
+        float fHalfAngle = m_fSpreadAngle * 0.5f;
+
+        for (int i = 0; i < m_iBulletCount; ++i)
+        {
+            GameObject refObj = CreateBullet();
+            if (refObj == null)
+                continue;
+
+            // fConeAngle: 중심축에서 얼마나 벌어지는지 (sqrt 분포로 원뿔 단면에 균등하게 채움)
+            // fSpinAngle: 중심축을 기준으로 몇 도 회전한 스포크에 놓을지 (골든 앵글로 겹치지 않게 배치)
+            float fRatio = (i + 0.5f) / m_iBulletCount;
+            float fConeAngle = Mathf.Sqrt(fRatio) * fHalfAngle;
+            float fSpinAngle = i * GOLDEN_ANGLE_DEG; //i가 증가할 때마다 황금각만큼 계속 회전시키기
+
+            Vector3 vAxis = Quaternion.AngleAxis(fSpinAngle, vBaseDir) * vSpokeAxis;//실제로 회전시킬 대상인 3D 화살표
+            Vector3 vDir = Quaternion.AngleAxis(fConeAngle, vAxis) * vBaseDir;
+
+            refObj.transform.position = m_refFireTr.position;
+            refObj.transform.rotation = Quaternion.LookRotation(vDir);
+
+            IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+            refAttackObj.SetAttack(m_refAttackInfo);
+        }
     }
 
 

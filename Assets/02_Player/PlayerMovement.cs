@@ -10,7 +10,7 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 /*///////////////////////////////////////////
                 PlayerMovement
-±â´É : ÇÃ·¹ÀÌ¾îÀÇ ½ÇÁúÀûÀÎ ¿òÁ÷ÀÓÀ» ´ã´çÇÏ´Â ±â´É
+ê¸°ëŠ¥ : í”Œë ˆì´ì–´ì˜ ì‹¤ì§ˆì ì¸ ì›€ì§ì„ì„ ë‹´ë‹¹í•˜ëŠ” ê¸°ëŠ¥
 *////////////////////////////////////////////
 
 public class PlayerMovement : MonoBehaviour
@@ -29,11 +29,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float m_fMoveSpeed = 5.0f;
     [SerializeField] private float m_fAngleSpeed = 12.0f;
 
+    private float m_fSpeedBoostMultiplier = 1.0f;
+    private float m_fSpeedBoostDecay = 3.0f; // ì´ˆë‹¹ ë°°ìœ¨ ê°ì†ŒëŸ‰
+
+    // MaxRoll ë“±ì—ì„œ ìˆœê°„ì ìœ¼ë¡œ ì´ë™ì†ë„ë¥¼ ì˜¬ë ¸ë‹¤ê°€ ì„œì„œíˆ ì›ë˜ ì†ë„ë¡œ ë˜ëŒë¦´ ë•Œ ì‚¬ìš©
+    public void ApplySpeedBoost(float _fBoostMultiplier, float _fDecayPerSecond)
+    {
+        m_fSpeedBoostMultiplier = Mathf.Max(m_fSpeedBoostMultiplier, _fBoostMultiplier);
+        m_fSpeedBoostDecay = _fDecayPerSecond;
+    }
     private void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refOwner = GetComponent<Player>();
-
     }
 
 
@@ -53,12 +61,15 @@ public class PlayerMovement : MonoBehaviour
         m_vRotate.x = Mathf.Clamp(m_vRotate.x, -85.0f, 40.0f);
 
         transform.rotation = Quaternion.Euler(m_vRotate.x, m_vRotate.y, 0.0f);
+
+        if (m_fSpeedBoostMultiplier > 1.0f)
+            m_fSpeedBoostMultiplier = Mathf.Max(1.0f, m_fSpeedBoostMultiplier - m_fSpeedBoostDecay * Time.deltaTime);
     }
 
     private void FixedUpdate()
     {
         Vector3 vMove = transform.forward * m_vInput.y + transform.right * m_vInput.x;
-        Vector3 vNewPos = m_refRigidbody.position + vMove * m_fMoveSpeed * Time.fixedDeltaTime;
+        Vector3 vNewPos = m_refRigidbody.position + vMove * m_fMoveSpeed * m_fSpeedBoostMultiplier * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNewPos);;
     }
 
