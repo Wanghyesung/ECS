@@ -13,13 +13,14 @@ GameObject:
   - component: {fileID: 7365733503409375280}
   - component: {fileID: 5394758280639574103}
   - component: {fileID: 8232150807328687796}
-  m_Layer: 0
+  - component: {fileID: 8772381844910706138}
+  m_Layer: 10
   m_Name: LargeHitEffect
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4255059899507560782
 Transform:
   m_ObjectHideFlags: 0
@@ -49,7 +50,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 3
   simulationSpeed: 1
-  stopAction: 0
+  stopAction: 3
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -4919,9 +4920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 6
   m_fAliveTime: 3
-  m_fCurAliveTime: 0
 --- !u!114 &8232150807328687796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4935,6 +4934,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refParticle: {fileID: 0}
+--- !u!136 &8772381844910706138
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271684863442157183}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 7
+  m_Height: 7
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1921578496291093682
 GameObject:
   m_ObjectHideFlags: 0
@@ -4946,7 +4968,7 @@ GameObject:
   - component: {fileID: 6721761411648593720}
   - component: {fileID: 4202775342096706108}
   - component: {fileID: 1608970579154910234}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BigSmokeTrails
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9859,7 +9881,7 @@ GameObject:
   - component: {fileID: 4479823393639094003}
   - component: {fileID: 2630424046583127077}
   - component: {fileID: 4273693950245834709}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: EmberSparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14759,7 +14781,7 @@ GameObject:
   - component: {fileID: 4800704541780874081}
   - component: {fileID: 4793108873815170457}
   - component: {fileID: 1125189306041146431}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CollisionSpherePop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19659,7 +19681,7 @@ GameObject:
   - component: {fileID: 43948142157151103}
   - component: {fileID: 4782173952940738113}
   - component: {fileID: 7368430829945923640}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: EmberSparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24559,7 +24581,7 @@ GameObject:
   - component: {fileID: 6649116241341337389}
   - component: {fileID: 6966956891305851258}
   - component: {fileID: 2353235140290702075}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LargeSmoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29459,7 +29481,7 @@ GameObject:
   - component: {fileID: 6889678416099269287}
   - component: {fileID: 1487367611128790703}
   - component: {fileID: 619942578524264747}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29496,7 +29518,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -34301,7 +34323,7 @@ GameObject:
   - component: {fileID: 2732738190012562707}
   - component: {fileID: 4504097630804503818}
   - component: {fileID: 3854099207753932374}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: OuterSparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}

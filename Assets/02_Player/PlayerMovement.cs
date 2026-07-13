@@ -6,9 +6,17 @@ using UnityEngine;
 using UnityEngine.AI;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
+
+
+/*///////////////////////////////////////////
+                PlayerMovement
+기능 : 플레이어의 실질적인 움직임을 담당하는 기능
+*////////////////////////////////////////////
+
 public class PlayerMovement : MonoBehaviour
 {
 
+    [SerializeField] private VisualObject m_refVSObject = null;
     private Rigidbody m_refRigidbody = null;
     private Player m_refOwner = null;
    
@@ -20,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] private float m_fMoveSpeed = 5.0f;
     [SerializeField] private float m_fAngleSpeed = 12.0f;
-
 
     private void Awake()
     {
@@ -34,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     {
         m_vInput = InputManager.m_Instance.InputInfo.MoveDir;
         m_vDelta = InputManager.m_Instance.InputInfo.Delta;
+
+        m_refVSObject.RollZ = m_vInput.x;
 
         float fY = m_vDelta.x * m_fAngleSpeed * 3 * Time.deltaTime;
         float fX = m_vDelta.y * m_fAngleSpeed  * Time.deltaTime * -1;

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
+  m_Name: SO_ParBossPassiveAttack
+  m_EditorClassIdentifier: 
+  listNode:
+  - {fileID: 11400000, guid: 43cf01c18563a6a458fefe88f3641412, type: 2}
+  - {fileID: 11400000, guid: 378a881a33b1acf4f9f28cb01511dedb, type: 2}
+  - {fileID: 11400000, guid: c0f4f293f9fbf0a40b0f0fe39185edbc, type: 2}

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//µ¿Àû ½ºÅÈ
-
-
 
 public class Weapon : MonoBehaviour
 {
@@ -16,64 +13,118 @@ public class Weapon : MonoBehaviour
         None,
         Bullet,
         Trace,
+        MissileBullet,
+        Missile,
+        Laser,
         End,
     }
 
     
     [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
+    private AttackInfo m_refAttackInfo;
+
     [SerializeField] private Transform m_refFireTr = null;
     [SerializeField] private ParticleSystem m_refEffectObject;
 
-    [SerializeField] private float m_fFireTime = 0.2f;
-    private float m_fCurTime = 0.0f;
+    private float m_fFireTime = 0.2f;
+    private float m_fBaseCooldown = 0.2f;
+    private float m_fLastFireTime = -Mathf.Infinity;
 
+    private eWeaponType m_eWeapoonType = eWeaponType.None;
+    public eWeaponType WeaponType => m_eWeapoonType;
 
-    public virtual void Fire(Vector3 _vTargetPos)
+    public PoolObject FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
+
+    
+    [SerializeField] private bool m_bLookTarget = true;
+    [SerializeField] private bool m_bNeedsTarget = false;
+    public bool NeeadNearTarget => m_bNeedsTarget;
+
+    private void Awake()
     {
-        if (CheckTime() == false)
-            return;
+        m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
+        m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fBaseCooldown = m_refAttackInfo.CoolDown;
+        m_eWeapoonType = m_SOAttackInfo.WeaponType;
+        m_fLastFireTime = Time.time;
 
-        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolType);
+#if UNITY_EDITOR
+        if (m_refAttackInfo == null)
+            Debug.Log("ê³µê²© SO ì—ì…‹ì„¤ì •ì„ ì•ˆ í•¨");
+        //UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
+    {
+        GameObject refObj = CreateBullet();
+
         if (refObj == null) 
             return;
 
-       Bullet refAttackObj = refObj.GetComponent<Bullet>();
-        if (refAttackObj == null)
+        refObj.transform.position = m_refFireTr.position;
+        if (m_bLookTarget == true)
+            refObj.transform.LookAt(_vTargetPos);
+        else
+            refObj.transform.rotation = m_refFireTr.rotation;
+
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+        m_refAttackInfo.TargetPos = _vTargetPos;
+        m_refAttackInfo.TargetTrasnform = _refTargetTr;
+        refAttackObj.SetAttack(m_refAttackInfo);
+    }
+
+
+    public void FireAndRotate(Vector3 _vDir, float _fFowardOffset)
+    {
+        GameObject refObj = CreateBullet();
+
+        if (refObj == null)
             return;
 
-        //°¢ ¹«±â¿¡ ¸Â´Â ÆÄÆ¼Å¬ ½ÇÇà
-        Vector3 vFirePos = m_refFireTr.transform.position;
-        refObj.transform.position = vFirePos;
-        refAttackObj.transform.rotation = m_refFireTr.transform.rotation;
-        m_refEffectObject.Play();
+        Vector3 vSpawnPos = m_refFireTr.position + (_vDir * _fFowardOffset);
+        refObj.transform.position = vSpawnPos;
 
+        Quaternion qRoation = Quaternion.LookRotation(_vDir);
+        refObj.transform.rotation = qRoation;
 
-        //°ø°İ·Â Àü´Ş, ¹æÇâ ¼³Á¤
-        m_fFireTime = m_SOAttackInfo.Cooldown;
-        refAttackObj.SetAttack(m_SOAttackInfo, _vTargetPos);
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+        refAttackObj.SetAttack(m_refAttackInfo);
     }
 
-    private void Update()
+
+    private GameObject CreateBullet()
     {
-        if (m_fCurTime >= m_fFireTime)
-            return;
+        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
+        if (refObj == null)
+            return null;
 
-        m_fCurTime += Time.deltaTime;
+       
+        if(m_refEffectObject != null)
+            m_refEffectObject.Play();
+
+        m_fLastFireTime = Time.time;
+        m_fFireTime = m_refAttackInfo.CoolDown;
+
+        return refObj;
     }
 
 
-    private bool CheckTime()
+    public bool CheckTime()
     {
-        if(m_fCurTime > m_fFireTime)
-        {
-            m_fCurTime = 0.0f;
-            return true;
-        }
-
-        return false;
+        return (Time.time - m_fLastFireTime) > m_fFireTime;
     }
-    
- 
+
+    // ê¸°ì¡´ ë°°ìœ¨ì— ëˆ„ì  ê³±í•˜ì§€ ì•Šê³  ë§¤ë²ˆ ê¸°ë³¸ ì¿¨ë‹¤ìš´ ê¸°ì¤€ìœ¼ë¡œ ì¬ê³„ì‚° (Repeatable ê¸°ëŠ¥ ì¬ì ìš© ì‹œ ë“œë¦¬í”„íŠ¸ ë°©ì§€)
+    public void SetCooldownMultiplier(float _fMultiplier)
+    {
+        float fClamped = Mathf.Max(_fMultiplier, 0.1f);
+
+        m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
+        m_fFireTime = m_refAttackInfo.CoolDown;
+    }
 }
 

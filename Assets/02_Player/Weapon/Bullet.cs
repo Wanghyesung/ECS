@@ -3,19 +3,32 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PoolObject;
 
-public class Bullet : MonoBehaviour
+/*///////////////////////////////////////////
+                IAttackObject
+Î™©Ï†Å : Í≥µÍ≤© Ïò§Î∏åÏ†ùÌä∏ÎùºÎ©¥ Î∞òÎìúÏãú Íµ¨ÌòÑÌï¥ÏïºÌïúÎã§Îäî ÏïΩÏÜç
+ *///////////////////////////////////////////
+public interface IAttackObject
 {
-    private Rigidbody m_refRigidbody;
+    public void SetAttack(AttackInfo _refAttackInfo);
+}
 
-    protected SOAttackInfo m_refAttackInfo;
-    private PoolObject m_refPoolObj;
-    private TriggerObject m_refTriggerObject;
+/*///////////////////////////////////////////
+                  Bullet
+Î™©Ï†Å : Î™¨Ïä§ÌÑ∞, ÌîåÎ†àÏù¥Ïñ¥ Îì±Ïùò Í∏∞Î≥∏ Î∞úÏÇ¨ Ïò§Î∏åÏ†ùÌä∏
+ *///////////////////////////////////////////
 
-    [SerializeField] ePoolType m_eHitEffectType;
+public class Bullet : MonoBehaviour, IAttackObject
+{
+    protected Rigidbody m_refRigidbody;
 
-    protected float m_fMoveSpeed = 0.0f;  //µø¿˚
+    protected AttackInfo m_refAttackInfo;
+
+    protected PoolObject m_refPoolObj;
+    protected TriggerObject m_refTriggerObject;
+
+    [SerializeField] private PoolObject m_refHitEffectObj;
+
 
     protected virtual void Awake()
     {
@@ -24,71 +37,50 @@ public class Bullet : MonoBehaviour
         m_refTriggerObject = GetComponent<TriggerObject>();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        m_refTriggerObject.OnHitTargetEnter += AttackMonster;
+        if(m_refTriggerObject != null)
+            m_refTriggerObject.OnHitTargetEnter += AttackMonster;
     }
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
-        m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
+        if(m_refTriggerObject != null)
+            m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
     }
 
-    protected virtual void Update()
-    {
-
-    }
 
     protected virtual void FixedUpdate()
     {
-        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_fMoveSpeed * Time.fixedDeltaTime;
+        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
     }
 
-    
-    //ƒ›∂Û¿Ã¥ıø° ∞…∑»¿ª ∂ß »£√‚
     protected virtual void AttackMonster(Collider other)
     {
         var iDamageable = other.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
-            MakeAttackInfo(out var attack);
-            iDamageable.TakeDamage(attack);
+            m_refAttackInfo.HitPosition = transform.position;
+            iDamageable.TakeDamage(m_refAttackInfo);
         }
 
-        //TODO : ≥™¡ﬂø° EffectSO±Ó¡ˆ µ˚∑Œ ∏∏µÈæÓº≠ »Æ¿Œ«œ¥¬∞…∑Œ
-        if (m_eHitEffectType != ePoolType.None)
+        if (m_refHitEffectObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_eHitEffectType);
-            Debug.Log($"≈∏∞Ÿ ¿ßƒ° : {transform.position}");
+            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
+            if (refHitEffect == null)
+                return;
+
             refHitEffect.transform.position = transform.position;
         }
 
         ObjectPool.m_Instance.PushObject(gameObject);
     }
-
-    public virtual void SetAttack(SOAttackInfo _refAttackInfo, Vector3 _vDir)
+    //Î∞©Ìñ•Îî∞Îùº ÎèôÏ†ÅÏúºÎ°ú Î∞©Ìñ• Ï†ïÌï¥Ï£ºÍ∏∞
+    public virtual void SetAttack(AttackInfo _refAttackInfo)
     {
         m_refAttackInfo = _refAttackInfo;
-        m_fMoveSpeed = _refAttackInfo.Speed;
-        m_refPoolObj?.SetPushTime(_refAttackInfo.AliveTime);
-
-        SetOption(_vDir);
-    }
-
-    protected virtual void SetOption(Vector3 _vDir)
-    {
-        transform.LookAt(_vDir);
-    }
-
-
-    protected void MakeAttackInfo(out tAttackInfo _tAttackInfo)
-    {
-        _tAttackInfo = new tAttackInfo();
-
-        _tAttackInfo.AttackPower = m_refAttackInfo.AttackPower;
-        _tAttackInfo.Damage = m_refAttackInfo.Damage;
-        _tAttackInfo.KnockbackForce = m_refAttackInfo.KnockbackForce;
-        _tAttackInfo.KnockbackDuration = m_refAttackInfo.KnockbackDuration;
-        _tAttackInfo.StunDuration = m_refAttackInfo.StunDuration;
+        m_refAttackInfo.MoveDir = transform.forward;
+        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
+        m_refTriggerObject.SetTriggerMask(_refAttackInfo.HitLayers);
     }
 }
