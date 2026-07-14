@@ -64,6 +64,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private PlayerMovement m_refMovement = null;
 
     [Header("Max Roll")]
+    [SerializeField] private float m_fRollTime = 2.0f;
+    private float m_fLastRollTime;
+
     [SerializeField] private float m_fMaxRollDuration = 0.5f;
     [SerializeField] private float m_fMaxRollSpeedBoost = 2.5f; // 부스트 시작 배율
     [SerializeField] private float m_fMaxRollSpeedDecay = 3.0f; // 초당 배율 감소량
@@ -102,6 +105,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
         m_refExSliderImage.OnFillMaxReached += MapExpSlider;
+
+        m_fLastRollTime = Time.time;
     }
 
     private void OnDestroy()
@@ -125,9 +130,11 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Update()
     {
-        bool bOnSpace = InputManager.m_Instance.InputInfo.OnSpace;
+        tInputInfo tInfo = InputManager.m_Instance.InputInfo;
+        bool bOnSpace = tInfo.OnSpace;
+        bool bInputX = tInfo.MoveDir.x != 0;
 
-        if (bOnSpace == true && m_refVisualPlayer.IsMaxRolling == false)
+        if (bOnSpace == true && bInputX == true)
             MoveRoll();
 
 
@@ -155,6 +162,11 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     // 스페이스 입력 시 z축 기준 360도 배럴롤 연출과 함께 이동속도를 순간적으로 올렸다가 서서히 되돌림
     private void MoveRoll()
     {
+        float fCurTime = Time.time - m_fLastRollTime;
+        if (fCurTime < m_fRollTime)
+            return;
+
+        m_fLastRollTime = Time.time;
         float fRollDir = InputManager.m_Instance.InputInfo.MoveDir.x;
         if (Mathf.Approximately(fRollDir, 0.0f) == true)
             fRollDir = 1.0f;

@@ -39,7 +39,9 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
-    
+
+    [Header("Inaccuracy")]
+    [SerializeField] private float m_fInaccuracyAngle = 0f; // 조준 방향에서 좌우/상하로 흔들리는 오차 각도
 
     [Header("Circular Sector Shot")]
     [SerializeField] private int m_iBulletCount = 1; // 1이면 기존처럼 단발
@@ -70,6 +72,7 @@ public class Weapon : MonoBehaviour
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.TargetPos = _vTargetPos;
         refShotInfo.TargetTr = _refTargetTr;
+        refShotInfo.Speed = RollSpeed();
 
         if (m_iBulletCount > 1)
         {
@@ -87,6 +90,8 @@ public class Weapon : MonoBehaviour
             refObj.transform.LookAt(_vTargetPos);
         else
             refObj.transform.rotation = m_refFireTr.rotation;
+
+        refObj.transform.rotation = ApplyInaccuracy(refObj.transform.rotation);
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
         refAttackObj.SetAttack(m_refAttackInfo, refShotInfo);
@@ -118,10 +123,13 @@ public class Weapon : MonoBehaviour
             Vector3 vDir = Quaternion.AngleAxis(fConeAngle, vAxis) * vBaseDir;
 
             refObj.transform.position = m_refFireTr.position;
-            refObj.transform.rotation = Quaternion.LookRotation(vDir);
+            refObj.transform.rotation = ApplyInaccuracy(Quaternion.LookRotation(vDir));
+
+            tShotInfo refPelletShotInfo = _refShotInfo;
+            refPelletShotInfo.Speed = RollSpeed();
 
             IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-            refAttackObj.SetAttack(m_refAttackInfo, _refShotInfo);
+            refAttackObj.SetAttack(m_refAttackInfo, refPelletShotInfo);
         }
     }
 
@@ -137,13 +145,34 @@ public class Weapon : MonoBehaviour
         refObj.transform.position = vSpawnPos;
 
         Quaternion qRoation = Quaternion.LookRotation(_vDir);
-        refObj.transform.rotation = qRoation;
+        refObj.transform.rotation = ApplyInaccuracy(qRoation);
+
+        tShotInfo refShotInfo = new tShotInfo();
+        refShotInfo.Speed = RollSpeed();
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo, new tShotInfo());
+        refAttackObj.SetAttack(m_refAttackInfo, refShotInfo);
     }
 
-    
+    private float RollSpeed()
+    {
+        return UnityEngine.Random.Range(m_SOAttackInfo.Speed - m_SOAttackInfo.SpeedOffset, m_SOAttackInfo.Speed + m_SOAttackInfo.SpeedOffset);
+    }
+
+    private Quaternion ApplyInaccuracy(Quaternion _qBase)
+    {
+        if (m_fInaccuracyAngle <= 0f)
+            return _qBase;
+
+        Quaternion qJitter = Quaternion.Euler(
+            UnityEngine.Random.Range(-m_fInaccuracyAngle, m_fInaccuracyAngle),
+            UnityEngine.Random.Range(-m_fInaccuracyAngle, m_fInaccuracyAngle),
+            0f);
+
+        return qJitter * _qBase;
+    }
+
+
     private GameObject CreateBullet()
     {
         GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);

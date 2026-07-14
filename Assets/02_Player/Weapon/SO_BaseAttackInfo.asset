@@ -17,16 +17,15 @@ MonoBehaviour:
   PoolPrefab: {fileID: 6662476535643214403, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
   Damage: 10
   AttackPower: 5
-  Cooldown: 0.1
-  HitCount: 1
+  Cooldown: 0.02
   Speed: 240
   SpeedOffset: 60
   AliveTime: 2
+  HitCount: 1
+  HitStep: 1
   KnockbackForce: 10
   KnockbackDuration: 0.5
   StunDuration: 0
-  ShakeMagnitude: 0.3
-  ShakeDuration: 0.4
   BaseRotationSpeed: 0
   MaxRotationSpeed: 0
   RotationAccelRate: 0

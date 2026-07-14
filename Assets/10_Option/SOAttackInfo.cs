@@ -56,7 +56,6 @@ public class SOAttackInfo : ScriptableObject
         AttackInfo refAttackInfo = new AttackInfo();
 
         refAttackInfo.AttackPower = AttackPower;
-        refAttackInfo.AttackSpeed = UnityEngine.Random.Range(Speed - SpeedOffset, Speed + SpeedOffset);
         refAttackInfo.Damage = Damage;
         refAttackInfo.MaxHitCount = HitCount;
         refAttackInfo.HitStep = HitStep;
@@ -94,7 +93,6 @@ public class AttackInfo
     public int Damage;
     public int AttackPower;
     public float AliveTime;
-    public float AttackSpeed;
     public float CoolDown;
 
     [Header("Hit Count")]
@@ -131,7 +129,8 @@ public struct tShotInfo
 
     public Vector3 MoveDir;
     public Vector3 HitPosition;
+    public float Speed;
 
     public int HitCount;
-    public float LastHitTime; 
+    public float LastHitTime;
 }

@@ -43,9 +43,9 @@ public class TargetScanner : MonoBehaviour
 
             foreach (var refMon in m_arrNearCollider)
             {
-                if (refMon == null)
+                if (refMon == null || refMon.gameObject.activeSelf == false)
                     continue;
-
+                
                 float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
                 if (fDist < fBestDist)
                 {

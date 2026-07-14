@@ -53,7 +53,7 @@ public class Missiles : Bullet
         float fDist = vToTarget.magnitude;
 
         // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
-        float fMoveDist = m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
+        float fMoveDist = m_tShotInfo.Speed * Time.fixedDeltaTime;
         float fArriveDist = Mathf.Max(fMoveDist, m_refAttackInfo.ProximityRadius);
         if (fDist <= fArriveDist)
         {

@@ -30,7 +30,6 @@ public class VisualObject : MonoBehaviour
     private float m_fMaxRollDuration = 0.5f;
     private float m_fMaxRollDir = 1f;
 
-    public bool IsMaxRolling => m_fMaxRollElapsed >= 0f;
 
     [Header("Hit Shake")]
     [SerializeField] private float m_fHitShakeDuration = 0.35f;

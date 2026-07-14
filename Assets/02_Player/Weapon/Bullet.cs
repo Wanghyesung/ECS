@@ -54,7 +54,7 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     protected virtual void FixedUpdate()
     {
-        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_refAttackInfo.AttackSpeed * Time.fixedDeltaTime;
+        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_tShotInfo.Speed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
     }
 
