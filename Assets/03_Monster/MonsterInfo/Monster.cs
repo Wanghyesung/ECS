@@ -149,7 +149,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void Dead()
     {
-        m_refVisualObj.RollX = 1;
+        //m_refVisualObj.RollX = 1;//여기 문제
 
         ChangeState(eEntityState.Dead);
         OnMonsterDied?.Invoke(m_SOMonsterInfo.ExpReward);

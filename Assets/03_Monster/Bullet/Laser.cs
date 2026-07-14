@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*///////////////////////////////////////////
+                    Laser
+목적 : 오브젝트가 바라보는 방향으로 원통형 공격을 하는 오브젝트
+ *///////////////////////////////////////////
+
 public class Laser : MonoBehaviour, IAttackObject
 {
     [SerializeField] protected AttackInfo m_refAttackInfo;
@@ -23,7 +28,6 @@ public class Laser : MonoBehaviour, IAttackObject
     {
         if (m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter += AttackMonster;
-
     }
 
     private void OnDisable()
@@ -64,7 +68,6 @@ public class Laser : MonoBehaviour, IAttackObject
         transform.rotation = m_refAttackInfo.Owner.transform.rotation;
         transform.position = m_refAttackInfo.Owner.transform.position;
     }
-
    
 
     public virtual void SetAttack(AttackInfo _refAttackInfo, tShotInfo _tShotInfo)
@@ -74,7 +77,6 @@ public class Laser : MonoBehaviour, IAttackObject
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         m_refTriggerObject.LayerMask = _refAttackInfo.HitLayers;
-
 
         m_tShotInfo.HitCount = 0;
         m_tShotInfo.LastHitTime = Time.time;

@@ -9697,9 +9697,9 @@ GameObject:
   - component: {fileID: 6260129206335529814}
   - component: {fileID: 8464619574724396953}
   - component: {fileID: 856771050238163266}
-  - component: {fileID: 5469615507277076676}
   - component: {fileID: 3167203205081735591}
   - component: {fileID: 2747596931255988514}
+  - component: {fileID: 2250228202428190407}
   m_Layer: 11
   m_Name: GBossBall
   m_TagString: Untagged
@@ -14548,24 +14548,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
---- !u!114 &5469615507277076676
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3270864465402891538}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!136 &3167203205081735591
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -14616,6 +14598,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2250228202428190407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3270864465402891538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &3383251568183227473
 GameObject:
   m_ObjectHideFlags: 0

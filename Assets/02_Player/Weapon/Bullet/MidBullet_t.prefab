@@ -14,10 +14,10 @@ GameObject:
   - component: {fileID: 3097948489159929952}
   - component: {fileID: 6032339163371132709}
   - component: {fileID: 9164877792443467453}
-  - component: {fileID: 453848223203154846}
   - component: {fileID: -7398542338301981515}
   - component: {fileID: 8472377594057605179}
   - component: {fileID: -6107177459045942003}
+  - component: {fileID: 3838914794046255209}
   m_Layer: 10
   m_Name: MidBullet_t
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 974b33ccbd786464a825203eb88b8dab, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,7 +89,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5082388106658570055}
-  m_Mesh: {fileID: 4300000, guid: d7bd1c1682ee18e4498d7e9af8d4956d, type: 2}
+  m_Mesh: {fileID: 0}
 --- !u!114 &3097948489159929952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,23 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ePoolType: 3
   m_fAliveTime: 2
---- !u!114 &453848223203154846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5082388106658570055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!54 &-7398542338301981515
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -311,5 +295,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refAttackInfo: {fileID: 0}
-  m_eHitEffectType: 4
+  m_refHitEffectObj: {fileID: 0}
+--- !u!114 &3838914794046255209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082388106658570055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 0

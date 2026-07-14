@@ -40,15 +40,6 @@ public class Aim : MonoBehaviour
         return tRay.origin + tRay.direction * m_fMaxLength;
     }
 
-    /* 자유시점
-     Vector2 screenPos =
-    RectTransformUtility.WorldToScreenPoint(
-        null,
-        m_refAimTransform.position);
-
-Ray ray =
-    Camera.main.ScreenPointToRay(screenPos);
-     */
 
 
     private void ChangeCollor(bool hit)

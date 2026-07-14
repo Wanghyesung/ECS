@@ -14379,7 +14379,7 @@ GameObject:
   - component: {fileID: 537172212668676843}
   - component: {fileID: 4813924074177353454}
   - component: {fileID: -817209721816472325}
-  - component: {fileID: 6874582215060016840}
+  - component: {fileID: 7575176214736215464}
   m_Layer: 11
   m_Name: LightBall
   m_TagString: Untagged
@@ -19279,7 +19279,7 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6874582215060016840
+--- !u!114 &7575176214736215464
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -19288,7 +19288,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8854180982353188001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnHitEvent:
@@ -19296,7 +19296,7 @@ MonoBehaviour:
       m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
 --- !u!1 &8862786846838705675
 GameObject:
   m_ObjectHideFlags: 0

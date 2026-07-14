@@ -57,7 +57,6 @@ public class ObjectInfo
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
-    private List<Weapon> m_listFireWeapon = null; 
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
@@ -77,17 +76,14 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private SliderImage m_refHPSliderImage = null;
     [SerializeField] private SliderImage m_refExSliderImage = null;
 
-    [SerializeField] LayerMask m_tAttackLayer;
-    private Transform m_refNearTargetTr = null; 
-    private Collider[] m_arrNearCollider = new Collider[20];
-    [SerializeField] private float m_fAttackRaius;
+    [SerializeField] private TargetScanner m_refTargetScnner = null;
 
+   
     private Coroutine m_CoNockback = null;
     private Rigidbody m_refRigidbody = null;
 
     private void Awake()
     {
-        m_listFireWeapon = new List<Weapon>(m_listWeapon.Count);
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
     }
@@ -144,10 +140,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         
     }
 
-    private void OnDisable()
-    {
-        System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
-    }
+   
 
     public void UpdateOnAnimation(eEntityState _eState, bool _bOn)
     {
@@ -174,58 +167,17 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Fire()
     {
-        bool bFindNearTarget = false;
+        Vector3 vTargetPos = m_refAim.TargetPosition;
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
             if (m_listWeapon[i].CheckTime() == true)
-            {
-                if (m_listWeapon[i].WeaponType == eWeaponType.Missile)
-                    bFindNearTarget = true;
-
-                m_listFireWeapon.Add(m_listWeapon[i]);
-            }
+                m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
         }
-
-
-        if(bFindNearTarget == true)
-            FindNearestTarget();
-
-        Vector3 vTargetPos = m_refAim.TargetPosition;
-
-        for (int i = 0; i < m_listFireWeapon.Count; ++i)
-            m_listWeapon[i].Fire(vTargetPos, m_refNearTargetTr);
-
-        m_listFireWeapon.Clear();
-        m_refNearTargetTr = null;
     }
 
-
-    private void FindNearestTarget()
-    {
-        Physics.OverlapSphereNonAlloc(transform.position, m_fAttackRaius, m_arrNearCollider, m_tAttackLayer);
-
-        Transform refTarget = null;
-        float fBestDist = float.MaxValue;
-        Vector3 vPos = transform.position;
-
-        foreach (var refMon in m_arrNearCollider)
-        {
-            if (refMon == null)
-                continue;
-
-            float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
-            if (fDist < fBestDist)
-            {
-                fBestDist = fDist;
-                refTarget = refMon.transform;
-            }
-        }
-
-        m_refNearTargetTr = refTarget;
-    }
 
 
     private void Dead()

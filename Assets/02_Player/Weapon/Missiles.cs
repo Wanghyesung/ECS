@@ -40,13 +40,11 @@ public class Missiles : Bullet
 
     private void UpdateDirMissile()
     {
-        if (m_tShotInfo.TargetTr == null)
-            return;
-
+       
         m_fElapsedTime += Time.fixedDeltaTime;
         Vector3 vTargetPos = Vector3.zero;
 
-        if (m_bTraceTarget == true)
+        if (m_bTraceTarget == true && m_tShotInfo.TargetTr != null)
             vTargetPos = m_tShotInfo.TargetTr.position;
         else
             vTargetPos = m_tShotInfo.TargetPos;
@@ -64,7 +62,6 @@ public class Missiles : Bullet
         }
 
         Vector3 vDir = vToTarget / fDist;
-
         float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
         float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
 
@@ -94,9 +91,11 @@ public class Missiles : Bullet
 
         m_fElapsedTime = 0f;
 
-        Vector3 vTargetPos = (m_bTraceTarget == true && _refShotInfo.TargetTr != null)
-            ? _refShotInfo.TargetTr.position
-            : _refShotInfo.TargetPos;
+        Vector3 vTargetPos = _refShotInfo.TargetPos;
+
+        if (m_bTraceTarget == true && _refShotInfo.TargetTr != null)
+            vTargetPos = _refShotInfo.TargetTr.position;
+
         m_fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
     }
 
