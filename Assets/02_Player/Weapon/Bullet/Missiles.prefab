@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4552152582649686416}
   - component: {fileID: 262128102816122980}
   - component: {fileID: 4180760221659619132}
-  - component: {fileID: 2569744709739673822}
+  - component: {fileID: 8703135510466516719}
   m_Layer: 10
   m_Name: Missiles
   m_TagString: Untagged
@@ -165,7 +165,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2569744709739673822
+--- !u!114 &8703135510466516719
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,7 +174,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1493568331743266066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnHitEvent:
@@ -182,7 +182,7 @@ MonoBehaviour:
       m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
 --- !u!1 &5044281674920169593
 GameObject:
   m_ObjectHideFlags: 0

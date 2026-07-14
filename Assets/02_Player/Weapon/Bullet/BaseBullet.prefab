@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8455968230701987564}
   - component: {fileID: 5225453047738321035}
-  - component: {fileID: 4908719710886659432}
   - component: {fileID: 2449183551540630354}
   - component: {fileID: 385868540193490018}
   - component: {fileID: 6662476535643214403}
+  - component: {fileID: 1404337562192347302}
   m_Layer: 10
   m_Name: BaseBullet
   m_TagString: Untagged
@@ -50,24 +50,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 198657733370794241, guid: 2cb73af5be8850e448becd5f0ba9d2cf, type: 3}
---- !u!114 &4908719710886659432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5353535738207964243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!54 &2449183551540630354
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -129,6 +111,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
+--- !u!114 &1404337562192347302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5353535738207964243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &5575457481199862928
 GameObject:
   m_ObjectHideFlags: 0

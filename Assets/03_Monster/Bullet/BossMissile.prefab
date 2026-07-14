@@ -159,8 +159,8 @@ GameObject:
   - component: {fileID: 7304655943035773325}
   - component: {fileID: 7100391378737244450}
   - component: {fileID: 8714179848935399806}
-  - component: {fileID: 814507931252500183}
   - component: {fileID: 7640906341208612219}
+  - component: {fileID: 3580043219707684258}
   m_Layer: 11
   m_Name: BossMissile
   m_TagString: Untagged
@@ -248,6 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 0}
   m_refExplodeObj: {fileID: 1627351260098366072, guid: c586e1597572db646b8ef69cc674e822, type: 3}
+  m_bTraceTarget: 0
 --- !u!114 &7100391378737244450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,24 +289,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &814507931252500183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5482934032008921225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!65 &7640906341208612219
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -327,3 +310,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8, y: 0.7, z: 2}
   m_Center: {x: 0, y: 0, z: 2.92}
+--- !u!114 &3580043219707684258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5482934032008921225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_tHitLayer:
+    serializedVersion: 2
+    m_Bits: 0

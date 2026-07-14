@@ -233,7 +233,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         //플레이어가 죽었을 때
     }
 
-    public void TakeDamage(AttackInfo _refAttackInfo)
+    public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         if (m_CoNockback != null)
             StopCoroutine(m_CoNockback);
@@ -242,12 +242,12 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
         m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_SOObjectInfo.MaxHP);
-        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
+        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
     }
 
-    private IEnumerator CoNockback(AttackInfo _refAttackInfo)
+    private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        Vector3 vDir = _refAttackInfo.MoveDir;
+        Vector3 vDir = _refShotInfo.MoveDir;
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
         float fPower = _refAttackInfo.AttackPower;
 

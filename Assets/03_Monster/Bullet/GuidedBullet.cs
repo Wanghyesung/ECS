@@ -17,9 +17,9 @@ public class GuidedBullet : Bullet
 
     protected override void FixedUpdate()
     {
-        if (m_refAttackInfo.TargetTrasnform != null)
+        if (m_tShotInfo.TargetTr != null)
         {
-            Vector3 vDir = (m_refAttackInfo.TargetTrasnform.position - transform.position).normalized;
+            Vector3 vDir = (m_tShotInfo.TargetTr.position - transform.position).normalized;
             Quaternion qTargetRot = Quaternion.LookRotation(vDir);
             m_refRigidbody.MoveRotation(qTargetRot);
         }
@@ -27,10 +27,10 @@ public class GuidedBullet : Bullet
         base.FixedUpdate();
     }
 
-  
-    public override void SetAttack(AttackInfo _refAttackInfo)
+
+    public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        base.SetAttack(_refAttackInfo);
+        base.SetAttack(_refAttackInfo, _refShotInfo);
     }
 
     protected override void AttackMonster(Collider other)

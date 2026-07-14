@@ -40,16 +40,16 @@ public class Missiles : Bullet
 
     private void UpdateDirMissile()
     {
-        if (m_refAttackInfo.TargetTrasnform == null)
+        if (m_tShotInfo.TargetTr == null)
             return;
 
         m_fElapsedTime += Time.fixedDeltaTime;
         Vector3 vTargetPos = Vector3.zero;
-   
+
         if (m_bTraceTarget == true)
-            vTargetPos = m_refAttackInfo.TargetTrasnform.position;
+            vTargetPos = m_tShotInfo.TargetTr.position;
         else
-            vTargetPos = m_refAttackInfo.TargetPos;
+            vTargetPos = m_tShotInfo.TargetPos;
 
         Vector3 vToTarget = vTargetPos - transform.position;
         float fDist = vToTarget.magnitude;
@@ -79,7 +79,7 @@ public class Missiles : Bullet
 
         Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
         m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
-        m_refAttackInfo.MoveDir = vNewForward;
+        m_tShotInfo.MoveDir = vNewForward;
     }
 
 
@@ -88,15 +88,15 @@ public class Missiles : Bullet
         base.AttackMonster(other);
     }
 
-    public override void SetAttack(AttackInfo _refAttackInfo)
+    public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-       base.SetAttack(_refAttackInfo);
+       base.SetAttack(_refAttackInfo, _refShotInfo);
 
         m_fElapsedTime = 0f;
 
-        Vector3 vTargetPos = (m_bTraceTarget == true && _refAttackInfo.TargetTrasnform != null)
-            ? _refAttackInfo.TargetTrasnform.position
-            : _refAttackInfo.TargetPos;
+        Vector3 vTargetPos = (m_bTraceTarget == true && _refShotInfo.TargetTr != null)
+            ? _refShotInfo.TargetTr.position
+            : _refShotInfo.TargetPos;
         m_fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
     }
 

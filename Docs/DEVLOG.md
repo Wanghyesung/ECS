@@ -234,4 +234,70 @@ public void TakeDamage(AttackInfo _refAttackInfo)
 > 2. **연출(Visual) 모듈은 데이터 소스를 몰라야 재사용 가능**: `VisualObject`가 `InputManager`를 직접 참조하던 것을, 인터페이스(`IRollable`)를 통해 "부모가 값을 제공한다"는 계약으로 바꾸자 플레이어 전용 컴포넌트가 범용 컴포넌트가 됨.
 > 3. **옵저버 패턴이 항상 정답은 아니다**: 구독자가 정확히 하나뿐이고 앞으로도 그럴 대상(현재 타겟 몬스터 HP UI)은, 이벤트 버스보다 기존 컨벤션(`CameraManager` 직접 호출)을 따르는 단순한 싱글턴 호출이 더 적합하다. 반대로 구독자가 늘어날 여지가 있는 대상(플레이어 HP)은 이벤트 기반으로 남겨두는 비대칭 설계가 합리적일 수 있다.
 
+---
+
+# 🚀 [Unity 우주 슈팅] AttackInfo 공유 참조 버그 → ShotInfo(struct) 분리
+
+- **날짜:** 2026-07-14
+- **관련 시스템:** Weapon/Bullet, Combat, Data Architecture
+
+## 1. 🚨 문제 상황
+
+- 레이저처럼 발사 후에도 플레이어를 계속 따라가야 하는 무기를 만들려다, "Weapon 쪽에 bool 플래그를 늘려서 자식으로 붙일지 말지 분기하면 코드가 더러워지지 않을까?"라는 질문에서 출발.
+- 논의 중 더 근본적인 문제를 발견: `Weapon.Awake()`가 `AttackInfo`를 **딱 한 번만** 생성해 `m_refAttackInfo` 필드에 저장해두고, 발사할 때마다 `SetAttack()`에 **그 동일한 참조**를 그대로 넘기고 있었음.
+- `AttackInfo`가 `class`(참조 타입)라서, 같은 무기에서 나간 총알들은 전부 메모리상 같은 인스턴스를 공유. `MoveDir`, `HitPosition`, `TargetPos`, `TargetTrasnform`처럼 총알 개별 생애주기에 종속돼야 할 값들이 전부 이 공유 객체에 뒤섞여 있었음.
+- 지금까지 티가 안 났던 이유:
+  - `HitPosition`은 쓰기만 하고 아무도 읽지 않는 죽은 필드였음.
+  - `Monster`/`Player`의 `CoNockback` 코루틴은 첫 `yield return` 이전에 필요한 값을 전부 로컬 변수로 스냅샷 떠서 우연히 안전했음.
+- 하지만 관통 총알의 `HitCount`처럼 **총알 하나의 생애 동안 누적되는 값**을 그대로 추가하면, 동시에 날아가는 총알 A/B가 같은 카운터를 공유해 서로의 히트 수를 간섭하는 버그가 바로 재현됨.
+
+## 2. 💡 해결 아이디어
+
+- `AttackInfo`를 통째로 `struct`로 바꾸는 방법도 검토했지만, "무기당 한 번 세팅되고 안 바뀌는 공유 설정"과 "총알 한 발마다 새로 생기는 동적 데이터"의 책임이 여전히 한 타입에 섞여있는 문제는 남음.
+- 대신 두 개념을 완전히 분리:
+  - **`AttackInfo` (class, 그대로 유지)**: `Damage`, `AttackSpeed`, `CoolDown`, `KnockbackForce/Duration`, 호밍 관련 필드, `HitLayers`, `Owner` 등 Weapon당 한 번 세팅되고 이후 절대 안 바뀌는 값. 참조 공유해도 안전.
+  - **`ShotInfo` (struct, 신설)**: `TargetPos`, `TargetTr`, `MoveDir`, `HitPosition`, `HitCount` 등 발사/피격마다 새로 생기는 값.
+- `struct`를 선택한 이유는 `new` 힙 할당 없이(GC-Alloc-0 유지) `SetAttack()` 호출 시 C#이 자동으로 값 복사를 해주기 때문 — 총알마다 독립된 복사본을 갖게 되어 공유 버그가 원천적으로 사라짐.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOAttackInfo.cs
+
+- `AttackInfo`에서 `TargetPos`/`TargetTrasnform`/`HitPosition`/`MoveDir` 제거.
+- 신규 `ShotInfo` struct 추가:
+
+```csharp
+[Serializable]
+public struct ShotInfo
+{
+    public Vector3 TargetPos;
+    public Transform TargetTr;
+    public Vector3 MoveDir;
+    public Vector3 HitPosition;
+    public int HitCount;
+}
+```
+
+### 🔹 Bullet.cs / Laser.cs / Missiles.cs / GuidedBullet.cs
+
+- `IAttackObject.SetAttack(AttackInfo, ShotInfo)`로 시그니처 변경, 각 구현체가 `m_refShotInfo` 필드를 자체적으로 보유.
+- `Missiles`/`GuidedBullet`의 호밍 로직에서 읽던 `TargetTrasnform`/`TargetPos`/`MoveDir`을 전부 `m_refShotInfo` 쪽으로 이동.
+
+### 🔹 Weapon.cs
+
+- `Fire()`/`FireCircularSector()`/`FireAndRotate()`가 발사마다 로컬 `ShotInfo`를 새로 만들어 `SetAttack(m_refAttackInfo, refShotInfo)`로 전달. `m_refAttackInfo`(공유 설정)는 그대로 재사용.
+
+### 🔹 Monster.cs / Player.cs
+
+- `IDamageable.TakeDamage(AttackInfo, ShotInfo)`로 확장.
+- `CoNockback` 코루틴이 `MoveDir`을 `_refAttackInfo`가 아닌 `_refShotInfo`에서 읽도록 수정.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **공유 참조 버그는 "쓰기만 하고 아무도 안 읽는 필드"에 숨어있을 수 있다**: `HitPosition`은 당장 아무 문제도 안 일으켰지만, 나중에 누군가 그 값을 읽는 코드를 추가하는 순간 바로 터지는 시한폭탄이었음. 필드가 안전한지는 "지금 안 터진다"가 아니라 "구조적으로 공유되지 않는다"로 판단해야 함.
+> 2. **"무기당 한 번 세팅되는 공유 설정" vs "발사마다 새로 생기는 동적 데이터"는 타입 레벨에서 분리하는 게 맞다**: SO는 데이터/에디터 세팅만, 런타임 동적 상태는 Blackboard나 인스턴스에 두라는 프로젝트 원칙(CLAUDE.md)을 Weapon/Bullet 쪽에도 그대로 적용한 사례.
+> 3. **struct는 "매번 복사해도 되는 작은 런타임 데이터"에 GC-Alloc-0을 유지하면서 값 격리를 얻는 좋은 도구**: `new` 없이 함수 호출 시 자동으로 독립된 복사본이 생기므로, 공유하면 안 되는 값을 클래스에 넣고 매번 clone하는 것보다 struct로 빼는 편이 더 저렴하고 명확하다.
+
 

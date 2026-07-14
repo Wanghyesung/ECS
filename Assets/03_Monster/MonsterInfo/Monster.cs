@@ -7,7 +7,7 @@ using static Weapon;
 
 public interface IDamageable
 {
-    public void TakeDamage(AttackInfo _refAttackInfo);
+    public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo);
 }
 
 public interface IChangeInfoable
@@ -126,7 +126,7 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBT?.Evaluate(m_refBlackBoard);
     }
 
-    public void TakeDamage(AttackInfo _refAttackInfo)
+    public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         if (m_refBlackBoard.ObjInfo.State == eEntityState.Hit || m_refBlackBoard.ObjInfo.State == eEntityState.Dead)
             return;
@@ -144,7 +144,7 @@ public class Monster : MonoBehaviour, IDamageable
         if(m_CoNockback !=null)
             StopCoroutine(m_CoNockback);
 
-        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo));
+        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
     }
 
     private void Dead()
@@ -158,12 +158,12 @@ public class Monster : MonoBehaviour, IDamageable
         gameObject.SetActive(false);
     }
 
-    private IEnumerator CoNockback(AttackInfo _refAttackInfo)
+    private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         ChangeState(eEntityState.Hit);
 
 
-        Vector3 vDir = _refAttackInfo.MoveDir;
+        Vector3 vDir = _refShotInfo.MoveDir;
         float fPower = _refAttackInfo.AttackPower;
         m_refVisualObj?.PlayHitShake(vDir, fPower);
 
@@ -224,5 +224,14 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBlackBoard.ObjInfo.State = _eState;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        int a = 10;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        int a = 10;
+    }
 }
 

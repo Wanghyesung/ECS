@@ -50,6 +50,7 @@ public class Weapon : MonoBehaviour
     private void Awake()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
+        m_refAttackInfo.Owner = gameObject.transform;
         m_fFireTime = m_refAttackInfo.CoolDown;
         m_fBaseCooldown = m_refAttackInfo.CoolDown;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
@@ -66,12 +67,13 @@ public class Weapon : MonoBehaviour
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {
-        m_refAttackInfo.TargetPos = _vTargetPos;
-        m_refAttackInfo.TargetTrasnform = _refTargetTr;
+        tShotInfo refShotInfo = new tShotInfo();
+        refShotInfo.TargetPos = _vTargetPos;
+        refShotInfo.TargetTr = _refTargetTr;
 
         if (m_iBulletCount > 1)
         {
-            FireCircularSector(_vTargetPos);
+            FireCircularSector(_vTargetPos, refShotInfo);
             return;
         }
 
@@ -87,12 +89,12 @@ public class Weapon : MonoBehaviour
             refObj.transform.rotation = m_refFireTr.rotation;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo);
+        refAttackObj.SetAttack(m_refAttackInfo, refShotInfo);
     }
 
     // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
     // 골든 앵글 스파이럴로 균등 분포시켜 3D 부채꼴(샷건 콘) 형태로 발사
-    private void FireCircularSector(Vector3 _vTargetPos)
+    private void FireCircularSector(Vector3 _vTargetPos, tShotInfo _refShotInfo)
     {
         Vector3 vBaseDir = (_vTargetPos - m_refFireTr.position).normalized;
         Vector3 vSpokeAxis = Vector3.Cross(vBaseDir, m_refFireTr.up);
@@ -119,7 +121,7 @@ public class Weapon : MonoBehaviour
             refObj.transform.rotation = Quaternion.LookRotation(vDir);
 
             IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-            refAttackObj.SetAttack(m_refAttackInfo);
+            refAttackObj.SetAttack(m_refAttackInfo, _refShotInfo);
         }
     }
 
@@ -138,10 +140,10 @@ public class Weapon : MonoBehaviour
         refObj.transform.rotation = qRoation;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo);
+        refAttackObj.SetAttack(m_refAttackInfo, new tShotInfo());
     }
 
-
+    
     private GameObject CreateBullet()
     {
         GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
