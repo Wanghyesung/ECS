@@ -30,6 +30,8 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected ITriggerable m_refTriggerObject;
 
     [SerializeField] private PoolObject m_refHitEffectObj;
+
+    private static int Count = 0;
     
     protected virtual void Awake()
     {
@@ -44,11 +46,14 @@ public class Bullet : MonoBehaviour, IAttackObject
             m_refTriggerObject.OnHitTargetEnter += AttackMonster;
 
         m_tShotInfo.HitCount = 0;
+        ++Count;
     }
     protected virtual void OnDisable()
     {
         if(m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
+
+        --Count;
     }
     
 
@@ -56,6 +61,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     {
         Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_tShotInfo.Speed * Time.fixedDeltaTime;
         m_refRigidbody.MovePosition(vNextPos);
+
     }
 
     protected virtual void AttackMonster(Collider other)
