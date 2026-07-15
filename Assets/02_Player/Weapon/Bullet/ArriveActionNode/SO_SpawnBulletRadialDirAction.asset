@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e90b5f4cf90f5ad4e9617b5cd16f869b, type: 3}
+  m_Name: SO_SpawnBulletRadialDirAction
+  m_EditorClassIdentifier: 
+  m_refSpawnBulletPrefab: {fileID: 6809344323104675476, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+  m_iSpawnCount: 4
+  m_fSpeed: 200

@@ -80,21 +80,17 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        GameObject refObj = CreateBullet();
+        Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
+        Quaternion qRot = (m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f)
+            ? Quaternion.LookRotation(vLookDir)
+            : m_refFireTr.rotation;
+        qRot = ApplyInaccuracy(qRot);
 
+        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
             return;
 
-        refObj.transform.position = m_refFireTr.position;
-        if (m_bLookTarget == true)
-            refObj.transform.LookAt(_vTargetPos);
-        else
-            refObj.transform.rotation = m_refFireTr.rotation;
-
-        refObj.transform.rotation = ApplyInaccuracy(refObj.transform.rotation);
-
-        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo, refShotInfo);
+        OnBulletFired();
     }
 
     // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
@@ -109,10 +105,6 @@ public class Weapon : MonoBehaviour
 
         for (int i = 0; i < m_iBulletCount; ++i)
         {
-            GameObject refObj = CreateBullet();
-            if (refObj == null)
-                continue;
-
             // fConeAngle: 중심축에서 얼마나 벌어지는지 (sqrt 분포로 원뿔 단면에 균등하게 채움)
             // fSpinAngle: 중심축을 기준으로 몇 도 회전한 스포크에 놓을지 (골든 앵글로 겹치지 않게 배치)
             float fRatio = (i + 0.5f) / m_iBulletCount;
@@ -122,36 +114,33 @@ public class Weapon : MonoBehaviour
             Vector3 vAxis = Quaternion.AngleAxis(fSpinAngle, vBaseDir) * vSpokeAxis;//실제로 회전시킬 대상인 3D 화살표
             Vector3 vDir = Quaternion.AngleAxis(fConeAngle, vAxis) * vBaseDir;
 
-            refObj.transform.position = m_refFireTr.position;
-            refObj.transform.rotation = ApplyInaccuracy(Quaternion.LookRotation(vDir));
+            Quaternion qRot = ApplyInaccuracy(Quaternion.LookRotation(vDir));
 
             tShotInfo refPelletShotInfo = _refShotInfo;
             refPelletShotInfo.Speed = RollSpeed();
 
-            IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-            refAttackObj.SetAttack(m_refAttackInfo, refPelletShotInfo);
+            GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
+            if (refObj == null)
+                continue;
+
+            OnBulletFired();
         }
     }
 
 
     public void FireAndRotate(Vector3 _vDir, float _fFowardOffset)
     {
-        GameObject refObj = CreateBullet();
-
-        if (refObj == null)
-            return;
-
         Vector3 vSpawnPos = m_refFireTr.position + (_vDir * _fFowardOffset);
-        refObj.transform.position = vSpawnPos;
-
-        Quaternion qRoation = Quaternion.LookRotation(_vDir);
-        refObj.transform.rotation = ApplyInaccuracy(qRoation);
+        Quaternion qRot = ApplyInaccuracy(Quaternion.LookRotation(_vDir));
 
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.Speed = RollSpeed();
 
-        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj.SetAttack(m_refAttackInfo, refShotInfo);
+        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
+        if (refObj == null)
+            return;
+
+        OnBulletFired();
     }
 
     private float RollSpeed()
@@ -173,20 +162,13 @@ public class Weapon : MonoBehaviour
     }
 
 
-    private GameObject CreateBullet()
+    private void OnBulletFired()
     {
-        GameObject refObj = ObjectPool.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
-        if (refObj == null)
-            return null;
-
-       
-        if(m_refEffectObject != null)
+        if (m_refEffectObject != null)
             m_refEffectObject.Play();
 
         m_fLastFireTime = Time.time;
         m_fFireTime = m_refAttackInfo.CoolDown;
-
-        return refObj;
     }
 
 

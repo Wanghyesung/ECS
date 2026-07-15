@@ -29,6 +29,9 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected PoolObject m_refPoolObj;
     protected ITriggerable m_refTriggerObject;
 
+    // BulletArriveAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
+    public AttackInfo AttackInfo => m_refAttackInfo;
+
     [SerializeField] private PoolObject m_refHitEffectObj;
 
     // 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행할 로직들. 프리팹별로 인스펙터에서 조합
@@ -102,6 +105,7 @@ public class Bullet : MonoBehaviour, IAttackObject
 
         ObjectPool.m_Instance.PushObject(gameObject);
     }
+
     //방향따라 동적으로 방향 정해주기
     public virtual void SetAttack(AttackInfo _refAttackInfo, tShotInfo _tShotInfo)
     {
@@ -110,5 +114,23 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         m_refTriggerObject.LayerMask = _refAttackInfo.HitLayers;
+    }
+
+
+    // 풀에서 공격 오브젝트를 꺼내 위치/회전을 세팅하고 SetAttack까지 호출하는 스폰 로직을 한 곳에 모아,
+    // Weapon뿐 아니라 BulletArriveAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
+    public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    {
+        GameObject refObj = ObjectPool.m_Instance.GetObject(_refPrefab);
+        if (refObj == null)
+            return null;
+
+        refObj.transform.position = _vPos;
+        refObj.transform.rotation = _qRot;
+
+        IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
+        refAttackObj?.SetAttack(_refAttackInfo, _refShotInfo);
+
+        return refObj;
     }
 }
