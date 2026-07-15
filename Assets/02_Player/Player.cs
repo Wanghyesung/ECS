@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.AI;
 using UnityEngine.AI;
 using static Weapon;
+using UnityEngine.Events;
 
 
 public enum eStatusEffect
@@ -53,7 +54,6 @@ public class ObjectInfo
 
 }
 
-
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
@@ -81,7 +81,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
 
-   
     private Coroutine m_CoNockback = null;
     private Rigidbody m_refRigidbody = null;
 
@@ -147,7 +146,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         
     }
 
-   
 
     public void UpdateOnAnimation(eEntityState _eState, bool _bOn)
     {
@@ -172,7 +170,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             fRollDir = 1.0f;
 
         m_refVisualPlayer.PlayMaxRoll(fRollDir, m_fMaxRollDuration);
-        m_refMovement.ApplySpeedBoost(m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
+        m_refMovement.ApplySpeedBoost(fRollDir, m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
     }
 
     
@@ -189,7 +187,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
                 m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
         }
     }
-
 
 
     private void Dead()
@@ -262,8 +259,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
                 m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
         }
     }
-
-
 
     public void ChangeHPRatio(float _fRatio)
     {

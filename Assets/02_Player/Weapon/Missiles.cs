@@ -12,7 +12,6 @@ public class Missiles : Bullet
 {
     private float m_fElapsedTime;
     private float m_fTargetLength;
-    [SerializeField] private PoolObject m_refExplodeObj;
     [SerializeField] private bool m_bTraceTarget = false;
 
     protected override void Awake()
@@ -24,18 +23,6 @@ public class Missiles : Bullet
     {
         UpdateDirMissile();
         base.FixedUpdate();
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        m_refPoolObj.OnPush += SpawnExplosion;
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        m_refPoolObj.OnPush -= SpawnExplosion;
     }
 
     private void UpdateDirMissile()
@@ -60,7 +47,6 @@ public class Missiles : Bullet
             m_refPoolObj.SetAliveTime(0.0f);
             return;
         }
-
         Vector3 vDir = vToTarget / fDist;
         float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
         float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
@@ -97,14 +83,5 @@ public class Missiles : Bullet
             vTargetPos = _refShotInfo.TargetTr.position;
 
         m_fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
-    }
-
-    private void SpawnExplosion()
-    {
-        if (m_refExplodeObj != null)
-        {
-            GameObject refExObject = ObjectPool.m_Instance.GetObject(m_refExplodeObj);
-            refExObject.transform.position = transform.position;
-        }
     }
 }

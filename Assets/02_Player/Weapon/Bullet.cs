@@ -31,8 +31,10 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     [SerializeField] private PoolObject m_refHitEffectObj;
 
-    private static int Count = 0;
-    
+    // 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행할 로직들. 프리팹별로 인스펙터에서 조합
+    [SerializeField] private SOBulletArriveAction[] m_arrArriveActions;
+
+
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
@@ -45,15 +47,27 @@ public class Bullet : MonoBehaviour, IAttackObject
         if(m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter += AttackMonster;
 
+        if (m_refPoolObj != null)
+            m_refPoolObj.OnPush += RunArriveActions;
+
         m_tShotInfo.HitCount = 0;
-        ++Count;
     }
     protected virtual void OnDisable()
     {
         if(m_refTriggerObject != null)
             m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
 
-        --Count;
+        if (m_refPoolObj != null)
+            m_refPoolObj.OnPush -= RunArriveActions;
+    }
+
+    private void RunArriveActions()
+    {
+        if (m_arrArriveActions == null)
+            return;
+
+        for (int i = 0; i < m_arrArriveActions.Length; ++i)
+            m_arrArriveActions[i]?.Execute(this);
     }
     
 

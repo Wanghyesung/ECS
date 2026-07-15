@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b0d174a95ac3364d96162d170e40627, type: 3}
-  m_Name: SO_FeatureUPHP_0.2
+  m_Name: SO_FeatureUPHP_0.2 2
   m_EditorClassIdentifier: 
   m_eID: 3
   m_strDescription: "\uD504\uB808\uC774\uC5B4\uC73C \uCCB4\uB825\uC73C \uB192\uC785\uB2C8\uB2E4."

@@ -247,7 +247,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 0}
-  m_refExplodeObj: {fileID: 1627351260098366072, guid: c586e1597572db646b8ef69cc674e822, type: 3}
+  m_arrArriveActions:
+  - {fileID: 11400000, guid: d5af5173816b0bb458bc9713eba374ff, type: 2}
   m_bTraceTarget: 0
 --- !u!114 &7100391378737244450
 MonoBehaviour:
