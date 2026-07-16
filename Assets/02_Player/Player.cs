@@ -51,7 +51,6 @@ public class ObjectInfo
 
     public ushort CurrentEffects; 
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
-
 }
 
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
@@ -137,8 +136,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             MoveRoll();
 
 
-        if (Input.GetKey(KeyCode.Q))
-            Fire();
+        //if (Input.GetKey(KeyCode.Q))
+        Fire();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -264,6 +263,16 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         {
             if (m_listWeapon[i].WeaponType == _eType)
                 m_listWeapon[i].AddHitAction(_refAction);
+        }
+    }
+    
+    // FeatureSO.Apply()에서 공격 카운트를 높여주는 기능 
+    public void PenetrationWeapon(eWeaponType _eType)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].SetMaxAttackCount = int.MaxValue;
         }
     }
 

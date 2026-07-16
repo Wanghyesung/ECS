@@ -127,9 +127,6 @@ public class Bullet : MonoBehaviour, IAttackObject
         var iDamageable = other.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
-            if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
-                return;
-
             ++m_tShotInfo.HitCount;
             m_tShotInfo.HitPosition = transform.position;
             iDamageable.TakeDamage(m_refAttackInfo, m_tShotInfo);
@@ -145,7 +142,9 @@ public class Bullet : MonoBehaviour, IAttackObject
             refHitEffect.transform.position = transform.position;
         }
 
-        ObjectPool.m_Instance.PushObject(gameObject);
+        if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
+            ObjectPool.m_Instance.PushObject(gameObject);
+
     }
 
     //방향따라 동적으로 방향 정해주기

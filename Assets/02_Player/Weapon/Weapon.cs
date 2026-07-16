@@ -25,6 +25,12 @@ public class Weapon : MonoBehaviour
 
     private AttackInfo m_refAttackInfo;
 
+    public int SetMaxAttackCount
+    {
+        get{return m_refAttackInfo.MaxHitCount;}
+        set{m_refAttackInfo.MaxHitCount = value;}
+    }
+
     [SerializeField] private Transform m_refFireTr = null;
     [SerializeField] private ParticleSystem m_refEffectObject;
 

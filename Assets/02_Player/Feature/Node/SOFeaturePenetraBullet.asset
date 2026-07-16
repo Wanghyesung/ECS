@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0326068139b236943978a7671a385511, type: 3}
-  m_Name: SO_FeatAddBullet
+  m_Script: {fileID: 11500000, guid: 40740e9c600beff42b3138a57059c29d, type: 3}
+  m_Name: SOFeaturePenetraBullet
   m_EditorClassIdentifier: 
-  m_eID: 5
+  m_eID: 3
   m_strDescription: 
-  m_sprIcon: {fileID: -118184348, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
-  m_eAcquireType: 0
+  m_sprIcon: {fileID: 351841236, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_eAcquireType: 1
   m_iWeight: 1
   m_eTargetWeaponType: 1

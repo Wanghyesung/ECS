@@ -161,6 +161,7 @@ GameObject:
   - component: {fileID: 8714179848935399806}
   - component: {fileID: 7640906341208612219}
   - component: {fileID: 3580043219707684258}
+  - component: {fileID: 7345396145052410490}
   m_Layer: 11
   m_Name: BossMissile
   m_TagString: Untagged
@@ -249,6 +250,7 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 0}
   m_arrArriveActions:
   - {fileID: 11400000, guid: d5af5173816b0bb458bc9713eba374ff, type: 2}
+  m_arrHitActions: []
   m_bTraceTarget: 0
 --- !u!114 &7100391378737244450
 MonoBehaviour:
@@ -329,3 +331,15 @@ MonoBehaviour:
   m_tHitLayer:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &7345396145052410490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5482934032008921225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

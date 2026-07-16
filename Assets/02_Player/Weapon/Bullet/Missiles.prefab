@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 262128102816122980}
   - component: {fileID: 4180760221659619132}
   - component: {fileID: 8703135510466516719}
+  - component: {fileID: 4360361215348570636}
   m_Layer: 10
   m_Name: Missiles
   m_TagString: Untagged
@@ -104,6 +105,7 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 0}
   m_arrArriveActions:
   - {fileID: 11400000, guid: 1e3e8b38b1c01e64f9c7299cdc4f4206, type: 2}
+  m_arrHitActions: []
   m_bTraceTarget: 1
 --- !u!114 &4552152582649686416
 MonoBehaviour:
@@ -184,6 +186,18 @@ MonoBehaviour:
   m_tHitLayer:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &4360361215348570636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493568331743266066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5044281674920169593
 GameObject:
   m_ObjectHideFlags: 0

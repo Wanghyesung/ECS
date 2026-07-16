@@ -300,4 +300,137 @@ public struct ShotInfo
 > 2. **"무기당 한 번 세팅되는 공유 설정" vs "발사마다 새로 생기는 동적 데이터"는 타입 레벨에서 분리하는 게 맞다**: SO는 데이터/에디터 세팅만, 런타임 동적 상태는 Blackboard나 인스턴스에 두라는 프로젝트 원칙(CLAUDE.md)을 Weapon/Bullet 쪽에도 그대로 적용한 사례.
 > 3. **struct는 "매번 복사해도 되는 작은 런타임 데이터"에 GC-Alloc-0을 유지하면서 값 격리를 얻는 좋은 도구**: `new` 없이 함수 호출 시 자동으로 독립된 복사본이 생기므로, 공유하면 안 되는 값을 클래스에 넣고 매번 clone하는 것보다 struct로 빼는 편이 더 저렴하고 명확하다.
 
+---
 
+# 🚀 [Unity 우주 슈팅] 명중 시 능력치 발동 시스템 — Weapon vs Bullet, Pool 재사용, Laser 상속 문제
+
+- **날짜:** 2026-07-16
+- **관련 시스템:** Weapon/Bullet, Object Pool, Feature(레벨업), Combat
+
+## 1. 🚨 문제 상황
+
+레벨업 능력치로 "총알이 관통한다", "적중 시 총알이 다방면으로 생성된다" 같은 걸 넣으려는데, 기존 구조로는 세 가지 지점에서 막혔다.
+
+1. 총알 도착(명중/AliveTime 만료) 시 실행되는 `SOBulletArriveAction[]`이 **Bullet 프리팹 인스펙터에 직접 박혀있는 구조**라, 레벨업으로 동적으로 붙었다 빠지는 능력치를 표현할 방법이 없었음.
+2. 관통 기능을 검토하다 보니 `Bullet.AttackMonster()`가 `AttackInfo.MaxHitCount`를 사실상 무시하고 명중하자마자 무조건 `ObjectPool.PushObject`를 호출하는 **기존 버그**를 발견 (관통을 염두에 둔 필드는 있는데 실제로 안 먹힘).
+3. "적중 시 다방면 발사" 카드(`SO_FeatureHitCreateBullet`, `eFeatureID.HitCreateBullet`)가 실제로는 스크립트 연결이 잘못돼 있어서 선택해도 HP 회복만 되는 상태였음(레벨업 카드 시스템 전수 조사 중 발견).
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) Weapon vs Bullet, 능력치 배열을 어디에 둘 것인가**
+- 처음 아이디어는 "원본 프리팹에 Action을 동적으로 꽂아주자"였는데, 총알 종류가 계속 늘어나는(현재 기준 프리팹 수십~수백 개 규모) 상황에서 프리팹 하나하나에 능력치를 세팅하는 건 확장성이 없다고 판단.
+- 결론: **소스 오브 트루스를 Weapon(개수가 훨씬 적음)에 두고, 발사 시점에만 총알 인스턴스에 얹어준다.**
+
+**2) Object Pool 재사용 함정**
+- Weapon이 발사할 때마다 능력치를 "추가(Add)"하는 방식으로 갔다면, 같은 풀 인스턴스가 재사용될수록 이전에 추가한 게 안 지워지고 계속 쌓여서 **같은 능력치가 중복 실행**되는 버그가 났을 것.
+- 해결: 프리팹 고유 동작(baseline, `[SerializeField]`)과 Weapon이 부여하는 동적 동작(런타임 전용)을 **배열 자체를 분리**해서 관리하고, Weapon은 발사할 때마다 자기 배열 참조를 **통째로 덮어쓰기**만 함. Add가 아니라 대입이라 몇 번을 재사용해도 중복이 없고, `new` 없이 참조만 옮기니 GC Alloc도 0.
+
+**3) Arrive/Hit을 클래스 계층으로 나눌 필요가 있는가**
+- 처음엔 "도착 시" 로직(`SOBulletArriveAction`)과 별개로 "명중 시" 로직을 위한 새 클래스 계층(`SOBulletHitAction`)을 만들려고 했는데, 두 Action 모두 `Execute(owner)` 시그니처가 완전히 동일하다는 걸 재확인.
+- 결론: 공통 베이스 SO 하나(`SOBulletAction`)만 두고, "언제 실행되는가"는 그냥 **배열 소속(Arrive용 배열 vs Hit용 배열)**으로만 구분. 클래스 계층을 늘리지 않아 SO 에셋도 그대로 재사용 가능.
+
+**4) Laser는 Bullet을 상속하지 않는다**
+- Weapon이 능력치를 주입할 때 `GetComponent<Bullet>()`으로 구현했는데, `Laser.cs`(`Assets/03_Monster/Bullet/Laser.cs`)가 `Bullet`을 상속하지 않고 `IAttackObject`를 독립적으로 구현하고 있다는 걸 뒤늦게 확인 — Laser 타입 무기는 능력치가 조용히 안 먹히는 상태였음.
+- Arrive(도착)는 Laser에는 아예 없는 개념(빔이라 "도착"이 없음)이라 Bullet 전용으로 남기고, Hit(명중)은 Bullet/Laser 둘 다 실제로 존재하는 공통 이벤트라 `IAttackObject` 인터페이스 계약으로 끌어올림. 단, 인터페이스는 필드를 가질 수 없어서 실제 저장 필드는 Bullet과 Laser가 각자 보유하고, 인터페이스엔 `SetWeaponHitActions(...)` 메서드 계약만 선언.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 IAttackObject (Bullet.cs)
+```csharp
+public interface IAttackObject
+{
+    public void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo);
+    public AttackInfo AttackInfo { get; }
+    public Transform transform { get; }   // MonoBehaviour가 이미 제공, 구현체가 별도 작성 불필요
+    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions);
+}
+```
+
+### 🔹 SOBulletAction (구 SOBulletArriveAction)
+- `Execute(Bullet _refOwner)` → `Execute(IAttackObject _refOwner)`로 일반화. `SOSpawnExplosionAction`, `SOSpawnRadialDirAction` 등 기존 구현체는 시그니처만 교체.
+
+### 🔹 Bullet.cs
+```csharp
+[SerializeField] private SOBulletAction[] m_arrArriveActions; // 프리팹 고유, 도착 시
+[SerializeField] private SOBulletAction[] m_arrHitActions;    // 프리팹 고유, 명중 시
+
+private SOBulletAction[] m_refWeaponArriveActions; // Weapon이 매 발사마다 덮어씀
+private SOBulletAction[] m_refWeaponHitActions;
+
+private void RunHitActions() { RunActions(m_arrHitActions); RunActions(m_refWeaponHitActions); }
+
+public void SetWeaponArriveActions(SOBulletAction[] _arr) => m_refWeaponArriveActions = _arr; // Bullet 전용
+public void SetWeaponHitActions(SOBulletAction[] _arr) => m_refWeaponHitActions = _arr;       // 인터페이스 구현
+```
+`AttackMonster()`에서 `TakeDamage` 직후, 즉 **실제로 데미지를 입힌 순간에만** `RunHitActions()`를 호출 — AliveTime 만료(허공에 사라짐)와 명중을 구분하는 별도 플래그 없이도 구조적으로 "명중 시에만" 실행이 보장됨.
+
+### 🔹 Laser.cs
+- `AttackInfo AttackInfo => m_refAttackInfo;` 프로퍼티, `m_refWeaponHitActions` 필드, `RunHitActions()` 추가.
+- `AttackMonster()`의 `TakeDamage` 직후 `RunHitActions()` 호출 — Bullet과 동일한 지점에 동일한 방식으로 훅.
+
+### 🔹 Weapon.cs
+```csharp
+public void GrantArriveAction(SOBulletAction _refAction) => AddGrantedAction(ref m_arrArriveActions, _refAction);
+public void GrantHitAction(SOBulletAction _refAction) => AddGrantedAction(ref m_arrHitActions, _refAction);
+// Array.Resize는 레벨업 시점(드문 이벤트)에만 발생하므로 GC Alloc 문제 없음
+
+private void ApplyGrantedActions(GameObject _refBulletObj)
+{
+    IAttackObject refAttackObj = _refBulletObj.GetComponent<IAttackObject>();
+    if (refAttackObj == null) return;
+
+    if (m_arrHitActions != null)
+        refAttackObj.SetWeaponHitActions(m_arrHitActions);          // Bullet + Laser 공통
+
+    if (m_arrArriveActions != null && refAttackObj is Bullet refBullet)
+        refBullet.SetWeaponArriveActions(m_arrArriveActions);       // Bullet 전용
+}
+```
+`Fire()` / `FireCircularSector()` / `FireAndRotate()` 세 발사 경로 모두에서 스폰 직후 `ApplyGrantedActions` 호출.
+
+### 🔹 Player.cs
+- 기존 `ModifyWeaponCooldown` 패턴 그대로 `GrantWeaponHitAction(eWeaponType, SOBulletAction)` 패스스루 추가 — `FeatureSO.Apply(Player, level)`에서 호출할 진입점.
+
+**남은 작업**: 레벨업 카드 쪽 `SOFeatureHitCreateBullet`(`SOFeature` 서브클래스) 신규 작성과, 잘못 연결된 `SO_FeatureHitCreateBullet.asset`의 스크립트 재배선은 아직 미착수. `Bullet.AttackMonster()`의 `MaxHitCount` 무시 버그(관통 미동작)도 이번 범위에선 손대지 않음.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **Pool 재사용 구조에서 "동적으로 부여되는 능력치"는 항상 Add가 아니라 대입(덮어쓰기)으로 다뤄야 한다**: 같은 인스턴스가 몇 번이고 재사용되기 때문에, 누적형 API는 반드시 중복 실행 버그로 이어진다. 매번 최신 상태로 통째로 덮어쓰면 누적 걱정 없이 항상 정확한 상태를 유지할 수 있다.
+> 2. **"언제 실행되는가"는 클래스 계층이 아니라 배열/컬렉션 소속으로 표현하는 게 더 가볍다**: `Execute` 시그니처가 같은 두 종류의 Action을 억지로 별도 상속 트리로 나눌 필요 없이, 같은 베이스를 공유하고 호출부에서 어느 배열에 넣느냐로만 구분하면 재사용성도 늘고 계층도 안 늘어난다.
+> 3. **"당연히 상속 관계겠지"라는 가정은 항상 실제 코드로 확인해야 한다**: Bullet과 Laser가 둘 다 `IAttackObject`를 구현한다는 것만 보고 지나쳤다면, Weapon의 `GetComponent<Bullet>()`이 Laser 타입 무기에서 조용히 아무 일도 안 하는 버그를 놓칠 뻔했다. 인터페이스로 계약을 공유하는 두 클래스라도 상속 관계가 아닐 수 있다는 걸 항상 의심해야 한다.
+
+# DEVLOG
+
+## 2026-07-15
+
+### PlayerMovement 부스트 잔여 속도 제거
+- **문제**: `MaxRoll`(배럴롤) 시 `ApplySpeedBoost`로 걸리는 롤 방향 가산 속도(`vBoostSpeed`)가 `FixedUpdate`에서 계산만 되고 실제 이동에 반영되지 않았음. 또한 `m_fBoostValue`가 감쇠 후 최소 1.0에서 멈추기 때문에, 그대로 가산에 썼다면 부스트가 끝나도 잔여 속도가 사라지지 않는 구조였음.
+- **수정**: `Assets/02_Player/PlayerMovement.cs`
+  - `vBoostSpeed`를 `vNewPos` 계산에 실제로 더해서 롤 부스트가 이동에 반영되도록 연결
+  - 가산량을 `m_fBoostValue`가 아닌 `(m_fBoostValue - 1.0f)`로 계산해, 부스트가 끝나는 시점(`m_fBoostValue == 1.0f`)에 가산 속도가 정확히 0으로 수렴하도록 변경
+  - 기본 이동 배율용 `m_fBoostValue`(최소 1.0 유지)와 가산용 부스트 속도의 역할을 분리
+
+### Bullet 도착(명중/AliveTime 만료) 로직을 SO Action으로 분리
+- **배경**: `Missiles`가 `PoolObject.OnPush`에 `SpawnExplosion`을 직접 구독하는 구조였음. 향후 "도착 시 사방으로 총알을 뿌리는" 것처럼 더 복잡한 도착 이벤트가 추가될 경우, 서브클래스별로 구현이 늘어나며 조합이 꼬일 우려가 있어 구조를 논의.
+- **결정**: 몬스터 BT의 `SONode` 패턴(SO 기반 Action, 인스펙터에서 조합/교체 가능)을 총알 도착 이벤트에도 동일하게 적용.
+- **변경 사항**
+  - `Assets/02_Player/Weapon/BulletArriveAction.cs` (신규): `Execute(Bullet _refOwner)`를 갖는 abstract SO 베이스
+  - `Assets/02_Player/Weapon/SOSpawnExplosionAction.cs` (신규): 기존 `Missiles.SpawnExplosion` 로직을 이전한 구체 Action
+  - `Assets/02_Player/Weapon/Bullet.cs`: `[SerializeField] BulletArriveAction[] m_arrArriveActions` 추가, `OnEnable`에서 `PoolObject.OnPush`에 `RunArriveActions` 공통 구독 → 모든 Bullet 계열이 프리팹 단위로 도착 이벤트를 조합 가능해짐
+  - `Assets/02_Player/Weapon/Missiles.cs`: `m_refExplodeObj`, `SpawnExplosion()`, base 호출만 남은 `OnEnable`/`OnDisable` 오버라이드 제거
+- **에디터 후속 작업 필요**: `SO_SpawnExplosionAction` 에셋 생성 후 기존 폭발 프리팹 재할당, `Missiles.prefab`의 `Bullet.m_arrArriveActions`에 등록
+- **별개로 발견한 이슈**: `Missiles.UpdateDirMissile()`에서 목표 근접 시 조기 반납(`SetAliveTime(0)`)하던 `fArriveDist` 체크 블록이 현재 코드에는 빠져 있어 `fMoveDist`가 미사용 상태이고, 미사일이 타겟을 통과할 수 있음. 이번 작업 범위 밖이라 수정하지 않음.
+
+### BulletArriveAction에서 총알을 직접 스폰하는 문제 해결 (Bullet.SpawnAttackObject 도입)
+- **문제**: "도착 시 사방으로 총알을 뿌리는" `SOSpawnRadialDirAction`을 구현하려니, 이 프로젝트 규칙("총알 생성/발사는 Weapon만 담당")과 충돌. Action은 어떤 Weapon 소유로 쐈는지 알 수 없고, Weapon을 매개변수로 억지로 넘기면 Action → Weapon 역참조가 생겨 지금까지 지켜온 단방향 구조(위 → 아래로만 참조)가 깨짐.
+- **검토한 대안**
+  - A) 풀에서 꺼내 위치/회전 세팅 후 `SetAttack` 호출하는 스폰 로직을 정적 헬퍼로 뽑아 Weapon과 Action이 공통으로 사용
+  - B) Action이 직접 `ObjectPool.GetObject` + `SetAttack`을 자체 구현
+  - B는 당장은 간단하지만 Weapon.cs와 Action 양쪽에 스폰 로직이 중복되어, "총알 생성은 한 곳에서만" 규칙이 사실상 깨지고 향후 비슷한 Action이 늘수록 중복이 커질 것으로 판단해 A로 진행 결정.
+- **변경 사항**
+  - `Assets/02_Player/Weapon/Bullet.cs`: `public static GameObject SpawnAttackObject(PoolObject, Vector3, Quaternion, AttackInfo, tShotInfo)` 추가(풀에서 꺼내기 → 위치/회전 세팅 → `SetAttack` 호출을 한 곳에 모음), 외부에서 총알 자신의 공격 정보를 재사용할 수 있도록 `public AttackInfo AttackInfo => m_refAttackInfo` 프로퍼티 추가
+  - `Assets/02_Player/Weapon/Weapon.cs`: `Fire()`, `FireCircularSector()`, `FireAndRotate()`가 각자 하던 `GetObject`+`SetAttack`을 전부 `Bullet.SpawnAttackObject` 호출로 교체. 기존 `CreateBullet()`(풀에서 꺼내기 + 발사 이펙트 + 쿨다운 갱신을 함께 처리하던 메서드)은 Weapon 고유 관심사(이펙트 재생, 쿨다운 갱신)만 남긴 `OnBulletFired()`로 축소
+  - `Assets/02_Player/Weapon/BulletAction/SOSpawnRadialDirAction.cs`: 피보나치 스피어 분포(`SOFireRadialDirNode`와 동일한 방식)로 사방에 새 공격 오브젝트를 `Bullet.SpawnAttackObject`로 직접 스폰하도록 구현. Weapon 참조 없이 동작.
+- **결과**: 총알 생성 책임이 `Bullet.SpawnAttackObject` 한 곳으로 모이고, Weapon과 BulletArriveAction 모두 그 아래로만 의존하는 단방향 구조 유지.
