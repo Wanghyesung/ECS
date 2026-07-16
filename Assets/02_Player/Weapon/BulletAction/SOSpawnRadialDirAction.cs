@@ -6,8 +6,8 @@ using UnityEngine;
  *///////////////////////////////////////////
 
 
-[CreateAssetMenu(fileName = "SO_SpawnRadialDirAction", menuName = "Game/Weapon/BulletArriveAction/SOSpawnRadialDirAction")]
-public class SOSpawnRadialDirAction : SOBulletArriveAction
+[CreateAssetMenu(fileName = "SO_SpawnRadialDirAction", menuName = "Game/Weapon/BulletAction/SOSpawnRadialDirAction")]
+public class SOSpawnRadialDirAction : SOBulletAction
 {
     [SerializeField] private PoolObject m_refSpawnBulletPrefab;
     [SerializeField] private int m_iSpawnCount = 8;
@@ -15,7 +15,7 @@ public class SOSpawnRadialDirAction : SOBulletArriveAction
 
     private static readonly float GOLDEN_RATIO = (1f + Mathf.Sqrt(5f)) / 2f;
 
-    public override void Execute(Bullet _refOwner)
+    public override void Execute(IAttackObject _refOwner)
     {
         if (m_refSpawnBulletPrefab == null || m_iSpawnCount <= 0)
             return;

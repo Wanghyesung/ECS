@@ -19,7 +19,7 @@ public class Weapon : MonoBehaviour
         ShotGun,
         End,
     }
-
+    
     
     [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
@@ -48,7 +48,12 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float m_fSpreadAngle = 30f; // 부채꼴(원뿔) 전체 각도
 
     private const float GOLDEN_ANGLE_DEG = 137.50776f;
-    
+
+    // 레벨업 등으로 획득한 동적 능력치. 총알 프리팹 개수와 무관하게 Weapon(적은 개수) 쪽에 모아두고
+    // 발사할 때마다 총알 인스턴스에 참조로 얹어줌 (AddArriveAction/AddHitAction 참고)
+    private SOBulletAction[] m_arrArriveActions;
+    private SOBulletAction[] m_arrHitActions;
+
     private void Awake()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
@@ -90,6 +95,7 @@ public class Weapon : MonoBehaviour
         if (refObj == null)
             return;
 
+        ApplyGrantedActions(refObj);
         OnBulletFired();
     }
 
@@ -123,6 +129,7 @@ public class Weapon : MonoBehaviour
             if (refObj == null)
                 continue;
 
+            ApplyGrantedActions(refObj);
             OnBulletFired();
         }
     }
@@ -140,6 +147,7 @@ public class Weapon : MonoBehaviour
         if (refObj == null)
             return;
 
+        ApplyGrantedActions(refObj);
         OnBulletFired();
     }
 
@@ -184,6 +192,43 @@ public class Weapon : MonoBehaviour
 
         m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
         m_fFireTime = m_refAttackInfo.CoolDown;
+    }
+
+    // FeatureSO.Apply()에서 명중 시 발동 능력(예: SOFeatureHitCreateBullet)이 호출.
+    // 레벨업 시점(드물게 발생)에만 배열을 늘리므로 Array.Resize의 GC Alloc은 문제 없음
+    public void AddArriveAction(SOBulletAction _refAction)
+    {
+        AddGrantedAction(ref m_arrArriveActions, _refAction);
+    }
+
+    public void AddHitAction(SOBulletAction _refAction)
+    {
+        AddGrantedAction(ref m_arrHitActions, _refAction);
+    }
+
+    private void AddGrantedAction(ref SOBulletAction[] _arrActions, SOBulletAction _refAction)
+    {
+        int iOldLen = _arrActions?.Length ?? 0;
+        Array.Resize(ref _arrActions, iOldLen + 1);
+        _arrActions[iOldLen] = _refAction;
+    }
+
+    // Pool 재사용 총알이라 매번 덮어써야 중복 실행을 막을 수 있음.
+    // Hit은 IAttackObject 공통 계약이라 Bullet/Laser 모두 적용, Arrive는 Laser에 없는 개념이라 Bullet에만 적용
+    private void ApplyGrantedActions(GameObject _refBulletObj)
+    {
+        if (m_arrArriveActions == null && m_arrHitActions == null)
+            return;
+
+        IAttackObject refAttackObj = _refBulletObj.GetComponent<IAttackObject>();
+        if (refAttackObj == null)
+            return;
+
+        if (m_arrHitActions != null)
+            refAttackObj.SetWeaponHitActions(m_arrHitActions);
+
+        if (m_arrArriveActions != null && refAttackObj is Bullet refBullet)
+            refBullet.SetWeaponArriveActions(m_arrArriveActions);
     }
 }
 

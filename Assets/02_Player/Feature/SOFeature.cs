@@ -6,9 +6,14 @@ public enum eFeatureID
 {
     None,
     AttackSpeedUp,
-    UnlockMissile,
+    HitCreateBulletRadius,
+    MissileUP,
+    BulletUP, 
     UpHP,
     End,
+
+    //AttackUp,
+    
 }
 
 [Serializable]

@@ -8213,7 +8213,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
 --- !u!1 &163998470
@@ -11447,7 +11447,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &219641858
@@ -23786,71 +23786,6 @@ Transform:
   - {fileID: 938238259}
   m_Father: {fileID: 303140461}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &449563670
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5225453047738321035, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_arrArriveActions.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5225453047738321035, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_arrArriveActions.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 801101aa3b69f9142b92a6cae65934ca, type: 2}
-    - target: {fileID: 5353535738207964243, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_Name
-      value: BaseBullet
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -24.84977
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 29.673103
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8455968230701987564, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
 --- !u!1 &449960992
 GameObject:
   m_ObjectHideFlags: 0
@@ -24149,7 +24084,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
 --- !u!1 &453052787
@@ -37266,7 +37201,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 1240284164}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &719286052
@@ -41401,7 +41336,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 795575402}
   m_refEffectObject: {fileID: 5585671605873680693}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &796205001
@@ -46993,7 +46928,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &888358478
@@ -68175,7 +68110,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &1333451691
@@ -72194,7 +72129,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 277580606}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
 --- !u!1 &1412971662
@@ -75850,7 +75785,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
 --- !u!1 &1474583771
@@ -97087,8 +97022,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_listAllFeatureSO:
   - {fileID: 11400000, guid: 07bd5b99af42ccc46b227152f5e53de0, type: 2}
-  - {fileID: 11400000, guid: b0ef1cc49941621479cebfafd6f3f668, type: 2}
-  - {fileID: 11400000, guid: a68158b0b7ca0a14faac84cd4d9314ee, type: 2}
+  - {fileID: 11400000, guid: 708c6329ce378a44b83e739dbeec481c, type: 2}
+  - {fileID: 11400000, guid: 5dd0e0231c4effe4d9bc874ca1587fb4, type: 2}
+  - {fileID: 11400000, guid: aa5c9036f2d5af54187536756e764bb5, type: 2}
+  - {fileID: 11400000, guid: 7fb74e963548da2448faa949af94a1ac, type: 2}
 --- !u!1 &1894843965
 GameObject:
   m_ObjectHideFlags: 0
@@ -97737,7 +97674,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
-  m_fInaccuracyAngle: 0
+  m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
 --- !u!1 &1909394134
@@ -109635,7 +109572,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4044696658643000
 Transform:
   m_ObjectHideFlags: 0
@@ -115945,7 +115882,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!33 &1529958166684678931
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -174786,4 +174723,3 @@ SceneRoots:
   - {fileID: 1277868791}
   - {fileID: 936170815}
   - {fileID: 1305620401}
-  - {fileID: 449563670}

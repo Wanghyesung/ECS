@@ -50,8 +50,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 198657733370794241, guid: 2cb73af5be8850e448becd5f0ba9d2cf, type: 3}
-  m_arrArriveActions:
-  - {fileID: 11400000, guid: 801101aa3b69f9142b92a6cae65934ca, type: 2}
+  m_arrArriveActions: []
+  m_arrHitActions: []
 --- !u!54 &2449183551540630354
 Rigidbody:
   m_ObjectHideFlags: 0

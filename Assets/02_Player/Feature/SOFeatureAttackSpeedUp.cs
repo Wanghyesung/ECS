@@ -1,6 +1,12 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SO_Feature_AttackSpeedUp", menuName = "Game/Feature/Attack Speed Up")]
+
+
+/*///////////////////////////////////////////
+            SOFeatureAttackSpeedUp
+기능 : 플레이어 공격하는 무기의 쿨타임을 줄이는 기능
+ *///////////////////////////////////////////
 public class SOFeatureAttackSpeedUp : SOFeature
 {
     [Header("Effect")]

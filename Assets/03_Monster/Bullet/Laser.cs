@@ -4,7 +4,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                     Laser
-¸ñÀû : ¿ÀºêÁ§Æ®°¡ ¹Ù¶óº¸´Â ¹æÇâÀ¸·Î ¿øÅëÇü °ø°ÝÀ» ÇÏ´Â ¿ÀºêÁ§Æ®
+ëª©ì  : ì˜¤ë¸Œì íŠ¸ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ìœ¼ë¡œ ì›í†µí˜• ê³µê²©ì„ í•˜ëŠ” ì˜¤ë¸Œì íŠ¸
  *///////////////////////////////////////////
 
 public class Laser : MonoBehaviour, IAttackObject
@@ -12,10 +12,15 @@ public class Laser : MonoBehaviour, IAttackObject
     [SerializeField] protected AttackInfo m_refAttackInfo;
     protected tShotInfo m_tShotInfo;
 
+    public AttackInfo AttackInfo => m_refAttackInfo;
+
     protected PoolObject m_refPoolObj;
     private TriggerStayObject m_refTriggerObject;
 
     [SerializeField] private PoolObject m_refHitEffectPoolObj;
+
+    // Weaponì´ ë¶€ì—¬í•œ ë™ì  ëŠ¥ë ¥ì¹˜. ë°œì‚¬(SetAttack) ì‹œì ë§ˆë‹¤ ë®ì–´ì¨ì•¼ í•˜ë¯€ë¡œ Bulletê³¼ ë™ì¼í•˜ê²Œ ì°¸ì¡° ëŒ€ìž… ë°©ì‹ ì‚¬ìš©
+    private SOBulletAction[] m_refWeaponHitActions;
 
 
     protected virtual void Awake()
@@ -43,12 +48,13 @@ public class Laser : MonoBehaviour, IAttackObject
         if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
             return;
 
-        var IDamageable = other.GetComponent<IDamageable>(); //ÀÌ°Å Ä³½ÌÇÏ´Â°Ô ÁÁÀ» °Í °°À½
+        var IDamageable = other.GetComponent<IDamageable>(); 
         if (IDamageable != null)
         {
             m_tShotInfo.LastHitTime = Time.time;
             ++m_tShotInfo.HitCount;
             IDamageable.TakeDamage(m_refAttackInfo, m_tShotInfo);
+            RunHitActions();
         }
 
         if (m_refHitEffectPoolObj != null)
@@ -61,14 +67,28 @@ public class Laser : MonoBehaviour, IAttackObject
         }
     }
 
+    private void RunHitActions()
+    {
+        if (m_refWeaponHitActions == null)
+            return;
+
+        for (int i = 0; i < m_refWeaponHitActions.Length; ++i)
+            m_refWeaponHitActions[i]?.Execute(this);
+    }
+
+    // Weaponì´ ë°œì‚¬ ì‹œì ë§ˆë‹¤ í˜¸ì¶œ, ì°¸ì¡°ë¥¼ í†µì§¸ë¡œ ë®ì–´ì”€ (Add ì•„ë‹˜) - Pool ìž¬ì‚¬ìš© ì‹œ ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€
+    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions)
+    {
+        m_refWeaponHitActions = _arrHitActions;
+    }
+
     private void Update()
     {
-        //¸¸¾à ³»°¡ Áö¿öÁ®¼­ ÀÚ½Ä Laser±îÁö Áö¿öÁö°Ô µÈ´Ù¸é ÇØ´ç laser´Â ¿ÀºêÁ§Æ® Ç®·Î µ¹¾Æ°¡Áö ¸øÇÏ°Ô µÊ
-        //¶§¹®¿¡ ¸Å ÇÁ·¹ÀÓ ºÎ¸ð¸¦ ±âÁØÀ¸·Î È¸Àü 
+
         transform.rotation = m_refAttackInfo.Owner.transform.rotation;
         transform.position = m_refAttackInfo.Owner.transform.position;
     }
-   
+
 
     public virtual void SetAttack(AttackInfo _refAttackInfo, tShotInfo _tShotInfo)
     {

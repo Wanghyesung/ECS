@@ -173,8 +173,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refMovement.ApplySpeedBoost(fRollDir, m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
     }
 
-    
-
     private void Fire()
     {
         Vector3 vTargetPos = m_refAim.TargetPosition;
@@ -214,7 +212,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         float fMagnitude = Mathf.Clamp(fPower / 50.0f, 0.0f, 2.0f);
         
-
         if (m_refVisualPlayer != null)
         {
             CameraManager.m_Instance.StartShakeCamera(fMagnitude);
@@ -239,13 +236,13 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.State = eEntityState.Idle;
     }
 
-    // FeatureSO.Apply()에서 무기 해금 기능(예: SOFeatureUnlockMissile)이 호출
+    // FeatureSO.Apply()에서 무기 추가
     // 씬에 미리 배치된 비활성 무기를 활성화하는 방식 (런타임 Instantiate 회피)
-    public void UnlockWeapon(eWeaponType _eType)
+    public void SetActiveWweapon(eWeaponType _eType)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
-            if (m_listWeapon[i].WeaponType == _eType)
+            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == false)
                 m_listWeapon[i].gameObject.SetActive(true);
         }
     }
@@ -257,6 +254,16 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         {
             if (m_listWeapon[i].WeaponType == _eType)
                 m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
+        }
+    }
+
+    // FeatureSO.Apply()에서 명중 시 발동 능력(예: SOFeatureHitCreateBullet)이 호출
+    public void AddWeaponHitAction(eWeaponType _eType, SOBulletAction _refAction)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].AddHitAction(_refAction);
         }
     }
 

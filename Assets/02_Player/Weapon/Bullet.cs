@@ -11,6 +11,15 @@ using UnityEngine;
 public interface IAttackObject
 {
     public void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo);
+
+    // SOBulletAction.Execute가 Bullet 상속 여부와 무관하게(Laser 등) 동작하도록 노출.
+    // transform은 MonoBehaviour가 이미 제공하므로 구현체에서 별도 작성 불필요
+    public AttackInfo AttackInfo { get; }
+    public Transform transform { get; }
+
+    // 명중은 Bullet/Laser 등 구현 방식과 무관하게 공통으로 존재하는 이벤트라 인터페이스에 둠
+    // (도착/Arrive는 Laser에 없는 개념이라 Bullet 쪽에만 유지).
+    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions);
 }
 
 /*///////////////////////////////////////////
@@ -29,13 +38,20 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected PoolObject m_refPoolObj;
     protected ITriggerable m_refTriggerObject;
 
-    // BulletArriveAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
+    // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
 
     [SerializeField] private PoolObject m_refHitEffectObj;
 
-    // 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행할 로직들. 프리팹별로 인스펙터에서 조합
-    [SerializeField] private SOBulletArriveAction[] m_arrArriveActions;
+    // 프리팹 고유 동작. 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행. 인스펙터에서 조합, 런타임에 안 건드림
+    [SerializeField] private SOBulletAction[] m_arrArriveActions;
+    // 프리팹 고유 동작. 실제로 대상에 데미지를 입힌 순간(=명중)에만 실행. 인스펙터에서 조합, 런타임에 안 건드림
+    [SerializeField] private SOBulletAction[] m_arrHitActions;
+
+    // Weapon이 부여한 동적 능력치. 풀에서 재사용되는 인스턴스이므로 Add로 누적하면 안 되고,
+    // Weapon이 발사할 때마다 SetWeaponArriveActions/SetWeaponHitActions로 항상 통째로 덮어써야 중복 실행을 막을 수 있음
+    private SOBulletAction[] m_refWeaponArriveActions;
+    private SOBulletAction[] m_refWeaponHitActions;
 
 
     protected virtual void Awake()
@@ -66,13 +82,38 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     private void RunArriveActions()
     {
-        if (m_arrArriveActions == null)
+        RunActions(m_arrArriveActions);
+        RunActions(m_refWeaponArriveActions);
+    }
+
+    private void RunHitActions()
+    {
+        RunActions(m_arrHitActions);
+        RunActions(m_refWeaponHitActions);
+    }
+
+    private void RunActions(SOBulletAction[] _arrActions)
+    {
+        if (_arrActions == null)
             return;
 
-        for (int i = 0; i < m_arrArriveActions.Length; ++i)
-            m_arrArriveActions[i]?.Execute(this);
+        for (int i = 0; i < _arrActions.Length; ++i)
+            _arrActions[i]?.Execute(this);
     }
-    
+
+    // Weapon이 발사 시점마다 호출. 참조를 통째로 덮어쓰는 방식이라(Add 아님) Pool 재사용으로 인한
+    // 능력치 중복 실행이 없고, 배열을 새로 만들지 않으므로 매 발사마다 GC Alloc도 발생하지 않음.
+    // Arrive는 Laser에 없는 개념이라 인터페이스가 아닌 Bullet 전용 메서드로 둠
+    public void SetWeaponArriveActions(SOBulletAction[] _arrArriveActions)
+    {
+        m_refWeaponArriveActions = _arrArriveActions;
+    }
+
+    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions)
+    {
+        m_refWeaponHitActions = _arrHitActions;
+    }
+
 
     protected virtual void FixedUpdate()
     {
@@ -92,6 +133,7 @@ public class Bullet : MonoBehaviour, IAttackObject
             ++m_tShotInfo.HitCount;
             m_tShotInfo.HitPosition = transform.position;
             iDamageable.TakeDamage(m_refAttackInfo, m_tShotInfo);
+            RunHitActions();
         }
 
         if (m_refHitEffectObj != null)
@@ -118,7 +160,7 @@ public class Bullet : MonoBehaviour, IAttackObject
 
 
     // 풀에서 공격 오브젝트를 꺼내 위치/회전을 세팅하고 SetAttack까지 호출하는 스폰 로직을 한 곳에 모아,
-    // Weapon뿐 아니라 BulletArriveAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
+    // Weapon뿐 아니라 BulletAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
     public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         GameObject refObj = ObjectPool.m_Instance.GetObject(_refPrefab);
