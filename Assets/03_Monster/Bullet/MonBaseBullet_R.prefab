@@ -111,6 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
+  m_arrArriveActions: []
+  m_arrHitActions: []
 --- !u!114 &192278650596170402
 MonoBehaviour:
   m_ObjectHideFlags: 0

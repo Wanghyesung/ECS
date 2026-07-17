@@ -218,7 +218,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
-  m_refExplodeObj: {fileID: 0}
+  m_arrArriveActions: []
+  m_arrHitActions: []
   m_bTraceTarget: 0
 --- !u!114 &1038463155963419527
 MonoBehaviour:
