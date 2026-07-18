@@ -10387,6 +10387,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -16293,6 +16295,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -22626,6 +22630,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -29935,6 +29941,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -35346,6 +35354,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -38549,6 +38559,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -41836,6 +41848,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -42008,6 +42022,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -43214,6 +43230,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -46071,6 +46089,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -52051,6 +52071,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -69982,6 +70004,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -70698,6 +70722,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -75648,6 +75674,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -98986,6 +99014,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5dd0e0231c4effe4d9bc874ca1587fb4, type: 2}
   - {fileID: 11400000, guid: aa5c9036f2d5af54187536756e764bb5, type: 2}
   - {fileID: 11400000, guid: 7fb74e963548da2448faa949af94a1ac, type: 2}
+  - {fileID: 11400000, guid: 06aea624f0aec6549b957a557dd5ca03, type: 2}
+  - {fileID: 11400000, guid: 6820d86661aa96245ba72e78afd93554, type: 2}
+  - {fileID: 11400000, guid: 90806c96709ed7b4ba61a2140f84e4e7, type: 2}
   - {fileID: 11400000, guid: 5c3a6337f392f1e4981568266f33c344, type: 2}
 --- !u!1 &1894843965
 GameObject:
@@ -103701,6 +103732,75 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1994712293}
   m_Mesh: {fileID: 4300046, guid: 660686678d5f55947881d7fe1a8292c1, type: 3}
+--- !u!1001 &1994756350
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -47.971115
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 75.01068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4427133356149012749, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7651479878627869435, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+      propertyPath: m_Name
+      value: MiniBullet
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bec734996cf01b34684603496a4b2b40, type: 3}
 --- !u!1 &1995621336
 GameObject:
   m_ObjectHideFlags: 0
@@ -105654,6 +105754,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -111694,6 +111796,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 0
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -123204,6 +123308,8 @@ MonoBehaviour:
       State: 1
       CurrentHP: 0
       Speed: 20
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -144395,6 +144501,8 @@ MonoBehaviour:
       State: 0
       CurrentHP: 100
       Speed: 0
+      Attack: 0
+      Defense: 0
       CurrentEffects: 0
       Effects:
       - EndTime: 0
@@ -144770,6 +144878,8 @@ MonoBehaviour:
     State: 0
     CurrentHP: 0
     Speed: 0
+    Attack: 0
+    Defense: 0
     CurrentEffects: 0
     Effects:
     - EndTime: 0
@@ -176669,3 +176779,4 @@ SceneRoots:
   - {fileID: 1305620401}
   - {fileID: 257673829}
   - {fileID: 623104191}
+  - {fileID: 1994756350}

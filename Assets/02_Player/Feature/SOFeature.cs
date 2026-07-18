@@ -9,8 +9,12 @@ public enum eFeatureID
     HitCreateBulletRadius,
     PenetrationBullet,
     MissileUP,
-    BulletUP, 
+    BulletUP,
+    UpAttack,
     UpHP,
+    UpSpeed,
+    UpDefense,
+    UpBulletSpeed,
     End,
 
     //AttackUp,

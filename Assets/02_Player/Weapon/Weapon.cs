@@ -159,7 +159,8 @@ public class Weapon : MonoBehaviour
 
     private float RollSpeed()
     {
-        return UnityEngine.Random.Range(m_SOAttackInfo.Speed - m_SOAttackInfo.SpeedOffset, m_SOAttackInfo.Speed + m_SOAttackInfo.SpeedOffset);
+        float fSpeed = m_refAttackInfo.Speed;
+        return UnityEngine.Random.Range(fSpeed - m_SOAttackInfo.SpeedOffset, fSpeed + m_SOAttackInfo.SpeedOffset);
     }
 
     private Quaternion ApplyInaccuracy(Quaternion _qBase)
@@ -192,7 +193,7 @@ public class Weapon : MonoBehaviour
     }
 
     // 기존 배율에 누적 곱하지 않고 매번 기본 쿨다운 기준으로 재계산 (Repeatable 기능 재적용 시 드리프트 방지)
-    public void SetCooldownMultiplier(float _fMultiplier)
+    public void SetCooldown(float _fMultiplier)
     {
         float fClamped = Mathf.Max(_fMultiplier, 0.1f);
 
@@ -200,8 +201,20 @@ public class Weapon : MonoBehaviour
         m_fFireTime = m_refAttackInfo.CoolDown;
     }
 
+    // Player.UpAttack()에서 레벨업 시점에 호출. m_refAttackInfo는 이 무기가 만든 모든 총알이
+    
+    public void AddAttackDamage(int _iValue)
+    {
+        m_refAttackInfo.Damage += _iValue;
+    }
+
+    public void AddBulletSpeed(float _fValue)
+    {
+        m_refAttackInfo.Speed += _fValue;
+    }
+
     // FeatureSO.Apply()에서 명중 시 발동 능력(예: SOFeatureHitCreateBullet)이 호출.
-    // 레벨업 시점(드물게 발생)에만 배열을 늘리므로 Array.Resize의 GC Alloc은 문제 없음
+
     public void AddArriveAction(SOBulletAction _refAction)
     {
         AddGrantedAction(ref m_arrArriveActions, _refAction);

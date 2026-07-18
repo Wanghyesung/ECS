@@ -49,7 +49,10 @@ public class ObjectInfo
 
     public float Speed;
 
-    public ushort CurrentEffects; 
+    public float Attack;
+    public float Defense;
+
+    public ushort CurrentEffects;
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
 
@@ -71,7 +74,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private float m_fMaxRollSpeedDecay = 3.0f; // 초당 배율 감소량
 
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
-    public ObjectInfo PlayerInfo => m_refObjectInfo;
+    public ObjectInfo ObjectInfo => m_refObjectInfo;
 
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
@@ -198,7 +201,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         m_refObjectInfo.State = eEntityState.Hit;
 
-        m_refObjectInfo.CurrentHP -= _refAttackInfo.Damage;
+        int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
+        m_refObjectInfo.CurrentHP -= iFinalDamage;
         m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_SOObjectInfo.MaxHP);
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
     }
@@ -252,7 +256,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
             if (m_listWeapon[i].WeaponType == _eType)
-                m_listWeapon[i].SetCooldownMultiplier(_fMultiplier);
+                m_listWeapon[i].SetCooldown(_fMultiplier);
         }
     }
 
@@ -276,6 +280,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         }
     }
 
+
+
+    // IChangeInfoable 기능 구현
     public void ChangeHPRatio(float _fRatio)
     {
         throw new NotImplementedException();
@@ -301,9 +308,65 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
     }
 
+    public void UpAttackRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        int iAccValue = (int)fAccValue;
 
-    // IChangeInfoable 기능 구현
+        UpAttack(iAccValue);
+    }
 
+    public void UpAttack(int _iValue)
+    {
+        float fPrevAttack = m_refObjectInfo.Attack;
 
+        m_refObjectInfo.Attack += _iValue;
+        if (m_refObjectInfo.Attack >= m_SOObjectInfo.MaxAtack)
+            m_refObjectInfo.Attack = m_SOObjectInfo.MaxAtack;
 
+        // MaxAtack 클램프로 실제 증가분이 _iValue보다 작을 수 있어 그 차이만 무기에 반영.
+        int iAppliedValue = (int)(m_refObjectInfo.Attack - fPrevAttack);
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+            m_listWeapon[i].AddAttackDamage(iAppliedValue);
+    }
+
+    public void UpSpeedRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxSpeed * _fRatio;
+        UpSpeed(fAccValue);
+    }
+
+    public void UpSpeed(float _fValue)
+    {
+        float fPrevSpeed = m_refObjectInfo.Speed;
+
+        m_refObjectInfo.Speed += _fValue;
+        if (m_refObjectInfo.Speed >= m_SOObjectInfo.MaxSpeed)
+            m_refObjectInfo.Speed = m_SOObjectInfo.MaxSpeed;
+
+        // MaxSpeed 클램프로 실제 증가분이 _fValue보다 작을 수 있어 그 차이만 PlayerMovement에 반영.
+        float fAppliedValue = m_refObjectInfo.Speed - fPrevSpeed;
+        m_refMovement.AddMoveSpeed(fAppliedValue);
+    }
+
+    public void UpDefenseRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxDefense * _fRatio;
+        UpDefense(fAccValue);
+    }
+
+    public void UpDefense(float _fValue)
+    {
+        m_refObjectInfo.Defense += _fValue;
+        if (m_refObjectInfo.Defense >= m_SOObjectInfo.MaxDefense)
+            m_refObjectInfo.Defense = m_SOObjectInfo.MaxDefense;
+    }
+
+    // FeatureSO.Apply()에서 총알 속도 강화 기능(예: SOFeatureUpBulletSpeed)이 호출.
+    // 무기별 상한이 없어 Attack/Speed처럼 클램프하지 않고 그대로 누적
+    public void UpBulletSpeed(float _fValue)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+            m_listWeapon[i].AddBulletSpeed(_fValue);
+    }
 }

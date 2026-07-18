@@ -12,11 +12,17 @@ public interface IDamageable
 
 public interface IChangeInfoable
 {
+    public ObjectInfo ObjectInfo { get; }
     public void ChangeHPRatio(float _fRatio);
     public void UpHPRatio(float _fRatio);
     public void UpHP(long _lValue);
     public void ChangeSpeedRatio(float _fRatio);
-
+    public void UpAttackRatio(float _fRatio);
+    public void UpAttack(int _iValue);
+    public void UpSpeedRatio(float _fRatio);
+    public void UpSpeed(float _fValue);
+    public void UpDefenseRatio(float _fRatio);
+    public void UpDefense(float _fValue);
 }
 
 /*///////////////////////////////////////////
@@ -224,14 +230,5 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBlackBoard.ObjInfo.State = _eState;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        int a = 10;
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        int a = 10;
-    }
 }
 

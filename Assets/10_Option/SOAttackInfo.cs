@@ -62,6 +62,7 @@ public class SOAttackInfo : ScriptableObject
 
         refAttackInfo.AliveTime = AliveTime;
         refAttackInfo.CoolDown = Cooldown;
+        refAttackInfo.Speed = Speed;
 
         refAttackInfo.RotationSpeed = BaseRotationSpeed;
         refAttackInfo.MaxRotationSpeed = MaxRotationSpeed;
@@ -94,6 +95,7 @@ public class AttackInfo
     public int AttackPower;
     public float AliveTime;
     public float CoolDown;
+    public float Speed;
 
     [Header("Hit Count")]
     public int MaxHitCount;

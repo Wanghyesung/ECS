@@ -6,7 +6,7 @@ using UnityEngine;
 public class SOObjectInfo : ScriptableObject
 {
     [Header("Identity")]
-    public string ObjectName = "New Monster";
+    public string ObjectName = "New Object";
 
     [TextArea]
     public string Description;
@@ -14,5 +14,8 @@ public class SOObjectInfo : ScriptableObject
     [Header("Stats")]
     public int MaxHP = 10;
     public float MaxSpeed = 3f;
+
+    public int MaxAtack = 1000;
+    public float MaxDefense = 100f;
 
 }
