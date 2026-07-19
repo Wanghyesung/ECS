@@ -269,7 +269,17 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
                 m_listWeapon[i].AddHitAction(_refAction);
         }
     }
-    
+
+    // FeatureSO.Apply()에서 총알이 사라질 시 발동 능력(예: SOFeatureHitCreateBullet)이 호출
+    public void AddWeaponArriveAction(eWeaponType _eType, SOBulletAction _refAction)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].AddArriveAction(_refAction);
+        }
+    }
+
     // FeatureSO.Apply()에서 공격 카운트를 높여주는 기능 
     public void PenetrationWeapon(eWeaponType _eType)
     {

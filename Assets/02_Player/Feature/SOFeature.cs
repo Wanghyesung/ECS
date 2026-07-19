@@ -7,6 +7,7 @@ public enum eFeatureID
     None,
     AttackSpeedUp,
     HitCreateBulletRadius,
+    SpawnExObject,
     PenetrationBullet,
     MissileUP,
     BulletUP,

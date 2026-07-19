@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
   m_Name: SO_TemplateBulletInfo
   m_EditorClassIdentifier: 
-  Description: "\uC784\uC2DC \uCD1D\uC54C \uC77C\uB2E8 \uB300\uAC01"
+  Description: "\uC784\uC2DC \uCD1D\uC54C\n"
   WeaponType: 1
   PoolPrefab: {fileID: 2094707447846978870, guid: 06babf01eeaad3c4ba3750b558b4e6fe, type: 3}
   Damage: 10

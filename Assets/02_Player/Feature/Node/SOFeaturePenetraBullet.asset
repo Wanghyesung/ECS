@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40740e9c600beff42b3138a57059c29d, type: 3}
   m_Name: SOFeaturePenetraBullet
   m_EditorClassIdentifier: 
-  m_eID: 3
+  m_eID: 4
   m_strDescription: 
   m_sprIcon: {fileID: 351841236, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
   m_eAcquireType: 1
