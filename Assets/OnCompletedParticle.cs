@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class OnCompletedParticle: MonoBehaviour
 {
     [SerializeField] private ParticleSystem m_refParticle;
-    [SerializeField] private UnityEvent m_refCompletedAction;
+    [SerializeField] private UnityEngine.Events.UnityEvent m_refCompletedAction;
 
     private void Awake()
     {

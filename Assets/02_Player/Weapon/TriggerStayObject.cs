@@ -8,7 +8,7 @@ public class TriggerStayObject : MonoBehaviour, ITriggerable
 {
     public event Action<Collider> OnHitTargetEnter; //피격 이벤트
 
-    [SerializeField] private UnityEvent OnHitEvent; //충돌 이벤트
+    [SerializeField] private UnityEngine.Events.UnityEvent OnHitEvent; //충돌 이벤트
 
     [SerializeField] private LayerMask m_tHitLayer;
 
