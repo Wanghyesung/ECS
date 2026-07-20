@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_FeatAddBullet
   m_EditorClassIdentifier: 
   m_eID: 6
-  m_strDescription: 
+  m_strDescription: Bullet UP
   m_sprIcon: {fileID: -118184348, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
   m_eAcquireType: 0
   m_iWeight: 1

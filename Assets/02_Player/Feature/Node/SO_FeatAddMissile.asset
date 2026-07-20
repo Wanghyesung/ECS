@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_FeatAddMissile
   m_EditorClassIdentifier: 
   m_eID: 5
-  m_strDescription: 
+  m_strDescription: Missile UP
   m_sprIcon: {fileID: 1337498356, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
   m_eAcquireType: 0
   m_iWeight: 1

@@ -43,6 +43,7 @@ public abstract class SOFeature : ScriptableObject
 
     [TextArea]
     [SerializeField] private string m_strDescription;
+    public string Description => m_strDescription;
 
     [SerializeField] private Sprite m_sprIcon;
     public Sprite Icon => m_sprIcon;

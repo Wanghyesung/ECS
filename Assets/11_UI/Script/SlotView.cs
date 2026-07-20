@@ -57,8 +57,8 @@ public class SlotView : BaseButtonUI
 
     public override void OnPointerClick(PointerEventData e)
     {
-        if (m_refContainer.IsOnSelect == false)
-            return;
+        //if (m_refContainer.IsOnSelect == false)
+        //    return;
 
         if (m_refContainer != null)
         {

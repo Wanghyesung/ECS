@@ -64,8 +64,8 @@ public class Container : BaseButtonUI
     [SerializeField] private int m_iCategoryCount = 0;
     public int CategoryCount { get => m_iCategoryCount; }
 
-    [SerializeField] private bool m_bOnSelect = false;
-    public bool IsOnSelect { get => m_bOnSelect; }
+    //[SerializeField] private bool m_bOnSelect = false;
+    //public bool IsOnSelect { get => m_bOnSelect; }
 
     [SerializeField] private SlotView m_refSlotPrefab; //셀 프리팹
     [SerializeField] private Vector2 m_vStep;     //셀 사이 간격(x=열 간, y=행 간)
@@ -74,7 +74,7 @@ public class Container : BaseButtonUI
     [Header("TargetSLOT")]
     private SlotView m_refTargetSlot;//id로 바꿀 수 있음 (매니저에서 가져오게 아니면 그냥 SO들고있기)
     [SerializeField] public UnityEvent OnSelectUEvt;
-    public event Action OnSelectEvt;
+    public event Action<SOFeature> OnSelectEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -159,33 +159,58 @@ public class Container : BaseButtonUI
 
             int pre = i - 1;
             while (pre >= 0 && m_listView[pre].SOFeat != null)
-            {
-                int iSwapIdx = pre;
                 --pre;
-            }
+
+            //앞쪽에 빈 슬롯이 없으면 옮길 곳이 없으므로 스킵
+            if (pre < 0)
+                continue;
 
             m_listView[pre].Bind(refTarget.SOFeat, pre);
             m_listView[i].Bind(null, i);
         }
     }
 
-    //public bool DeleteData(int _iDataIdx, int _iCategoryIdx = 0)
-    //{
-    //    CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
-    //    if (refCategoryData == null || refCategoryData.ListData[_iDataIdx] == null)
-    //        return false;
-    //
-    //    SOEntryUI pDeleteData = refCategoryData.ListData[_iDataIdx];
-    //
-    //
-    //    refCategoryData.ListData[_iDataIdx] = null;
-    //    ++refCategoryData.m_iCurrentRemnantData;
-    //
-    //    //데이터 새로 바인딩
-    //    BindData(_iCategoryIdx);
-    //
-    //    return true;
-    //}
+    public bool DeleteData(int _iDataIdx, int _iCategoryIdx = 0)
+    {
+        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        if (refCategoryData == null || refCategoryData.ListData[_iDataIdx] == null)
+            return false;
+    
+        refCategoryData.ListData[_iDataIdx] = null;
+        ++refCategoryData.m_iCurrentRemnantData;
+    
+        //데이터 새로 바인딩
+        BindData(_iCategoryIdx);
+    
+        return true;
+    }
+
+    public bool DeleteData(SOFeature _refTarget, int _iCategoryIdx = 0)
+    {
+        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        if (refCategoryData == null)
+            return false;
+
+
+        var listData = refCategoryData.ListData;
+        bool bFind = false; 
+        for(int i = 0; i<listData.Count; ++i)
+        {
+            if (listData[i] == _refTarget)
+            {
+                refCategoryData.ListData[i] = null;
+                ++refCategoryData.m_iCurrentRemnantData;
+                bFind = true;
+            }
+        }
+
+        if (bFind == false)
+            return false;
+
+        SortData();
+        return true;
+    }
+
 
     //-1이면 남는 데이터 인덱스에 넣기 , 0이면 기본 데이터 리스트에 넣기
     public bool AddData(SOFeature _refSOEntryUI, int _iCategoryIdx = 0, int _iIdx = -1)
@@ -364,18 +389,18 @@ public class Container : BaseButtonUI
         BindData(_iCategoryData);
     }
 
-    public void ChanageSelect()
-    {
-        m_bOnSelect = !m_bOnSelect;
-    }
-    public void OnSelect()
-    {
-        m_bOnSelect = true;
-    }
-    public void OffSelect()
-    {
-        m_bOnSelect = false;
-    }
+    //public void ChanageSelect()
+    //{
+    //    m_bOnSelect = !m_bOnSelect;
+    //}
+    //public void OnSelect()
+    //{
+    //    m_bOnSelect = true;
+    //}
+    //public void OffSelect()
+    //{
+    //    m_bOnSelect = false;
+    //}
 
     /*/////////////////////////////////////
                   Input 
@@ -392,8 +417,8 @@ public class Container : BaseButtonUI
 
     public override void OnDrag(PointerEventData e)
     {
-        if (m_bOnSelect == true)
-            return;
+        //if (m_bOnSelect == true)
+        //    return;
 
         Vector2 vPositionDelta = e.position - m_vDragCurPosition;
 
@@ -441,7 +466,7 @@ public class Container : BaseButtonUI
         m_refTargetSlot = _pTargetSlot;
 
         //콜백함수
-        OnSelectEvt?.Invoke();
+        OnSelectEvt?.Invoke(_pTargetSlot.SOFeat);
         OnSelectUEvt?.Invoke();
     }
 
@@ -477,7 +502,7 @@ public class Container : BaseButtonUI
 #if UNITY_EDITOR
                 Undo.DestroyObjectImmediate(m_refContentView.GetChild(i).gameObject);
 #else
-    Destroy(m_pContentView.GetChild(i).gameObject);
+                Destroy(m_refContentView.GetChild(i).gameObject);
 #endif
             }
         }
