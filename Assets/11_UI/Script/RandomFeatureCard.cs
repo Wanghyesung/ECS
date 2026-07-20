@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
@@ -42,13 +41,20 @@ public class RandomFeatureCard : BaseButtonUI
         gameObject.SetActive(true);
     }
 
-    override public void OnPointerClick(PointerEventData e)
+    protected override void OnClicked()
     {
-        base.OnPointerClick(e);
         OnCardClicked?.Invoke(m_SOFeature);
-     
     }
- 
+
+    protected override void OnPressed()
+    {
+        // 눌림 연출 트리거 (Animator 등, 매 프레임 로직 없음)
+    }
+
+    protected override void OnReleased()
+    {
+        // 복원 연출 트리거
+    }
 
     
     private IEnumerator CORotate()

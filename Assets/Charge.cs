@@ -16,7 +16,7 @@ public class Charge : MonoBehaviour
 {
     [SerializeField] private ParticleSystem m_refParticleSystem;
 
-    [SerializeField] private UnityEngine.Events.UnityEvent OnChargeComplete;
+    [SerializeField] private UnityEvent OnChargeComplete;
     [SerializeField] private float m_fStartEventOffset;
 
     private float m_fStartEventTime;
