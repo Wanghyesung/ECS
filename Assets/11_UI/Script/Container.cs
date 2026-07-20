@@ -25,6 +25,10 @@ public class CategoryData
     public bool IsFull => m_iCurrentRemnantData <= 0;
     [HideInInspector] public int m_iCategoryIdx = 0;
 
+    //이 카테고리가 보여줄 데이터의 카운트를 어디서 가져올지 (예: FeatureManager). 카테고리마다 다른 출처를 꽂을 수 있음
+    [SerializeField] private MonoBehaviour m_refCountSourceObj;
+    public ICountable CountSource => m_refCountSourceObj as ICountable;
+
     //[SerializeField] public eUIType m_iUIType = eUIType.None;
     public int GetRemnantDataIdx()
     {
@@ -38,6 +42,18 @@ public class CategoryData
     }
 }
 
+[Serializable]
+public enum eContainerType
+{
+    None,
+    Feature,
+}
+
+/*//////////////////////////////////////////////
+기능 : 특정 SO를 보관하고 관리해주는 역할, 동적으로 컨테이너 크기를 키워주고 
+      사용자와 상호작용(드래그 클릭) 역할을 수행
+ *//////////////////////////////////////////////
+
 public class Container : BaseButtonUI
 {
     //UI 컨테이너 (스킬창, 인벤토리 창)
@@ -47,9 +63,10 @@ public class Container : BaseButtonUI
     //controll은 UGUI pointer에서 담당
     //카테고리별로 슬롯뷰는 동일하되 데이터는 따로 보여줄 수 있게 
 
-
     [Header("CONTANIER")]
     private RectMask2D m_refRectMask;
+
+    [SerializeField] eContainerType m_eType; //어떤 도메인 데이터를 다루는 컨테이너인지 (Feature면 FeatureManager와 연동)
 
     [SerializeField] private RectTransform m_refContainerView; // 프레임(마스크) Rect
     [SerializeField] private RectTransform m_refContentView;   // 셀들이 붙는 부모 Rect
@@ -107,6 +124,14 @@ public class Container : BaseButtonUI
     protected void Awake()
     {
         Build();
+    }
+
+    public void Init()
+    {
+        //Feature 전용 컨테이너면 기능 흭득/레벨업 이벤트를 구독해서 슬롯에 자동 반영
+        if (m_eType == eContainerType.Feature && FeatureManager.m_Instance != null)
+            FeatureManager.m_Instance.OnFeatureSelect += OnFeatureAcquired;
+
         if (m_refSelectFramePrefab != null)
         {
             GameObject pFrameObejct = Instantiate(m_refSelectFramePrefab, m_refContentView);
@@ -115,6 +140,12 @@ public class Container : BaseButtonUI
 
             m_refFrameRectTrasnform = pFrameObejct?.GetComponent<RectTransform>();
         }
+    }
+
+    //FeatureManager.OnFeatureSelect(Action<SOFeature,int>) 시그니처에 맞춘 전용 래퍼
+    private void OnFeatureAcquired(SOFeature _refFeature, int _iNewLevel)
+    {
+        AddData(_refFeature, _iNewLevel);
     }
 
 
@@ -165,7 +196,8 @@ public class Container : BaseButtonUI
             if (pre < 0)
                 continue;
 
-            m_listView[pre].Bind(refTarget.SOFeat, pre);
+            int iPreCount = m_listView[pre].Count;
+            m_listView[pre].Bind(refTarget.SOFeat, pre, iPreCount);
             m_listView[i].Bind(null, i);
         }
     }
@@ -212,38 +244,53 @@ public class Container : BaseButtonUI
     }
 
 
-    //-1이면 남는 데이터 인덱스에 넣기 , 0이면 기본 데이터 리스트에 넣기
-    public bool AddData(SOFeature _refSOEntryUI, int _iCategoryIdx = 0, int _iIdx = -1)
+    //FeatureManager.OnFeatureSelect 핸들러 전용: 처음 흭득이면 목록에 새로 추가하고,
+    //이미 보유 중인 기능이면(레벨업) 추가 없이 카운트(레벨)만 갱신
+    public bool AddData(SOFeature _refSOEntryUI, int _iCount, int _iCategoryIdx = 0)
     {
         CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
-
-        if (pCategoryData == null || pCategoryData.IsFull == true)
+        if (pCategoryData == null)
             return false;
 
-        if (_iIdx == -1)
+        //이미 보유 중인 기능인지(=레벨업) 확인
+        int iIdx = pCategoryData.ListData.IndexOf(_refSOEntryUI);
+
+        if (iIdx == -1)
         {
-            //남는 자리
-            int iRemIdx = pCategoryData.GetRemnantDataIdx();
-            if (iRemIdx == -1)
+            //처음 흭득 -> 남는 자리에 새로 추가
+            if (pCategoryData.IsFull == true)
                 return false;
 
-            pCategoryData.ListData[iRemIdx] = _refSOEntryUI;
-        }
-        else
-        {
-            //지정된 자리
-            if (pCategoryData.ListData[_iIdx] != null)
+            iIdx = pCategoryData.GetRemnantDataIdx();
+            if (iIdx == -1)
                 return false;
 
-            pCategoryData.ListData[_iIdx] = _refSOEntryUI;
+            pCategoryData.ListData[iIdx] = _refSOEntryUI;
+            --pCategoryData.m_iCurrentRemnantData;
+
+
+            //구조가 바뀌었으니(슬롯 하나가 새로 채워짐) 전체 재바인딩
+            BindData();
         }
 
-
-        BindData(_iCategoryIdx);
-
-        --pCategoryData.m_iCurrentRemnantData;
+        //이미 화면에 보이는 슬롯이면 전체 재바인딩 없이 카운트만 갱신
+        SetSlotCount(iIdx, _iCount);
 
         return true;
+    }
+
+    //카운트(레벨)는 CategoryData에 저장하지 않고 FeatureManager가 유일한 소스이므로,
+    //데이터 idx를 그리고 있는 슬롯을 찾아 값만 밀어줌 (안 보이는 슬롯이면 무시)
+    private void SetSlotCount(int _iDataIdx, int _iCount)
+    {
+        for (int i = 0; i < m_listView.Count; ++i)
+        {
+            if (m_listView[i].SlotIdx == _iDataIdx)
+            {
+                m_listView[i].SetCount(_iCount);
+                return;
+            }
+        }
     }
 
 
@@ -361,9 +408,12 @@ public class Container : BaseButtonUI
 
     public void BindData(int _iCategoryIdx = 0)
     {
-        var listData = GetListData(_iCategoryIdx);
-        if (listData == null)
+        CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
+        if (pCategoryData == null || pCategoryData.ListData == null)
             return;
+
+        var listData = pCategoryData.ListData;
+        ICountable ICountSource = pCategoryData.CountSource;
 
         //보이는 구간 업데이트
         int iStartIdx = m_iCurRow * m_iColCount;
@@ -375,7 +425,14 @@ public class Container : BaseButtonUI
                 return;
 
             int iDataIdx = iStartIdx + i;
-            m_listView[i].Bind(listData[iDataIdx], iDataIdx);
+            SOFeature refFeat = listData[iDataIdx];
+
+            //카테고리별 카운트 출처(ICountable)에서 조회. 미할당이면 카운트 없이(0) 표시
+            if(refFeat != null && ICountSource != null)
+            {
+                int iCount = ICountSource.GetCount(refFeat);
+                m_listView[i].Bind(refFeat, iDataIdx, iCount);
+            }
         }
     }
 
@@ -389,26 +446,14 @@ public class Container : BaseButtonUI
         BindData(_iCategoryData);
     }
 
-    //public void ChanageSelect()
-    //{
-    //    m_bOnSelect = !m_bOnSelect;
-    //}
-    //public void OnSelect()
-    //{
-    //    m_bOnSelect = true;
-    //}
-    //public void OffSelect()
-    //{
-    //    m_bOnSelect = false;
-    //}
+  
 
     /*/////////////////////////////////////
                   Input 
-   *////////////////////////////////////
+    *///////////////////////////////////////
 
     public override void OnBeginDrag(PointerEventData e)
     {
-
         if (m_refFrameImage != null)
             m_refFrameImage.enabled = false;
 

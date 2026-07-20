@@ -434,3 +434,80 @@ private void ApplyGrantedActions(GameObject _refBulletObj)
   - `Assets/02_Player/Weapon/Weapon.cs`: `Fire()`, `FireCircularSector()`, `FireAndRotate()`가 각자 하던 `GetObject`+`SetAttack`을 전부 `Bullet.SpawnAttackObject` 호출로 교체. 기존 `CreateBullet()`(풀에서 꺼내기 + 발사 이펙트 + 쿨다운 갱신을 함께 처리하던 메서드)은 Weapon 고유 관심사(이펙트 재생, 쿨다운 갱신)만 남긴 `OnBulletFired()`로 축소
   - `Assets/02_Player/Weapon/BulletAction/SOSpawnRadialDirAction.cs`: 피보나치 스피어 분포(`SOFireRadialDirNode`와 동일한 방식)로 사방에 새 공격 오브젝트를 `Bullet.SpawnAttackObject`로 직접 스폰하도록 구현. Weapon 참조 없이 동작.
 - **결과**: 총알 생성 책임이 `Bullet.SpawnAttackObject` 한 곳으로 모이고, Weapon과 BulletArriveAction 모두 그 아래로만 의존하는 단방향 구조 유지.
+
+---
+
+# 🚀 [Unity 우주 슈팅] Container 버그 수정 & Feature 슬롯 설명/보유 개수 표시 설계
+
+- **날짜:** 2026-07-20
+- **관련 시스템:** UI(Container/SlotView), FeatureManager, Event System
+
+## 1. 🚨 Container.cs 버그 리뷰
+
+코드 리뷰 중 `Container.cs`에서 두 가지 실질적인 결함을 발견.
+
+1. **빌드 시 컴파일 에러**: `ClearData()`(private, 슬롯 오브젝트 파괴용)의 `#else`(비-에디터) 분기에서 존재하지 않는 필드 `m_pContentView`를 참조. `#if UNITY_EDITOR` 분기만 타는 에디터에서는 안 드러나고, 실제 빌드에서만 컴파일이 깨지는 잠복 버그였음.
+2. **`SortData()` IndexOutOfRangeException 위험**: 빈 공간 없이 데이터를 앞으로 당기는 로직에서, 대상 슬롯(`i`) 앞쪽에 빈 슬롯이 하나도 없으면 탐색 인덱스 `pre`가 `-1`까지 내려간 채로 `m_listView[pre]`에 접근 → 컨테이너가 꽉 찬 상태에서 `SortData()`를 호출하면 크래시.
+
+### 🛠️ 수정
+- `m_pContentView` → `m_refContentView`로 정정.
+- `SortData()`에 `if (pre < 0) continue;` 가드 추가 (옮길 빈 슬롯이 없으면 그냥 스킵). 사용되지 않던 루프 내 임시 변수(`iSwapIdx`)도 함께 제거.
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) 슬롯 선택 시 SO 설명(Description) 텍스트로 보여주기**
+- 처음 아이디어: `SODescView` 같은 별도 클래스가 `Container`의 선택 콜백을 구독해서 그려주면 어떨까?
+- `Container.OnSelectEvt`가 기존엔 `Action`(파라미터 없음)이라, 구독자가 결과를 알려면 `Container.GetTargetSlot().SOFeat`로 다시 조회해야 했음 → 구독자가 `Container`뿐 아니라 `SlotView` 타입까지 알아야 해서 결합도가 늘어남.
+- **결론**: `OnSelectEvt`를 `Action<SOFeature>`로 바꿔 선택된 SO를 이벤트 인자로 직접 push. `SOFeature.m_strDescription`에 `Description` 프로퍼티를 새로 열어주고, 신규 `SODescView`가 이벤트를 구독해 TMP 텍스트에 반영.
+
+**2) 기능 보유 개수(레벨)는 어디서 관리할 것인가**
+- 논의 순서:
+  1. 1차 제안: `SlotView.Bind()` 시점에 `FeatureManager.GetLevel()`을 조회하고, 이후엔 `SlotView`가 직접 `FeatureManager.OnFeatureAcquired`를 구독해서 자기 갱신.
+  2. **반박(사용자)**: 컨테이너에 슬롯이 12개면 흭득 이벤트 1번마다 12개 슬롯이 전부 "내 것 맞나?" 필터링을 반복하게 됨. 실제 성능 임팩트는 거의 없지만(흭득은 프레임마다 도는 이벤트가 아님), 더 근본적인 문제는 **범용 뷰(`SlotView`)가 특정 게임플레이 싱글턴(`FeatureManager`)에 직접 의존하게 된다는 것** — 인벤토리/스킬창 등으로 재사용해야 할 슬롯 뷰가 이 기능 하나 때문에 오염됨.
+  3. **재설계**: 구독은 `Container`가 한 번만 하고(슬롯 수와 무관), 필요한 슬롯에만 `SetCount(int)`로 값을 밀어준다. `SlotView`는 `FeatureManager`를 아예 모르게 됨.
+- 실제 구현 단계에서 추가로 발견한 함정: `Container.AddData`에 `(SOFeature,int)`/`(SOFeature,int,int=0)` 두 오버로드가 동시에 존재하는 상태라, `FeatureManager.OnFeatureAcquired += AddData` 처럼 메서드 그룹으로 바로 구독하면 두 오버로드 모두 `Action<SOFeature,int>`에 대입 가능해 컴파일러가 어떤 걸 고를지 모호해짐 → 잘못 고르면 이벤트가 준 카운트 값이 조용히 `_iCategoryIdx` 자리로 들어가는 버그가 될 뻔함. 시그니처가 명확한 전용 래퍼 메서드(`OnFeatureAcquired`)를 하나 두고 그 안에서 명시적으로 호출하도록 회피.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOFeature.cs
+```csharp
+public string Description => m_strDescription; // 기존엔 접근자가 없었음
+```
+
+### 🔹 Container.cs
+```csharp
+public event Action<SOFeature> OnSelectEvt; // 기존 Action → 선택된 SO를 직접 전달
+
+private void OnEnable()
+{
+    if (m_eType == eContainerType.Feature && FeatureManager.m_Instance != null)
+        FeatureManager.m_Instance.OnFeatureAcquired += OnFeatureAcquired;
+}
+
+// 오버로드 모호성 회피용 래퍼
+private void OnFeatureAcquired(SOFeature _refFeature, int _iNewLevel)
+{
+    AddData(_refFeature, _iNewLevel);
+}
+
+// 처음 흭득이면 남는 자리에 추가 + 전체 재바인딩, 이미 있으면 SetSlotCount로 그 슬롯만 갱신
+public bool AddData(SOFeature _refSOEntryUI, int _iCount, int _iCategoryIdx = 0) { ... }
+```
+- `BindData()`에도 스크롤/카테고리 전환으로 슬롯이 새로 바인딩될 때 `FeatureManager.GetLevel()`로 최신 카운트를 반영하는 처리 추가 (레벨업 순간이 아닌 재바인딩 경로 커버).
+
+### 🔹 SlotView.cs
+- `BindData()`에서 하던 `FeatureManager.GetLevel()` 직접 조회 제거.
+- `private void UpdateCountBadge(int)` → `public void SetCount(int)`로 승격, `Container`가 밀어주는 값만 반영하는 순수 뷰로 축소.
+
+### 🔹 SODescView.cs (신규)
+- `Container.OnSelectEvt<SOFeature>`를 구독해 선택된 SO의 `Description`을 TMP 텍스트에 반영. `OnEnable`/`OnDisable`에서 구독/해제.
+
+**남은 작업**: 씬/프리팹에서 `SODescView`에 `Container`와 TMP 텍스트 오브젝트 연결, `Container` 인스펙터에서 `m_eType`을 실제로 `Feature`로 세팅해야 카운트 push 경로가 동작함.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **에디터 전용 분기(`#if UNITY_EDITOR`)에 숨은 컴파일 에러는 에디터에서 아무리 테스트해도 안 드러난다.** 실제 빌드 파이프라인을 한 번은 반드시 통과시켜야 하는 이유.
+> 2. **"이벤트를 몇 개가 구독하느냐"보다 "누가 무엇에 의존하게 되느냐"가 결합도 판단의 핵심 질문이다.** 12개 슬롯이 매번 이벤트를 필터링하는 성능 비용은 무시할 수준이었지만, 재사용 가능해야 할 뷰 컴포넌트가 특정 매니저 싱글턴을 알게 되는 것은 구조적으로 더 나쁜 문제였음.
+> 3. **오버로드가 여러 개인 메서드는 메서드 그룹으로 델리게이트에 바로 구독하지 말 것.** C#은 필요하면 선택적 매개변수를 채워서라도 호환되는 오버로드를 묵시적으로 골라주는데, 후보가 여럿이면 어떤 게 선택될지 코드만 봐서는 확신하기 어렵다. 시그니처가 델리게이트와 정확히 일치하는 전용 래퍼 메서드로 구독하면 이 모호성 자체가 생기지 않는다.

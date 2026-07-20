@@ -10,21 +10,22 @@ using UnityEngine;
       기능 목록은 고정이고 런타임 추가/삭제가 없어서 eFeatureID를 인덱스로 쓰는
       배열 접근 방식을 사용 (Dictionary의 해시/버킷 탐색 비용 회피)
  *///////////////////////////////////////////
-public class FeatureManager : MonoBehaviour
+public class FeatureManager : MonoBehaviour, ICountable
 {
     public static FeatureManager m_Instance = null;
 
-    [SerializeField] private List<SOFeature> m_listAllFeatureSO = new List<SOFeature>();
+    [SerializeField] private List<SOFeature> m_listFeatureSO = new List<SOFeature>();
 
     private SOFeature[] m_arrFeatureByID;
     private int[] m_arrAcquiredLevel;
 
-    // RequestFeatureChoices 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
+    // RequestFeature 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
     private List<SOFeature> m_listPoolBuffer = new List<SOFeature>();
     private List<SOFeature> m_listResultBuffer = new List<SOFeature>();
 
-    public event Action<List<SOFeature>> OnFeatureChoicesReady;
-    public event Action<SOFeature, int> OnFeatureAcquired;
+    public event Action<SOFeature, int> OnFeatureSelect;
+    public event Action<SOFeature, int> OnFeatureDelete;
+
 
     private void Awake()
     {
@@ -34,20 +35,20 @@ public class FeatureManager : MonoBehaviour
         m_Instance = this;
         DontDestroyOnLoad(this);
 
-        BuildFeatureTable();
+        Build();
 
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
     }
 
-    private void BuildFeatureTable()
+    private void Build()
     {
         int iCount = (int)eFeatureID.End;
         m_arrFeatureByID = new SOFeature[iCount];
         m_arrAcquiredLevel = new int[iCount]; //해당 기능의 레벨이 현재 몇인지 체크하는 배열
 
-        for (int i = 0; i < m_listAllFeatureSO.Count; ++i)
+        for (int i = 0; i < m_listFeatureSO.Count; ++i)
         {
-            SOFeature refFeature = m_listAllFeatureSO[i];
+            SOFeature refFeature = m_listFeatureSO[i];
             int iIndex = (int)refFeature.ID;
 
             if (iIndex <= (int)eFeatureID.None || iIndex >= iCount)
@@ -68,7 +69,7 @@ public class FeatureManager : MonoBehaviour
 
     // _iCount : 이번에 보여줄 후보 개수 (상황에 따라 가변으로 호출부에서 결정)
     // 후보가 _iCount보다 적으면 있는 만큼만 반환 (호출부에서 남는 카드 슬롯 처리)
-    public List<SOFeature> RequestFeatureChoices(int _iCount)
+    public List<SOFeature> RequestFeature(int _iCount)
     {
         m_listPoolBuffer.Clear();
 
@@ -121,6 +122,24 @@ public class FeatureManager : MonoBehaviour
         return _listPool.Count - 1;
     }
 
+    public int GetLevel(eFeatureID _eID)
+    {
+        int iIndex = (int)_eID;
+        if (iIndex <= (int)eFeatureID.None || iIndex >= m_arrAcquiredLevel.Length)
+            return 0;
+
+        return m_arrAcquiredLevel[iIndex];
+    }
+
+    //ICountable 구현: Container가 카테고리별 카운트 출처로 참조
+    public int GetCount(SOFeature _refSO)
+    {
+        if (_refSO == null)
+            return 0;
+
+        return GetLevel(_refSO.ID);
+    }
+
     public void SelectFeature(SOFeature _refFeature, Player _refPlayer)
     {
         if (_refFeature == null || _refPlayer == null)
@@ -131,6 +150,6 @@ public class FeatureManager : MonoBehaviour
 
         _refFeature.Apply(_refPlayer, m_arrAcquiredLevel[iIndex]);
 
-        OnFeatureAcquired?.Invoke(_refFeature, m_arrAcquiredLevel[iIndex]);
+        OnFeatureSelect?.Invoke(_refFeature, m_arrAcquiredLevel[iIndex]);
     }
 }

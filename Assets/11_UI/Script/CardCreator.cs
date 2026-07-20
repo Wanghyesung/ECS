@@ -27,7 +27,7 @@ public class CardCreator : MonoBehaviour
         // Time.time / Time.deltaTime 기반이라 timeScale만 0으로 만들면 별도 처리 없이 정지됨
         Time.timeScale = 0f;
 
-        var listChoices = FeatureManager.m_Instance.RequestFeatureChoices(m_arrCard.Length);
+        var listChoices = FeatureManager.m_Instance.RequestFeature(m_arrCard.Length);
 
         for (int i = 0; i < m_arrCard.Length; ++i)
             m_arrCard[i].Setup(listChoices[i]);

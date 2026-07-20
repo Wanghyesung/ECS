@@ -16,6 +16,9 @@ public class SlotView : BaseButtonUI
 
     protected int m_iID = -1;
     protected int m_iSlotIdx = -1; //내 컨테이너에서 몇번째 슬롯인지
+    protected int m_iCount = 0;
+    public int Count => m_iCount;
+
     protected SOFeature m_SOTargetSO = null;
 
     protected Container m_refContainer = null;
@@ -32,9 +35,10 @@ public class SlotView : BaseButtonUI
             m_refIcon = GetComponent<Image>();
     }
 
-    public virtual void Bind(SOFeature _refFeat, int _iSlotIdx)
+    
+    public virtual void Bind(SOFeature _refFeat, int _iSlotIdx, int _iCount = 0)
     {
-        BindData(_refFeat, _iSlotIdx);
+        BindData(_refFeat, _iSlotIdx, _iCount);
     }
 
     override public void OnBeginDrag(PointerEventData e)
@@ -66,7 +70,7 @@ public class SlotView : BaseButtonUI
         }
     }
 
-    protected void BindData(SOFeature _SOFeat, int _iSlotIdx)
+    protected void BindData(SOFeature _SOFeat, int _iSlotIdx, int _iCount = 0)
     {
 
         if (_SOFeat != null)
@@ -86,25 +90,23 @@ public class SlotView : BaseButtonUI
             m_iID = -1;
         }
 
+        SetCount(_iCount);
         m_iSlotIdx = _iSlotIdx;
     }
-    //private void update_count(SOEntryUI _pEntryUI)
-    //{
-    //    if (m_refCountBadgeText == null)
-    //        return;
 
-    //    int iCount = m_refContainer?.GetCount(_pEntryUI) ?? 0;
+    //Container가 바인딩 시점/흭득 이벤트에서 밀어주는 카운트를 받아 뱃지에 반영
+    public void SetCount(int _iCount)
+    {
+        if (m_refCountBadgeText == null)
+            return;
 
-    //    bool bShow = iCount > 1; // 1개 이하면 보통 표기 안 함
-    //    if (bShow)
-    //    {
-    //        m_refCountBadgeText.enabled = true;
-    //        m_refCountBadgeText.text = iCount.ToString();
-    //    }
-    //    else
-    //        m_refCountBadgeText.enabled = false;
-    //}
+        m_iCount = _iCount;
+        bool bShow = _iCount > 1; // 1개 이하면 보통 표기 안 함
+        m_refCountBadgeText.enabled = bShow;
 
+        if (bShow)
+            m_refCountBadgeText.text = m_iCount.ToString();
+    }
 
 
 }

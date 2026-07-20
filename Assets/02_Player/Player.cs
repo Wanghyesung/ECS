@@ -337,7 +337,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         // MaxAtack 클램프로 실제 증가분이 _iValue보다 작을 수 있어 그 차이만 무기에 반영.
         int iAppliedValue = (int)(m_refObjectInfo.Attack - fPrevAttack);
         for (int i = 0; i < m_listWeapon.Count; ++i)
-            m_listWeapon[i].AddAttackDamage(iAppliedValue);
+        {
+            if (m_listWeapon[i].gameObject.activeSelf == true)
+                m_listWeapon[i].AddAttackDamage(iAppliedValue);
+        }
     }
 
     public void UpSpeedRatio(float _fRatio)
@@ -377,6 +380,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public void UpBulletSpeed(float _fValue)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
-            m_listWeapon[i].AddBulletSpeed(_fValue);
+        {
+            if (m_listWeapon[i].gameObject.activeSelf == true)
+                m_listWeapon[i].AddBulletSpeed(_fValue);
+
+        }
     }
 }
