@@ -92,6 +92,8 @@ public class Container : BaseButtonUI
     private SlotView m_refTargetSlot;//id로 바꿀 수 있음 (매니저에서 가져오게 아니면 그냥 SO들고있기)
     [SerializeField] public UnityEvent OnSelectUEvt;
     public event Action<SOData> OnSelectEvt;
+    public event Action<SOData> OnAddEvt;
+    public event Action<SOData> OnDeleteEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -116,6 +118,7 @@ public class Container : BaseButtonUI
     private Vector2 m_vContainerDragPosition = Vector2.zero;
     private Vector2 m_vViewCurDrageLine = Vector2.zero;//현재 드래그 라인
     private Vector2 m_vContaninerSize = Vector2.zero; //전체 컨테이너 크기
+    private Vector2 m_vViewOriginPos = Vector2.zero;//현재 드래그 라인
 
 
     //빌드 전용
@@ -123,6 +126,8 @@ public class Container : BaseButtonUI
 
     protected void Awake()
     {
+        m_vViewOriginPos = m_refContentView.anchoredPosition;
+
         Build();
     }
 
@@ -207,28 +212,31 @@ public class Container : BaseButtonUI
         CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
         if (refCategoryData == null || refCategoryData.ListData[_iDataIdx] == null)
             return false;
-    
+
+        var SOData = refCategoryData.ListData[_iDataIdx];
+
         refCategoryData.ListData[_iDataIdx] = null;
         ++refCategoryData.m_iCurrentRemnantData;
     
         //데이터 새로 바인딩
         BindData(_iCategoryIdx);
-    
+        OnDeleteEvt?.Invoke(SOData);
+
         return true;
     }
 
-    public bool DeleteData(SOData _refTarget, int _iCategoryIdx = 0)
+    public bool DeleteData(SOData _SOData, int _iCategoryIdx = 0)
     {
         CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
         if (refCategoryData == null)
             return false;
 
-
+       
         var listData = refCategoryData.ListData;
         bool bFind = false; 
         for(int i = 0; i<listData.Count; ++i)
         {
-            if (listData[i] == _refTarget)
+            if (listData[i] == _SOData)
             {
                 refCategoryData.ListData[i] = null;
                 ++refCategoryData.m_iCurrentRemnantData;
@@ -240,20 +248,21 @@ public class Container : BaseButtonUI
             return false;
 
         SortData();
+        OnDeleteEvt?.Invoke(_SOData);
         return true;
     }
 
 
     //FeatureManager.OnFeatureSelect 핸들러 전용: 처음 흭득이면 목록에 새로 추가하고,
     //이미 보유 중인 기능이면(레벨업) 추가 없이 카운트(레벨)만 갱신
-    public bool AddData(SOData _refSOEntryUI, int _iCount, int _iCategoryIdx = 0)
+    public bool AddData(SOData _SOData, int _iCount, int _iCategoryIdx = 0)
     {
         CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
         if (pCategoryData == null)
             return false;
 
         //이미 보유 중인 기능인지(=레벨업) 확인
-        int iIdx = pCategoryData.ListData.IndexOf(_refSOEntryUI);
+        int iIdx = pCategoryData.ListData.IndexOf(_SOData);
 
         if (iIdx == -1)
         {
@@ -265,7 +274,7 @@ public class Container : BaseButtonUI
             if (iIdx == -1)
                 return false;
 
-            pCategoryData.ListData[iIdx] = _refSOEntryUI;
+            pCategoryData.ListData[iIdx] = _SOData;
             --pCategoryData.m_iCurrentRemnantData;
 
 
@@ -275,9 +284,27 @@ public class Container : BaseButtonUI
 
         //이미 화면에 보이는 슬롯이면 전체 재바인딩 없이 카운트만 갱신
         SetSlotCount(iIdx, _iCount);
+        OnAddEvt?.Invoke(_SOData);
 
         return true;
     }
+
+    public SOData FindData(SOData _SOData , int _iCategoryIdx = 0)
+    {
+        CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
+        if (pCategoryData == null)
+            return null;
+
+        var listData = pCategoryData.ListData;
+        for(int i = 0; i< listData.Count; ++i)
+        {
+            if (listData[i] == _SOData)
+                return _SOData;
+        }
+
+        return null;
+    }
+
 
     //카운트(레벨)는 CategoryData에 저장하지 않고 FeatureManager가 유일한 소스이므로,
     //데이터 idx를 그리고 있는 슬롯을 찾아 값만 밀어줌 (안 보이는 슬롯이면 무시)
@@ -293,7 +320,7 @@ public class Container : BaseButtonUI
         }
     }
 
-
+  
     //에디터에서 가장 처음에 실행
     public void Build()
     {
@@ -350,12 +377,21 @@ public class Container : BaseButtonUI
 
     public void Sort()
     {
-        //부드럽게 이동을 위한 뒤에 버퍼까지 계산
-        m_iRowCount = m_iSlotRowCount > 0 ? m_iSlotRowCount + 1 : 0;
+        var refCategory = GetCategoryData(m_iCurrentCategoryIdx);
+        int iCurMax = m_iSlotColCount * m_iSlotRowCount;
+
+
+        var listData = refCategory.ListData;
+
+        if (iCurMax <= listData.Count)
+            m_iRowCount = m_iSlotRowCount > 0 ? m_iSlotRowCount + 1 : 0; //부드럽게 이동을 위한 뒤에 버퍼까지 계산
+        else
+            m_iRowCount = m_iSlotRowCount;
+
         m_iColCount = m_iSlotColCount;
 
-        if (m_iRowCount * m_iColCount > m_listCategoryData[0].ListData.Count)
-            m_iRowCount = Mathf.CeilToInt((float)m_listCategoryData[0].ListData.Count / m_iColCount);
+        if (m_iRowCount * m_iColCount > listData.Count)
+            m_iRowCount = Mathf.CeilToInt((float)listData.Count / m_iColCount);
 
         //슬롯 프리팹 생성
         Vector2 vPadding = m_vPadding;
@@ -369,6 +405,9 @@ public class Container : BaseButtonUI
         {
             for (int j = 0; j < m_iColCount; ++j)
             {
+                if (i * m_iColCount + j >= listData.Count)
+                    break;
+
                 SlotView pSlot = Instantiate(m_refSlotPrefab, m_refContentView);
                 pSlot.Init(this);
 
@@ -384,19 +423,13 @@ public class Container : BaseButtonUI
             }
         }
 
-        //모든 데이터는 0번을 기준을 값은 데이터 크기를 가진다
-        CategoryData pBaseCategoryData = m_listCategoryData[0];
-        var pListData = pBaseCategoryData.ListData;
+        //현재 카테고리 데이터 기준 스크롤 가능 y축 계산
+        int iRowSize = listData.Count / m_iColCount;
 
-        //실제 크기는 슬롯 수가 아닌, 데이터 수에 따라
-        int iRowSize = pListData.Count >= m_listView.Count ?
-            (pListData.Count / m_iColCount) : m_iRowCount;
 
-        //딱맞게 떨어졌다면
-        //if (m_iRowCount * m_iColCount == m_listCategoryData[0].ListData.Count)
-        //    iRowSize = 0;
-        //else
-        iRowSize -= (m_iRowCount - 1);
+        //보여주는 구간 밑에 얼마나 내릴 수 있는지 체크
+        int iViewCount = (m_iSlotRowCount* m_iSlotColCount) / m_iSlotColCount;
+        iRowSize -= iViewCount;
 
         if (iRowSize < 0)
             iRowSize = 0;
@@ -428,11 +461,11 @@ public class Container : BaseButtonUI
             SOData refFeat = listData[iDataIdx];
 
             //카테고리별 카운트 출처(ICountable)에서 조회. 미할당이면 카운트 없이(0) 표시
-            if(refFeat != null && ICountSource != null)
-            {
-                int iCount = ICountSource.GetCount(refFeat);
-                m_listView[i].Bind(refFeat, iDataIdx, iCount);
-            }
+            int iCount = 1;
+            if(ICountSource != null)
+                     iCount = ICountSource.GetCount(refFeat);
+           
+            m_listView[i].Bind(refFeat, iDataIdx, iCount);
         }
     }
 
@@ -487,8 +520,9 @@ public class Container : BaseButtonUI
 
         m_vViewCurDrageLine = new Vector2(0.0f, fContentPosY);
 
+       
         // 실제 이동
-        m_refContentView.anchoredPosition = new Vector2(m_refContentView.anchoredPosition.x, m_vViewCurDrageLine.y);
+        m_refContentView.anchoredPosition = new Vector2(m_vViewOriginPos.x, m_vViewOriginPos.y + m_vViewCurDrageLine.y);
 
         if (m_iCurRow != iRow)
         {
@@ -559,7 +593,7 @@ public class Container : BaseButtonUI
                   Data Category
     *////////////////////////////////////
 
-    public List<SOData> GetListData(int _iCategoryIdx)
+    public List<SOData> GetListData(int _iCategoryIdx = 0)
     {
 
         CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
@@ -573,7 +607,7 @@ public class Container : BaseButtonUI
     }
 
 
-    public CategoryData GetCategoryData(int _iCategoryIdx)
+    public CategoryData GetCategoryData(int _iCategoryIdx = 0)
     {
         if (_iCategoryIdx >= m_listCategoryData.Count)
             return null;
@@ -589,17 +623,42 @@ public class Container : BaseButtonUI
 
         return listData[_iDataIdx];
     }
+    public void Resize(int _iCount, int _iCategoryIdx = 0)
+    {
+        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        if (refCategoryData == null)
+            return;
+        var listData = refCategoryData.ListData;
 
-    //public int GetCategoryIdx(eUIType _eUIType)
-    //{
-    //    for (int i = 0; i < m_listCategoryData.Count; ++i)
-    //    {
-    //        if (m_listCategoryData[i].m_iUIType == _eUIType)
-    //            return i;
-    //    }
-    //
-    //    return -1;
-    //}
+        if (listData.Count > _iCount)
+        {
+            int iDeleteCount = listData.Count - _iCount;
+
+            // 잘려나갈 구간에 실제 데이터가 있었다면 삭제 이벤트로 알림
+            for (int i = _iCount; i < listData.Count; ++i)
+            {
+                if (listData[i] != null)
+                    OnDeleteEvt?.Invoke(listData[i]);
+            }
+
+            // _iCount 번 인덱스부터 iDeleteCount 개수만큼 삭제
+            listData.RemoveRange(_iCount, iDeleteCount);
+            refCategoryData.m_iCurrentRemnantData -= iDeleteCount;
+        }
+        else if (listData.Count < _iCount)
+        {
+            int iAddCount = _iCount - listData.Count;
+
+            for (int i = 0; i < iAddCount; ++i)
+                listData.Add(null);
+
+            refCategoryData.m_iCurrentRemnantData += iAddCount;
+        }
+
+        Build();
+        //BindData(_iCategoryIdx);
+    }
+
     public void ChanageCategory(int _iCategoryIdx)
     {
         if (m_iCategoryCount <= _iCategoryIdx)
@@ -618,25 +677,4 @@ public class Container : BaseButtonUI
         return refCategoryData.IsCanDuplication;
     }
 
-    //public int GetCount(int _iDataIdx)
-    //{
-    //    if (m_IOwner == null)
-    //        return -1;
-    //
-    //    int iAmount = m_IOwner.GetDataAmount(_iDataIdx, m_iCurrentCategoryIdx);
-    //    return iAmount;
-    //}
-    //
-    //public int GetCount(SOEntryUI _pEntryUI)
-    //{
-    //    if (m_IOwner == null)
-    //        return -1;
-    //    int iAmount = m_IOwner.GetDataAmount(_pEntryUI, m_iCurrentCategoryIdx);
-    //    return iAmount;
-    //}
-    //
-    //public void SetParent(IContainer _IContainer)
-    //{
-    //    m_IOwner = _IContainer;
-    //}
 }

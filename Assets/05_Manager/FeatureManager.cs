@@ -132,24 +132,24 @@ public class FeatureManager : MonoBehaviour, ICountable
     }
 
     //ICountable 구현: Container가 카테고리별 카운트 출처로 참조
-    public int GetCount(SOData _refSO)
+    public int GetCount(SOData _SOData)
     {
-        if (_refSO is not SOFeature refFeature)
+        if (_SOData is not SOFeature SOFeature)
             return 0;
 
-        return GetLevel(refFeature.ID);
+        return GetLevel(SOFeature.ID);
     }
 
-    public void SelectFeature(SOFeature _refFeature, Player _refPlayer)
+    public void SelectFeature(SOFeature _SOFeature, Player _refPlayer)
     {
-        if (_refFeature == null || _refPlayer == null)
+        if (_SOFeature == null || _refPlayer == null)
             return;
 
-        int iIndex = (int)_refFeature.ID;
+        int iIndex = (int)_SOFeature.ID;
         m_arrAcquiredLevel[iIndex]++;
 
-        _refFeature.Apply(_refPlayer, m_arrAcquiredLevel[iIndex]);
+        _SOFeature.Apply(_refPlayer, m_arrAcquiredLevel[iIndex]);
 
-        OnFeatureSelect?.Invoke(_refFeature, m_arrAcquiredLevel[iIndex]);
+        OnFeatureSelect?.Invoke(_SOFeature, m_arrAcquiredLevel[iIndex]);
     }
 }

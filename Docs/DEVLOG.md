@@ -511,3 +511,84 @@ public bool AddData(SOFeature _refSOEntryUI, int _iCount, int _iCategoryIdx = 0)
 > 1. **에디터 전용 분기(`#if UNITY_EDITOR`)에 숨은 컴파일 에러는 에디터에서 아무리 테스트해도 안 드러난다.** 실제 빌드 파이프라인을 한 번은 반드시 통과시켜야 하는 이유.
 > 2. **"이벤트를 몇 개가 구독하느냐"보다 "누가 무엇에 의존하게 되느냐"가 결합도 판단의 핵심 질문이다.** 12개 슬롯이 매번 이벤트를 필터링하는 성능 비용은 무시할 수준이었지만, 재사용 가능해야 할 뷰 컴포넌트가 특정 매니저 싱글턴을 알게 되는 것은 구조적으로 더 나쁜 문제였음.
 > 3. **오버로드가 여러 개인 메서드는 메서드 그룹으로 델리게이트에 바로 구독하지 말 것.** C#은 필요하면 선택적 매개변수를 채워서라도 호환되는 오버로드를 묵시적으로 골라주는데, 후보가 여럿이면 어떤 게 선택될지 코드만 봐서는 확신하기 어렵다. 시그니처가 델리게이트와 정확히 일치하는 전용 래퍼 메서드로 구독하면 이 모호성 자체가 생기지 않는다.
+
+---
+
+# 🚀 [Unity 우주 슈팅] 조커카드 도박 시스템 설계 & SOData 리팩토링 & Container 스크롤/리사이즈 버그 수정
+
+- **날짜:** 2026-07-21
+- **관련 시스템:** Feature(레벨업), UI(Container/SlotView), Data Architecture, Object/Card UI
+
+## 1. 🚨 기획 배경 / 문제 상황
+
+- **기획**: 레벨업마다 뜨는 "조커카드" 한 장. 누르면 회차별 확률로 성공/실패가 갈리고, 성공하면 보상 카드를 더 받는다. 연속 성공(스트릭)할수록 다음 성공 확률은 낮아지지만 후보 카드 수·선택 가능 수는 늘어나서, 매 판마다 "더 걸지 vs 지금까지 딴 걸 챙기고 멈출지"를 선택하게 만드는 구조.
+- **구조 문제 1**: 기존 `SOFeature`는 고르는 즉시 `FeatureManager`가 레벨을 올리고 스탯을 적용한다. 도박 실패 시 이걸 되돌리려면 `UpAttack`/`UpHP`/`AddWeapon` 등 모든 `SOFeature` 서브클래스에 Revert 로직을 새로 넣어야 해서 "기존 구조를 최대한 깨뜨리지 않는다"는 프로젝트 규칙과 충돌.
+- **구조 문제 2**: 뽑은 카드를 보여줄 `Container`/`SlotView`가 처음부터 `SOFeature` 타입에 하드 결합돼 있어, 별개 SO 타입인 조커카드(`SOJokerCard`)를 같은 슬롯 UI에 띄울 방법이 없었음.
+- **버그 리뷰**: 조커카드 UI를 얹기 전에 `Container.cs`의 가상 스크롤/리사이즈 로직을 다시 점검하다 4건의 결함을 추가로 발견 (아래 3장 참조).
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) 도박 실패 시 "몰수"를 어떻게 구현할 것인가**
+- 처음 검토: 고를 때마다 바로 `FeatureManager.SelectFeature()`를 호출하고, 실패하면 적용된 스탯을 되돌리는 Revert 로직 추가 → 서브클래스 전수 수정이 필요해 기각.
+- **결론**: 선택한 `SOFeature`를 `JokerCardManager`가 `m_listPendingFeature`에 보류만 시켜두고, 실제 `FeatureManager.SelectFeature` 호출은 도박을 끝내고 "현금화"하는 시점에 몰아서 처리. 실패하면 pending 리스트를 비우기만 하면 끝 — 애초에 적용한 적이 없으니 되돌릴 것도 없음. 회차별 성공 확률/후보 수/선택 가능 수는 `SOJokerCard`에 `AnimationCurve` 3개로 데이터만 분리.
+
+**2) Container를 SOFeature 전용으로 유지할지, 공통 부모 타입을 새로 뽑을지**
+- 인터페이스(`IDisplayable` 등)로 Icon/Description 계약만 공유하는 방법도 검토했으나, 이러면 `SOFeature`/`SOJokerCard`가 각자 필드를 중복 선언해야 함.
+- **결론**: 추상 베이스 SO `SOData`를 신설해 `SOFeature`가 상속하도록 변경. 이 프로젝트가 이미 `SOFeature` 자체를 "추상 베이스 SO 아래 서브클래스" 패턴으로 쓰고 있어서 그 결을 그대로 잇는 쪽이 인터페이스보다 일관적이라고 판단. `Container`/`SlotView`/`ICountable`/`SODescView` 전반의 타입을 `SOFeature` → `SOData`로 일반화.
+- **트레이드오프**: `ICountable.GetCount`가 `SOData`를 받게 되면서 `FeatureManager.GetCount`는 `is not SOFeature`로 한 번 다운캐스트가 필요해짐. 인스펙터에서 MonoBehaviour를 캐스팅해 꽂는 기존 `ICountable` 패턴상, 제네릭 인터페이스보다 이쪽이 Unity스럽다고 보고 그대로 채택.
+
+**3) 조커카드 트리거를 CardCreator에 어떻게 얹을 것인가**
+- `RandomFeatureCard.Setup()`은 원래도 `.Icon`만 참조했기 때문에 `SOFeature` 전용일 이유가 없었음 → `SOData` 기반으로 일반화해서 회전 연출/아이콘 스왑 뷰를 조커카드에도 그대로 재사용.
+- 다만 `CardCreator.HandleCardClicked` 안에서 타입 분기(`is SOFeature` / `is SOJokerCard`)로 합치는 안은 기각. 기능카드는 "1장 클릭 = 즉시 확정"이고 조커카드 후보는 "K장까지 토글 후 별도 확정"이라 클릭 한 번의 의미 자체가 다름 — 한 메서드에 분기를 쌓는 대신 `m_refJokerCard` 전용 슬롯을 따로 두고 `HandleJokerCardClicked`를 별도 이벤트로 구독.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOData.cs (신규)
+```csharp
+public abstract class SOData : ScriptableObject
+{
+    [TextArea]
+    [SerializeField] private string m_strDescription;
+    public string Description => m_strDescription;
+
+    [SerializeField] private Sprite m_sprIcon;
+    public Sprite Icon => m_sprIcon;
+}
+```
+`SOFeature : SOData`, `SOJokerCard : SOData`로 변경하고 각자 중복 선언하던 Description/Icon 필드는 제거. 기존 SOFeature 에셋의 필드 값은 Unity가 이름 기준으로 직렬화하므로 클래스 계층을 옮겨도 유지됨(마이그레이션 후 인스펙터에서 육안 확인 권장).
+
+### 🔹 Container.cs / SlotView.cs / ICountable.cs / SODescView.cs
+- `CategoryData.ListData`, `Container.OnSelectEvt`, `AddData`/`DeleteData`/`GetListData`/`GetDataIdx`, `SlotView.SOFeat`/`Bind`/`BindData`, `ICountable.GetCount`, `SODescView.OnSelect` 전부 `SOFeature` → `SOData`로 교체.
+- `FeatureManager.GetCount(SOData)`는 `is not SOFeature` 가드로 다운캐스트.
+
+### 🔹 Container.cs — 스크롤/리사이즈 버그 4건
+1. **`Resize()` 확장 분기 누락**: 축소(`listData.Count > _iCount`)만 구현돼 있고 늘리는 경우가 아예 없어서, 용량을 늘리는 호출이 조용히 아무 일도 안 했음 → `else if (listData.Count < _iCount)` 분기로 `null` 채워 넣는 코드 추가.
+2. **`Sort()`의 category 0 하드코딩**: 함수 초반엔 `GetCategoryData(m_iCurrentCategoryIdx)`로 현재 카테고리를 제대로 가져오면서도, 행 개수 클램프와 스크롤 가능 높이(`m_vContaninerSize.y`) 계산은 `m_listCategoryData[0]`을 참조 → 카테고리가 2개 이상이면 1번 이후 카테고리는 항상 0번 데이터 크기 기준으로 스크롤 범위가 계산되던 버그. 전부 현재 카테고리(`listData`) 참조로 교체.
+3. **슬롯 flat 인덱스 공식 오류**: 슬롯 생성 루프의 종료 조건이 `i * j + j >= listData.Count`로 돼있었는데, 이는 `i`행 `j`열의 실제 flat 인덱스(`i * m_iColCount + j`)와 다른 식이라 `BindData()`의 인덱싱 방식과 불일치 — 행이 늘어날수록 생성되는 슬롯 개수가 실제 데이터 개수와 어긋남. `i * m_iColCount + j`로 수정.
+4. **`Resize()` 축소 시 이벤트 누락**: `RemoveRange`로 잘라내는 뒤쪽 슬롯에 실제 데이터가 남아있어도 `OnDeleteEvt`가 안 불려서 다른 시스템이 그 삭제를 알 방법이 없었음 → 삭제 전 non-null 항목에 대해 `OnDeleteEvt?.Invoke(...)` 호출 추가.
+
+```csharp
+// Container.cs — Sort() 슬롯 생성 루프, 수정 후
+for (int i = 0; i < m_iRowCount; ++i)
+    for (int j = 0; j < m_iColCount; ++j)
+    {
+        if (i * m_iColCount + j >= listData.Count)
+            break;
+        // ...슬롯 인스턴스화
+    }
+```
+
+### 🔹 RandomFeatureCard.cs / CardCreator.cs
+- `RandomFeatureCard`: `m_SOFeature`/`SOFeature`/`OnCardClicked` → `m_SOData`/`Data`/`Action<SOData>`로 일반화.
+- `CardCreator`: `m_refJokerCard`(전용 슬롯) + `m_SOJokerCard`(표시 데이터) 추가, `HandleJokerCardClicked`를 별도 이벤트 구독으로 분리. `HandleCardClicked`는 `is not SOFeature` 가드 추가.
+
+**남은 작업**: `CardCreator.HandleJokerCardClicked`의 `TryGamble` 성공 분기가 아직 TODO 스텁. 성공 후 후보 카드를 K-of-N 토글로 선택하고 확정/현금화하는 UI 흐름은 다음 작업으로 남음.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **"되돌리기 어려운 부수효과"가 있는 로직은, 실패 가능성이 있는 흐름 앞에서 아예 적용을 미루는 편이 Revert 로직을 새로 만드는 것보다 싸다.** 조커카드 몰수를 "이미 적용된 스탯을 되돌리기"가 아니라 "적용을 pending 리스트로 미뤘다가 확정 시점에만 실제로 적용하기"로 설계하니, 실패 처리가 리스트 Clear 한 줄로 끝났다.
+> 2. **여러 도메인 SO가 같은 범용 UI(Container/SlotView)를 공유해야 한다면, 인터페이스보다 프로젝트가 이미 쓰고 있는 상속 패턴을 따라가는 쪽이 결이 맞는다.** `SOFeature`가 이미 "추상 베이스 SO + 서브클래스" 구조였기 때문에, 공통 부모(`SOData`)를 뽑아 그 위에 얹는 게 인터페이스로 계약만 공유하는 것보다 필드 중복도 없고 기존 컨벤션과도 일치했다.
+> 3. **"클릭 한 번"의 의미가 도메인마다 다르면, 한 핸들러에 타입 분기를 쌓기보다 이벤트 구독 자체를 분리하는 게 낫다.** 기능카드(즉시 확정)와 조커카드 후보(토글 후 확정)는 겉보기엔 같은 "카드 클릭"이지만 선택 상태 머신이 완전히 다르므로, 뷰 컴포넌트(`RandomFeatureCard`)는 공유하되 컨트롤러의 이벤트 구독은 도메인별로 나누는 편이 조건문이 쌓이는 것보다 안전했다.
+> 4. **컨테이너 유틸리티 코드에서 "카테고리 0번"처럼 특정 인덱스를 하드코딩하는 부분은 리팩토링/버그 스캔 시 우선적으로 의심할 지점이다.** 함수 초반에 현재 카테고리를 제대로 가져와놓고도 후반부 계산에서 다른 변수(`m_listCategoryData[0]`)를 실수로 쓰는 패턴은, 카테고리가 1개뿐인 동안은 절대 드러나지 않다가 카테고리를 늘리는 순간 조용히 터지는 전형적인 잠복 버그였다.

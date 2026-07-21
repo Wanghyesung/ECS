@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -13,16 +14,19 @@ public class JokerCardManager : MonoBehaviour
 {
     public static JokerCardManager m_Instance = null;
 
-    [SerializeField] private SOJokerCard m_SOConfig;
+    private SOJokerCard m_SOJokerCard = null;
 
     private int m_iLevel = 0;
-    public int Streak => m_iLevel;
+    public int Level => m_iLevel;
 
     private List<SOFeature> m_listPendingFeature = new List<SOFeature>();
     public IReadOnlyList<SOFeature> PendingFeature => m_listPendingFeature;
 
     // 현재 내가 적용한 기능들
     private List<SOFeature> m_listApplyFeature = new List<SOFeature>();
+
+    [SerializeField] private Container m_refPickContainer;   //내가 고를 기능
+    [SerializeField] private Container m_refSelectContainer; //내가 선택한 기능
 
     private void Awake()
     {
@@ -32,43 +36,86 @@ public class JokerCardManager : MonoBehaviour
         m_Instance = this;
     }
 
+    private void Start()
+    {
+        //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
+        m_refSelectContainer.OnSelectEvt += AddData;
+    }
+
+
     // 도박 1회 시도. 성공하면 이번 회차의 후보 목록을 반환하고, 실패하면 보류 목록을 몰수(초기화)한다.
-    public bool TryGamble(out List<SOFeature> _outCandidates)
+    public void TryGamble(SOJokerCard _SOJokerCard)
     {
-        bool bSuccess = Random.value < m_SOConfig.GetSuccessChance(m_iLevel);
+        if (_SOJokerCard == null)
+            return;
 
-        if (!bSuccess)
+        m_SOJokerCard = _SOJokerCard;
+        bool bSuccess = Random.value < m_SOJokerCard.GetSuccessChance(m_iLevel);
+        if (bSuccess == true)
         {
-            m_listPendingFeature.Clear();
-            m_iLevel = 0;
-            _outCandidates = null;
-            return false;
+            m_refPickContainer.gameObject.SetActive(true);
+            m_refSelectContainer.gameObject.SetActive(true);
+
+            m_iLevel++;
+            m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel));
+            for (int i = 0; i < m_listPendingFeature.Count; ++i)
+                m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
+
+
+            //내가 고를 수 있는 사이즈만큼 컨테이너 사이즈 줄이기
+            int iPickCount = GetCurrentPickCount();
+            m_refPickContainer.Resize(iPickCount);
+
         }
-
-        m_iLevel++;
-
-        var listResult = FeatureManager.m_Instance.RequestFeature(m_SOConfig.GetCandidateCount(m_iLevel));
-
-
-        m_listPendingFeature.AddRange(listResult);
-        _outCandidates = m_listPendingFeature;
-        return true;
+        else
+            ClearFeature();
+       
     }
 
-    public int GetCurrentPickCount() => m_SOConfig.GetPickCount(m_iLevel);
+    public int GetCurrentPickCount() => m_SOJokerCard.GetPickCount(m_iLevel);
 
-    // 후보 중 고른 카드들을 보류 목록에 추가만 함 (Player에는 아직 미적용)
-    public void ConfirmPicks(List<SOFeature> _listPicked)
+
+    private void AddData(SOData _SOData)
     {
-        m_listPendingFeature.AddRange(_listPicked);
+        var SOFind = m_refPickContainer.FindData(_SOData);
+        if (SOFind != null)
+            return;
+
+        m_refPickContainer.AddData(_SOData, 1);
     }
 
-    public void CashOut(Player _refPlayer)
+    //유니티 이벤트로 직렬화해서 연결 (Container UI의 CloseButton)
+    public void PickData()
     {
-        for (int i = 0; i < m_listPendingFeature.Count; ++i)
-            FeatureManager.m_Instance.SelectFeature(m_listPendingFeature[i], _refPlayer);
+        CategoryData refData = m_refPickContainer.GetCategoryData(0);
+        var listData = refData.ListData;
 
+        Player refTarget = Player.CurrentPlayer;
+
+        for (int i = 0; i< listData.Count; ++i)
+        {
+            SOFeature SOTarget = listData[i] as SOFeature;
+            FeatureManager.m_Instance.SelectFeature(SOTarget, refTarget);
+        }
+        m_listApplyFeature.AddRange(listData);
+        
+
+        m_refSelectContainer.ClearData();
+        m_refPickContainer.ClearData();
+
+        m_refSelectContainer.gameObject.SetActive(false);
+        m_refPickContainer.gameObject.SetActive(false);
+
+        Time.timeScale = 1.0f;
+    }
+
+
+    private void ClearFeature()
+    {
         m_listPendingFeature.Clear();
         m_iLevel = 0;
+        Time.timeScale = 1.0f;
+
+        //TODO : 플레이어 기술 몰수
     }
 }

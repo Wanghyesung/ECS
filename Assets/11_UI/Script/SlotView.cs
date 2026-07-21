@@ -86,7 +86,6 @@ public class SlotView : BaseButtonUI
         {
             m_SOTargetSO = null;
             m_refIcon.enabled = false;
-
             m_iID = -1;
         }
 

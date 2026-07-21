@@ -86,10 +86,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private Coroutine m_CoNockback = null;
     private Rigidbody m_refRigidbody = null;
 
+    private static Player ThisPlayer = null;
+    public static Player CurrentPlayer {  get { return ThisPlayer; } }
+
     private void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
+
+        ThisPlayer = this;
     }
 
     private void Start()
