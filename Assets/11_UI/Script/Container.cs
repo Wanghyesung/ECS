@@ -90,10 +90,11 @@ public class Container : BaseButtonUI
 
     [Header("TargetSLOT")]
     private SlotView m_refTargetSlot;//id로 바꿀 수 있음 (매니저에서 가져오게 아니면 그냥 SO들고있기)
-    [SerializeField] public UnityEvent OnSelectUEvt;
+
     public event Action<SOData> OnSelectEvt;
     public event Action<SOData> OnAddEvt;
     public event Action<SOData> OnDeleteEvt;
+    public event Action<SOData> OnFullEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -546,7 +547,6 @@ public class Container : BaseButtonUI
 
         //콜백함수
         OnSelectEvt?.Invoke(_pTargetSlot.SOFeat);
-        OnSelectUEvt?.Invoke();
     }
 
     public SlotView GetTargetSlot()
