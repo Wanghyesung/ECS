@@ -17,7 +17,7 @@ using UnityEngine.UI;
 public class CategoryData
 {
     public List<SOData> ListData = new List<SOData>();
-
+    
     [HideInInspector] public int m_iCurrentRemnantData = 0;
 
     [SerializeField] private bool m_bCanDuplication = true; //중복 허용할지(장비 템 창, 스킬 창)
@@ -94,7 +94,7 @@ public class Container : BaseButtonUI
     public event Action<SOData> OnSelectEvt;
     public event Action<SOData> OnAddEvt;
     public event Action<SOData> OnDeleteEvt;
-    public event Action<SOData> OnFullEvt;
+    public event Action OnFullEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -186,26 +186,29 @@ public class Container : BaseButtonUI
      *////////////////////////////////////
 
     //빈공간 없이 정렬
-    public void SortData()
+    public void SortData(int _iCategoryIdx = 0)
     {
-        for (int i = 1; i < m_listView.Count; ++i)
+        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        if (refCategoryData == null)
+            return;
+
+        var listData = refCategoryData.ListData;
+
+        int iWrite = 0;
+        for (int iRead = 0; iRead < listData.Count; ++iRead)
         {
-            SlotView refTarget = m_listView[i];
-            if (refTarget.SOFeat == null)
+            if (listData[iRead] == null)
                 continue;
 
-            int pre = i - 1;
-            while (pre >= 0 && m_listView[pre].SOFeat != null)
-                --pre;
-
-            //앞쪽에 빈 슬롯이 없으면 옮길 곳이 없으므로 스킵
-            if (pre < 0)
-                continue;
-
-            int iPreCount = m_listView[pre].Count;
-            m_listView[pre].Bind(refTarget.SOFeat, pre, iPreCount);
-            m_listView[i].Bind(null, i);
+            if (iWrite != iRead)
+            {
+                listData[iWrite] = listData[iRead];
+                listData[iRead] = null;
+            }
+            ++iWrite;
         }
+
+        BindData(_iCategoryIdx);
     }
 
     public bool DeleteData(int _iDataIdx, int _iCategoryIdx = 0)
@@ -240,8 +243,10 @@ public class Container : BaseButtonUI
             if (listData[i] == _SOData)
             {
                 refCategoryData.ListData[i] = null;
+
                 ++refCategoryData.m_iCurrentRemnantData;
                 bFind = true;
+                break;
             }
         }
 
@@ -278,6 +283,9 @@ public class Container : BaseButtonUI
             pCategoryData.ListData[iIdx] = _SOData;
             --pCategoryData.m_iCurrentRemnantData;
 
+
+            if (pCategoryData.m_iCurrentRemnantData == 0)
+                OnFullEvt?.Invoke();
 
             //구조가 바뀌었으니(슬롯 하나가 새로 채워짐) 전체 재바인딩
             BindData();
@@ -451,7 +459,6 @@ public class Container : BaseButtonUI
 
         //보이는 구간 업데이트
         int iStartIdx = m_iCurRow * m_iColCount;
-
 
         for (int i = 0; i < m_listView.Count; ++i)
         {

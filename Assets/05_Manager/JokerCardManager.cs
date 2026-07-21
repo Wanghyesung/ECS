@@ -23,7 +23,7 @@ public class JokerCardManager : MonoBehaviour
     public IReadOnlyList<SOFeature> PendingFeature => m_listPendingFeature;
 
     // 현재 내가 적용한 기능들
-    private List<SOFeature> m_listApplyFeature = new List<SOFeature>();
+    //private List<SOFeature> m_listApplyFeature = new List<SOFeature>();
 
     [SerializeField] private Container m_refPickContainer;   //내가 고를 기능
     [SerializeField] private Container m_refSelectContainer; //내가 선택한 기능
@@ -40,6 +40,8 @@ public class JokerCardManager : MonoBehaviour
     {
         //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
         m_refSelectContainer.OnSelectEvt += AddData;
+
+        m_refPickContainer.OnSelectEvt += DeleteData;
     }
 
 
@@ -84,12 +86,19 @@ public class JokerCardManager : MonoBehaviour
         m_refPickContainer.AddData(_SOData, 1);
     }
 
+    private void DeleteData(SOData _SOData)
+    {
+        m_refPickContainer.DeleteData(_SOData, 0);
+    }
+
     //유니티 이벤트로 직렬화해서 연결 (Container UI의 CloseButton)
     public void PickData()
     {
         CategoryData refData = m_refPickContainer.GetCategoryData(0);
-        var listData = refData.ListData;
+        if (refData.IsFull == false)
+            return;
 
+        var listData = refData.ListData;
         Player refTarget = Player.CurrentPlayer;
 
         for (int i = 0; i< listData.Count; ++i)
@@ -97,7 +106,7 @@ public class JokerCardManager : MonoBehaviour
             SOFeature SOTarget = listData[i] as SOFeature;
             FeatureManager.m_Instance.SelectFeature(SOTarget, refTarget);
         }
-        m_listApplyFeature.AddRange(listData);
+        //m_listApplyFeature.AddRange(listData);
         
 
         m_refSelectContainer.ClearData();

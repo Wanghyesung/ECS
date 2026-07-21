@@ -41,8 +41,8 @@ public class SOSpawnAttackObject : SOBulletAction
         int iLevel = BattleManager.m_Instance.CurrentLevel;
         refAttackObj.SetScale(m_fBaseRadius + m_fRadiusPerLevel * iLevel);
 
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPaused = true; // ◄ 에디터 일시정지
-#endif
+//#if UNITY_EDITOR
+//        UnityEditor.EditorApplication.isPaused = true; // ◄ 에디터 일시정지
+//#endif
     }
 }
