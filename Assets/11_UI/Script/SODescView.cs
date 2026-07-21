@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-//선택된 SOFeature의 설명을 TMP로 그려주는 뷰 (Container.OnSelectEvt 구독, 느슨한 결합 유지)
+//선택된 SOData의 설명을 TMP로 그려주는 뷰 (Container.OnSelectEvt 구독, 느슨한 결합 유지)
 public class SODescView : MonoBehaviour
 {
     [SerializeField] private Container m_refContainer;
@@ -19,7 +19,7 @@ public class SODescView : MonoBehaviour
             m_refContainer.OnSelectEvt -= OnSelect;
     }
 
-    private void OnSelect(SOFeature _refSO)
+    private void OnSelect(SOData _refSO)
     {
         if (m_refDescText == null)
             return;

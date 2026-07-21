@@ -2,5 +2,5 @@
 //FeatureManager뿐 아니라 향후 InventoryManager 등도 이를 구현해 카테고리별로 갈아끼울 수 있음
 public interface ICountable
 {
-    int GetCount(SOFeature _refSO);
+    int GetCount(SOData _refSO);
 }

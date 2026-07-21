@@ -19,11 +19,11 @@ public class SlotView : BaseButtonUI
     protected int m_iCount = 0;
     public int Count => m_iCount;
 
-    protected SOFeature m_SOTargetSO = null;
+    protected SOData m_SOTargetSO = null;
 
     protected Container m_refContainer = null;
 
-    public SOFeature SOFeat { get => m_SOTargetSO; }
+    public SOData SOFeat { get => m_SOTargetSO; }
     public int SlotIdx { get => m_iSlotIdx; }
 
     public void Init(Container _refContainer)
@@ -36,9 +36,9 @@ public class SlotView : BaseButtonUI
     }
 
     
-    public virtual void Bind(SOFeature _refFeat, int _iSlotIdx, int _iCount = 0)
+    public virtual void Bind(SOData _SOFeat, int _iSlotIdx, int _iCount = 0)
     {
-        BindData(_refFeat, _iSlotIdx, _iCount);
+        BindData(_SOFeat, _iSlotIdx, _iCount);
     }
 
     override public void OnBeginDrag(PointerEventData e)
@@ -70,7 +70,7 @@ public class SlotView : BaseButtonUI
         }
     }
 
-    protected void BindData(SOFeature _SOFeat, int _iSlotIdx, int _iCount = 0)
+    protected void BindData(SOData _SOFeat, int _iSlotIdx, int _iCount = 0)
     {
 
         if (_SOFeat != null)

@@ -16,7 +16,7 @@ using UnityEngine.UI;
 [Serializable]
 public class CategoryData
 {
-    public List<SOFeature> ListData = new List<SOFeature>();
+    public List<SOData> ListData = new List<SOData>();
 
     [HideInInspector] public int m_iCurrentRemnantData = 0;
 
@@ -91,7 +91,7 @@ public class Container : BaseButtonUI
     [Header("TargetSLOT")]
     private SlotView m_refTargetSlot;//id로 바꿀 수 있음 (매니저에서 가져오게 아니면 그냥 SO들고있기)
     [SerializeField] public UnityEvent OnSelectUEvt;
-    public event Action<SOFeature> OnSelectEvt;
+    public event Action<SOData> OnSelectEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -217,7 +217,7 @@ public class Container : BaseButtonUI
         return true;
     }
 
-    public bool DeleteData(SOFeature _refTarget, int _iCategoryIdx = 0)
+    public bool DeleteData(SOData _refTarget, int _iCategoryIdx = 0)
     {
         CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
         if (refCategoryData == null)
@@ -246,7 +246,7 @@ public class Container : BaseButtonUI
 
     //FeatureManager.OnFeatureSelect 핸들러 전용: 처음 흭득이면 목록에 새로 추가하고,
     //이미 보유 중인 기능이면(레벨업) 추가 없이 카운트(레벨)만 갱신
-    public bool AddData(SOFeature _refSOEntryUI, int _iCount, int _iCategoryIdx = 0)
+    public bool AddData(SOData _refSOEntryUI, int _iCount, int _iCategoryIdx = 0)
     {
         CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
         if (pCategoryData == null)
@@ -425,7 +425,7 @@ public class Container : BaseButtonUI
                 return;
 
             int iDataIdx = iStartIdx + i;
-            SOFeature refFeat = listData[iDataIdx];
+            SOData refFeat = listData[iDataIdx];
 
             //카테고리별 카운트 출처(ICountable)에서 조회. 미할당이면 카운트 없이(0) 표시
             if(refFeat != null && ICountSource != null)
@@ -559,7 +559,7 @@ public class Container : BaseButtonUI
                   Data Category
     *////////////////////////////////////
 
-    public List<SOFeature> GetListData(int _iCategoryIdx)
+    public List<SOData> GetListData(int _iCategoryIdx)
     {
 
         CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
@@ -581,7 +581,7 @@ public class Container : BaseButtonUI
         return m_listCategoryData[_iCategoryIdx];
     }
 
-    public SOFeature GetDataIdx(int _iDataIdx, int _iCategoryIdx)
+    public SOData GetDataIdx(int _iDataIdx, int _iCategoryIdx)
     {
         var listData = GetListData(_iCategoryIdx);
         if (listData == null || listData[_iDataIdx] == null)
