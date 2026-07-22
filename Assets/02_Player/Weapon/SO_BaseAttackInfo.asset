@@ -12,22 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
   m_Name: SO_BaseAttackInfo
   m_EditorClassIdentifier: 
-  Description: 
+  Description: "\uD50C\uB808\uC774\uC5B4 \uAE30\uBCF8 \uACF5\uACA9"
   WeaponType: 1
   PoolPrefab: {fileID: 6662476535643214403, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
   Damage: 10
-  AttackPower: 0
-  Cooldown: 0.1
-  HitCount: 1
+  AttackPower: 5
+  Cooldown: 0.02
   Speed: 240
   SpeedOffset: 60
   AliveTime: 2
-  KnockbackForce: 3
-  KnockbackDuration: 0.2
+  HitCount: 1
+  HitStep: 1
+  KnockbackForce: 10
+  KnockbackDuration: 0.5
   StunDuration: 0
-  BaseRotationSpeed: 90
-  MaxRotationSpeed: 180
+  BaseRotationSpeed: 0
+  MaxRotationSpeed: 0
   RotationAccelRate: 0
+  ProximityRadius: 0
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dedf900647741b4896e14adca319cb7, type: 3}
   m_Name: SO_BaseMonInfo
   m_EditorClassIdentifier: 
-  MonsterName: New Monster
+  ObjectName: New Monster
   Description: 
   MaxHP: 100
-  Speed: 5
-  AttackRange: 1.5
+  MaxSpeed: 3
+  ExpReward: 10

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc4e4abed17bf741a875c7bc6ad3603, type: 3}
+  m_Name: SO_FeatArriveSpawnAttackObj0.05
+  m_EditorClassIdentifier: 
+  m_strDescription: "\uC77C\uC815 \uD655\uB960\uB85C \uCD1D\uC54C\uC774 \uC0AC\uB77C\uC9C8
+    \uB54C \uD3ED\uBC1C \uC624\uBE0C\uC81D\uD2B8\uAC00 \uC0DD\uC131 \uB429\uB2C8\uB2E4."
+  m_sprIcon: {fileID: -492337938, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_eID: 3
+  m_eAcquireType: 1
+  m_iWeight: 1
+  m_iMaxLevel: 1
+  m_eTargetWeaponType: 1
+  m_SOBulletAction: {fileID: 11400000, guid: 625a7003e07b3a8499614194c6c26320, type: 2}

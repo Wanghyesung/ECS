@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 4552152582649686416}
   - component: {fileID: 262128102816122980}
   - component: {fileID: 4180760221659619132}
-  - component: {fileID: 2569744709739673822}
+  - component: {fileID: 8703135510466516719}
+  - component: {fileID: 4360361215348570636}
   m_Layer: 10
   m_Name: Missiles
   m_TagString: Untagged
@@ -33,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.13721976, w: 0.9905407}
   m_LocalPosition: {x: 7.1334515, y: 0.0000009536743, z: -8.028448}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3957653121974841941}
@@ -46,7 +47,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493568331743266066}
-  m_Mesh: {fileID: -6975534646258205631, guid: e480339ff7f74726bafe804013ebfc21, type: 3}
+  m_Mesh: {fileID: 4300002, guid: afbbf42a35d3ca347aea29a1457035cc, type: 3}
 --- !u!23 &976255526486551011
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -67,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 69ce2f55c3b94e97a5c7899631cc2e20, type: 2}
+  - {fileID: 2100000, guid: 30d351457dfac9d40a8b07e6426fd177, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -79,7 +80,7 @@ MeshRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -102,7 +103,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 0}
-  m_refExplodeObj: {fileID: 5394758280639574103, guid: 798ac151bda9db64fa023b68a135e690, type: 3}
+  m_arrArriveActions:
+  - {fileID: 11400000, guid: 1e3e8b38b1c01e64f9c7299cdc4f4206, type: 2}
+  m_arrHitActions: []
   m_bTraceTarget: 1
 --- !u!114 &4552152582649686416
 MonoBehaviour:
@@ -136,8 +139,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.6, z: 6.13}
-  m_Center: {x: 0, y: 0, z: 1.2}
+  m_Size: {x: 0.8, y: 0.6, z: 2.28}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &4180760221659619132
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -165,7 +168,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2569744709739673822
+--- !u!114 &8703135510466516719
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,7 +177,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1493568331743266066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80afdd6c1d1f8a84f9d547a7ac114bae, type: 3}
+  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnHitEvent:
@@ -182,7 +185,19 @@ MonoBehaviour:
       m_Calls: []
   m_tHitLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
+--- !u!114 &4360361215348570636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493568331743266066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5044281674920169593
 GameObject:
   m_ObjectHideFlags: 0

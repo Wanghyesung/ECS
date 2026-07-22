@@ -19,16 +19,18 @@ MonoBehaviour:
   Damage: 10
   AttackPower: 2
   Cooldown: 5
-  HitCount: 1
   Speed: 0
   SpeedOffset: 0
   AliveTime: 1.5
-  KnockbackForce: 3
-  KnockbackDuration: 0.2
+  HitCount: 200
+  HitStep: 1
+  KnockbackForce: 50
+  KnockbackDuration: 0.7
   StunDuration: 0
   BaseRotationSpeed: 0
   MaxRotationSpeed: 0
   RotationAccelRate: 0
+  ProximityRadius: 1.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

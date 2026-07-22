@@ -13,12 +13,10 @@ public class ActionTimer : MonoBehaviour
     private void Update()
     {
         m_fCurTime += Time.deltaTime;
-        if(m_fCurTime >= m_fActionTime)
+        if (m_fCurTime >= m_fActionTime)
         {
             m_fCurTime = 0.0f;
             OnCompletedTime?.Invoke();
         }
     }
-
-    
 }

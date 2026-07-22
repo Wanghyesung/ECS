@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40740e9c600beff42b3138a57059c29d, type: 3}
+  m_Name: SOFeaturePenetraBullet
+  m_EditorClassIdentifier: 
+  m_strDescription: Penetration Bullet
+  m_sprIcon: {fileID: 351841236, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_eID: 4
+  m_eAcquireType: 1
+  m_iWeight: 1
+  m_iMaxLevel: 1
+  m_eTargetWeaponType: 1
