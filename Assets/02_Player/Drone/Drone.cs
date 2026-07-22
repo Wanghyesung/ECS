@@ -16,7 +16,11 @@ public class Drone : MonoBehaviour
     [SerializeField] private float m_fRotateSpeed;
 
     [SerializeField] private float m_fFireAngle = 10f; // 사격을 허용할 각도 오차 범위
-    
+
+    private void Awake()
+    {
+        m_refWeapon?.Init();
+    }
     private void Update()
     {
         Transform refTarget = m_refTargetScanner.Target;

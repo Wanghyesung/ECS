@@ -119,7 +119,7 @@ public class AttackInfo
 /*///////////////////////////////////////////
                 tShotInfo
 기능 : 발사(총알) 한 발마다 새로 생기는 동적 데이터.
-       AttackInfo와 달리 struct라 SetAttack 호출 시 값으로 복사되어
+       AttackInfo와 달리 struct라 AddAttack 호출 시 값으로 복사되어
        총알 인스턴스끼리 서로 값을 공유하지 않음
  *///////////////////////////////////////////
 

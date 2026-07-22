@@ -59,6 +59,7 @@ public class ObjectInfo
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
+    [SerializeField] private List<Drone> m_listDrone = null;
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
     [SerializeField] private Aim m_refAim= null;
@@ -83,6 +84,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
 
+
     private Coroutine m_CoNockback = null;
     private Rigidbody m_refRigidbody = null;
 
@@ -95,6 +97,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refMovement = GetComponent<PlayerMovement>();
 
         ThisPlayer = this;
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+            m_listWeapon[i].Init();
     }
 
     private void Start()
@@ -113,6 +117,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refExSliderImage.OnFillMaxReached += MapExpSlider;
 
         m_fLastRollTime = Time.time;
+
     }
 
     private void OnDestroy()
@@ -246,22 +251,65 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     // FeatureSO.Apply()에서 무기 추가
     // 씬에 미리 배치된 비활성 무기를 활성화하는 방식 (런타임 Instantiate 회피)
-    public void SetActiveWweapon(eWeaponType _eType)
+    public void ActiveWweapon(eWeaponType _eType)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
             if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == false)
+            {
                 m_listWeapon[i].gameObject.SetActive(true);
+                return;
+            }
         }
     }
 
+    public void ActivDrone()
+    {
+        for (int i = 0; i < m_listDrone.Count; ++i)
+        {
+            if (m_listDrone[i].gameObject.activeSelf == false)
+            {
+                m_listDrone[i].gameObject.SetActive(true);
+                return;
+            }
+        }
+    }
+
+
+
+    public void UnActiveWweapon(eWeaponType _eType)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == true)
+            {
+                m_listWeapon[i].gameObject.SetActive(false);
+                return;
+            }
+        }
+    }
+
+    public void UnActivDrone()
+    {
+        for (int i = 0; i < m_listDrone.Count; ++i)
+        {
+            if (m_listDrone[i].gameObject.activeSelf == true)
+            {
+                m_listDrone[i].gameObject.SetActive(false);
+                return;
+            }
+        }
+    }
+
+
+
     // FeatureSO.Apply()에서 공격속도 강화 기능(예: SOFeatureAttackSpeedUp)이 호출
-    public void ModifyWeaponCooldown(eWeaponType _eType, float _fMultiplier)
+    public void SetWeaponCooldown(eWeaponType _eType, float _fValue)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
             if (m_listWeapon[i].WeaponType == _eType)
-                m_listWeapon[i].SetCooldown(_fMultiplier);
+                m_listWeapon[i].SetCooldown(_fValue);
         }
     }
 
@@ -285,38 +333,67 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         }
     }
 
-    // FeatureSO.Apply()에서 공격 카운트를 높여주는 기능 
-    public void PenetrationWeapon(eWeaponType _eType)
+    public void CancelWeaponArriveAction(eWeaponType _eType, SOBulletAction _refAction)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
             if (m_listWeapon[i].WeaponType == _eType)
-                m_listWeapon[i].SetMaxAttackCount = int.MaxValue;
+                m_listWeapon[i].CancelArriveAction(_refAction);
+        }
+    }
+
+    public void CancelWeaponHitAction(eWeaponType _eType, SOBulletAction _refAction)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].CancelHitAction(_refAction);
+        }
+    }
+
+    // FeatureSO.Apply()에서 공격 카운트를 높여주는 기능 
+    public void PenetrationWeapon(eWeaponType _eType, int _iValue)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType)
+                m_listWeapon[i].SetMaxAttackCount = _iValue;
         }
     }
 
 
 
     // IChangeInfoable 기능 구현
+    public void ChangeSpeedRatio(float _fRatio)
+    {
+        throw new NotImplementedException();
+    }
+
+
     public void ChangeHPRatio(float _fRatio)
     {
         throw new NotImplementedException();
     }
+
 
     public void UpHPRatio(float _fRatio)
     {
         float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
         long lAccValue = (long)fAccValue;
 
-        UpHP(lAccValue);
+        AddHP(lAccValue);
     }
 
-    public void ChangeSpeedRatio(float _fRatio)
+    public void DownHPRatio(float _fRatio)
     {
-        throw new NotImplementedException();
+        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        long lAccValue = (long)fAccValue;
+
+        AddHP(-lAccValue);
     }
 
-    public void UpHP(long _lValue)
+
+    public void AddHP(long _lValue)
     {
         m_refObjectInfo.CurrentHP += _lValue;
         if (m_refObjectInfo.CurrentHP >= m_SOObjectInfo.MaxHP)
@@ -328,16 +405,27 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
         int iAccValue = (int)fAccValue;
 
-        UpAttack(iAccValue);
+        AddAttack(iAccValue);
     }
 
-    public void UpAttack(int _iValue)
+    public void DownAttackRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        int iAccValue = (int)fAccValue;
+
+        AddAttack(-iAccValue);
+    }
+
+    public void AddAttack(int _iValue)
     {
         float fPrevAttack = m_refObjectInfo.Attack;
 
         m_refObjectInfo.Attack += _iValue;
         if (m_refObjectInfo.Attack >= m_SOObjectInfo.MaxAtack)
             m_refObjectInfo.Attack = m_SOObjectInfo.MaxAtack;
+
+        else if (m_refObjectInfo.Attack <= 1)
+            m_refObjectInfo.Attack = 1;
 
         // MaxAtack 클램프로 실제 증가분이 _iValue보다 작을 수 있어 그 차이만 무기에 반영.
         int iAppliedValue = (int)(m_refObjectInfo.Attack - fPrevAttack);
@@ -351,10 +439,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public void UpSpeedRatio(float _fRatio)
     {
         float fAccValue = m_SOObjectInfo.MaxSpeed * _fRatio;
-        UpSpeed(fAccValue);
+        AddSpeed(fAccValue);
+    }
+    public void DownSpeedRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxSpeed * _fRatio;
+        AddSpeed(-fAccValue);
     }
 
-    public void UpSpeed(float _fValue)
+    public void AddSpeed(float _fValue)
     {
         float fPrevSpeed = m_refObjectInfo.Speed;
 
@@ -370,10 +463,16 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public void UpDefenseRatio(float _fRatio)
     {
         float fAccValue = m_SOObjectInfo.MaxDefense * _fRatio;
-        UpDefense(fAccValue);
+        AddDefense(fAccValue);
     }
 
-    public void UpDefense(float _fValue)
+    public void DownDefenseRatio(float _fRatio)
+    {
+        float fAccValue = m_SOObjectInfo.MaxDefense * _fRatio;
+        AddDefense(-fAccValue);
+    }
+
+    public void AddDefense(float _fValue)
     {
         m_refObjectInfo.Defense += _fValue;
         if (m_refObjectInfo.Defense >= m_SOObjectInfo.MaxDefense)
@@ -388,7 +487,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         {
             if (m_listWeapon[i].gameObject.activeSelf == true)
                 m_listWeapon[i].AddBulletSpeed(_fValue);
+        }
+    }
 
+    public void DownBulletSpeed(float _fValue)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].gameObject.activeSelf == true)
+                m_listWeapon[i].DownBulletSpeed(_fValue);
         }
     }
 }

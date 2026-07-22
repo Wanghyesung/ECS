@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
         m_fBostDir = _fRollDir;
     }
 
-    // Player.UpSpeed()에서 레벨업 시점에 호출. m_fMoveSpeed를 한 번만 늘려주면
+    // Player.AddSpeed()에서 레벨업 시점에 호출. m_fMoveSpeed를 한 번만 늘려주면
     // FixedUpdate가 매 프레임 참조하는 값이라 재계산 없이 바로 반영됨
     public void AddMoveSpeed(float _fValue)
     {

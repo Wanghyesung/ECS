@@ -13,11 +13,17 @@ public class SOFeatureAttackSpeedUp : SOFeature
     [SerializeField] private Weapon.eWeaponType m_eTargetWeaponType = Weapon.eWeaponType.Bullet;
 
     [Tooltip("1레벨당 쿨다운 감소율")]
-    [SerializeField] [Range(0f, 0.9f)] private float m_fCooldownReduceRate = 0.1f;
+    [SerializeField] [Range(0f, 0.9f)] private float m_fCooldownReduceRate = 0.03f;
 
     public override void Apply(Player _refPlayer, int _iNewLevel)
     {
         float fMultiplier = 1f - (m_fCooldownReduceRate * _iNewLevel);
-        _refPlayer.ModifyWeaponCooldown(m_eTargetWeaponType, fMultiplier);
+        _refPlayer.SetWeaponCooldown(m_eTargetWeaponType, fMultiplier);
+    }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        float fMultiplier = 1f + (m_fCooldownReduceRate * _iNewLevel);
+        _refPlayer.SetWeaponCooldown(m_eTargetWeaponType, fMultiplier);
     }
 }

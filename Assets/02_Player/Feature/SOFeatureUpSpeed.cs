@@ -14,4 +14,9 @@ public class SOFeatureUpSpeed : SOFeature
     {
         _refPlayer.UpSpeedRatio(m_fSpeedRatio);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.DownSpeedRatio(m_fSpeedRatio);
+    }
 }

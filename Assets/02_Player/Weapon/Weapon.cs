@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,16 +56,20 @@ public class Weapon : MonoBehaviour
 
     // 레벨업 등으로 획득한 동적 능력치. 총알 프리팹 개수와 무관하게 Weapon(적은 개수) 쪽에 모아두고
     // 발사할 때마다 총알 인스턴스에 참조로 얹어줌 (AddArriveAction/AddHitAction 참고)
-    private SOBulletAction[] m_arrArriveActions;
-    private SOBulletAction[] m_arrHitActions;
+    private List<SOBulletAction> m_listArriveActions;
+    private List<SOBulletAction> m_listHitActions;
 
-    private void Awake()
+    public void Init()
     {
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_refAttackInfo.Owner = gameObject.transform;
-        m_fFireTime = m_refAttackInfo.CoolDown;
-        m_fBaseCooldown = m_refAttackInfo.CoolDown;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
+        m_fBaseCooldown = m_refAttackInfo.CoolDown;
+    }
+
+    private void Start()
+    {
+        m_fFireTime = m_refAttackInfo.CoolDown;
         m_fLastFireTime = Time.time;
 
 #if UNITY_EDITOR
@@ -101,7 +104,7 @@ public class Weapon : MonoBehaviour
         if (refObj == null)
             return;
 
-        ApplyGrantedActions(refObj);
+        ApplyActions(refObj);
         OnBulletFired();
     }
 
@@ -135,7 +138,7 @@ public class Weapon : MonoBehaviour
             if (refObj == null)
                 continue;
 
-            ApplyGrantedActions(refObj);
+            ApplyActions(refObj);
             OnBulletFired();
         }
     }
@@ -153,7 +156,7 @@ public class Weapon : MonoBehaviour
         if (refObj == null)
             return;
 
-        ApplyGrantedActions(refObj);
+        ApplyActions(refObj);
         OnBulletFired();
     }
 
@@ -193,9 +196,9 @@ public class Weapon : MonoBehaviour
     }
 
     // 기존 배율에 누적 곱하지 않고 매번 기본 쿨다운 기준으로 재계산 (Repeatable 기능 재적용 시 드리프트 방지)
-    public void SetCooldown(float _fMultiplier)
+    public void SetCooldown(float _fValue)
     {
-        float fClamped = Mathf.Max(_fMultiplier, 0.1f);
+        float fClamped = Mathf.Max(_fValue, 0.1f);
 
         m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
         m_fFireTime = m_refAttackInfo.CoolDown;
@@ -212,42 +215,61 @@ public class Weapon : MonoBehaviour
     {
         m_refAttackInfo.Speed += _fValue;
     }
+    public void DownBulletSpeed(float _fValue)
+    {
+        m_refAttackInfo.Speed -= _fValue;
+    }
 
     // FeatureSO.Apply()에서 명중 시 발동 능력(예: SOFeatureHitCreateBullet)이 호출.
 
     public void AddArriveAction(SOBulletAction _refAction)
     {
-        AddGrantedAction(ref m_arrArriveActions, _refAction);
+        AddAction(ref m_listArriveActions, _refAction);
     }
+    public void CancelArriveAction(SOBulletAction _refAction)
+    {
+        CancelAction(ref m_listArriveActions, _refAction);
+    }
+
 
     public void AddHitAction(SOBulletAction _refAction)
     {
-        AddGrantedAction(ref m_arrHitActions, _refAction);
+        AddAction(ref m_listHitActions, _refAction);
     }
 
-    private void AddGrantedAction(ref SOBulletAction[] _arrActions, SOBulletAction _refAction)
+    public void CancelHitAction(SOBulletAction _refAction)
     {
-        int iOldLen = _arrActions?.Length ?? 0;
-        Array.Resize(ref _arrActions, iOldLen + 1);
-        _arrActions[iOldLen] = _refAction;
+        CancelAction(ref m_listHitActions, _refAction);
+    }
+
+    private void AddAction(ref List<SOBulletAction> _listActions, SOBulletAction _refAction)
+    {
+        if (_listActions == null)
+            _listActions = new List<SOBulletAction>();
+        _listActions.Add(_refAction);
+    }
+
+    private void CancelAction(ref List<SOBulletAction> _listActions, SOBulletAction _refAction)
+    {
+        _listActions?.Remove(_refAction);
     }
 
     // Pool 재사용 총알이라 매번 덮어써야 중복 실행을 막을 수 있음.
     // Hit은 IAttackObject 공통 계약이라 Bullet/Laser 모두 적용, Arrive는 Laser에 없는 개념이라 Bullet에만 적용
-    private void ApplyGrantedActions(GameObject _refBulletObj)
+    private void ApplyActions(GameObject _refBulletObj)
     {
-        if (m_arrArriveActions == null && m_arrHitActions == null)
+        if (m_listArriveActions == null && m_listHitActions == null)
             return;
 
         IAttackObject refAttackObj = _refBulletObj.GetComponent<IAttackObject>();
         if (refAttackObj == null)
             return;
 
-        if (m_arrHitActions != null)
-            refAttackObj.SetWeaponHitActions(m_arrHitActions);
+        if (m_listHitActions != null)
+            refAttackObj.SetWeaponHitActions(m_listHitActions);
 
-        if (m_arrArriveActions != null && refAttackObj is Bullet refBullet)
-            refBullet.SetWeaponArriveActions(m_arrArriveActions);
+        if (m_listArriveActions != null && refAttackObj is Bullet refBullet)
+            refBullet.SetWeaponArriveActions(m_listArriveActions);
     }
 }
 

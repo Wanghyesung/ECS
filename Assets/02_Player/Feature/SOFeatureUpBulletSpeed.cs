@@ -13,4 +13,9 @@ public class SOFeatureUpBulletSpeed : SOFeature
     {
         _refPlayer.UpBulletSpeed(m_fSpeedIncrease);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.DownBulletSpeed(m_fSpeedIncrease);
+    }
 }

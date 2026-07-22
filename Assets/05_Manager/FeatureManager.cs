@@ -22,9 +22,13 @@ public class FeatureManager : MonoBehaviour, ICountable
     // RequestFeature 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
     private List<SOFeature> m_listPoolBuffer = new List<SOFeature>();
     private List<SOFeature> m_listResultBuffer = new List<SOFeature>();
+    private List<SOFeature> m_listApplyBuffer = new List<SOFeature>();
 
     public event Action<SOFeature, int> OnFeatureSelect;
     public event Action<SOFeature, int> OnFeatureDelete;
+
+
+    [SerializeField] private List<SOFeature> m_listTemFeautre; //임시로 넣은 플레이어 기능
 
 
     private void Awake()
@@ -40,6 +44,18 @@ public class FeatureManager : MonoBehaviour, ICountable
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
     }
 
+    private void Start()
+    {
+        Player refTarget = Player.CurrentPlayer;
+        for (int i = 0; i < m_listTemFeautre.Count; ++i)
+        {
+            SOFeature SOTarget = m_listTemFeautre[i];
+            int iIndex = (int)SOTarget.ID;
+            m_arrAcquiredLevel[iIndex]++;
+
+            SOTarget.Apply(refTarget, m_arrAcquiredLevel[iIndex]);
+        }
+    }
     private void Build()
     {
         int iCount = (int)eFeatureID.End;
@@ -149,7 +165,27 @@ public class FeatureManager : MonoBehaviour, ICountable
         m_arrAcquiredLevel[iIndex]++;
 
         _SOFeature.Apply(_refPlayer, m_arrAcquiredLevel[iIndex]);
-
         OnFeatureSelect?.Invoke(_SOFeature, m_arrAcquiredLevel[iIndex]);
+
+        m_listApplyBuffer.Add(_SOFeature);
+    }
+
+    public void CancelFeature(Player _refPlayer, int _iLostCount)
+    {
+        for(int i = 0; i<_iLostCount; ++i)
+        {
+            int iBufferSize = m_listApplyBuffer.Count;
+            if (iBufferSize <= 0)
+                return;
+
+            int iRandomIdx = UnityEngine.Random.Range(0, iBufferSize);
+
+            SOFeature SOTarget = m_listApplyBuffer[iRandomIdx];
+            m_listApplyBuffer.RemoveAt(iRandomIdx);
+
+            int iIndex = (int)SOTarget.ID;
+            SOTarget.Cancel(_refPlayer, m_arrAcquiredLevel[iIndex]);
+            m_arrAcquiredLevel[iIndex] = 0;
+        }
     }
 }

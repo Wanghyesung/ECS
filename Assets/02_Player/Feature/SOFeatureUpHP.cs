@@ -13,4 +13,10 @@ public class SOFeatureUPHP : SOFeature
     {
         _refPlayer.UpHPRatio(_iNewLevel);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.DownHPRatio(_iNewLevel);
+
+    }
 }

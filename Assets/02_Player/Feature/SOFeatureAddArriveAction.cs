@@ -15,4 +15,9 @@ public class SOFeatureAddArriveAction : SOFeature
     {
         _refPlayer.AddWeaponArriveAction(m_eTargetWeaponType, m_SOBulletAction);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.CancelWeaponArriveAction(m_eTargetWeaponType, m_SOBulletAction);
+    }
 }

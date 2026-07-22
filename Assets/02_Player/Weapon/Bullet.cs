@@ -19,7 +19,7 @@ public interface IAttackObject
 
     // 명중은 Bullet/Laser 등 구현 방식과 무관하게 공통으로 존재하는 이벤트라 인터페이스에 둠
     // (도착/Arrive는 Laser에 없는 개념이라 Bullet 쪽에만 유지).
-    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions);
+    public void SetWeaponHitActions(List<SOBulletAction> _listHitActions);
 }
 
 /*///////////////////////////////////////////
@@ -50,8 +50,8 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     // Weapon이 부여한 동적 능력치. 풀에서 재사용되는 인스턴스이므로 Add로 누적하면 안 되고,
     // Weapon이 발사할 때마다 SetWeaponArriveActions/SetWeaponHitActions로 항상 통째로 덮어써야 중복 실행을 막을 수 있음
-    private SOBulletAction[] m_refWeaponArriveActions;
-    private SOBulletAction[] m_refWeaponHitActions;
+    private List<SOBulletAction> m_listWeaponArriveActions;
+    private List<SOBulletAction> m_listWeaponHitActions;
 
 
     protected virtual void Awake()
@@ -83,13 +83,13 @@ public class Bullet : MonoBehaviour, IAttackObject
     private void RunArriveActions()
     {
         RunActions(m_arrArriveActions);
-        RunActions(m_refWeaponArriveActions);
+        RunActions(m_listWeaponArriveActions);
     }
 
     private void RunHitActions()
     {
         RunActions(m_arrHitActions);
-        RunActions(m_refWeaponHitActions);
+        RunActions(m_listWeaponHitActions);
     }
 
     private void RunActions(SOBulletAction[] _arrActions)
@@ -101,17 +101,26 @@ public class Bullet : MonoBehaviour, IAttackObject
             _arrActions[i]?.Execute(this);
     }
 
+    private void RunActions(List<SOBulletAction> _listActions)
+    {
+        if (_listActions == null)
+            return;
+
+        for (int i = 0; i < _listActions.Count; ++i)
+            _listActions[i]?.Execute(this);
+    }
+
     // Weapon이 발사 시점마다 호출. 참조를 통째로 덮어쓰는 방식이라(Add 아님) Pool 재사용으로 인한
     // 능력치 중복 실행이 없고, 배열을 새로 만들지 않으므로 매 발사마다 GC Alloc도 발생하지 않음.
     // Arrive는 Laser에 없는 개념이라 인터페이스가 아닌 Bullet 전용 메서드로 둠
-    public void SetWeaponArriveActions(SOBulletAction[] _arrArriveActions)
+    public void SetWeaponArriveActions(List<SOBulletAction> _listArriveActions)
     {
-        m_refWeaponArriveActions = _arrArriveActions;
+        m_listWeaponArriveActions = _listArriveActions;
     }
 
-    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions)
+    public void SetWeaponHitActions(List<SOBulletAction> _listHitActions)
     {
-        m_refWeaponHitActions = _arrHitActions;
+        m_listWeaponHitActions = _listHitActions;
     }
 
 

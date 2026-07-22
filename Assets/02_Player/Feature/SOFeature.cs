@@ -10,12 +10,15 @@ public enum eFeatureID
     SpawnExObject,
     PenetrationBullet,
     MissileUP,
+    ShotGunUp,
     BulletUP,
+    BulletMissileUP,
     UpAttack,
     UpHP,
     UpSpeed,
     UpDefense,
     UpBulletSpeed,
+    UPDrone,
     End,
 
     //AttackUp,
@@ -48,5 +51,7 @@ public abstract class SOFeature : SOData
     public int Weight => m_iWeight;
 
     // _iNewLevel : 이 기능을 선택한 시점의 누적 획득 횟수 (FeatureManager가 갱신 후 전달)
-    public abstract void Apply(Player _refPlayer, int _iNewLevel); //TODO : 기능의 반대도 구현 + -
+    public abstract void Apply(Player _refPlayer, int _iNewLevel); 
+    public abstract void Cancel(Player _refPlayer, int _iNewLevel); 
+
 }

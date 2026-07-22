@@ -12,6 +12,11 @@ public class SOFeaturePenetration : SOFeature
 
     public override void Apply(Player _refPlayer, int _iNewLevel)
     {
-        _refPlayer.PenetrationWeapon(m_eTargetWeaponType);
+        _refPlayer.PenetrationWeapon(m_eTargetWeaponType, int.MaxValue);
+    }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.PenetrationWeapon(m_eTargetWeaponType, 1);
     }
 }

@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2514c9d3a6d61a41bf8f40c1e3f9fb5, type: 3}
-  m_Name: SO_FeatureUpAttack
+  m_Script: {fileID: 11500000, guid: 0326068139b236943978a7671a385511, type: 3}
+  m_Name: SO_FeatAddShotGun
   m_EditorClassIdentifier: 
-  m_strDescription: "\uD50C\uB808\uC774\uC5B4 \uACF5\uACA9\uC744 10% \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
-  m_sprIcon: {fileID: -118184348, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
-  m_eID: 9
+  m_strDescription: Missile UP
+  m_sprIcon: {fileID: 1337498356, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_eID: 6
   m_eAcquireType: 0
   m_iWeight: 1
-  m_fAttackRatio: 0.1
+  m_eTargetWeaponType: 6

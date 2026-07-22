@@ -18,7 +18,11 @@ public class SOJokerCard : SOData
     [Tooltip("x = 연속 성공 횟수, y = 그 중 고를 수 있는 카드 수")]
     [SerializeField] private AnimationCurve m_refPickCount;
 
+    [Tooltip("x = 연속 성공 횟수, y = 실패 시 잃을 카드 수")]
+    [SerializeField] private AnimationCurve m_refLostCardCoun;
+
     public float GetSuccessChance(int _iLevel) => Mathf.Clamp01(m_refSuccessChance.Evaluate(_iLevel));
     public int GetCandidateCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refCandidateCount.Evaluate(_iLevel)));
     public int GetPickCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refPickCount.Evaluate(_iLevel)));
+    public int GetLostCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refLostCardCoun.Evaluate(_iLevel)));
 }

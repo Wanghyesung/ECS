@@ -19,8 +19,8 @@ public class Laser : MonoBehaviour, IAttackObject
 
     [SerializeField] private PoolObject m_refHitEffectPoolObj;
 
-    // Weapon이 부여한 동적 능력치. 발사(SetAttack) 시점마다 덮어써야 하므로 Bullet과 동일하게 참조 대입 방식 사용
-    private SOBulletAction[] m_refWeaponHitActions;
+    // Weapon이 부여한 동적 능력치. 발사(AddAttack) 시점마다 덮어써야 하므로 Bullet과 동일하게 참조 대입 방식 사용
+    private List<SOBulletAction> m_listWeaponHitActions;
 
 
     protected virtual void Awake()
@@ -69,17 +69,17 @@ public class Laser : MonoBehaviour, IAttackObject
 
     private void RunHitActions()
     {
-        if (m_refWeaponHitActions == null)
+        if (m_listWeaponHitActions == null)
             return;
 
-        for (int i = 0; i < m_refWeaponHitActions.Length; ++i)
-            m_refWeaponHitActions[i]?.Execute(this);
+        for (int i = 0; i < m_listWeaponHitActions.Count; ++i)
+            m_listWeaponHitActions[i]?.Execute(this);
     }
 
     // Weapon이 발사 시점마다 호출, 참조를 통째로 덮어씀 (Add 아님) - Pool 재사용 시 중복 실행 방지
-    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions)
+    public void SetWeaponHitActions(List<SOBulletAction> _listHitActions)
     {
-        m_refWeaponHitActions = _arrHitActions;
+        m_listWeaponHitActions = _listHitActions;
     }
 
     private void Update()

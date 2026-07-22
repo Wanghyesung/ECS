@@ -12,6 +12,11 @@ public class SOFeatureAddWeapon : SOFeature
 
     public override void Apply(Player _refPlayer, int _iNewLevel)
     {
-        _refPlayer.SetActiveWweapon(m_eTargetWeaponType);
+        _refPlayer.ActiveWweapon(m_eTargetWeaponType);
+    }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.UnActiveWweapon(m_eTargetWeaponType);
     }
 }

@@ -14,4 +14,9 @@ public class SOFeatureUpAttack : SOFeature
     {
         _refPlayer.UpAttackRatio(_iNewLevel);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.DownAttackRatio(_iNewLevel);
+    }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -24,7 +25,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
     private tShotInfo m_tShotInfo;
 
     // FeatureSO 등 외부에서 부여한 명중 시 능력치. Weapon.ApplyGrantedActions와 동일한 계약
-    private SOBulletAction[] m_refWeaponHitActions;
+    private List<SOBulletAction> m_listWeaponHitActions;
 
     private void Awake()
     {
@@ -53,7 +54,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
             iDamageable.TakeDamage(m_refAttackInfo, m_tShotInfo);
 
             RunActions(m_arrHitActions);
-            RunActions(m_refWeaponHitActions);
+            RunActions(m_listWeaponHitActions);
         }
 
         if (m_refHitEffectObj != null)
@@ -73,7 +74,16 @@ public class AttackObject : MonoBehaviour, IAttackObject
             _arrActions[i]?.Execute(this);
     }
 
- 
+    private void RunActions(List<SOBulletAction> _listActions)
+    {
+        if (_listActions == null)
+            return;
+
+        for (int i = 0; i < _listActions.Count; ++i)
+            _listActions[i]?.Execute(this);
+    }
+
+
     public void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         m_refAttackInfo.Damage = _refAttackInfo.Damage; //SO로 추가 딜 가능
@@ -88,8 +98,8 @@ public class AttackObject : MonoBehaviour, IAttackObject
     {
         transform.localScale = Vector3.one * _fRadius;
     }
-    public void SetWeaponHitActions(SOBulletAction[] _arrHitActions)
+    public void SetWeaponHitActions(List<SOBulletAction> _listHitActions)
     {
-        m_refWeaponHitActions = _arrHitActions;
+        m_listWeaponHitActions = _listHitActions;
     }
 }

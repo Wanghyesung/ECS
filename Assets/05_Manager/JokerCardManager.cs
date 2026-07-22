@@ -121,10 +121,13 @@ public class JokerCardManager : MonoBehaviour
 
     private void ClearFeature()
     {
+        int iLostCount = m_SOJokerCard.GetLostCount(m_iLevel);
+        Player refTarget = Player.CurrentPlayer;
+        FeatureManager.m_Instance.CancelFeature(refTarget, iLostCount);
+
         m_listPendingFeature.Clear();
         m_iLevel = 0;
         Time.timeScale = 1.0f;
 
-        //TODO : 플레이어 기술 몰수
     }
 }

@@ -14,4 +14,10 @@ public class SOFeatureUpDefense : SOFeature
     {
         _refPlayer.UpDefenseRatio(m_fDefenseRatio);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.DownDefenseRatio(m_fDefenseRatio);
+
+    }
 }

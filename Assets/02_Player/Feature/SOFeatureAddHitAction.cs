@@ -15,4 +15,9 @@ public class SOFeatureAddHitAction : SOFeature
     {
         _refPlayer.AddWeaponHitAction(m_eTargetWeaponType, m_SOBulletAction);
     }
+
+    public override void Cancel(Player _refPlayer, int _iNewLevel)
+    {
+        _refPlayer.CancelWeaponHitAction(m_eTargetWeaponType, m_SOBulletAction);
+    }
 }
