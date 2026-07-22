@@ -17,7 +17,7 @@ public class FeatureManager : MonoBehaviour, ICountable
     [SerializeField] private List<SOFeature> m_listFeatureSO = new List<SOFeature>();
 
     private SOFeature[] m_arrFeatureByID;
-    private int[] m_arrAcquiredLevel;
+    private int[] m_arrFeatureLevel;
 
     // RequestFeature 내부에서 재사용하는 버퍼 (호출마다 알록 방지)
     private List<SOFeature> m_listPoolBuffer = new List<SOFeature>();
@@ -51,16 +51,16 @@ public class FeatureManager : MonoBehaviour, ICountable
         {
             SOFeature SOTarget = m_listTemFeautre[i];
             int iIndex = (int)SOTarget.ID;
-            m_arrAcquiredLevel[iIndex]++;
+            m_arrFeatureLevel[iIndex]++;
 
-            SOTarget.Apply(refTarget, m_arrAcquiredLevel[iIndex]);
+            SOTarget.Apply(refTarget, m_arrFeatureLevel[iIndex]);
         }
     }
     private void Build()
     {
         int iCount = (int)eFeatureID.End;
         m_arrFeatureByID = new SOFeature[iCount];
-        m_arrAcquiredLevel = new int[iCount]; //해당 기능의 레벨이 현재 몇인지 체크하는 배열
+        m_arrFeatureLevel = new int[iCount]; //해당 기능의 레벨이 현재 몇인지 체크하는 배열
 
         for (int i = 0; i < m_listFeatureSO.Count; ++i)
         {
@@ -96,7 +96,11 @@ public class FeatureManager : MonoBehaviour, ICountable
                 continue;
 
             //한번만 나오는 카드고 이미 흭득했다면 무시
-            if (refFeature.AcquireType == eAcquireType.OneTime && m_arrAcquiredLevel[i] > 0)
+            if (refFeature.AcquireType == eAcquireType.OneTime && m_arrFeatureLevel[i] > 0)
+                continue;
+
+            //최대 레벨(0이면 제한 없음)에 도달했다면 무시
+            if (refFeature.MaxLevel > 0 && m_arrFeatureLevel[i] >= refFeature.MaxLevel)
                 continue;
 
             m_listPoolBuffer.Add(refFeature);
@@ -104,7 +108,7 @@ public class FeatureManager : MonoBehaviour, ICountable
 
         m_listResultBuffer.Clear();
         int iPickCount = Mathf.Min(_iCount, m_listPoolBuffer.Count);
-
+        
         for (int i = 0; i < iPickCount; ++i)
         {
             int iPickedIdx = PickWeightedIndex(m_listPoolBuffer);
@@ -141,10 +145,10 @@ public class FeatureManager : MonoBehaviour, ICountable
     public int GetLevel(eFeatureID _eID)
     {
         int iIndex = (int)_eID;
-        if (iIndex <= (int)eFeatureID.None || iIndex >= m_arrAcquiredLevel.Length)
+        if (iIndex <= (int)eFeatureID.None || iIndex >= m_arrFeatureLevel.Length)
             return 0;
 
-        return m_arrAcquiredLevel[iIndex];
+        return m_arrFeatureLevel[iIndex];
     }
 
     //ICountable 구현: Container가 카테고리별 카운트 출처로 참조
@@ -162,10 +166,10 @@ public class FeatureManager : MonoBehaviour, ICountable
             return;
 
         int iIndex = (int)_SOFeature.ID;
-        m_arrAcquiredLevel[iIndex]++;
+        m_arrFeatureLevel[iIndex]++;
 
-        _SOFeature.Apply(_refPlayer, m_arrAcquiredLevel[iIndex]);
-        OnFeatureSelect?.Invoke(_SOFeature, m_arrAcquiredLevel[iIndex]);
+        _SOFeature.Apply(_refPlayer, m_arrFeatureLevel[iIndex]);
+        OnFeatureSelect?.Invoke(_SOFeature, m_arrFeatureLevel[iIndex]);
 
         m_listApplyBuffer.Add(_SOFeature);
     }
@@ -184,8 +188,8 @@ public class FeatureManager : MonoBehaviour, ICountable
             m_listApplyBuffer.RemoveAt(iRandomIdx);
 
             int iIndex = (int)SOTarget.ID;
-            SOTarget.Cancel(_refPlayer, m_arrAcquiredLevel[iIndex]);
-            m_arrAcquiredLevel[iIndex] = 0;
+            SOTarget.Cancel(_refPlayer, m_arrFeatureLevel[iIndex]);
+            m_arrFeatureLevel[iIndex] = 0;
         }
     }
 }

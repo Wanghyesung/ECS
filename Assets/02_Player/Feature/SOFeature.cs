@@ -50,6 +50,10 @@ public abstract class SOFeature : SOData
     [SerializeField] private int m_iWeight = 1;
     public int Weight => m_iWeight;
 
+    [Tooltip("이 기능의 최대 레벨. 0이면 제한 없음")]
+    [SerializeField] private int m_iMaxLevel = 0;
+    public int MaxLevel => m_iMaxLevel;
+
     // _iNewLevel : 이 기능을 선택한 시점의 누적 획득 횟수 (FeatureManager가 갱신 후 전달)
     public abstract void Apply(Player _refPlayer, int _iNewLevel); 
     public abstract void Cancel(Player _refPlayer, int _iNewLevel); 

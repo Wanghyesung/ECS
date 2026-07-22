@@ -17,3 +17,4 @@ MonoBehaviour:
   m_eID: 14
   m_eAcquireType: 0
   m_iWeight: 1
+  m_iMaxLevel: 2
