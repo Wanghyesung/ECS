@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-
+using UnityEngine.UIElements;
+using DG.Tweening;
 
 /*///////////////////////////////////////////
 기능 : 해당 UI를 눌렀을 때 콜백 기능을 담당하는 클래스
@@ -88,4 +89,12 @@ public class BaseButtonUI : MonoBehaviour,
         OnDownUEvt?.Invoke();
         OnDownEvt?.Invoke();
     }
+
+
+    public void PushScale()
+    {
+        transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 0.2f, 1, 0.5f);
+    }
+
+      
 }
