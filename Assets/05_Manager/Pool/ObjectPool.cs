@@ -35,14 +35,14 @@ public class ObjectPool : MonoBehaviour
         if (_listPoolData == null)
             return;
 
-        var listTasks = new List<UniTask>(_listPoolData.Count); // <- 풀링으로 변경 부족한 점
+        var listTasks = new List<UniTask>(_listPoolData.Count); // <- 풀링으로 변경 
         for (int i = 0; i < _listPoolData.Count; ++i)
-            listTasks.Add(AsyncLoad(_listPoolData[i], _token));
+            listTasks.Add(PrewarmOneAsync(_listPoolData[i], _token));
 
         await UniTask.WhenAll(listTasks);
     }
 
-    private async UniTask AsyncLoad(SOPoolData _refData, CancellationToken _token)
+    private async UniTask PrewarmOneAsync(SOPoolData _refData, CancellationToken _token)
     {
         if (_refData == null || _refData.PrefabRef == null || _refData.PrefabRef.RuntimeKeyIsValid() == false)
         {
@@ -50,8 +50,10 @@ public class ObjectPool : MonoBehaviour
             return;
         }
 
+        var handle = _refData.PrefabRef.LoadAssetAsync();
+        
         GameObject refPrefab = await _refData.PrefabRef.LoadAssetAsync()
-            .ToUniTask(null, PlayerLoopTiming.Update, _token, false, true);
+            .ToUniTask(cancellationToken: _token, autoReleaseWhenCanceled: true);
 
         PoolObject refPrefabPoolObj = refPrefab.GetComponent<PoolObject>();
         if (refPrefabPoolObj == null)
@@ -68,8 +70,8 @@ public class ObjectPool : MonoBehaviour
         for (int i = 0; i < _refData.PreLoad; ++i)
         {
             GameObject refInstance = Instantiate(refPrefab);
-            PoolObject refPoolObject = refInstance.GetComponent<PoolObject>();
-            refPoolObject.SetOriginalPoolObj(refPrefabPoolObj);
+            PoolObject instancePoolObj = refInstance.GetComponent<PoolObject>();
+            instancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
             PushObject(refInstance);
 
             if (i % c_iInstantiatePerFrame == c_iInstantiatePerFrame - 1)

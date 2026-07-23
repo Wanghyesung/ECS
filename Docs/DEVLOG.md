@@ -592,3 +592,83 @@ for (int i = 0; i < m_iRowCount; ++i)
 > 2. **여러 도메인 SO가 같은 범용 UI(Container/SlotView)를 공유해야 한다면, 인터페이스보다 프로젝트가 이미 쓰고 있는 상속 패턴을 따라가는 쪽이 결이 맞는다.** `SOFeature`가 이미 "추상 베이스 SO + 서브클래스" 구조였기 때문에, 공통 부모(`SOData`)를 뽑아 그 위에 얹는 게 인터페이스로 계약만 공유하는 것보다 필드 중복도 없고 기존 컨벤션과도 일치했다.
 > 3. **"클릭 한 번"의 의미가 도메인마다 다르면, 한 핸들러에 타입 분기를 쌓기보다 이벤트 구독 자체를 분리하는 게 낫다.** 기능카드(즉시 확정)와 조커카드 후보(토글 후 확정)는 겉보기엔 같은 "카드 클릭"이지만 선택 상태 머신이 완전히 다르므로, 뷰 컴포넌트(`RandomFeatureCard`)는 공유하되 컨트롤러의 이벤트 구독은 도메인별로 나누는 편이 조건문이 쌓이는 것보다 안전했다.
 > 4. **컨테이너 유틸리티 코드에서 "카테고리 0번"처럼 특정 인덱스를 하드코딩하는 부분은 리팩토링/버그 스캔 시 우선적으로 의심할 지점이다.** 함수 초반에 현재 카테고리를 제대로 가져와놓고도 후반부 계산에서 다른 변수(`m_listCategoryData[0]`)를 실수로 쓰는 패턴은, 카테고리가 1개뿐인 동안은 절대 드러나지 않다가 카테고리를 늘리는 순간 조용히 터지는 전형적인 잠복 버그였다.
+
+---
+
+# 🚀 [Unity 우주 슈팅] 씬 전환형 오브젝트 풀 로딩 — Addressables + UniTask 비동기 프리워밍
+
+- **날짜:** 2026-07-23
+- **관련 시스템:** Object Pool, Scene Loading, Addressables, Async(UniTask)
+
+## 1. 🚨 문제 상황
+
+- 기존 `ObjectPool`은 인스펙터에 직렬화된 `List<PoolInfo>`(프리팹 + 개수)를 `Start()`에서 전부 동기 `Instantiate`하는 구조. `MainScene.unity`에 이미 21개 항목(최대 800개짜리 포함)이 박혀 있어 초반 로딩이 길고, 프레임 한 번에 몰아서 생성되니 스파이크도 발생.
+- "총알/파티클/몬스터를 로드한 만큼 거의 다 소모하는 사용 패턴이라 Addressable이 필요 없지 않나?"라는 질문에서 출발 — 메모리에 다 올려놓고 거의 다 쓰는 상황이면 Addressable의 핵심 이점(안 쓰는 걸 내려서 절약)이 안 산다는 판단.
+- 다만 이어진 확인 과정에서 **스테이지마다 몬스터 풀 구성을 거의 다 갈아치운다**는 사실이 드러남 — 이 경우 게임 전체 기준으로는 에셋 종류가 많은데 한 씬에서 쓰는 건 일부라, Addressable로 스테이지 전환 시 이전 것을 실제로 언로드하는 이점이 다시 성립.
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) Addressables 전환 범위**
+- 처음엔 `SOPoolData` 하나가 `List<AssetReferenceGameObject>`를 통째로 들고 있는 안도 검토했으나, 항목별로 `PreLoad`/`Max`를 따로 못 주는 구조라 기각.
+- **결론**: `SOPoolData` = 프리팹 1종(`AssetReferenceGameObject`) + `PreLoad`/`Max`, `SOSceneData` = `List<SOPoolData>`. 스테이지 진입 시 `SceneController`가 그 씬에 필요한 `SOSceneData` 하나를 `PoolManager`(`ObjectPool`)에 넘기는 구조로 확정.
+- **추가로 확인한 함정**: `Bullet.cs`, `Laser.cs`, `SOAttackInfo.cs` 등 8곳이 이미 `PoolObject`를 **direct 하드 레퍼런스**로 들고 있음을 발견 — 이런 곳까지 Addressable로 안 바꾸면 그 프리팹들은 하드 레퍼런스 때문에 메모리에 그대로 남아 언로드 이점이 없음. 다만 그 대상들(플레이어 무기 히트이펙트 등)은 스테이지 공통으로 계속 쓰는 에셋이라 애초에 언로드할 필요가 없다고 보고, **1차 범위는 `SOPoolData`/`SOSceneData`(스테이지별로 실제로 갈아치우는 몬스터 계열 풀)로 한정**. 나머지 direct 참조 8곳은 이번 범위에서 변경하지 않음.
+
+**2) 초반 로딩 속도 — UniTask 채택 근거**
+- "로드하고 씬에 올리는 작업을 순수 `Task`/`Thread`로 나누면 되지 않나?"라는 질문에 대해: `Instantiate`/`GetComponent` 등 Unity API는 메인 스레드 전용이라 워커 스레드에서 직접 다루면 깨짐. `UniTask`는 이미 프로젝트에 플러그인으로 포함돼 있고(`Assets/Plugins/UniTask`), `PlayerLoop`에 편입되어 `await`가 메인 스레드로 자연스럽게 복귀하며, Addressables 확장(`AsyncOperationHandle.ToUniTask()`)까지 지원해 이 케이스에 정확히 맞는다고 판단.
+- 여러 `SOPoolData`의 로딩을 순차가 아닌 `UniTask.WhenAll`로 묶어 프레임 양보 지점에서 인터리빙되게 하고, `Instantiate`는 4개당 한 번 `UniTask.Yield`로 프레임 분산해 스파이크 방지.
+- 대화 말미에 Unity 2022.3.20+ 정식 지원되는 `Object.InstantiateAsync<T>(prefab, count)`(내부적으로 Job System으로 일부 병렬 처리 후 메인 스레드에서 마무리, UniTask 확장 `AsyncInstantiateOperation<T>.ToUniTask()`도 이미 존재)가 수동 프레임 분산 루프보다 나은 대안이라는 데까지 논의 진행 — **아직 코드에는 미반영, 다음 작업으로 남음**.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOPoolData.cs
+- 기존 코드가 `[CreateAssetMenu]`인데 `MonoBehaviour`를 상속해 SO 에셋 생성이 안 되던 버그를 `ScriptableObject` 상속으로 수정.
+```csharp
+[CreateAssetMenu(fileName = "SO_PoolData", menuName = "Game/Load/PoolData")]
+public class SOPoolData : ScriptableObject
+{
+    public AssetReferenceGameObject PrefabRef;
+    public int PreLoad = 8;
+    public int Max = 12; // 아직 사용하지 않음(동적 증설 미구현)
+}
+```
+
+### 🔹 SOSceneData.cs (신규)
+```csharp
+[CreateAssetMenu(fileName = "SO_SceneData", menuName = "Game/Load/SceneData")]
+public class SOSceneData : ScriptableObject
+{
+    public List<SOPoolData> PoolDataList = new List<SOPoolData>();
+}
+```
+
+### 🔹 ObjectPool.cs
+- 인스펙터 직렬화 `List<PoolInfo>` + `Start()` 동기 프리로드 제거.
+- `BuildPoolsAsync(List<SOPoolData>, CancellationToken)`: 이전 풀 정리 후 `SOPoolData`별 `AsyncLoad`를 `UniTask.WhenAll`로 동시 진행.
+- `AsyncLoad`: `AssetReferenceGameObject.LoadAssetAsync().ToUniTask(...)`로 프리팹 로드 → `PreLoad`개 `Instantiate`를 프레임 분산.
+- `ClearAllPools()`: 큐에 남은 인스턴스 `Destroy` + 로드했던 `AssetReferenceGameObject.ReleaseAsset()`로 실제 메모리 해제 — 스테이지 전환 시 이전 스테이지 몬스터 풀이 실제로 언로드되는 지점.
+- `GetObject`/`PushObject`/`GetObjectCount`/`m_Instance`는 시그니처 변경 없이 유지해 기존 8곳 호출부는 무수정.
+
+### 🔹 SceneController.cs
+```csharp
+[SerializeField] private SOSceneData m_refSceneData;
+
+private async UniTaskVoid Start()
+{
+    if (m_refSceneData == null) { Debug.Log("씬 데이터 미설정 : SceneController"); return; }
+    await ObjectPool.m_Instance.BuildPoolsAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
+}
+```
+
+**남은 작업**:
+- `MainScene.unity`의 기존 `ObjectPool` 인스펙터 21개 항목(합계 다수, 최대 800개)이 필드 제거로 못 쓰게 됨 — 각 프리팹 Addressable 마킹 + 동일 수치로 `SOPoolData` 에셋 21개 재구성, `SOSceneData`에 모아서 `SceneController`에 할당 필요 (에디터 작업, 스크립트로 대체 불가).
+- 스테이지별로 별도 `SOSceneData` 에셋 구성 필요.
+- `Object.InstantiateAsync` 도입 검토 중, 미반영.
+- `SOPoolData.Max`(풀 상한) 필드는 선언만 되어 있고 동적 증설 로직에는 아직 연결되지 않음.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **"로드한 걸 거의 다 쓴다"는 사실만으로 Addressable 필요성을 판단하면 안 된다.** 판단 기준은 "한 씬 안에서의 사용률"이 아니라 "게임 전체 기준으로 안 쓰는 걸 실제로 내릴 수 있는가"다. 스테이지마다 몬스터 풀을 거의 다 갈아치우는 이 프로젝트는 씬 내 사용률은 높아도, 스테이지 전환 시점엔 이전 걸 언로드할 여지가 크다.
+> 2. **일부만 Addressable로 바꾸면 하드 레퍼런스가 있는 다른 곳 때문에 언로드 이점이 무효화될 수 있다.** `Bullet`/`Laser`/`SOAttackInfo`가 같은 프리팹을 direct로 물고 있으면, `SOPoolData`만 `AssetReference`로 바꿔도 그 프리팹은 여전히 메모리에 상주한다. 전환 범위는 "실제로 스테이지마다 갈아치우는 대상"으로 한정하는 게 비용 대비 합리적이었다.
+> 3. **Unity API는 메인 스레드 전용이라, 로딩/인스턴스화의 "속도"는 스레드 분리가 아니라 프레임 분산과 Unity 자체의 비동기 API(`InstantiateAsync`, Addressables `LoadAssetAsync`)로 얻어야 한다.** `UniTask`는 이 둘을 `PlayerLoop`/Addressables 확장으로 자연스럽게 이어주는 접착제 역할이지, 그 자체가 멀티스레드 인스턴스화를 가능하게 하는 도구는 아니다.
