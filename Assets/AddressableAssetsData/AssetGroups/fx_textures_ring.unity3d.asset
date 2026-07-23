@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_ring.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_ring.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: c106fe3328a525948a23f8ba24930b7f
+  m_SerializeEntries:
+  - m_GUID: 1082b472313a4034eb907efd4dee27a6
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/sd_21a.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 319db0fd1f133684496fbe0f86c02a14
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/genericglow2c.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 410a79895a0febf44b657b8fa74d4922
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/fanwei_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d44ea4e18b650a4888b42a3c6cacf15
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Fx_Rin022.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2665207210e10140a09f223becbb5ca
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/ring02_00_2.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3c2286ff96751e44b64a769bccd123f
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/shock_02.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cec52caea64bcb049858f7bb75aa8308
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/CFXM3_T_HollowCircle.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df6b154f0e5e4b948b7a4a05467e5d9c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/shockeffect_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e45cd352d0320d449be8061625a1a7b3
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/ring02_00.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f56951506d8c6bc48a13a3efc67f6aad
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_EnergyShield/Textures/Ring02.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8e5b7fb08d4324c40819d5ada8f3ca32, type: 2}
+    - {fileID: 11400000, guid: b2d2dc039ec5b104e9850dc9e8c98247, type: 2}

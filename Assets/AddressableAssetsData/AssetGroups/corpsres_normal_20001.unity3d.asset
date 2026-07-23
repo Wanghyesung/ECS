@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: corpsres_normal_20001.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: corpsres_normal_20001.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 309b70308e9d2204ca6c98964e75180d
+  m_SerializeEntries:
+  - m_GUID: 047862dd263872d4d825842db292974d
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/materials/30009_dissolve.mat"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: b4d6d2c94f826d241b9673f8f59000e4, type: 2}
+    - {fileID: 11400000, guid: 141b51274964f5e4698c046d651e57aa, type: 2}

@@ -1,10 +1,9 @@
 fileFormatVersion: 2
 guid: e64f5fb47c44b9e4291f7b3528f90819
-timeCreated: 1547119325
-licenseType: Store
 ShaderImporter:
   externalObjects: {}
   defaultTextures: []
+  nonModifiableTextures: []
   userData: 
-  assetBundleName: shaders.unity3d
+  assetBundleName: 
   assetBundleVariant: 

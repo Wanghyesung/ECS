@@ -1,10 +1,7 @@
 fileFormatVersion: 2
 guid: bdeb220805c45ee4081d69c799ac246e
-timeCreated: 1557317906
-licenseType: Store
-NativeFormatImporter:
+PrefabImporter:
   externalObjects: {}
-  mainObjectFileID: 100100000
   userData: 
-  assetBundleName: animation_effectfx_lightningball 1.unity3d
+  assetBundleName: 
   assetBundleVariant: 

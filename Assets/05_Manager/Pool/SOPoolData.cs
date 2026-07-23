@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(fileName = "SO_PoolData", menuName = "Game/Load/PoolData")]
-
-public class SOPoolData : MonoBehaviour
+public class SOPoolData : ScriptableObject
 {
-    public PoolObject prefabRef;
+    public AssetReferenceGameObject PrefabRef;
     public int PreLoad = 8;
-    public int MaX = 12;
+    public int Max = 12; //아직 사용하지 않음
 }

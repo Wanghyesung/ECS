@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_gradient_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_gradient_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 75acc50bb6c6c0e46823ae59270d8cae
+  m_SerializeEntries:
+  - m_GUID: 34f4bcd174a17984c8d7e7f653b6c091
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/Materials/grad12_16.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 426406b431fd795458648c27fd3f3a0c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/Materials/FireNoiseUV_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b5f61622d74b9c45b0966c21db3c05d
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/Materials/FireNoiseUV_04.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86a761a2b00908c418d1b01217d75bab
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/Materials/StartWave_Electro
+      3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c3cc6c0a2de0a041b5e77eafe5ace8c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_EnergyShield/Textures/Materials/Uvnoise_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af0f0226df0a9eb499691c652f5f0b39
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/materials/la_00_33k
+      5.mat"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0e80700123b6484aad09bb3fb470217
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/la_00_33k
+      7.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecb3759b86af1184caf3e21c182d2f53
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/trail04.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0fb48ec7e35374d40a0f40b95aad5eca, type: 2}
+    - {fileID: 11400000, guid: ea82f31595c55dd4499c552ec0cf6f4a, type: 2}

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: shaders.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: shaders.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 102492f18720b54418f46fa352e3d756
+  m_SerializeEntries:
+  - m_GUID: 16973c2faba79a1438ae920c4e887db2
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Shader/MaskUV.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 895a57bfcfc97594c8b5267b157c902b
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_EnergyShield/Shader/uvnoise.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2679aaa9d6558442bc71873a2128c68
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Meteorite/Shader/SraeWaveAlphaBlended02.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b83f15d2b385ebf488431e48a6ea10b2
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Meteorite/Shader/StartWaveAlphaBlended.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c027d521ec056624fb87fa4829710a92
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Shader/dissolve_c.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e64f5fb47c44b9e4291f7b3528f90819
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Shader/ParticleBlend.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: a4c7294f23e463249a6361cd1c69934f, type: 2}
+    - {fileID: 11400000, guid: 6711856f47f3e8c4da156d5a98d224a7, type: 2}

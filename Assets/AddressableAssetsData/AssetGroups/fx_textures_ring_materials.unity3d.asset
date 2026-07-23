@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_ring_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_ring_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0d0a61d7640abc044ab33183788e7cf0
+  m_SerializeEntries:
+  - m_GUID: 16c8909443e18924482a5399d4441b64
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/shockeffect_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4be75f5660cd2ca48bce0770ea0905ab
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/Fx_Rin022.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5164fb1f376abfc4480bdd91029c58e3
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/ring02_09.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72112c535f7dccc408eed5d04980f20a
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/ring02_00_2.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b1837499ee131146803332558ab6b02
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/shock_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d75d824a057384468ac842bf239881c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/Glow_CPxs_rm_017.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87cd33ab50e927846877304ce0d8b6b2
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/dkjEff_s2007.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b84aa919c49ac494eac6bfc0c791a24c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/CFXM3_HollowCircle
+      ADD.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cededfd4febec0a40b22f99e2b9acb18
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/ring_03.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb64212c555b96f43a876677e2424687
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/fanwei_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d46954faf24422349a19b3b674d5eb82, type: 2}
+    - {fileID: 11400000, guid: 624c205f06efbf846a738d9825dbd33b, type: 2}

@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_glow_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_glow_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 58f05ac18bd02cd4cb8b625279efb6c2
+  m_SerializeEntries:
+  - m_GUID: 024bce68c9f9c72428ebdecdc97a0fd6
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/Materials/lp-g06b
+      1.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11f539182ee3b03439f2ce34a013db3d
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/materials/glow_point2_yellow_03.mat"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 251e372554a27ce43b4f18f2b38d4574
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/glowa_hot_grey_15.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32128fcecb736794ea3f9fa0fa996566
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/glow_ball2_blue_4.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4653a52dceaf8a94ab168e8a2dbb5cfa
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Slash01/Textures/Materials/glow_ball2_blue_3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50676fc3913039a4abc75528b3405a85
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/materials/Glow_Flair_001.mat"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5405df9cc39186b45adc90457e824d7d
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/glow_ball3_grey_2.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65a9b9cfda450864e946cd05307a8a8b
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/glow_ball2_grey_2.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f3f034bd7aa3f14ca900b4546a6bc9a
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_MagicCircle/Textures/Materials/glow_point2_yellow_3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82007b00befb06141a2e29afe425df1b
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/glow_ball3_red_1.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a14188c8fa60dea40b9b2fbab30126c0
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/glow_ball2_grey_3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a73da2de63c1a0e40a3d165dbf8c29af
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/Galaxy_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad8f5087ef1879a4a8041b1adec5d43c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/alpha_point_8.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc92956ec8fad9b4c8da6746e2748afa
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Slash01/Textures/Materials/glow_blue_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8d1e5fa6afc8774e8b15b4d64c4bb33
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/point_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e45a32f945322e44ea5ae5bc0dec2092
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/glowa_hot_grey_12.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8de63b6192bf714dbe93bbb1131c2c7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/Materials/glowa_ball_grey_3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0dc8a6c009f05c4c96478e857a1b274
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/flare2b_purple.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f34a905bf17be07498a52a4cf8ae0424
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/alpha_point
+      5.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f555b099f53713d43992bcbb91520847
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/glow_point2_yellow_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4bec5dc598e60764da705b60eba26c01, type: 2}
+    - {fileID: 11400000, guid: bfca8653d8fa4914e9fd470a6d040962, type: 2}

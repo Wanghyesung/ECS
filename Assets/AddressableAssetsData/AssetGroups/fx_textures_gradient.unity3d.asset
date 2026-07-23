@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_gradient.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_gradient.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f2b6e880e91c50a4c990e9746c682891
+  m_SerializeEntries:
+  - m_GUID: 094527908027d4544b6466f68ec2fc31
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/other_ryan_160_alpha_f0e63f5e008fc86956c3aa130618056b.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57cf1ac228e882244ade5d0ba0103076
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_EnergyShield/Textures/grad03_05.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 692310abb4e156c43b86e975c88eaf5d
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/mask_yk_1.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69c4a6898925c474c847db66695e96e6
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Meteorite/Textures/Gradient_03.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d521297609a99b418f36421dbfbb98c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Magicbullet/Textures/wenli.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9bbbb7232e15acc439e708daec1f8cda
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Meteorite/Textures/Ramp_orange.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2e3075485469244c8c2313d89c34e61
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_WeaponEffect/Textures/grad01_14.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b90d8dc6e2defc648a57ac06d08d4f16
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/grad12_03.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c077b8ab40c6be445851599c0adc021a
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/Ramp10.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb7628863abacba42bc46b73d5c28110
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/Noise_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ddbe992520a6ae841b0e77103be51639
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/Gradient03Clamp.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7d1a2ee0c4afa9d4298ac0b2cccb5514, type: 2}
+    - {fileID: 11400000, guid: 36c942c3c7d364e489ec017205aafc11, type: 2}

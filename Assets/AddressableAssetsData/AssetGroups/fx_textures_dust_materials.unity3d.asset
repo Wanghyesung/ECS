@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_dust_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_dust_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b108220e805361f408e63f9904e02e85
+  m_SerializeEntries:
+  - m_GUID: 1db85c7f47754e5488ddf6cc91ae0898
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/Materials/firedust_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20a964ea08959f841ae6c9f41794fff0
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/dust_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab8eee276074da444b0962bf2dda058b
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/materials/storm_smokecloud1.mat"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adbc82fedb9c7da40aebceacdc72d4d6
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/particle_sprite.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c746e9c3b5deaac469f72a7530769eef
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/smoke_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7f825f93df1cb640b74c7eb002d9cd7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/Materials/smoke_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 786fe47f328fe314e98079c399593b36, type: 2}
+    - {fileID: 11400000, guid: 2f442675926654944900d8d17cd4e377, type: 2}

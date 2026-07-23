@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_line_rotate_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_line_rotate_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f4f21b09597d20447913be047243a7c5
+  m_SerializeEntries:
+  - m_GUID: 16df485cfdc6a154eb97e603889fc2ef
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_HolyWings/Textures/Materials/sl-g01g_13.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6abcac340e3d4ad4aabb748349ef49ab
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_HolyWings/Textures/Materials/sl-g01g_14.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be38b6b2eec86224384ae6c69957ed7c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/Sparkle_Ink_008.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd7f4ea03f83ad644bd4d7c293597a7d
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_SlashLight/Textures/Materials/la_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1187d0fe8f525b41a316d661ba18738
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/fm-g01-02_1.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2549eea462b12524399c329a03cbb120, type: 2}
+    - {fileID: 11400000, guid: b35ca5847d4797f49bad8cf718b052c1, type: 2}

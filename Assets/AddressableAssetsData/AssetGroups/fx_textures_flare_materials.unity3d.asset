@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_flare_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_flare_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 3055805169325d54fa0be8dde3324f0e
+  m_SerializeEntries:
+  - m_GUID: 0a3971338e1b7774fa60f5e9eff38cd4
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Slash01/Textures/Materials/flare02_blue.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18483de19c384234db28ddf753dd5c0d
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/vfx_twinkle-blurred-add-[1.0]
+      1.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19bfb18aab3bce247b9e7ace4caf7d65
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/glowblue.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 645618f1f8117b4438515ce6f935ca19
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/Glow_004.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 71d65d1bcd3a34b48b993b5f524cd162
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/Background_paticle02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7eb25974bf376b344ab0c0cf95e49168
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/Gamestar_Particle
+      3.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c8b85a3b73e7c84faeadb27b35af03e
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/God_hit00_light00.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbef64c5e7b6cdb4e8a54fba33e67180
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Arrow/Textures/Materials/twink_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d341d45a322e2dd4fbfbb2c2143e7c0a
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/Materials/eye_lwy_6.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0631bb957d94954a85ee0470922b3a6
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Slash01/Textures/Materials/flare06_blue_2.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4e0b4cfeb78844249bea81eed55902d2, type: 2}
+    - {fileID: 11400000, guid: 5d1604f220fd08b41862122109bf5dfc, type: 2}

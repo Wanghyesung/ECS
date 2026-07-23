@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
-    
+    [SerializeField] private SOSceneData m_refSceneData;
 
-
-    private void Update()
+    private async UniTaskVoid Start()
     {
-        
+        if (m_refSceneData == null)
+        {
+            Debug.Log("씬 데이터 미설정 : SceneController");
+            return;
+        }
 
-
+        await ObjectPool.m_Instance.BuildPoolsAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
     }
-
-
 }

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_dust.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_dust.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: bc1b2cc1f16c5b7468c4117eb2585504
+  m_SerializeEntries:
+  - m_GUID: 0778196411335eb4da94e43324e8c13c
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/storm_smokecloud1.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2dac3824466180740886c7ea437b5851
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/tex_vfx-ult_particle_sprite_fire4.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c96ed77489406c4c9ef0c846215a986
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/smoke_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9f9ca7967bec5c46b98436f8fd692c7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/smoke_02.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea2224d32758f82418c12590be249b84
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkDoor/Textures/dust_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4e89cbfb3be69745b85300bb2b462e7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/firedust_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 21630c0149779a24eaf4231be7fd3628, type: 2}
+    - {fileID: 11400000, guid: ba36d861e04313b4e967628b7711a852, type: 2}
