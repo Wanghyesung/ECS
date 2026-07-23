@@ -13,6 +13,6 @@ public class SceneController : MonoBehaviour
             return;
         }
 
-        await ObjectPool.m_Instance.BuildPoolsAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
+        await ObjectPool.m_Instance.LoadPoolAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
     }
 }

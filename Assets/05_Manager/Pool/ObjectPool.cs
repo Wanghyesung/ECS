@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*///////////////////////////////////////////
                ObjectPool
@@ -15,9 +16,7 @@ public class ObjectPool : MonoBehaviour
 {
     public static ObjectPool m_Instance = null;
     private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new Dictionary<PoolObject, Queue<GameObject>>();
-    private List<AssetReferenceGameObject> m_listLoadedRef = new List<AssetReferenceGameObject>();
-
-    private const int c_iInstantiatePerFrame = 4;
+    private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
     private void Awake()
     {
@@ -28,7 +27,7 @@ public class ObjectPool : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public async UniTask BuildPoolsAsync(List<SOPoolData> _listPoolData, CancellationToken _token = default)
+    public async UniTask LoadPoolAsync(List<SOPoolData> _listPoolData, CancellationToken _token = default)
     {
         ClearAllPools();
 
@@ -37,12 +36,12 @@ public class ObjectPool : MonoBehaviour
 
         var listTasks = new List<UniTask>(_listPoolData.Count); // <- 풀링으로 변경 
         for (int i = 0; i < _listPoolData.Count; ++i)
-            listTasks.Add(PrewarmOneAsync(_listPoolData[i], _token));
+            listTasks.Add(IntanceAsync(_listPoolData[i], _token));
 
         await UniTask.WhenAll(listTasks);
     }
 
-    private async UniTask PrewarmOneAsync(SOPoolData _refData, CancellationToken _token)
+    private async UniTask IntanceAsync(SOPoolData _refData, CancellationToken _token)
     {
         if (_refData == null || _refData.PrefabRef == null || _refData.PrefabRef.RuntimeKeyIsValid() == false)
         {
@@ -50,32 +49,31 @@ public class ObjectPool : MonoBehaviour
             return;
         }
 
-        var handle = _refData.PrefabRef.LoadAssetAsync();
-        
-        GameObject refPrefab = await _refData.PrefabRef.LoadAssetAsync()
-            .ToUniTask(cancellationToken: _token, autoReleaseWhenCanceled: true);
+        var tHandle = Addressables.LoadAssetAsync<GameObject>(_refData.PrefabRef);
+
+        GameObject refPrefab = await tHandle.ToUniTask(cancellationToken: _token, autoReleaseWhenCanceled: true);
 
         PoolObject refPrefabPoolObj = refPrefab.GetComponent<PoolObject>();
         if (refPrefabPoolObj == null)
         {
             Debug.Log("풀 프리팹에 PoolObject 없음 : ObjectPool");
+            Addressables.Release(tHandle);
             return;
         }
 
-        m_listLoadedRef.Add(_refData.PrefabRef);
+        m_hashHandle[refPrefabPoolObj] = tHandle;
 
         Queue<GameObject> queGameObject = new Queue<GameObject>();
         m_hashPool[refPrefabPoolObj] = queGameObject;
 
-        for (int i = 0; i < _refData.PreLoad; ++i)
-        {
-            GameObject refInstance = Instantiate(refPrefab);
-            PoolObject instancePoolObj = refInstance.GetComponent<PoolObject>();
-            instancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
-            PushObject(refInstance);
+        GameObject[] arrInstance = await Object.InstantiateAsync(refPrefab, _refData.PreLoad)
+            .ToUniTask(cancellationToken: _token);
 
-            if (i % c_iInstantiatePerFrame == c_iInstantiatePerFrame - 1)
-                await UniTask.Yield(PlayerLoopTiming.Update, _token);
+        for (int i = 0; i < arrInstance.Length; ++i)
+        {
+            PoolObject refInstancePoolObj = arrInstance[i].GetComponent<PoolObject>();
+            refInstancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
+            PushObject(arrInstance[i]);
         }
     }
 
@@ -93,9 +91,9 @@ public class ObjectPool : MonoBehaviour
         }
         m_hashPool.Clear();
 
-        for (int i = 0; i < m_listLoadedRef.Count; ++i)
-            m_listLoadedRef[i].ReleaseAsset();
-        m_listLoadedRef.Clear();
+        foreach (var tKvHandle in m_hashHandle)
+            Addressables.Release(tKvHandle.Value);
+        m_hashHandle.Clear();
     }
 
     public GameObject GetObject(PoolObject _refPrefabPoolObj)

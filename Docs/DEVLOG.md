@@ -618,6 +618,23 @@ for (int i = 0; i < m_iRowCount; ++i)
 - 여러 `SOPoolData`의 로딩을 순차가 아닌 `UniTask.WhenAll`로 묶어 프레임 양보 지점에서 인터리빙되게 하고, `Instantiate`는 4개당 한 번 `UniTask.Yield`로 프레임 분산해 스파이크 방지.
 - 대화 말미에 Unity 2022.3.20+ 정식 지원되는 `Object.InstantiateAsync<T>(prefab, count)`(내부적으로 Job System으로 일부 병렬 처리 후 메인 스레드에서 마무리, UniTask 확장 `AsyncInstantiateOperation<T>.ToUniTask()`도 이미 존재)가 수동 프레임 분산 루프보다 나은 대안이라는 데까지 논의 진행 — **아직 코드에는 미반영, 다음 작업으로 남음**.
 
+
+---------------------------------------------------------------------
+                            이후 변경된 점
+---------------------------------------------------------------------
+
+- 여러 `SOPoolData`의 로딩을 순차가 아닌 `UniTask.WhenAll`로 묶어 프레임 양보 지점에서 인터리빙되게 하고, 처음엔 `Instantiate`를 4개당 한 번 `UniTask.Yield`로 프레임 분산해 스파이크를 방지하는 수동 루프로 구현.
+- 이 수동 루프는 "Instantiate를 개별 호출로 너무 많이 하는것 아니냐"는 지적을 받고 갱신됨: Unity 2022.3.20+ 정식 지원되는 `Object.InstantiateAsync<T>(prefab, count)`는 동일 프리팹 N개를 한 번에 요청하면 내부적으로 Job System이 컴포넌트 데이터 복사를 병렬 처리하고 메인 스레드에서 마무리해주는
+ 배치 API(UniTask 확장 `AsyncInstantiateOperation<T>.ToUniTask()`도 이미 존재). 대화 초반엔 "논의만 하고 다음 작업으로미루자"로 기록했었지만, 같은 세션 안에서 바로 적용 가능하
+다고 판단해 수동 프레임 분산 루프와 그 상수(`c_iInstantiatePerFrame`)를 지우고 배치 호출 한 줄로 교체 — 남겨뒀던 "미반영" 기록을 실제 반영 상태로 갱신.
+
+**3) SO 오염 함정 — `AssetReference.LoadAssetAsync()`를 직 접 호출하면 안 되는 이유** - 구현 중 "`_refData.PrefabRef.LoadAssetAsync()`로 SO에 직접 접근하면 SO 자체가 오염되는 거 아니냐"는 지적이 나와 Addressables 소스(`AssetReference.cs`)를 확인.
+- `AssetReference.LoadAssetAsync()`는 로드한 핸들을 **자기
+자신의 내부 필드(`m_Operation`)에 저장**하는 구조이고, 공식 주석에도 "이미 로드된 상태에서 다시 호출하면 안 되며, 여러번 로드하려면 `Addressables.LoadAssetAsync(object)`에 AssetReference를 키로 넘기라"고 명시돼 있음. `SOPoolData`는 여러 `SOSceneData`(스테이지)가 공유할 수 있는 영속 에셋이라,
+`AssetReference` 자체의 상태를 건드리면 두 스테이지가 같은`SOPoolData`를 참조할 때 두 번째 로드 시도가 에러를 내며 조용히 깨지는 구조 — CLAUDE.md가 금지하는 "SO 데이터 오염"과동일한 문제.
+- **해결**: `Addressables.LoadAssetAsync<GameObject>(_refData.PrefabRef)`로 AssetReference를 순수 키로만 사용하고, 반환된 `AsyncOperationHandle`은 `ObjectPool` 쪽 `Dictionary<PoolObject, AsyncOperationHandle>`에 직접 보관.
+해제도 SO의`ReleaseAsset()`이 아니라 우리가 들고 있는 핸들을 `Addressables.Release()`로 직접 해제 — SO는 순수 데이터로 유지되고,여러 스테이지가 공유해도 각자 독립적인 참조 카운트를 가짐.
+
 ## 3. 🛠️ 반영된 핵심 코드 변경 사항
 
 ### 🔹 SOPoolData.cs
