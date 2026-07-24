@@ -7,8 +7,7 @@ using UnityEngine;
 기능 : FeatureManager가 뽑은 후보 FeatureSO를 각 RandomFeatureCard에 분배하고,
       카드가 클릭되면 그 카드에 할당된 FeatureSO를 FeatureManager로 넘겨
       Player에게 적용시키는 중간 역할 (카드 <-> FeatureManager 라우팅 전담)
-      조커카드 트리거(m_refJokerCard)도 같이 관리: 클릭 시 RollGamble로 판정 후 연출을 재생하고,
-      연출이 끝나면 결과에 따라 ApplySuccess/ApplyFail 호출. 실제 도박 상태(streak, pending)는 JokerCardManager가 전담
+      조커카드 트리거(m_refJokerCard)도 같이 관리: 클릭 시 RollGamble로 판정 후 연출을 재생
  *//////////////////////////////////////////
 
 public class CardCreator : MonoBehaviour
@@ -22,6 +21,7 @@ public class CardCreator : MonoBehaviour
     [SerializeField] private Player m_refPlayer;
 
     [SerializeField] private TextMeshProUGUI m_refJokerSuccessText;
+    [SerializeField] private TextMeshProUGUI m_refCurrentLevel;
     //[SerializeField] private 
     private void Awake()
     {
@@ -38,13 +38,19 @@ public class CardCreator : MonoBehaviour
     private void OnEnable()
     {
         float fJokerSuccessValue = JokerCardManager.m_Instance.GetSuccessValue();
-        m_refJokerSuccessText.text = fJokerSuccessValue.ToString();
+        float fJokerLevelValue = JokerCardManager.m_Instance.Level;
+
+        int iJokerSuccessValue = (int)(fJokerSuccessValue * 100.0f);
+        m_refJokerSuccessText.text = iJokerSuccessValue.ToString();
+        m_refCurrentLevel.text = fJokerLevelValue.ToString();
     }
 
     public void ShowChoices()
     {
         // 기능 카드 UI를 제외한 나머지(몬스터 BT, 무기 쿨타임, 애니메이션 등)는
         // Time.time / Time.deltaTime 기반이라 timeScale만 0으로 만들면 별도 처리 없이 정지됨
+        gameObject.SetActive(true);
+
         Time.timeScale = 0f;
 
         var listChoices = FeatureManager.m_Instance.RequestFeature(m_arrCard.Length);
@@ -91,11 +97,7 @@ public class CardCreator : MonoBehaviour
 
     private void Close()
     {
-        for (int i = 0; i < m_arrCard.Length; ++i)
-            m_arrCard[i].gameObject.SetActive(false);
-
-        if (m_refJokerCard != null)
-            m_refJokerCard.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 }
 

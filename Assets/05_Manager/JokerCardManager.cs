@@ -14,7 +14,7 @@ public class JokerCardManager : MonoBehaviour
 {
     public static JokerCardManager m_Instance = null;
 
-    private SOJokerCard m_SOJokerCard = null;
+    [SerializeField] private SOJokerCard m_SOJokerCard = null;
 
     private int m_iLevel = 0;
     public int Level => m_iLevel;

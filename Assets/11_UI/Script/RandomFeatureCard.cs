@@ -26,13 +26,6 @@ public class RandomFeatureCard : BaseButtonUI
     public event Action<SOData> OnCardClicked;
     private Coroutine m_CORotate = null;
 
-    private void OnEnable()
-    {
-        m_refImage.sprite = m_refOriginSprite;
-        m_refImage.raycastTarget = false;
-
-        m_CORotate = StartCoroutine(CORotate());
-    }
 
     public void Setup(SOData _refData)
     {
@@ -40,6 +33,11 @@ public class RandomFeatureCard : BaseButtonUI
 
         m_refTargetSprite = _refData.Icon;
         gameObject.SetActive(true);
+
+        m_refImage.sprite = m_refOriginSprite;
+        m_refImage.raycastTarget = false;
+
+        m_CORotate = StartCoroutine(CORotate());
     }
 
     public override void OnPointerClick(PointerEventData _eventData)
