@@ -27,6 +27,8 @@ public enum eEntityState
     Hit,
     Lock,
     Dead,
+    Success,
+    Fail,
     End,
 }
 

@@ -45,37 +45,38 @@ public class JokerCardManager : MonoBehaviour
     }
 
 
-    // 도박 1회 시도. 성공하면 이번 회차의 후보 목록을 반환하고, 실패하면 보류 목록을 몰수(초기화)한다.
-    public void TryGamble(SOJokerCard _SOJokerCard)
+    // 도박 판정만 수행 (side effect 없음) - 연출과 결과 반영 시점을 분리하기 위해 호출부가 결과를 들고 있다가 애니메이션 이후에 Apply*를 호출한다.
+    public bool RollGamble(SOJokerCard _SOJokerCard)
     {
         if (_SOJokerCard == null)
-            return;
+            return false;
 
         m_SOJokerCard = _SOJokerCard;
-        bool bSuccess = Random.value < m_SOJokerCard.GetSuccessChance(m_iLevel);
-        if (bSuccess == true)
-        {
-            m_refPickContainer.gameObject.SetActive(true);
-            m_refSelectContainer.gameObject.SetActive(true);
-
-            m_iLevel++;
-            m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel));
-            for (int i = 0; i < m_listPendingFeature.Count; ++i)
-                m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
-
-
-            //내가 고를 수 있는 사이즈만큼 컨테이너 사이즈 줄이기
-            int iPickCount = GetCurrentPickCount();
-            m_refPickContainer.Resize(iPickCount);
-
-        }
-        else
-            ClearFeature();
-       
+        return Random.value < m_SOJokerCard.GetSuccessValue(m_iLevel);
     }
+
+    // 도박 성공 결과 반영: 이번 회차의 후보 목록을 컨테이너에 표시
+    public void ApplySuccess()
+    {
+        m_refPickContainer.gameObject.SetActive(true);
+        m_refSelectContainer.gameObject.SetActive(true);
+
+        m_iLevel++;
+        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel));
+        for (int i = 0; i < m_listPendingFeature.Count; ++i)
+            m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
+
+        //내가 고를 수 있는 사이즈만큼 컨테이너 사이즈 줄이기
+        int iPickCount = GetCurrentPickCount();
+        m_refPickContainer.Resize(iPickCount);
+    }
+
+    // 도박 실패 결과 반영: 보류 목록 몰수
+    public void ApplyFail() => ClearFeature();
 
     public int GetCurrentPickCount() => m_SOJokerCard.GetPickCount(m_iLevel);
 
+    public float GetSuccessValue() => m_SOJokerCard.GetSuccessValue(m_iLevel);
 
     private void AddData(SOData _SOData)
     {

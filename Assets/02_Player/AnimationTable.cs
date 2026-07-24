@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,16 +31,20 @@ public class AnimationNode
 /*///////////////////////////////////////////
              AnimationTable
 
-±â´É : ¾Ö´Ï¸ŞÀÌ¼Ç ½ÇÇà °ü¸®, Entity»óÅÂ¿¡ µû¸¥ ¾Ö´Ï¸ŞÀÌ¼Ç ÆÄ¸®¹ÌÅÍ °ü¸®
+ê¸°ëŠ¥ : ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰ ê´€ë¦¬, Entityìƒíƒœì— ë”°ë¥¸ ì• ë‹ˆë©”ì´ì…˜ íŒŒë¦¬ë¯¸í„° ê´€ë¦¬
  *///////////////////////////////////////////
 
+[RequireComponent(typeof(Animator))]
 public class AnimationTable : MonoBehaviour
 {
+    [SerializeField] private bool m_bOnTimeScale = false;
+
     [SerializeField] private List<AnimationNode> m_listAnimationList = new();
     private Dictionary<eEntityState, AnimationNode> m_hashAnimation = new();
     private Animator m_refAnimator = null;
     private string m_currentBoolParam = null;
 
+    
     private void Awake()
     {
         m_hashAnimation.Clear();
@@ -49,6 +54,10 @@ public class AnimationTable : MonoBehaviour
         m_refAnimator = GetComponentInChildren<Animator>();
 
         m_listAnimationList.Clear();
+
+
+        if (m_bOnTimeScale == false)
+            m_refAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
     }
 
     public void SetTrigger(eEntityState _eState)
@@ -90,7 +99,6 @@ public class AnimationTable : MonoBehaviour
     private void UpdateAnimation(AnimationNode _refAnim)
     {
        
-        //TODO : case°¡ ¸¹¾ÆÁö¸é Dictionary<eState, Action<AnimationNode>·Î ¿¬°áÇÏ±â
         switch (_refAnim.ParamType)
         {
             case eAnimParamType.Trigger:
@@ -116,6 +124,16 @@ public class AnimationTable : MonoBehaviour
         }
     }
 
+    public async UniTask PlayAimation(eEntityState _eEntityState)
+    {
+        if (m_hashAnimation.TryGetValue(_eEntityState, out var refAnim) == false)
+            return;
+
+        UpdateAnimation(refAnim);
+
+        await UniTask.Yield(); // íŠ¸ë¦¬ê±°ê°€ ì‹¤ì œ ìƒíƒœ ì „í™˜ì— ë°˜ì˜ë  ë•Œê¹Œì§€ í•œ í”„ë ˆì„ ëŒ€ê¸°
+        await UniTask.WaitUntil(() => m_refAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+    }
 
     private void UpdateAnimationTrigger(AnimationNode _refAnimNode)
     {

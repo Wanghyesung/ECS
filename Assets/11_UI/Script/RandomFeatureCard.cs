@@ -17,14 +17,13 @@ public class RandomFeatureCard : BaseButtonUI
 {
     [SerializeField] private Sprite m_refTargetSprite = null;
     [SerializeField] private Sprite m_refOriginSprite = null; //현재 보여주는 이미지
-    [SerializeField] private Image m_refImage = null;
+    [SerializeField] protected Image m_refImage = null;
 
     [SerializeField] private float m_fShowTime = 2.0f;
     private SOData m_SOData = null;
     public SOData Data => m_SOData;
 
     public event Action<SOData> OnCardClicked;
-
     private Coroutine m_CORotate = null;
 
     private void OnEnable()
@@ -34,7 +33,7 @@ public class RandomFeatureCard : BaseButtonUI
 
         m_CORotate = StartCoroutine(CORotate());
     }
-    
+
     public void Setup(SOData _refData)
     {
         m_SOData = _refData;
@@ -49,7 +48,6 @@ public class RandomFeatureCard : BaseButtonUI
         OnCardClicked?.Invoke(m_SOData);
     }
 
-    
     private IEnumerator CORotate()
     {
         // 레벨업 시 Time.timeScale이 0이 되어도 카드 연출은 계속 움직여야 하므로 unscaledDeltaTime 사용
