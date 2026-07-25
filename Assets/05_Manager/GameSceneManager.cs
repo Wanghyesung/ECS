@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class SceneController : MonoBehaviour
+public class GameSceneManager : MonoBehaviour
 {
     [SerializeField] private SOSceneData m_refSceneData;
 
