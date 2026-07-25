@@ -689,3 +689,154 @@ private async UniTaskVoid Start()
 > 1. **"로드한 걸 거의 다 쓴다"는 사실만으로 Addressable 필요성을 판단하면 안 된다.** 판단 기준은 "한 씬 안에서의 사용률"이 아니라 "게임 전체 기준으로 안 쓰는 걸 실제로 내릴 수 있는가"다. 스테이지마다 몬스터 풀을 거의 다 갈아치우는 이 프로젝트는 씬 내 사용률은 높아도, 스테이지 전환 시점엔 이전 걸 언로드할 여지가 크다.
 > 2. **일부만 Addressable로 바꾸면 하드 레퍼런스가 있는 다른 곳 때문에 언로드 이점이 무효화될 수 있다.** `Bullet`/`Laser`/`SOAttackInfo`가 같은 프리팹을 direct로 물고 있으면, `SOPoolData`만 `AssetReference`로 바꿔도 그 프리팹은 여전히 메모리에 상주한다. 전환 범위는 "실제로 스테이지마다 갈아치우는 대상"으로 한정하는 게 비용 대비 합리적이었다.
 > 3. **Unity API는 메인 스레드 전용이라, 로딩/인스턴스화의 "속도"는 스레드 분리가 아니라 프레임 분산과 Unity 자체의 비동기 API(`InstantiateAsync`, Addressables `LoadAssetAsync`)로 얻어야 한다.** `UniTask`는 이 둘을 `PlayerLoop`/Addressables 확장으로 자연스럽게 이어주는 접착제 역할이지, 그 자체가 멀티스레드 인스턴스화를 가능하게 하는 도구는 아니다.
+
+---
+
+# 🚀 [Unity 우주 슈팅] DungeonManager — PQ 기반 시간 예약 스포너
+
+- **날짜:** 2026-07-25
+- **관련 시스템:** Dungeon/Spawner, Object Pool, Optimization
+
+## 1. 🚨 목표
+
+- 던전 진행 중 "몇 초 뒤 이 오브젝트를 이 위치에 스폰"처럼 시간 기반 예약이 여러 건 동시에 쌓이는 상황을, 매번 정렬하지 않고 항상 가장 빠른 예약만 O(log n)으로 확인/처리하고 싶었음.
+- `Assets/14_Uti/PriorityQueue.cs` (이진 힙 기반 범용 우선순위 큐)를 신설하고, `DungeonManager`가 이를 스폰 예약 큐로 사용하도록 설계.
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) 대기 방식: "정확히 그 시간만큼 잠들기" vs "매 프레임 최상단만 감시하기"**
+- 1차 제안: PQ 최상단 항목의 예약 시각까지 `UniTask.Delay`로 정확히 그만큼 슬립한 뒤 `Dequeue`. 시간 계산은 정확하지만, 중간에 그보다 더 이른 예약이 새로 들어와도 이미 시작된 `Delay`를 취소하기 전까진 반영이 안 되는 구조적 약점이 있음.
+- **결론(사용자 지정)**: "시간을 예약해두면 별도로 계속 지켜보는 놈이 있다"는 개념으로 변경 — 매 프레임 PQ 최상단만 `Peek`해서 예약 시각이 지났는지 확인하고, 지났으면 그때 `Dequeue`+스폰. 새 예약이 중간에 들어와도 다음 프레임에 자동으로 반영되어 별도 취소/재시작 로직이 필요 없어짐.
+
+**2) 감시 루프를 `Update()`로 만들지 않은 이유**
+- 실행 빈도(매 프레임 1회)는 `Update()`와 동일하지만, `Update()`는 오브젝트가 살아있는 한 Unity 엔진이 무조건 호출하는 콜백이라 MonoBehaviour당 디스패치 오버헤드가 붙고, 정지/재개를 직접 관리해야 함.
+- `UniTaskVoid` + `while(true) { ... await UniTask.Yield(_tToken); }` 형태로 `PlayerLoop`에 직접 붙이면 같은 프레임 주기를 얻으면서도, `this.GetCancellationTokenOnDestroy()` 토큰이 취소되는 순간 `await` 지점에서 바로 `OperationCanceledException`이 발생해 루프가 종료됨 — `OnDestroy`에서 별도 정리 코드 없이 CLAUDE.md의 "Update 사용 최소화" 원칙을 지킴.
+
+**3) 스폰 대상 참조 타입: `PoolObject` 직접 참조 vs `AssetReferenceGameObject`**
+- `SOPoolData.PrefabRef`(AssetReferenceGameObject)는 `ObjectPool.LoadPoolAsync`가 씬 시작 시 Addressables로 **비동기 로드**할 때만 쓰는 참조.
+- 반면 `Bullet.m_refHitEffectObj`, `SOSpawnAttackObject.m_refAttackObjectPrefab`처럼 이미 로드되어 풀에 들어간 오브젝트를 `ObjectPool.GetObject(PoolObject)`로 꺼낼 때 쓰는 참조는 단순 **딕셔너리 키**라서 로딩 비용이 없어야 함 — 명중/도착처럼 프레임 중 빈번히 도는 경로이기 때문.
+- `DungeonManager`의 스폰 예약도 같은 성격(이미 풀에 있는 대상 중 뭘 꺼낼지 가리킴)이라 `PoolObject`를 직접 들고 있는 기존 방식을 그대로 따름. `AssetReferenceGameObject`로 바꾸면 스폰마다 불필요한 간접비용만 늘어남.
+
+## 3. 🛠️ 구현 및 리뷰에서 발견한 버그
+
+1차 구현 직후 코드 리뷰에서 실제로 동작을 깨뜨리는 문제 4가지를 발견해 함께 수정.
+
+| 문제 | 증상 | 수정 |
+| --- | --- | --- |
+| `UpdateSpawnObject`를 아무도 호출하지 않음 | 감시 루프 자체가 실행 안 됨, 예약해도 영원히 스폰 안 됨 | `Start()`에서 `UpdateSpawnObject(this.GetCancellationTokenOnDestroy()).Forget()` 호출 추가 |
+| 루프 안에 `Dequeue()` 누락 | `Peek()`만 하고 스폰해서 같은 항목이 매 프레임 무한 반복 스폰, 다른 예약은 영원히 순서가 안 옴 | 스폰 직전 `m_PQObject.Dequeue()` 추가 |
+| `await UniTask.Yield()` 뒤 `continue` 누락 | 큐가 비었을 때 한 프레임 쉬고도 바로 `Peek()`으로 떨어져 `InvalidOperationException` 위험, "아직 시간 안 됨" 분기도 한 프레임만 쉬고 그대로 스폰돼버려 시간 비교가 사실상 죽은 코드 | 두 분기 모두 `await` 뒤 `continue` 추가 |
+| `SpawnObject`에서 null 체크 없음 | 풀이 비어 `ObjectPool.GetObject`가 `null`을 반환하면 `NullReferenceException` | `refGameObject == null` 가드 추가 |
+
+### 최종 구조 (`Assets/05_Manager/DungeonManager.cs`)
+```csharp
+private struct tSpawnData
+{
+    public float fSpawnTime;
+    public PoolObject refSpawnObject;
+    public Vector3 vPosition;
+}
+private struct tSpawnTimeComparer : IComparer<tSpawnData>
+{
+    public int Compare(tSpawnData x, tSpawnData y) => x.fSpawnTime.CompareTo(y.fSpawnTime);
+}
+
+PriorityQueue<tSpawnData> m_PQObject;
+
+private void Awake() => m_PQObject = new PriorityQueue<tSpawnData>(new tSpawnTimeComparer());
+private void Start() => UpdateSpawnObject(this.GetCancellationTokenOnDestroy()).Forget();
+
+private async UniTaskVoid UpdateSpawnObject(CancellationToken _tToken)
+{
+    while (true)
+    {
+        if (m_PQObject.Count <= 0) { await UniTask.Yield(_tToken); continue; }
+
+        var tSpawn = m_PQObject.Peek();
+        if (tSpawn.fSpawnTime - Time.time > 0.0f) { await UniTask.Yield(_tToken); continue; }
+
+        m_PQObject.Dequeue();
+        SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition);
+    }
+}
+
+public void AddSpawnObject(float _fNextSpawnTime, PoolObject _refPoolData, Vector3 _vPosition = default)
+{
+    m_PQObject.Enqueue(new tSpawnData(Time.time + _fNextSpawnTime, _refPoolData, _vPosition));
+}
+
+private void SpawnObject(PoolObject _refSpawnObject, Vector3 _vPosition)
+{
+    GameObject refGameObject = ObjectPool.m_Instance.GetObject(_refSpawnObject);
+    if (refGameObject == null) return;
+    refGameObject.transform.position = _vPosition;
+}
+```
+
+**남은 작업**: 실제 던전 웨이브/스폰 테이블에서 `AddSpawnObject`를 호출하는 쪽은 아직 미착수 (지금은 예약→감시→스폰 파이프라인만 완성된 상태). `DungeonManager`를 어디가 들고 있을지(예: `SceneManager`가 소유)는 별도 논의 중.
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **"매 프레임 확인해야 한다"가 곧 `Update()`를 써야 한다는 뜻은 아니다.** `UniTaskVoid` + `Yield` 루프는 같은 프레임 주기를 얻으면서도 MonoBehaviour 콜백 오버헤드 없이 `CancellationToken`으로 생명주기까지 자동 정리된다.
+> 2. **PQ + 감시 루프 조합에서 `Peek`만 하고 `Dequeue`를 빠뜨리면 같은 항목이 무한 반복되는 게 전형적인 함정이다.** "확인"과 "제거"는 항상 짝을 맞춰 리뷰해야 한다.
+> 3. **`await` 뒤 조건 분기에서 `continue`(또는 `return`)를 빠뜨리면, 대기 자체는 코드상 존재하지만 실행 흐름은 대기 결과와 무관하게 그대로 다음 줄로 떨어진다.** "한 프레임 쉬고 다시 조건을 검사한다"와 "한 프레임 쉬고 무조건 진행한다"는 완전히 다른 동작이므로, 비동기 폴링 루프를 작성할 때는 각 분기의 탈출 경로를 명시적으로 그려봐야 한다.
+> 4. **참조 타입(`AssetReference` vs 직접 참조)은 "로딩이 필요한 지점"과 "이미 로드된 것 중 무엇을 쓸지 가리키는 지점"을 구분해서 선택해야 한다.** 후자에 전자를 쓰면 매번 불필요한 간접비용이 붙는다.
+
+---
+
+# 🚀 [Unity 우주 슈팅] DungeonManager 구조 확정 — Stage 소유권, 몬스터 풀링 연동
+
+- **날짜:** 2026-07-26
+- **관련 시스템:** Dungeon/Spawner, Object Pool, Monster, Optimization
+
+## 1. 🚨 오늘 정리한 것
+
+지난 논의에서 미뤄뒀던 것들을 확정: **(1)** `ObjectSpawner`(구 `DungeonManager`, 예약→감시→스폰 엔진)와 스테이지 진행 규칙을 누가 들고 있을지, **(2)** 몬스터가 실제로 Object Pool을 타게 되면서 생기는 부작용.
+
+## 2. 💡 설계 논의
+
+**1) `DungeonManager`(신규) vs `ObjectSpawner`(기존 예약 엔진) 분리**
+- 기존에 만들어뒀던 시간 예약 감시 루프는 이미 사용자가 `ObjectSpawner`로 이름을 바꿔서 `Assets/14_Uti/ObjectSpawner.cs`에 정리해둔 상태였음 — "몬스터/스테이지/보스" 같은 게임 규칙은 전혀 모르는 순수 엔진으로 유지.
+- 그 위에 스테이지 순서 진행 + 보스 트리거 + 던전 클리어 판정을 담당하는 `DungeonManager`(신규, 유일한 싱글턴)를 별도로 두고, `ObjectSpawner`를 `[SerializeField]`로 소유하게 함. `List<SOStage>`도 `DungeonManager`가 순서대로 진행.
+- 이렇게 나눈 이유: `ObjectSpawner`는 아이템 드랍 타이머 등 다른 용도로도 재사용 가능한 범용 유틸로 남기고, "몬스터 다 죽으면 보스" 같은 게임 규칙은 전부 `DungeonManager` 한 곳에 모아 진입점을 하나로 고정(다른 매니저들처럼 `X.m_Instance`로만 접근).
+
+**2) 몬스터가 이제 진짜로 Object Pool을 탐**
+- `ObjectSpawner`가 몬스터를 `ObjectPool.GetObject(PoolObject)`로 꺼내 쓰게 되면서, `Monster.cs`에 예전부터 남아있던 `//TODO 몬스터 Object Pool 도입 시 PushObject로 교체` 코멘트가 더 이상 미룰 수 없는 실제 버그가 됨 — `Dead()`가 `SetActive(false)`만 하고 있어서 풀 큐에 반납이 안 되고, 그대로 두면 프리로드된 몬스터가 하나씩 소모되다 고갈됨.
+- `Bullet.cs`가 `PoolObject.OnPush`를 구독해 도착 액션을 실행하는 것과 같은 패턴으로, `Monster`도 `OnPush`를 구독해 재사용 시 새는 상태(넉백 코루틴, 상태이상 비트마스크)를 정리하도록 맞춤. `OnEnable()`의 State/Speed/HP 리셋만으로는 이 두 가지가 안 지워졌음.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 Monster.cs
+```csharp
+private void OnEnable()
+{
+    m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
+    m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed;
+    m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
+
+    if (m_refPoolObj != null)
+        m_refPoolObj.OnPush += ResetPoolState;
+}
+
+// 풀 반납 시점(OnPush)에 실행 — "이전 생"의 넉백 코루틴/상태이상 비트마스크 정리
+private void ResetPoolState()
+{
+    if (m_CoNockback != null) { StopCoroutine(m_CoNockback); m_CoNockback = null; }
+    m_refBlackBoard.ObjInfo.CurrentEffects = 0;
+}
+```
+`Effects[]` 배열의 `EndTime`/`TickDamage` 자체는 안 지워도 되는데, `SOPassiveEffectNode`/`CheckStateEffect` 등 모든 읽기 경로가 `CurrentEffects` 비트를 먼저 확인하고서야 그 값을 보기 때문. `Dead()`도 `gameObject.SetActive(false)` → `ObjectPool.m_Instance.PushObject(gameObject)`로 교체(풀 컴포넌트가 없으면 기존 방식으로 폴백).
+
+### 🔹 DungeonManager.cs (신규) / SOStage.cs (신규)
+- `SOStage`: 스테이지별 몬스터 스폰 테이블(`fSpawnTime`, `MonsterPrefab`, `vPosition`)과 보스 정보만 담는 순수 데이터, `SOPoolData`/`SOSceneData`와 동일하게 별도 SO 에셋으로 분리.
+- `DungeonManager`: `StartStage`로 그 스테이지의 예약을 전부 `ObjectSpawner.AddSpawnObject`에 흘려보내고, `Monster.OnMonsterDied` 구독으로 처치 카운트다운 → 조건 충족 시 보스 등장 → 보스 사망 시 다음 스테이지로 진행.
+
+## 4. 🧭 아직 결론 안 낸 것 (TODO로 이관)
+
+- **`DungeonManager`를 로비 씬에 두기로 결정** (로비에서 스테이지를 고르고 그대로 던전 씬까지 들고 감). 그런데 `SOStage.SpawnEntry.MonsterPrefab`이 `PoolObject` 하드 레퍼런스라서, 로비 진입 시점부터 전체 스테이지의 몬스터 프리팹이 메모리에 올라오는 문제가 그대로 남음.
+- 대안(선택과 실행 분리 / `AssetReferenceGameObject`+GUID 키 전환)까지 논의했지만, 우선순위상 **지금은 이 상태로 진행하고 리팩토링은 나중으로 미룸** — `Docs/TODO.md`에 두 후보안과 함께 상세 기록.
+- 부수적으로 확인된 것: `AssetReferenceGameObject`는 `Equals`/`GetHashCode`를 오버라이드하지 않아 참조 동일성 비교라 그대로 Dictionary 키로 못 씀(같은 에셋도 다른 인스턴스면 조회 실패) → 나중에 이 리팩토링을 하게 되면 `AssetGUID`(string) 혹은 이를 파싱한 `System.Guid`를 키로 써야 함.
+
+**다음 작업**: 일단 로비 씬 UI/흐름부터 만들고, 그 위에서 던전 진입 연결을 이어서 진행하기로 함.

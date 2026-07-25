@@ -34,7 +34,6 @@ public class PoolObject : MonoBehaviour, IPoolable
             ObjectPool.m_Instance.PushObject(gameObject);
     }
 
- 
     public virtual void Push()
     {
         m_iPushCount = 1;

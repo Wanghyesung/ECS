@@ -5,5 +5,4 @@ using UnityEngine;
 public class SOSceneData : ScriptableObject
 {
     public List<SOPoolData> PoolDataList = new List<SOPoolData>();
-    //public List<GameObject> PoolDataList <
 }

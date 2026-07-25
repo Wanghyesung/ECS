@@ -72,6 +72,8 @@ public class Monster : MonoBehaviour, IDamageable
 
     private Coroutine m_CoNockback = null;
 
+    private PoolObject m_refPoolObj;
+
     // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적 이벤트로 공유)
     public static event Action<int> OnMonsterDied;
 
@@ -86,8 +88,10 @@ public class Monster : MonoBehaviour, IDamageable
         if(m_refBT == null)
             m_refBT = GetComponent<BehaviorTree>();
 
+        m_refPoolObj = GetComponent<PoolObject>();
+
         m_refBlackBoard.Owner = this;
-       
+
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
     }
@@ -97,6 +101,29 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
+        m_refPoolObj.SetAliveTime(float.MaxValue);
+
+        if (m_refPoolObj != null)
+            m_refPoolObj.OnPush += ResetState;
+    }
+
+    private void OnDisable()
+    {
+        if (m_refPoolObj != null)
+            m_refPoolObj.OnPush -= ResetState;
+    }
+
+    // 풀에 반납되는 시점(OnPush)에 실행. OnEnable의 State/Speed/HP 리셋만으로는 안 지워지는
+    // "이전 생"의 잔여물(넉백 코루틴, 상태이상 비트마스크)을 정리해 재사용 시 새는 걸 막음
+    private void ResetState()
+    {
+        if (m_CoNockback != null)
+        {
+            StopCoroutine(m_CoNockback);
+            m_CoNockback = null;
+        }
+
+        m_refBlackBoard.ObjInfo.CurrentEffects = 0;
     }
 
     private void Start()
@@ -162,8 +189,10 @@ public class Monster : MonoBehaviour, IDamageable
         ChangeState(eEntityState.Dead);
         OnMonsterDied?.Invoke(m_SOMonsterInfo.ExpReward);
 
-        //TODO 몬스터 Object Pool 도입 시 PushObject로 교체
-        gameObject.SetActive(false);
+        if (m_refPoolObj != null)
+            ObjectPool.m_Instance.PushObject(gameObject);
+        else
+            gameObject.SetActive(false);
     }
 
     private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
