@@ -14,5 +14,7 @@ public class GameSceneManager : MonoBehaviour
         }
 
         await ObjectPool.m_Instance.LoadPoolAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
+
+        Debug.Log("로딩완료");
     }
 }

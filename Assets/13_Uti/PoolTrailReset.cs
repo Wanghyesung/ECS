@@ -22,7 +22,7 @@ public class PoolTrailReset : MonoBehaviour
         if (m_refPoolObj == null || m_refTrail == null)
         {
             Debug.LogError($"{gameObject.name}의 자식 오브젝트에서 필요한 컴포넌트를 찾을 수 없습니다!");
-        }
+        }   
     }
 
     private void OnEnable()
