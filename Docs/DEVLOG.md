@@ -840,3 +840,118 @@ private void ResetPoolState()
 - 부수적으로 확인된 것: `AssetReferenceGameObject`는 `Equals`/`GetHashCode`를 오버라이드하지 않아 참조 동일성 비교라 그대로 Dictionary 키로 못 씀(같은 에셋도 다른 인스턴스면 조회 실패) → 나중에 이 리팩토링을 하게 되면 `AssetGUID`(string) 혹은 이를 파싱한 `System.Guid`를 키로 써야 함.
 
 **다음 작업**: 일단 로비 씬 UI/흐름부터 만들고, 그 위에서 던전 진입 연결을 이어서 진행하기로 함.
+
+---
+
+# 🚀 [Unity 우주 슈팅] SelectStage(로비 UI) + Addressable 씬 비동기 로딩/진행률 표시
+
+- **날짜:** 2026-07-26
+- **관련 시스템:** UI, Scene Loading, Addressables, Object Pool, Async(UniTask)
+
+## 1. 🚨 오늘 정리한 것
+
+바로 전 항목("DungeonManager 구조 확정")의 다음 작업이었던 **로비 씬 UI/흐름**을 실제로 붙임: 스테이지 선택 화면(`SelectStage`)에서 이미지를 클릭하면 Addressable로 등록된 게임 씬을 비동기로 로드하고, 그 진행률을 이미지 하나로 보여준다.
+
+## 2. 💡 설계 논의
+
+**1) SelectStage — RectMask2D 캐러셀**
+- `RectMask2D`로 잘린 콘텐츠 안에 스테이지 이미지(`BaseButtonUI`)를 가로로 나열, 이전/다음 버튼을 누르면 `DOTween`으로 오프셋 500만큼 `DOAnchorPosX` 이동 (트윈 도중 중복 입력 방지, 첫/마지막 페이지에서 클램프).
+- 각 이미지는 `for` 루프에서 델리게이트를 등록하는데, 루프 변수를 그대로 캡처하면 전부 마지막 값을 참조하는 클로저 버그가 나서 로컬 변수로 복사 후 캡처. `OnDestroy`에서 등록한 델리게이트를 그대로 구독 해제.
+
+**2) SOSceneData/GameSceneManager 소유권 — "누가 List를 들고 있나"**
+- 처음엔 `SOSceneData`가 `List<AssetReference>`(씬 여러 개 합쳐서 로드)를 들고 있는 안으로 갔었으나, **SOSceneData는 씬 하나당 하나(단일 `AssetReference`)로 단순화**하고, "여러 스테이지 중 어떤 걸 로드할지"의 List는 `GameSceneManager`가 `List<SOSceneData>`로 들고 있는 구조로 정정. 데이터(SO)는 순수하게 하나의 씬 단위 정보만 갖고, "여러 스테이지를 순서대로 관리"하는 건 런타임 매니저의 책임이라는 원칙에 더 맞음.
+- `SelectStage`의 이미지 idx ↔ `GameSceneManager.m_listSceneData`의 idx가 1:1 대응.
+
+**3) GameSceneManager — 씬 전환 중에도 살아있어야 진행률을 그릴 수 있음**
+- `SelectStage`는 로비 씬, 기존 `GameSceneManager`는 메인 씬 소속이라 서로 다른 씬. 로딩 진행 이미지를 보여주려면 씬이 바뀌는 동안에도 그 컴포넌트가 죽지 않아야 해서, `FeatureManager`와 동일한 패턴(`m_Instance` + `DontDestroyOnLoad`)의 싱글톤으로 전환.
+- 기존에 `Start()`에서 처리하던 오브젝트 풀 로딩은, 이제 인스턴스가 씬이 바뀌어도 재생성되지 않으므로 `Start()`가 아니라 `LoadStage → LoadSceneAsync` 흐름 안으로 이동.
+
+**4) 진행률 버그 — "씬 로드 끝나면 100%로 보이는" 문제**
+- 처음엔 `Addressables.LoadSceneAsync(...).ToUniTask(IProgress<float>)`의 진행률만 그대로 이미지 `fillAmount`에 꽂았는데, 리뷰 중 "씬만 로드되면 100% 다 채워지는 거 아니냐, 뒤에 풀 로딩도 끝나야지"라는 지적으로 버그 확인. 씬 로드가 끝나는 순간 바로 1.0이 되고, 그 뒤 풀 로딩 동안은 갱신이 전혀 없었음.
+- **해결**: 전체 진행률을 씬 로드(0~0.5)와 풀 로드(0.5~1.0) 두 구간으로 나눠서 매핑하도록 수정.
+
+**5) ObjectPool.LoadPoolAsync — 진행률 보고 + 추가 할당 없이**
+- 풀 로딩(`LoadPoolAsync`)은 원래 진행률을 전혀 보고하지 않아서, `IProgress<float>` 파라미터를 추가하고 개별 프리팹 로드가 (병렬로) 끝날 때마다 "완료 개수 / 전체 개수"를 보고하도록 함.
+- 처음엔 완료 개수 카운터를 `int[] arrCompleteCount = { 0 }`로 박스에 담아 넘겼는데, "이거 매개변수로 그냥 인스턴스 필드로 잡으면 추가 할당 없잖아"라는 지적을 받고 `m_iLoadCount`(인스턴스 필드, `LoadPoolAsync` 진입 시 리셋)로 교체 — 호출마다 배열 힙 할당이 생기던 걸 없앰. CLAUDE.md의 "GC Alloc 0 추구" 원칙과 직결되는 부분이라 기록.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOSceneData.cs
+```csharp
+[CreateAssetMenu(fileName = "SO_SceneData", menuName = "Game/Load/SceneData")]
+public class SOSceneData : ScriptableObject
+{
+    public AssetReference SceneAddress; //Addressable로 등록된 씬 주소 (씬 하나당 SOSceneData 하나)
+    public List<SOPoolData> PoolDataList = new List<SOPoolData>();
+}
+```
+
+### 🔹 GameSceneManager.cs (싱글톤 전환 + Addressable 씬 로드)
+```csharp
+public class GameSceneManager : MonoBehaviour
+{
+    public static GameSceneManager m_Instance = null;
+
+    [SerializeField] private List<SOSceneData> m_listSceneData = new List<SOSceneData>();
+    [SerializeField] private Image m_refProgressImage;
+
+    public int SelectedStageIdx { get; private set; } = 0;
+
+    private void Awake()
+    {
+        if (m_Instance != null) { Destroy(gameObject); return; }
+        m_Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void LoadStage(int _iStageIdx)
+    {
+        SelectedStageIdx = _iStageIdx;
+        LoadSceneAsync(m_listSceneData[_iStageIdx]).Forget();
+    }
+
+    private async UniTaskVoid LoadSceneAsync(SOSceneData _refSceneData)
+    {
+        // 씬 로드 0~0.5, 풀 로드 0.5~1.0
+        var refSceneProgress = Progress.Create<float>(fPercent => SetProgress(fPercent * 0.5f));
+        var refPoolProgress = Progress.Create<float>(fPercent => SetProgress(0.5f + fPercent * 0.5f));
+
+        var tHandle = Addressables.LoadSceneAsync(_refSceneData.SceneAddress, LoadSceneMode.Single);
+        await tHandle.ToUniTask(refSceneProgress, cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        await ObjectPool.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy(), refPoolProgress);
+    }
+}
+```
+
+### 🔹 ObjectPool.cs (진행률 보고, 추가 할당 없음)
+```csharp
+private int m_iLoadCount = 0;
+
+public async UniTask LoadPoolAsync(List<SOPoolData> _listPoolData, CancellationToken _token = default, IProgress<float> _refProgress = null)
+{
+    m_iLoadCount = 0;
+    ClearPool();
+    // ... IntanceAsync(idx, totalCount, _refProgress)를 UniTask.WhenAll로 병렬 실행
+}
+
+private async UniTask IntanceAsync(SOPoolData _refData, CancellationToken _token, int _iTotalCount, IProgress<float> _refProgress)
+{
+    // ... 로드/인스턴스화 ...
+    ++m_iLoadCount;
+    _refProgress?.Report((float)m_iLoadCount / _iTotalCount);
+}
+```
+
+### 🔹 SelectStage.cs (신규)
+- `RectMask2D` 콘텐츠를 이전/다음 버튼으로 `DOTween` 오프셋 500씩 이동, 이미지 클릭 시 `GameSceneManager.m_Instance.LoadStage(idx)` 호출.
+
+### 🔹 DungeonManager.cs
+- `StartStage(0)` 고정값을 `GameSceneManager.m_Instance.SelectedStageIdx`로 교체 — 로비에서 고른 스테이지가 실제 던전 진행에 반영됨.
+
+## 4. 🧭 아직 남은 것 (에디터 작업 / TODO)
+
+- 로비를 제외한 씬들을 Addressable Groups에서 Addressable로 마킹하고, 각 `SOSceneData.SceneAddress`에 연결하는 작업은 에디터 UI에서 직접 해야 함 (스크립트로 대체 불가).
+- `GameSceneManager` 오브젝트를 로비 씬으로 옮기고 `m_listSceneData`/`m_refProgressImage`를 인스펙터에서 채워야 함.
+- 지난 항목에서 남겨둔 "로비 진입 시점부터 전체 스테이지 몬스터 프리팹이 메모리에 올라오는 문제"(`SOStage.SpawnEntry.MonsterPrefab` 하드 레퍼런스)는 이번 작업 범위에 포함하지 않음 — `Docs/TODO.md` 기록 그대로 유효.
+

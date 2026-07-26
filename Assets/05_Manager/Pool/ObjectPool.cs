@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -18,6 +19,7 @@ public class ObjectPool : MonoBehaviour
     private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new Dictionary<PoolObject, Queue<GameObject>>();
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
+    private int m_iLoadCount = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -27,21 +29,29 @@ public class ObjectPool : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public async UniTask LoadPoolAsync(List<SOPoolData> _listPoolData, CancellationToken _token = default)
+    //_refProgress: 풀 프리팹 하나 완료될 때마다 (완료 개수 / 전체 개수)를 보고 (0~1). 로딩 화면 진행바용
+    public async UniTask LoadPoolAsync(List<SOPoolData> _listPoolData, CancellationToken _token = default, IProgress<float> _refProgress = null)
     {
-        ClearAllPools();
+        m_iLoadCount = 0;
 
-        if (_listPoolData == null)
+        ClearPool();
+
+        if (_listPoolData == null || _listPoolData.Count == 0)
+        {
+            _refProgress?.Report(1.0f);
             return;
+        }
 
-        var listTasks = new List<UniTask>(_listPoolData.Count); // <- 풀링으로 변경 
-        for (int i = 0; i < _listPoolData.Count; ++i)
-            listTasks.Add(IntanceAsync(_listPoolData[i], _token));
+        int iTotalCount = _listPoolData.Count;
+
+        var listTasks = new List<UniTask>(iTotalCount); // <- 풀링으로 변경
+        for (int i = 0; i < iTotalCount; ++i)
+            listTasks.Add(IntanceAsync(_listPoolData[i], _token, iTotalCount, _refProgress));
 
         await UniTask.WhenAll(listTasks);
     }
 
-    private async UniTask IntanceAsync(SOPoolData _refData, CancellationToken _token)
+    private async UniTask IntanceAsync(SOPoolData _refData, CancellationToken _token, int _iTotalCount, IProgress<float> _refProgress)
     {
         if (_refData == null || _refData.PrefabRef == null || _refData.PrefabRef.RuntimeKeyIsValid() == false)
         {
@@ -66,7 +76,7 @@ public class ObjectPool : MonoBehaviour
         Queue<GameObject> queGameObject = new Queue<GameObject>();
         m_hashPool[refPrefabPoolObj] = queGameObject;
 
-        GameObject[] arrInstance = await Object.InstantiateAsync(refPrefab, _refData.PreLoad)
+        GameObject[] arrInstance = await UnityEngine.Object.InstantiateAsync(refPrefab, _refData.PreLoad)
             .ToUniTask(cancellationToken: _token);
 
         for (int i = 0; i < arrInstance.Length; ++i)
@@ -75,9 +85,12 @@ public class ObjectPool : MonoBehaviour
             refInstancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
             PushObject(arrInstance[i]);
         }
+
+        ++m_iLoadCount;
+        _refProgress?.Report((float)m_iLoadCount / _iTotalCount);
     }
 
-    public void ClearAllPools()
+    public void ClearPool()
     {
         foreach (var kvValue in m_hashPool)
         {

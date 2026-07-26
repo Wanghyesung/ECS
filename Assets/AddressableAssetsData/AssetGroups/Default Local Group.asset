@@ -87,6 +87,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
+    m_Address: Assets/00_Scene/MainScene/MainScene.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aa9fb594a22551241a8460f7f2da8d7c
     m_Address: Assets/03_Monster/Bullet/SparkEx.prefab
     m_ReadOnly: 0

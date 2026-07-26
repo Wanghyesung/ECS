@@ -55,7 +55,8 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        StartStage(0);
+        int iStartStageIdx = GameSceneManager.m_Instance != null ? GameSceneManager.m_Instance.SelectedStageIdx : 0;
+        StartStage(iStartStageIdx);
     }
 
     private void StartStage(int _iStageIdx)
