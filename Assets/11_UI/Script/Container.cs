@@ -64,7 +64,7 @@ public class Container : BaseButtonUI
     //카테고리별로 슬롯뷰는 동일하되 데이터는 따로 보여줄 수 있게 
 
     [Header("CONTANIER")]
-    private RectMask2D m_refRectMask;
+    [SerializeField] private RectMask2D m_refRectMask;
 
     [SerializeField] eContainerType m_eType; //어떤 도메인 데이터를 다루는 컨테이너인지 (Feature면 FeatureManager와 연동)
 
@@ -134,6 +134,8 @@ public class Container : BaseButtonUI
 
     public void Init()
     {
+        //TODO : 나중에 클래스 하나 따로 만들고 위에서 핸들 연결해주는걸로 수정
+
         //Feature 전용 컨테이너면 기능 흭득/레벨업 이벤트를 구독해서 슬롯에 자동 반영
         if (m_eType == eContainerType.Feature && FeatureManager.m_Instance != null)
             FeatureManager.m_Instance.OnFeatureSelect += OnFeatureAcquired;
@@ -335,7 +337,9 @@ public class Container : BaseButtonUI
     {
         ClearData();
 
-        m_refRectMask = GetComponent<RectMask2D>();
+        if(m_refRectMask == null)
+            m_refRectMask = GetComponent<RectMask2D>();
+
         m_refRectMask.padding = new Vector4(m_vPadding.x, m_vPadding.y, m_vPadding.x, m_vPadding.y);
 
         //슬롯 최대치 보정

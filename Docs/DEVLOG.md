@@ -955,3 +955,98 @@ private async UniTask IntanceAsync(SOPoolData _refData, CancellationToken _token
 - `GameSceneManager` 오브젝트를 로비 씬으로 옮기고 `m_listSceneData`/`m_refProgressImage`를 인스펙터에서 채워야 함.
 - 지난 항목에서 남겨둔 "로비 진입 시점부터 전체 스테이지 몬스터 프리팹이 메모리에 올라오는 문제"(`SOStage.SpawnEntry.MonsterPrefab` 하드 레퍼런스)는 이번 작업 범위에 포함하지 않음 — `Docs/TODO.md` 기록 그대로 유효.
 
+---
+
+# 🚀 [Unity 우주 슈팅] ObjectPool — InstantiateAsync 취소 시 오브젝트 유실 버그 수정
+
+- **날짜:** 2026-07-27
+- **관련 시스템:** Object Pool, Async(UniTask), Optimization
+
+## 1. 🚨 문제
+
+- Play 모드에서 `ObjectPool.IntanceAsync`가 `Object.InstantiateAsync`로 대량 인스턴스화를 진행하는 도중 Play를 중단하면, 참조를 잃은 오브젝트가 에디터(Edit 모드) 씬에 그대로 남는 현상 발견.
+
+## 2. 💡 원인 분석
+
+- 프로젝트에 벤더링된 UniTask 소스(`Assets/Plugins/UniTask/Runtime/UnityAsyncExtensions.AsyncInstantiate.cs`)를 직접 확인.
+- `AsyncInstantiateOperationConfiguredSource<T>.MoveNext()`/`Continuation()`은 `CancellationToken`이 취소되면 `core.TrySetCanceled()`로 **C# 쪽 `await`만 취소**시킬 뿐, `AsyncInstantiateOperation<T>` 자신의 `Cancel()`은 어디에서도 호출하지 않음.
+- 즉 토큰 취소는 "기다림"만 멈출 뿐 Unity 엔진의 인스턴스화 Job(Job System 기반)은 계속 실행됨. `IntanceAsync`는 이미 예외로 빠져나가 `for` 루프(→ `m_hashPool`/`m_hashHandle` 등록)를 타지 않으므로, 뒤늦게 완성된 오브젝트들은 아무도 추적하지 않는 고아가 됨. 완료 시점이 Play→Edit 전환 경계와 겹치면 그대로 에디터에 남는다.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 ObjectPool.cs (`IntanceAsync`)
+```csharp
+var tOpInstantiate = UnityEngine.Object.InstantiateAsync(refPrefab, _refData.PreLoad);
+GameObject[] arrInstance;
+using (_token.Register(() => tOpInstantiate.Cancel()))
+{
+    arrInstance = await tOpInstantiate.ToUniTask(cancellationToken: _token);
+}
+```
+- `_token.Register`로 토큰 취소 시 `AsyncInstantiateOperation<T>.Cancel()`을 직접 호출하도록 연결 — 취소되는 순간 엔진 Job 자체가 멈춰서 고아 오브젝트가 생기지 않음.
+
+## 4. 💡 인사이트
+
+> `CancellationToken`을 async API에 넘기는 것과, "취소됐을 때 그 안의 리소스를 실제로 정리하는 것"은 별개의 책임이다. UniTask 같은 래퍼가 알아서 다 처리해줄 거라 가정하면 안 되고, 특히 자체 `Cancel()` API를 가진 엔진 레벨 오퍼레이션(`AsyncInstantiateOperation` 등)은 `CancellationToken.Register`로 직접 연결해줘야 한다. 벤더링된 라이브러리 소스가 프로젝트에 있으면 "그럴 것이다" 추측 대신 직접 읽고 확인하는 게 빠르고 정확하다.
+
+---
+
+# 🚀 [Unity 우주 슈팅] 아이템 시스템 설계 — SOItemData / ItemManager
+
+- **날짜:** 2026-07-27
+- **관련 시스템:** Item, Inventory, ScriptableObject, Event System
+
+## 1. 🚨 목표
+
+- 아이템 데이터 보관 방식과, 획득/장착 시 실제 효과를 플레이어에게 적용하는 흐름을 설계.
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) Item 런타임 클래스 도입 여부 — 기각**
+- 초안: `SOItemData`(`SOData` 상속)를 `Item`이라는 런타임 클래스가 들고 동적으로 데이터를 전달하는 구조.
+- 클릭/선택 입력 처리는 이미 `Container`(`BaseButtonUI` 상속)가 담당하고 있어서, `Item`이 실제로 할 일이 없다는 걸 스스로 확인하고 클래스 자체를 생략 — SO만으로 처리.
+
+**2) `SOFeature`식 abstract 메서드 패턴 적용 여부 — 기각**
+- 초안: `SOFeature.Apply(Player, int)`처럼 `SOItemData`에도 `abstract void Use(Player)`를 두고 아이템별 서브클래스가 오버라이드.
+- 사용자 지적: "데이터 위주 SO를 상속으로 계속 늘리지 말라." `SOFeature`의 abstract-메서드+서브클래스 패턴은 정말 재사용 가능한 "기능" 단위에만 쓰는 것이고, `SOItemData`처럼 순수 데이터 SO는 필드만 갖고 기능은 소비하는 쪽(매니저)에 둔다는 원칙으로 정리. (관련 판단 기준을 메모리에 기록)
+
+**3) 능력치 데이터 표현 — 포지셔널 슬롯(Vector4/int[]) 대신 (enum, 값) 리스트**
+- 초안(사용자): `Vector4` 또는 `int[4~8]` 고정 슬롯 + 슬롯 의미를 설명하는 별도 문자열(`ItemDataDesc`).
+- 문제 제기: 슬롯 위치가 뭘 의미하는지 코드가 전혀 모르므로 적용부에서 결국 아이템별 분기가 필요해지고, 슬롯 순서가 바뀌면 조용히 깨짐 — 컴파일 타임 안전성이 없음.
+- 채택안: `eStatType` enum + `tStatValue{ eStatType Type; float Value; }` 구조체의 `List<tStatValue>`. 적용부는 이 리스트를 순회하며 enum 하나로 `Player`의 기존 스탯 메서드(`AddHP`/`AddAttack`/`AddDefense`/`AddSpeed`/`UpBulletSpeed`)에 위임 — 아이템 종류별 분기 없이 공용 처리 가능. `SOData.Description`을 그대로 쓰므로 별도 설명 문자열도 불필요해짐.
+
+**4) `Inventory`/`PlayerInterface` 분리 → `ItemManager` 하나로 병합**
+- 1차안: `JokerCardManager` 전례(두 `Container`를 각각 들고 `OnSelectEvt` 구독)를 따라 `Inventory`(보관)/`PlayerInterface`(장착·적용) 두 클래스로 분리.
+- 사용자 지적: 이 흐름은 로비 전용이고 전투 씬에서는 쓰지 않으므로 굳이 클래스를 나눌 이유가 없음 → `ItemManager` 하나로 병합, 인벤토리용/장착용 `Container` 둘 다 필드로 받아 각자 `OnSelectEvt` 구독.
+- 이름은 처음 `ItemContainer`로 제안했으나, 이미 `Container`가 UI 슬롯 클래스 이름으로 쓰이고 있어 혼동 우려 → `FeatureManager`/`JokerCardManager`와 통일감 있는 `ItemManager`로 확정.
+
+**5) 싱글턴 지속성 — `DontDestroyOnLoad` 여부**
+- 1차안: 로비 씬에서만 쓰는 오브젝트라 싱글턴 중복 체크(`Destroy`)/`DontDestroyOnLoad` 둘 다 불필요하다고 판단.
+- 사용자 정정: 스테이지 클리어로 아이템을 얻는 흐름이 나중에 붙으면, 로비로 돌아올 때마다 상태를 다시 로드하고 무슨 아이템을 먹었는지 역추적해야 하는 문제가 생김 → `FeatureManager`/`JokerCardManager`와 동일한 지속 싱글턴 패턴(중복 체크 + `DontDestroyOnLoad`)으로 유지하기로 확정.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 SOItemData.cs (`Assets/11_UI/Item/`)
+- `eStatType`(HP/Attack/Defense/Speed/BulletSpeed), `eEquipType`, `tStatValue{Type, Value}` 정의.
+- `SOData` 상속, `List<tStatValue> ListValue` + `eEquipType EquipType` 필드만 갖는 순수 데이터 SO (abstract 메서드 없음).
+
+### 🔹 ItemManager.cs (`Assets/05_Manager/`)
+```csharp
+[SerializeField] private Container m_refInventoryContainer; // 보관
+[SerializeField] private Container m_refInterFaceContainer; // 장착/적용
+
+private void Awake()
+{
+    if (m_Instance != null) Destroy(this);
+    m_Instance = this;
+    DontDestroyOnLoad(this);
+}
+```
+- `ApplyItemData`에서 `tStatValue.Type`(`eStatType`) 스위치로 `Player`의 기존 스탯 메서드에 위임하는 공용 적용 루프 작성.
+
+## 4. 🧭 아직 남은 것
+
+- `Start()`의 `OnSelectEvt` 구독 연결(보관/장착 각각 어떤 메서드로 받을지)이 아직 주석 처리된 상태 — 확정 필요.
+- 기존 `Inventory.cs`/`PlayerInterface.cs`는 `ItemManager`로 대체되어 더 이상 필요 없지만, 파일 삭제는 에이전트가 임의로 하지 않고 사용자가 직접 진행하기로 함.
+- `SOItemData`에 수량 제한, 아이템 종류 세분화 등 추가 필드가 더 필요한지는 미정.
+
