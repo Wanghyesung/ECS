@@ -76,8 +76,16 @@ public class ObjectPool : MonoBehaviour
         Queue<GameObject> queGameObject = new Queue<GameObject>();
         m_hashPool[refPrefabPoolObj] = queGameObject;
 
-        GameObject[] arrInstance = await UnityEngine.Object.InstantiateAsync(refPrefab, _refData.PreLoad)
-            .ToUniTask(cancellationToken: _token);
+        var tOpInstantiate = UnityEngine.Object.InstantiateAsync(refPrefab, _refData.PreLoad);
+        GameObject[] arrInstance;
+
+        //var t =tOpInstantiate.Result;//tOp.Result — 생성이 끝날 때까지 스레드를 붙잡음. 그동안 아무것도 못 함. 끊김.
+        //이 토큰이 취소되는 순간 이 콜백을 실행 , using으로 감싸면 블록을 빠져나갈 때 자동으로 등록이 해제(Dispose)
+       
+        using (_token.Register(() => tOpInstantiate.Cancel()))
+        {
+            arrInstance = await tOpInstantiate.ToUniTask(cancellationToken: _token);
+        }
 
         for (int i = 0; i < arrInstance.Length; ++i)
         {

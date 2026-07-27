@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: SO_MainStage0
   m_EditorClassIdentifier: 
   ListSpawnEntry:
-  - fSpawnTime: 0
-    MonsterPrefab: {fileID: 0}
-    vPosition: {x: 0, y: 0, z: 0}
-  - fSpawnTime: 0
-    MonsterPrefab: {fileID: 0}
-    vPosition: {x: 0, y: 0, z: 0}
-  - fSpawnTime: 0
-    MonsterPrefab: {fileID: 0}
-    vPosition: {x: 0, y: 0, z: 0}
-  - fSpawnTime: 0
-    MonsterPrefab: {fileID: 0}
-    vPosition: {x: 0, y: 0, z: 0}
-  BossPrefab: {fileID: 0}
-  BossSpawnPosition: {x: 0, y: 0, z: 0}
+  - fSpawnTime: 4
+    MonsterPrefab: {fileID: 7781567569334348831, guid: b644cdf74c787cb44980d4383b4eb91a, type: 3}
+    vPosition: {x: 30.14753, y: 14.18, z: 33.61361}
+  - fSpawnTime: 4
+    MonsterPrefab: {fileID: 2966755597795771774, guid: b24e55e95e59f4a48ad2cf093ce1ddb0, type: 3}
+    vPosition: {x: -31.477684, y: 12.7, z: 33.3}
+  - fSpawnTime: 12
+    MonsterPrefab: {fileID: 7781567569334348831, guid: b644cdf74c787cb44980d4383b4eb91a, type: 3}
+    vPosition: {x: 30.14753, y: 14.18, z: 33.61361}
+  - fSpawnTime: 12
+    MonsterPrefab: {fileID: 2966755597795771774, guid: b24e55e95e59f4a48ad2cf093ce1ddb0, type: 3}
+    vPosition: {x: -31.477684, y: 12.7, z: 33.3}
+  BossPrefab: {fileID: 3982470965335869779, guid: b8f872a168a6a0b43b83ebad4d281c0d, type: 3}
+  BossSpawnPosition: {x: 23.5, y: 68.9, z: 163.2}

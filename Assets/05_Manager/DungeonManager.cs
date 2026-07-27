@@ -29,6 +29,8 @@ public class DungeonManager : MonoBehaviour
         }
 
         m_Instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnDestroy()
@@ -47,19 +49,7 @@ public class DungeonManager : MonoBehaviour
         Monster.OnMonsterDied -= MonsterDead;
     }
 
-    private void Start()
-    {
-        if (m_refSpawner == null)
-        {
-            Debug.Log("Spawner 미설정 : DungeonManager");
-            return;
-        }
-
-        int iStartStageIdx = GameSceneManager.m_Instance != null ? GameSceneManager.m_Instance.SelectedStageIdx : 0;
-        StartStage(iStartStageIdx);
-    }
-
-    private void StartStage(int _iStageIdx)
+    public void StartStage(int _iStageIdx)
     {
         if (_iStageIdx >= m_listStage.Count)
         {
@@ -90,7 +80,7 @@ public class DungeonManager : MonoBehaviour
         }
 
         --m_iRemainMonsterCount;
-        if (m_iRemainMonsterCount <= 0)
+        if (m_iRemainMonsterCount <= 0 && m_refSpawner.RemainObject <= 0)
             SpawnBoss();
     }
 

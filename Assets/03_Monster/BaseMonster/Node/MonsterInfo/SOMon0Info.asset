@@ -16,4 +16,6 @@ MonoBehaviour:
   Description: 
   MaxHP: 100
   MaxSpeed: 4
-  ExpReward: 240
+  MaxAtack: 1000
+  MaxDefense: 100
+  ExpReward: 20

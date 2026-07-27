@@ -14,6 +14,8 @@ using UnityEngine;
 public class ObjectSpawner : MonoBehaviour
 {
     private PriorityQueue<tSpawnData> m_PQObject;
+
+    public int RemainObject => m_PQObject.Count;
     private struct tSpawnData
     {
         public float fSpawnTime;

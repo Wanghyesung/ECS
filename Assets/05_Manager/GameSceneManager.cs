@@ -21,8 +21,8 @@ public class GameSceneManager : MonoBehaviour
     //SelectStage의 이미지 idx와 1:1 대응. 각 스테이지가 어떤 씬 + 어떤 풀데이터를 쓰는지 여기서 관리
     [SerializeField] private List<SOSceneData> m_listSceneData = new List<SOSceneData>();
 
-    [SerializeField] private Image m_refProgressImage; //fillAmount로 로딩 진행률 표시
-
+    //[SerializeField] private Image m_refProgressImage; //fillAmount로 로딩 진행률 표시
+    [SerializeField] private LoadingOverlay m_refLoadingOverlay;
     public int SelectedStageIdx { get; private set; } = 0;
 
     private AsyncOperationHandle<SceneInstance> m_tSceneHandle;
@@ -38,8 +38,8 @@ public class GameSceneManager : MonoBehaviour
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (m_refProgressImage != null)
-            m_refProgressImage.gameObject.SetActive(false);
+        if (m_refLoadingOverlay != null)
+            m_refLoadingOverlay.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -63,10 +63,10 @@ public class GameSceneManager : MonoBehaviour
 
     private async UniTaskVoid LoadSceneAsync(SOSceneData _refSceneData)
     {
-        SetProgress(0.0f);
-        if (m_refProgressImage != null)
-            m_refProgressImage.gameObject.SetActive(true);
+        if (m_refLoadingOverlay != null)
+            m_refLoadingOverlay.gameObject.SetActive(true);
 
+        SetProgress(0.0f);
         //씬 로드가 끝났다고 100%가 되면 안 되므로(뒤에 풀 로딩이 남음) 구간을 절반씩 나눠서 표시
         //씬 로드 0~0.5, 풀 로드 0.5~1.0
         var refSceneProgress = Progress.Create<float>(fPercent => SetProgress(fPercent * 0.5f));
@@ -77,15 +77,16 @@ public class GameSceneManager : MonoBehaviour
 
         await ObjectPool.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy(), refPoolProgress);
 
-        if (m_refProgressImage != null)
-            m_refProgressImage.gameObject.SetActive(false);
+        if (m_refLoadingOverlay != null)
+            m_refLoadingOverlay.gameObject.SetActive(false);
 
+        DungeonManager.m_Instance.StartStage(SelectedStageIdx);
         Debug.Log("로딩완료");
     }
 
     private void SetProgress(float _fPercent)
     {
-        if (m_refProgressImage != null)
-            m_refProgressImage.fillAmount = _fPercent;
+        m_refLoadingOverlay.SetProgress(_fPercent);
+       
     }
 }
