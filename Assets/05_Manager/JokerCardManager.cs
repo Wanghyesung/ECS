@@ -68,7 +68,7 @@ public class JokerCardManager : MonoBehaviour
 
         //내가 고를 수 있는 사이즈만큼 컨테이너 사이즈 줄이기
         int iPickCount = GetCurrentPickCount();
-        m_refPickContainer.Resize(iPickCount);
+        m_refPickContainer.Resize(iPickCount, eDataType.Features);
     }
 
     // 도박 실패 결과 반영: 보류 목록 몰수
@@ -89,13 +89,13 @@ public class JokerCardManager : MonoBehaviour
 
     private void DeleteData(SOData _SOData)
     {
-        m_refPickContainer.DeleteData(_SOData, 0);
+        m_refPickContainer.DeleteData(_SOData);
     }
 
     //유니티 이벤트로 직렬화해서 연결 (Container UI의 CloseButton)
     public void PickData()
     {
-        CategoryData refData = m_refPickContainer.GetCategoryData(0);
+        CategoryData refData = m_refPickContainer.GetCategoryData(eDataType.Features);
         if (refData.IsFull == false)
             return;
 

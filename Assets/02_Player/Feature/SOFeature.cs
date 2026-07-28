@@ -32,6 +32,16 @@ public enum eAcquireType
     OneTime,
 }
 
+[Serializable]
+public enum eFetureTier
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+}
+
 /*///////////////////////////////////////////
                 FeatureSO
 기능 : 레벨업 등 특정 상황에 랜덤으로 제시되는 강화/기능의 정적 데이터 + 적용 로직을 담는 베이스 SO
@@ -40,7 +50,12 @@ public enum eAcquireType
 
 public abstract class SOFeature : SOData
 {
+    public override eDataType DataType { get => eDataType.Features; }
+
     [SerializeField] private eFeatureID m_eID = eFeatureID.None;
+
+    public override int SubDataType => -1; //아직 미 개발
+
     public eFeatureID ID => m_eID;
 
     [SerializeField] private eAcquireType m_eAcquireType = eAcquireType.Repeatable;

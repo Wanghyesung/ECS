@@ -23,13 +23,13 @@ public class CategoryData
     [SerializeField] private bool m_bCanDuplication = true; //중복 허용할지(장비 템 창, 스킬 창)
     public bool IsCanDuplication => m_bCanDuplication;
     public bool IsFull => m_iCurrentRemnantData <= 0;
-    [HideInInspector] public int m_iCategoryIdx = 0;
 
     //이 카테고리가 보여줄 데이터의 카운트를 어디서 가져올지 (예: FeatureManager). 카테고리마다 다른 출처를 꽂을 수 있음
     [SerializeField] private MonoBehaviour m_refCountSourceObj;
     public ICountable CountSource => m_refCountSourceObj as ICountable;
 
-    //[SerializeField] public eUIType m_iUIType = eUIType.None;
+    [SerializeField] private eDataType m_eDataType; //해당 카테고리에 넣어야할 아이템
+    public eDataType DataType => m_eDataType; //해당 카테고리에 넣어야할 아이템
     public int GetRemnantDataIdx()
     {
         for (int i = 0; i < ListData.Count; ++i)
@@ -73,9 +73,11 @@ public class Container : BaseButtonUI
 
     //[SerializeField] private List<SOEntryUI> m_listData = new List<SOEntryUI>(); //실세 데이터
     [SerializeField] private List<CategoryData> m_listCategoryData = new List<CategoryData>();
+    private Dictionary<eDataType, int> m_hashCategory = new Dictionary<eDataType, int>(); //Build()에서 DataType -> 카테고리 인덱스 캐싱 (DataType당 카테고리 1개 전제)
     private List<SlotView> m_listView = new List<SlotView>();
-    [SerializeField] private int m_iCurrentCategoryIdx = 0;
-    public int CurrentCategoryIdx { get => m_iCurrentCategoryIdx; }
+    [SerializeField] private eDataType m_eCurrentDataType; // 현재 보여주는 카테고리(MainType)
+
+    public int CurrentCategoryIdx => GetCategoryIdx(m_eCurrentDataType);
 
 
     [SerializeField] private int m_iCategoryCount = 0;
@@ -94,6 +96,7 @@ public class Container : BaseButtonUI
     public event Action<SOData> OnSelectEvt;
     public event Action<SOData> OnAddEvt;
     public event Action<SOData> OnDeleteEvt;
+    public event Action<SlotView> OnSelectSlotView;
     public event Action OnFullEvt;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
@@ -188,9 +191,10 @@ public class Container : BaseButtonUI
      *////////////////////////////////////
 
     //빈공간 없이 정렬
-    public void SortData(int _iCategoryIdx = 0)
+    public void SortData(eDataType _eDataType)
     {
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        int iCategoryIdx = GetCategoryIdx(_eDataType);
+        CategoryData refCategoryData = GetCategoryData(iCategoryIdx);
         if (refCategoryData == null)
             return;
 
@@ -210,12 +214,13 @@ public class Container : BaseButtonUI
             ++iWrite;
         }
 
-        BindData(_iCategoryIdx);
+        BindData(iCategoryIdx);
     }
 
-    public bool DeleteData(int _iDataIdx, int _iCategoryIdx = 0)
+    public bool DeleteData(int _iDataIdx, eDataType _eDataType)
     {
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        int iCategoryIdx = GetCategoryIdx(_eDataType);
+        CategoryData refCategoryData = GetCategoryData(iCategoryIdx);
         if (refCategoryData == null || refCategoryData.ListData[_iDataIdx] == null)
             return false;
 
@@ -223,23 +228,23 @@ public class Container : BaseButtonUI
 
         refCategoryData.ListData[_iDataIdx] = null;
         ++refCategoryData.m_iCurrentRemnantData;
-    
+
         //데이터 새로 바인딩
-        BindData(_iCategoryIdx);
+        BindData(iCategoryIdx);
         OnDeleteEvt?.Invoke(SOData);
 
         return true;
     }
 
-    public bool DeleteData(SOData _SOData, int _iCategoryIdx = 0)
+    public bool DeleteData(SOData _SOData)
     {
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData refCategoryData = GetCategoryData(_SOData.DataType);
         if (refCategoryData == null)
             return false;
 
-       
+
         var listData = refCategoryData.ListData;
-        bool bFind = false; 
+        bool bFind = false;
         for(int i = 0; i<listData.Count; ++i)
         {
             if (listData[i] == _SOData)
@@ -255,7 +260,7 @@ public class Container : BaseButtonUI
         if (bFind == false)
             return false;
 
-        SortData();
+        SortData(_SOData.DataType);
         OnDeleteEvt?.Invoke(_SOData);
         return true;
     }
@@ -263,9 +268,9 @@ public class Container : BaseButtonUI
 
     //FeatureManager.OnFeatureSelect 핸들러 전용: 처음 흭득이면 목록에 새로 추가하고,
     //이미 보유 중인 기능이면(레벨업) 추가 없이 카운트(레벨)만 갱신
-    public bool AddData(SOData _SOData, int _iCount, int _iCategoryIdx = 0)
+    public bool AddData(SOData _SOData, int _iCount)
     {
-        CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData pCategoryData = GetCategoryData(_SOData.DataType);
         if (pCategoryData == null)
             return false;
 
@@ -296,13 +301,14 @@ public class Container : BaseButtonUI
         //이미 화면에 보이는 슬롯이면 전체 재바인딩 없이 카운트만 갱신
         SetSlotCount(iIdx, _iCount);
         OnAddEvt?.Invoke(_SOData);
-
         return true;
     }
-
-    public SOData FindData(SOData _SOData , int _iCategoryIdx = 0)
+    
+   
+    
+    public SOData FindData(SOData _SOData)
     {
-        CategoryData pCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData pCategoryData = GetCategoryData(_SOData.DataType);
         if (pCategoryData == null)
             return null;
 
@@ -316,6 +322,24 @@ public class Container : BaseButtonUI
         return null;
     }
 
+    public SOData FindData(SOData _SOData, int _iSubData)
+    {
+        CategoryData pCategoryData = GetCategoryData(_SOData.DataType);
+        if (pCategoryData == null)
+            return null;
+
+        var listData = pCategoryData.ListData;
+        for (int i = 0; i < listData.Count; ++i)
+        {
+            if (listData[i] == _SOData && listData[i].DataType == _SOData.DataType)
+                return _SOData;
+        }
+
+        return null;
+    }
+
+
+    //public SOData FindData()
 
     //카운트(레벨)는 CategoryData에 저장하지 않고 FeatureManager가 유일한 소스이므로,
     //데이터 idx를 그리고 있는 슬롯을 찾아 값만 밀어줌 (안 보이는 슬롯이면 무시)
@@ -345,6 +369,19 @@ public class Container : BaseButtonUI
         //슬롯 최대치 보정
         ClampSlot();
 
+        //DataType별 카테고리 인덱스 캐시 구성 (Sort()가 CurrentCategoryIdx로 조회하기 전에 먼저 채워야 함, DataType당 카테고리 1개 전제라 처음 매칭된 것만 등록)
+        m_hashCategory.Clear();
+        for (int i = 0; i < m_listCategoryData.Count; ++i)
+        {
+            eDataType eType = m_listCategoryData[i].DataType;
+            if (!m_hashCategory.ContainsKey(eType))
+                m_hashCategory[eType] = i;
+        }
+
+        //현재 탭으로 지정된 DataType이 존재하지 않으면(기본값 등) 첫 카테고리의 DataType으로 대체
+        if (!m_hashCategory.ContainsKey(m_eCurrentDataType) && m_listCategoryData.Count > 0)
+            m_eCurrentDataType = m_listCategoryData[0].DataType;
+
         Sort();
 
         m_iCategoryCount = m_listCategoryData.Count;
@@ -359,11 +396,10 @@ public class Container : BaseButtonUI
                     ++iRemnantData;
             }
             m_listCategoryData[i].m_iCurrentRemnantData = iRemnantData;
-            m_listCategoryData[i].m_iCategoryIdx = i;
         }
 
         //슬롯 바인딩
-        BindData(m_iCurrentCategoryIdx);
+        BindData(CurrentCategoryIdx);
     }
 
     //슬롯 최대 계수 지정 어차피 보여질 부분만 만들기 때문에 불필요하게 더 늘리지 않기
@@ -390,7 +426,7 @@ public class Container : BaseButtonUI
 
     public void Sort()
     {
-        var refCategory = GetCategoryData(m_iCurrentCategoryIdx);
+        var refCategory = GetCategoryData(CurrentCategoryIdx);
         int iCurMax = m_iSlotColCount * m_iSlotRowCount;
 
 
@@ -539,7 +575,7 @@ public class Container : BaseButtonUI
         if (m_iCurRow != iRow)
         {
             m_iCurRow = iRow;
-            BindData(m_iCurrentCategoryIdx);
+            BindData(CurrentCategoryIdx);
         }
     }
     public void SetTargetSlot(SlotView _pTargetSlot)
@@ -558,6 +594,7 @@ public class Container : BaseButtonUI
 
         //콜백함수
         OnSelectEvt?.Invoke(_pTargetSlot.SOFeat);
+        OnSelectSlotView?.Invoke(_pTargetSlot);
     }
 
     public SlotView GetTargetSlot()
@@ -604,10 +641,10 @@ public class Container : BaseButtonUI
                   Data Category
     *////////////////////////////////////
 
-    public List<SOData> GetListData(int _iCategoryIdx = 0)
+    public List<SOData> GetListData(eDataType _eDataType)
     {
 
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData refCategoryData = GetCategoryData(_eDataType);
         if (refCategoryData == null)
             return null;
 
@@ -620,23 +657,37 @@ public class Container : BaseButtonUI
 
     public CategoryData GetCategoryData(int _iCategoryIdx = 0)
     {
-        if (_iCategoryIdx >= m_listCategoryData.Count)
+        if (_iCategoryIdx < 0 || _iCategoryIdx >= m_listCategoryData.Count)
             return null;
 
         return m_listCategoryData[_iCategoryIdx];
     }
 
-    public SOData GetDataIdx(int _iDataIdx, int _iCategoryIdx)
+    //DataType으로 바로 카테고리를 찾음 (DataType당 카테고리 1개 전제, m_hashCategory로 조회)
+    public CategoryData GetCategoryData(eDataType _eDataType)
     {
-        var listData = GetListData(_iCategoryIdx);
+        return GetCategoryData(GetCategoryIdx(_eDataType));
+    }
+
+    public int GetCategoryIdx(eDataType _eDataType)
+    {
+        if (!m_hashCategory.TryGetValue(_eDataType, out int iCategoryIdx))
+            return -1;
+
+        return iCategoryIdx;
+    }
+
+    public SOData GetDataIdx(int _iDataIdx, eDataType _eDataType)
+    {
+        var listData = GetListData(_eDataType);
         if (listData == null || listData[_iDataIdx] == null)
             return null;
 
         return listData[_iDataIdx];
     }
-    public void Resize(int _iCount, int _iCategoryIdx = 0)
+    public void Resize(int _iCount, eDataType _eDataType)
     {
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData refCategoryData = GetCategoryData(_eDataType);
         if (refCategoryData == null)
             return;
         var listData = refCategoryData.ListData;
@@ -670,18 +721,18 @@ public class Container : BaseButtonUI
         //BindData(_iCategoryIdx);
     }
 
-    public void ChanageCategory(int _iCategoryIdx)
+    public void ChanageCategory(eDataType _eDataType)
     {
-        if (m_iCategoryCount <= _iCategoryIdx)
+        if (!m_hashCategory.ContainsKey(_eDataType))
             return;
 
-        m_iCurrentCategoryIdx = _iCategoryIdx;
-        BindData(m_iCurrentCategoryIdx);
+        m_eCurrentDataType = _eDataType;
+        BindData(CurrentCategoryIdx);
     }
 
-    public bool IsCanDuplication(int _iCategoryIdx)
+    public bool IsCanDuplication(eDataType _eDataType)
     {
-        CategoryData refCategoryData = GetCategoryData(_iCategoryIdx);
+        CategoryData refCategoryData = GetCategoryData(_eDataType);
         if (refCategoryData == null)
             return false;
 

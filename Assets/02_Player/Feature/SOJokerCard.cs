@@ -9,6 +9,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SOJokerCard", menuName = "Game/Feature/SOJokerCard")]
 public class SOJokerCard : SOData
 {
+    public override eDataType DataType { get => eDataType.Features;}
+
+    public override int SubDataType => -1;
+
     [Tooltip("x = 현재까지 연속 성공 횟수, y = 다음 도박 성공 확률(0~1)")]
     [SerializeField] private AnimationCurve m_refSuccessChance;
 
