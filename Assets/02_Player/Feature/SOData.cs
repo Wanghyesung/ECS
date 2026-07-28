@@ -9,7 +9,7 @@ using UnityEngine;
 public enum eDataType
 {
     Features,
-    Item,
+    Equip,
     End
 }
 

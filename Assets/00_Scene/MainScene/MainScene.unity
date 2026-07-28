@@ -854,13 +854,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300032, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 1
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 6
 --- !u!222 &93696237
@@ -8857,6 +8857,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1051749162}
   m_refContentView: {fileID: 1081987956}
@@ -8876,9 +8877,9 @@ MonoBehaviour:
     - {fileID: 0}
     m_iCurrentRemnantData: 12
     m_bCanDuplication: 0
-    m_iCategoryIdx: 0
     m_refCountSourceObj: {fileID: 0}
-  m_iCurrentCategoryIdx: 0
+    m_eDataType: 0
+  m_eCurrentDataType: 0
   m_iCategoryCount: 1
   m_refSlotPrefab: {fileID: 1824466130642140545, guid: ccf1d8cff9f4cd94bb1134a9c8fe927b, type: 3}
   m_vStep: {x: 50, y: 50}
@@ -12464,6 +12465,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1509255863}
   m_refContentView: {fileID: 291598625}
@@ -12483,9 +12485,9 @@ MonoBehaviour:
     - {fileID: 0}
     m_iCurrentRemnantData: 12
     m_bCanDuplication: 0
-    m_iCategoryIdx: 0
     m_refCountSourceObj: {fileID: 0}
-  m_iCurrentCategoryIdx: 0
+    m_eDataType: 0
+  m_eCurrentDataType: 0
   m_iCategoryCount: 1
   m_refSlotPrefab: {fileID: 1824466130642140545, guid: ccf1d8cff9f4cd94bb1134a9c8fe927b, type: 3}
   m_vStep: {x: 32, y: 20}
@@ -15734,6 +15736,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1941138654}
   m_refContentView: {fileID: 1540674878}
@@ -15753,9 +15756,9 @@ MonoBehaviour:
     - {fileID: 0}
     m_iCurrentRemnantData: 12
     m_bCanDuplication: 0
-    m_iCategoryIdx: 0
     m_refCountSourceObj: {fileID: 0}
-  m_iCurrentCategoryIdx: 0
+    m_eDataType: 0
+  m_eCurrentDataType: 0
   m_iCategoryCount: 1
   m_refSlotPrefab: {fileID: 1824466130642140545, guid: ccf1d8cff9f4cd94bb1134a9c8fe927b, type: 3}
   m_vStep: {x: 32, y: 20}

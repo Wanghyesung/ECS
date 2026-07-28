@@ -39,7 +39,7 @@ public struct tStatValue
 [CreateAssetMenu(fileName = "SO_EquipData", menuName = "Game/Item/SOEquipData")]
 public class SOEqipData : SOData
 {
-    public override eDataType DataType => eDataType.Item;
+    public override eDataType DataType => eDataType.Equip;
 
     [SerializeField] private eEquipType m_eEquipType = eEquipType.End;
     public override int SubDataType => (int)m_eEquipType;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /*///////////////////////////////////////////
                 DungeonManager
@@ -54,6 +55,7 @@ public class DungeonManager : MonoBehaviour
         if (_iStageIdx >= m_listStage.Count)
         {
             Debug.Log("던전 클리어 : DungeonManager");
+            GameSceneManager.m_Instance.LoadFirstScene();
             return;
         }
 

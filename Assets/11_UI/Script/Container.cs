@@ -54,7 +54,7 @@ public enum eContainerType
       사용자와 상호작용(드래그 클릭) 역할을 수행
  *//////////////////////////////////////////////
 
-public class Container : BaseButtonUI
+public class Container : BaseButtonUI , ISelectDataable
 {
     //UI 컨테이너 (스킬창, 인벤토리 창)
 
@@ -71,7 +71,6 @@ public class Container : BaseButtonUI
     [SerializeField] private RectTransform m_refContainerView; // 프레임(마스크) Rect
     [SerializeField] private RectTransform m_refContentView;   // 셀들이 붙는 부모 Rect
 
-    //[SerializeField] private List<SOEntryUI> m_listData = new List<SOEntryUI>(); //실세 데이터
     [SerializeField] private List<CategoryData> m_listCategoryData = new List<CategoryData>();
     private Dictionary<eDataType, int> m_hashCategory = new Dictionary<eDataType, int>(); //Build()에서 DataType -> 카테고리 인덱스 캐싱 (DataType당 카테고리 1개 전제)
     private List<SlotView> m_listView = new List<SlotView>();
@@ -83,8 +82,6 @@ public class Container : BaseButtonUI
     [SerializeField] private int m_iCategoryCount = 0;
     public int CategoryCount { get => m_iCategoryCount; }
 
-    //[SerializeField] private bool m_bOnSelect = false;
-    //public bool IsOnSelect { get => m_bOnSelect; }
 
     [SerializeField] private SlotView m_refSlotPrefab; //셀 프리팹
     [SerializeField] private Vector2 m_vStep;     //셀 사이 간격(x=열 간, y=행 간)

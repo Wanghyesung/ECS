@@ -21,12 +21,12 @@ public class SlotView : BaseButtonUI
 
     protected SOData m_SOTargetSO = null;
 
-    protected Container m_refContainer = null;
+    protected ISelectDataable m_refContainer = null;
 
     public SOData SOFeat { get => m_SOTargetSO; }
     public int SlotIdx { get => m_iSlotIdx; }
 
-    public void Init(Container _refContainer)
+    public void Init(ISelectDataable _refContainer)
     {
         m_refContainer = _refContainer;
 
@@ -65,9 +65,7 @@ public class SlotView : BaseButtonUI
         //    return;
 
         if (m_refContainer != null)
-        {
             m_refContainer.SetTargetSlot(this);
-        }
     }
 
     protected void BindData(SOData _SOFeat, int _iSlotIdx, int _iCount = 0)

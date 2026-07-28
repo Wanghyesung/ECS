@@ -32,8 +32,10 @@ public class Aim : MonoBehaviour
 
         if (Physics.Raycast(tRay, out tHit, m_fMaxLength, m_tLayerMask))
         {
+            GameObject refTarget = tHit.collider.gameObject;
             ChangeCollor(true);
-            return tHit.point;
+            return refTarget.transform.position;
+            //return tHit.point;
         }
 
         ChangeCollor(false);

@@ -23,6 +23,8 @@ public class GameSceneManager : MonoBehaviour
 
     //[SerializeField] private Image m_refProgressImage; //fillAmount로 로딩 진행률 표시
     [SerializeField] private LoadingOverlay m_refLoadingOverlay;
+    [SerializeField] private string m_strFirstSceneName = "LobyScene"; //Addressable이 아닌 Build Settings 등록 씬(로비/처음 씬)
+
     public int SelectedStageIdx { get; private set; } = 0;
 
     private AsyncOperationHandle<SceneInstance> m_tSceneHandle;
@@ -87,6 +89,25 @@ public class GameSceneManager : MonoBehaviour
     private void SetProgress(float _fPercent)
     {
         m_refLoadingOverlay.SetProgress(_fPercent);
-       
+
+    }
+
+    //던전 클리어 등으로 처음 씬(로비)으로 돌아갈 때 호출. 로비는 Addressable이 아니라 Build Settings에 등록된 일반 씬이라 SceneManager로 바로 로드
+    public void LoadFirstScene()
+    {
+        LoadFirstSceneAsync().Forget();
+    }
+
+    private async UniTaskVoid LoadFirstSceneAsync()
+    {
+        //진행률 계산 없이 배경(오버레이)만 켰다 끄기
+        if (m_refLoadingOverlay != null)
+            m_refLoadingOverlay.ShowLoadingImage();
+
+        await SceneManager.LoadSceneAsync(m_strFirstSceneName, LoadSceneMode.Single)
+            .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        if (m_refLoadingOverlay != null)
+            m_refLoadingOverlay.CompletedLoading();
     }
 }
