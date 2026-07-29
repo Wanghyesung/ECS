@@ -23,7 +23,7 @@ public class SlotView : BaseButtonUI
 
     protected ISelectDataable m_refContainer = null;
 
-    public SOData SOFeat { get => m_SOTargetSO; }
+    public SOData SOData { get => m_SOTargetSO; }
     public int SlotIdx { get => m_iSlotIdx; }
 
     public void Init(ISelectDataable _refContainer)

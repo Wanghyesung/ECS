@@ -265,7 +265,7 @@ public class Container : BaseButtonUI , ISelectDataable
 
     //FeatureManager.OnFeatureSelect 핸들러 전용: 처음 흭득이면 목록에 새로 추가하고,
     //이미 보유 중인 기능이면(레벨업) 추가 없이 카운트(레벨)만 갱신
-    public bool AddData(SOData _SOData, int _iCount)
+    public bool AddData(SOData _SOData, int _iCount = 1)
     {
         CategoryData pCategoryData = GetCategoryData(_SOData.DataType);
         if (pCategoryData == null)
@@ -577,7 +577,7 @@ public class Container : BaseButtonUI , ISelectDataable
     }
     public void SetTargetSlot(SlotView _pTargetSlot)
     {
-        if (_pTargetSlot.SOFeat == null)
+        if (_pTargetSlot.SOData == null)
             return;
 
         //해당 슬롯에 프레임 장착
@@ -590,7 +590,7 @@ public class Container : BaseButtonUI , ISelectDataable
         m_refTargetSlot = _pTargetSlot;
 
         //콜백함수
-        OnSelectEvt?.Invoke(_pTargetSlot.SOFeat);
+        OnSelectEvt?.Invoke(_pTargetSlot.SOData);
         OnSelectSlotView?.Invoke(_pTargetSlot);
     }
 

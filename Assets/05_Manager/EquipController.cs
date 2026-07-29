@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Reflection;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -20,7 +21,7 @@ public class EquipController : MonoBehaviour
     public static EquipController m_Instance = null;
 
     [SerializeField] private Container m_refInventoryContainer; // 보관
-
+    [SerializeField] private Interface m_refEquipInterface;
     private SOEqipData m_refInventoryPick = null;
 
     //인벤토리에서 지정한 데이터를 인터페이스에 올릴지 최종 체크하는 버튼
@@ -36,10 +37,8 @@ public class EquipController : MonoBehaviour
 
     private void Start()
     {
-        m_refInventoryContainer.OnSelectEvt += PickInventoryItem;
-        
-
-        //m_refPlusButton.OnClickEvt += PushInterface;
+        m_refInventoryContainer.OnSelectSlotView += PickInventorySlot;
+        m_refPlusButton.OnClickEvt += PushInterface;
 
         //m_refInventoryContainer.OnSelectEvt += AddData;
         //m_refInterFaceContainer.OnSelectEvt += PushAndApply;
@@ -47,10 +46,14 @@ public class EquipController : MonoBehaviour
 
     private void OnDestroy()
     {
-        m_refInventoryContainer.OnSelectEvt -= PickInventoryItem;
-       
-
+        m_refInventoryContainer.OnSelectSlotView -= PickInventorySlot;
         m_refPlusButton.OnClickEvt -= PushInterface;
+    }
+
+    private void OnEnable()
+    {
+        m_refInventoryPick = null;
+        m_refPlusButton.gameObject.SetActive(false);
     }
 
     private void PushEventory(SOData _refSOData, int _iCount = 1)
@@ -73,8 +76,13 @@ public class EquipController : MonoBehaviour
 
     private void PushInterface()
     {
-        if (m_refInventoryPick == null)
-            return;
+        m_refPlusButton.gameObject.SetActive(false);
+
+        //기존에 잡은 데이터 원본 컨테이너에서 지우고 인터페이스에 저장
+        m_refInventoryContainer.DeleteData(m_refInventoryPick);
+        SOData SOPreData = m_refEquipInterface.AddSwapData(m_refInventoryPick);
+        if(SOPreData != null)
+            m_refInventoryContainer.AddData(SOPreData);
     }
 
     //private void SelectInterfaceView(SlotView _refClickView)
@@ -111,11 +119,18 @@ public class EquipController : MonoBehaviour
         }
     }
 
-    private void PickInventoryItem(SOData _SOData)
+    private void PickInventorySlot(SlotView _refSlotView)
     {
-        m_refInventoryPick = _SOData as SOEqipData;
+        m_refInventoryPick = _refSlotView.SOData as SOEqipData;
 
-    
+        Vector3 vViewPosition =
+            m_refEquipInterface.FindSlotPosition(m_refInventoryPick.DataType, m_refInventoryPick.SubDataType);
+
+        if (vViewPosition == Vector3.zero)
+            return;
+
+        m_refPlusButton.gameObject.SetActive(true);
+        m_refPlusButton.transform.position = vViewPosition;
     }
 
 }

@@ -20,7 +20,7 @@ public interface ISelectDataable
 public class Interface : BaseButtonUI, ISelectDataable
 {
     [Serializable]
-    private class tSlotInfo
+    public class SlotInfo
     {
         public Vector2 vSlotSize;
         public Vector2 vPosition;
@@ -30,13 +30,14 @@ public class Interface : BaseButtonUI, ISelectDataable
         public SlotView refSlotView;
     }
 
-    [SerializeField] private List<tSlotInfo> m_listView = new List<tSlotInfo>();
+    [SerializeField] private List<SlotInfo> m_listView = new List<SlotInfo>();
 
     private SlotView m_refTargetSlot;
 
+    //콜백함수
+    public Action<SOData> OnAddData;
     public Action<SOData> OnSelectEvt;
     public Action<SlotView> OnSelectSlotView;
-        //콜백함수
       
 
     [Header("BUILD")]
@@ -123,14 +124,31 @@ public class Interface : BaseButtonUI, ISelectDataable
             if (pSlotInfo.eType != _SOData.DataType || pSlotInfo.iSubType != _SOData.SubDataType)
                 continue;
 
-            if (pSlotInfo.refSlotView.SOFeat != null)
+            if (pSlotInfo.refSlotView.SOData != null)
                 return false; //이미 장착된 소켓 (교체는 별도 처리 필요)
 
             pSlotInfo.refSlotView.Bind(_SOData, i);
+            OnAddData?.Invoke(_SOData);
             return true;
         }
 
         return false;
+    }
+
+    //지정된 위치에 이미 데이터가 있다면 반환해주고 데이터 넣기
+    public SOData AddSwapData(SOData _SOData)
+    {
+        int iFindIdx = FindDataIdx(_SOData);
+        SOData SOPreData = null;
+
+        if (iFindIdx != -1)
+        {
+            SOPreData = m_listView[iFindIdx].refSlotView.SOData;
+            DeleteData(iFindIdx);
+        }
+        AddData(_SOData);
+
+        return SOPreData;
     }
 
     public bool DeleteData(SOData _SOData)
@@ -138,7 +156,7 @@ public class Interface : BaseButtonUI, ISelectDataable
         for (int i = 0; i < m_listView.Count; ++i)
         {
             var pSlotInfo = m_listView[i];
-            if (pSlotInfo.refSlotView.SOFeat != _SOData)
+            if (pSlotInfo.refSlotView.SOData != _SOData)
                 continue;
 
             pSlotInfo.refSlotView.Bind(null, i);
@@ -148,11 +166,41 @@ public class Interface : BaseButtonUI, ISelectDataable
         return false;
     }
 
+    public bool DeleteData(int _iDataIdx)
+    {
+        if(m_listView.Count <= _iDataIdx || 0>m_listView.Count)
+            return false;
+
+        m_listView[_iDataIdx].refSlotView.Bind(null, _iDataIdx);
+        return true;
+    }
+
     public int FindDataIdx(SOData _SOData)
     {
         for (int i = 0; i < m_listView.Count; ++i)
         {
-            if (m_listView[i].refSlotView.SOFeat == _SOData)
+            SlotInfo refSlotInfo = m_listView[i];
+            if (refSlotInfo.eType == _SOData.DataType && refSlotInfo.iSubType == _SOData.SubDataType)
+                return i;
+        }
+        return -1;
+    }
+    
+    public Vector3 FindSlotPosition(eDataType _eDataType, int _iSubDataType)
+    {
+        for (int i = 0; i < m_listView.Count; ++i)
+        {
+            if (m_listView[i].eType == _eDataType && m_listView[i].iSubType == _iSubDataType)
+                return m_listView[i].refSlotView.transform.position;
+        }
+        return Vector3.zero;
+    }
+
+    public int FindDataIdx(eDataType _eDataType, int _iSubDataType)
+    {
+        for (int i = 0; i < m_listView.Count; ++i)
+        {
+            if (m_listView[i].eType == _eDataType && m_listView[i].iSubType == _iSubDataType)
                 return i;
         }
 
@@ -164,7 +212,7 @@ public class Interface : BaseButtonUI, ISelectDataable
         m_refTargetSlot = _pTargetSlot;
 
         //콜백함수
-        OnSelectEvt?.Invoke(_pTargetSlot.SOFeat);
+        OnSelectEvt?.Invoke(_pTargetSlot.SOData);
         OnSelectSlotView?.Invoke(_pTargetSlot);
     }
 
