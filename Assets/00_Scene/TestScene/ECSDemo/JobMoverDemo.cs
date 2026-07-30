@@ -55,7 +55,7 @@ public class JobMoverDemo : MonoBehaviour
         m_moveHandle.Complete();
     }
 
-    private void OnDestroy()
+    private void OnDestroy()    
     {
         if (m_transformArray.isCreated)
             m_transformArray.Dispose();

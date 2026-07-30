@@ -296,6 +296,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refHitEffectObj: {fileID: 0}
+  m_arrArriveActions: []
+  m_arrHitActions: []
+  UseBatchedMovement: 1
 --- !u!114 &3838914794046255209
 MonoBehaviour:
   m_ObjectHideFlags: 0

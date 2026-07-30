@@ -159,6 +159,7 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 2573818985882799060, guid: 4c68c24dc1ecdc94baea408c38aed288, type: 3}
   m_arrArriveActions: []
   m_arrHitActions: []
+  UseBatchedMovement: 0
 --- !u!54 &8544054938250855333
 Rigidbody:
   m_ObjectHideFlags: 0
