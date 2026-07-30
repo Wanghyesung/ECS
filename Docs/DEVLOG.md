@@ -1050,3 +1050,115 @@ private void Awake()
 - 기존 `Inventory.cs`/`PlayerInterface.cs`는 `ItemManager`로 대체되어 더 이상 필요 없지만, 파일 삭제는 에이전트가 임의로 하지 않고 사용자가 직접 진행하기로 함.
 - `SOItemData`에 수량 제한, 아이템 종류 세분화 등 추가 필드가 더 필요한지는 미정.
 
+---
+
+# 🚀 [Unity 우주 슈팅] 총알 이동 Job/Burst 하이브리드 전환 — MonoBehaviour 병목 제거와 그 한계
+
+- **날짜:** 2026-07-30
+- **관련 시스템:** Weapon/Bullet, Job System/Burst, Object Pool, Physics, Optimization
+
+## 1. 🚨 문제 상황
+
+- 프로파일러에서 `Bullet.FixedUpdate()`가 총알 수(300~1000개대)에 비례해 Main Thread를 잡아먹는 게 확인됨. 사양 좋은 개발 PC에선 안 느껴지지만, 실제 타겟 사양에서는 총알이 최대 5000발까지 늘어날 예정이라 60FPS를 못 지킴.
+- 원인은 총알 하나하나가 개별 `MonoBehaviour.FixedUpdate()` 콜백(+`PoolObject.Update()`)으로 움직이는 구조라, 오브젝트 수만큼 native↔managed 전환/가상함수 호출 같은 고정비가 반복되는 것.
+
+## 2. 💡 설계 논의 (대화로 좁혀나간 과정)
+
+**1) 진짜 Unity ECS(Entities) 완전 전환 vs Job+Burst 하이브리드**
+- 완전 ECS는 `com.unity.entities`/`com.unity.physics` 신규 패키지, 콜라이더 기반 히트 판정과 `SOBulletAction`/데미지 파이프라인 전면 재설계, 몬스터(GameObject 유지)와의 브리지까지 필요한 대규모 작업.
+- Job+Burst 하이브리드는 기존 `PoolObject`/`SOBulletAction`/`ITriggerable`/데미지 파이프라인을 그대로 두고 이동 계산만 뽑아내는 방식이라 리스크·작업량이 훨씬 작음 → 이번 범위는 하이브리드로 결정.
+- 결정 전에 `TestScene/ECSDemo/MonoMoverDemo.cs` vs `JobMoverDemo.cs`(같은 이동 로직을 MonoBehaviour vs Job으로 각각 구현한 큐브 데모)로 Job System의 원리(TransformAccessArray, JobHandle, Schedule/Complete, Burst 컴파일 타이밍)를 먼저 손으로 확인.
+
+**2) 원본 클래스를 직접 고칠 것인가, 별도 클래스로 분리할 것인가**
+- 1차 시도: `Bullet.cs`에 `UseBatchedMovement` 플래그를 추가해 직선 총알만 선택적으로 Job 이동을 타게 하는 방식으로 구현.
+- 사용자 피드백: 실제 파일(특히 원본 `Bullet`/`Missiles`/`GuidedBullet`)을 고치기 전엔 매번 명시적 허락이 필요하고, "코드부터 보자"가 곧 적용 승인은 아니라는 점을 짚음.
+- 최종 구조: 원본 `Bullet`/`GuidedBullet`/`Missiles`는 전부 원상복구하고, `JobBullet`/`JobGuidedBullet`/`JobMissile`을 `Bullet`을 상속하는 **별도 클래스**로 신설. 같은 프리팹을 복제해 컴포넌트만 바꿔 끼우면 두 방식을 프로파일러로 직접 비교할 수 있는 구조.
+
+**3) 반복적으로 실측하며 걷어낸 두 가지 회귀(regression)**
+- (a) 이중 이동 버그: `JobXXX` 클래스에서 빈 `FixedUpdate()` 오버라이드가 빠지면, 상속받은 원본 `Bullet.FixedUpdate()`(Rigidbody 이동)가 그대로 실행되어 Job 이동과 동시에 두 번 움직임 → 성능이 오히려 2배 나빠지고 총알이 오작동하며 동시 총알 수도 비정상적으로 불어남. 디버거로 `Bullet.FixedUpdate()`에 `JobMissiles (Clone)`가 걸리는 걸 직접 확인해 확정.
+- (b) GC Alloc: 발사/반납마다 `TransformAccessArray.Add`/`RemoveAtSwapBack`을 호출했더니 콜당 250B씩 GC Alloc 발생(`GarbageCollector.CollectIncremental` 3ms 스파이크로 확인). `TransformAccessArray`가 내부에 관리되는 북키핑 구조를 갖고 있어 Add/Remove마다 비용이 드는 게 원인.
+- (c) Physics.SyncColliderTransform 신규 비용: Job이 `TransformAccessArray`로 Transform을 직접 쓰면, 이건 PhysX 입장에서 "물리 엔진 몰래 이동"이라 다음 물리 스텝 전에 콜라이더 상태를 강제 동기화해야 함 — 원래 `Rigidbody.MovePosition()`(물리 엔진이 아는 이동)엔 없던 비용이 새로 생김.
+
+## 3. 🛠️ 반영된 핵심 코드 변경 사항
+
+### 🔹 등록 패턴 — 발사마다 Add/Remove 대신, 풀 생성 시 1회 등록 + 플래그 토글
+
+```csharp
+// JobBullet.cs
+protected override void Awake()
+{
+    base.Awake();
+    m_iJobIndex = BulletMoveManager.m_Instance.RegisterPermanent(this); // 총알 생애주기 중 딱 한 번
+}
+
+public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+{
+    base.SetAttack(_refAttackInfo, _refShotInfo);
+    BulletMoveManager.m_Instance.Activate(m_iJobIndex, transform.position, transform.forward, _refShotInfo.Speed); // 값만 갱신
+}
+
+protected override void OnDisable()
+{
+    base.OnDisable();
+    if (m_iJobIndex >= 0)
+        BulletMoveManager.m_Instance.Deactivate(m_iJobIndex); // 배열 구조는 안 건드림
+}
+```
+`ObjectPool`이 이미 총알을 미리 Instantiate해두는 구조라, 그 프리워밍 시점(`Awake`)에 한 번만 등록해두고 발사/반납은 `NativeList`의 값(Active 플래그, Speed 등)만 바꾸는 방식으로 GC Alloc을 제거.
+
+### 🔹 이동 적용 — Job은 계산만, 실제 적용은 Rigidbody API로
+
+```csharp
+// BulletMoveManager.cs — Job은 순수 NativeArray만 다룸 (Transform 직접 접근 없음)
+[BurstCompile]
+private struct StraightMoveJob : IJobParallelFor
+{
+    public NativeArray<float3> ArrPos;
+    [ReadOnly] public NativeArray<float3> ArrForward;
+    [ReadOnly] public NativeArray<float> ArrSpeed;
+    [ReadOnly] public NativeArray<bool> ArrActive;
+    public float FDeltaTime;
+
+    public void Execute(int index)
+    {
+        if (!ArrActive[index]) return;
+        ArrPos[index] += ArrForward[index] * ArrSpeed[index] * FDeltaTime;
+    }
+}
+
+// Complete() 이후 메인 스레드에서 실제 적용
+job.Schedule(iCount, 64).Complete();
+for (int i = 0; i < iCount; ++i)
+{
+    if (!m_listActive[i]) continue;
+    m_listOwnerAtIndex[i].ApplyMove(new Vector3(vPos.x, vPos.y, vPos.z)); // 내부에서 Rigidbody.MovePosition
+}
+```
+`TransformAccessArray` 기반(Job이 Transform 직접 쓰기) → 순수 `NativeArray` 기반(`IJobParallelFor`)으로 전환하고, 계산 결과만 메인 스레드에서 `Rigidbody.MovePosition`/`MoveRotation`으로 적용하도록 되돌려서 `Physics.SyncColliderTransform` 비용을 제거.
+
+### 🔹 JobMissile의 회전 보간 — 쿼터니언 없이 벡터 구면보간으로 재구현
+
+- 원본 `Missiles.cs`의 `Vector3.Slerp(forward, dir, t)`(시간/거리 기반 가속 회전)를 Burst 안에서 그대로 쓰기 위해, `UnityEngine.Quaternion.LookRotation`(Burst 안전성 불확실) 대신 각도·사인 기반의 벡터 슬러프 공식을 직접 구현. 최종 forward만 메인 스레드에서 `Quaternion.LookRotation`으로 변환해 `Rigidbody.MoveRotation`에 적용.
+
+### 🔹 신규 파일
+- `Assets/02_Player/Weapon/BulletMoveManager.cs`, `JobBullet.cs`
+- `Assets/02_Player/Weapon/GuidedMoveManager.cs`, `Assets/03_Monster/Bullet/JobGuidedBullet.cs`
+- `Assets/02_Player/Weapon/MissileMoveManager.cs`, `JobMissile.cs`
+
+## 4. 💡 인사이트 및 요약
+
+> 💡 **핵심 요약**
+>
+> 1. **Job/Burst 최적화는 "콜백 횟수"가 아니라 "콜백 1개당 비용"을 줄이는 것.** 빈 `FixedUpdate()` 오버라이드조차 Unity 메시지 디스패치 자체는 계속 발생하며, 상속 구조상 오버라이드를 아예 없애면(부모가 여전히 그 메시지를 정의하고 있으므로) 부모 구현이 그대로 실행돼버리는 함정이 있다.
+> 2. **이 최적화가 줄일 수 있는 상한은 "총알 이동 로직이 전체 프레임에서 차지하던 비중"뿐이다.** `Physics.Simulate`처럼 총알 이동 방식과 무관하게 발생하는 비용은 그대로 남아, 특정 항목(`Bullet.FixedUpdate()`)은 20배 가까이 줄어도 전체 프레임 개선폭은 그보다 훨씬 작게 느껴질 수 있다.
+> 3. **"물리 엔진이 아는 이동"(Rigidbody API)과 "물리 엔진 몰래 하는 이동"(Transform 직접 쓰기)은 다른 비용 구조를 갖는다.** 후자는 `Physics.SyncColliderTransform`이라는, 원래 없던 동기화 비용을 새로 유발한다 — Job/Burst로 총알을 옮길 때는 계산과 적용 경로를 분리해서, 적용은 기존 물리 API를 그대로 쓰는 게 안전하다.
+> 4. **`TransformAccessArray`/`NativeList`처럼 "구조가 자주 바뀌는" 컨테이너는 매 프레임/매 이벤트 Add·Remove하기보다, 총알처럼 이미 Object Pool로 개수가 고정된 대상이면 "한 번만 등록하고 활성 플래그로 토글"하는 패턴이 GC Alloc 관점에서 훨씬 안전하다.**
+> 5. **프로파일러 단일 프레임 스냅샷은 물리 캐치업(한 렌더 프레임에 물리 스텝이 여러 번 몰리는 현상) 때문에 인스턴스 수·시간이 실제보다 부풀려 보일 수 있다.** 여러 프레임에 걸친 평균을 보려면 타임라인에서 구간을 드래그 선택하거나, `Profile Analyzer` 패키지로 두 캡처(Mono vs Job)를 통계적으로 비교하는 게 정확하다.
+> 6. **원본 클래스(`Bullet`/`GuidedBullet`/`Missiles`)를 건드리지 않고 병렬 클래스(`JobXXX`)로 완전히 분리해두면, A/B 비교와 되돌리기가 훨씬 안전해진다.** 실제로 이번 세션에서 원본 클래스를 고쳤다가 되돌리는 과정을 두 번 거쳤는데, 병렬 클래스 구조였다면 그 왕복이 필요 없었을 것.
+
+## 5. 🧭 아직 남은 것
+
+- `Physics.SyncColliderTransform`을 걷어냈어도 `Physics.Simulate`(콜라이더 간 충돌 검사) 자체의 비용은 여전히 남아있음 — 더 줄이려면 총알의 물리 콜라이더/Rigidbody를 아예 떼고 명중 판정을 직접 구현해야 하는데, 이번 범위에는 포함하지 않음.
+- `JobBullet`/`JobGuidedBullet`/`JobMissile`을 실제 프리팹에 적용하고 `BulletMoveManager`/`GuidedMoveManager`/`MissileMoveManager`를 MainScene에도 배치하는 작업은 사용자가 진행 중 — 이번 세션에선 TestScene 기준으로만 검증됨.
+- `Profile Analyzer` 패키지로 Mono vs Job 버전의 여러 프레임 평균을 통계적으로 비교하는 작업은 아직 미착수.
+
