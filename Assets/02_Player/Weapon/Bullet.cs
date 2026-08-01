@@ -36,7 +36,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected tShotInfo m_tShotInfo;
 
     protected PoolObject m_refPoolObj;
-    protected ITriggerable m_refTriggerObject;
+    protected CircleCollider m_refCircleCollider;
 
     // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
@@ -58,13 +58,13 @@ public class Bullet : MonoBehaviour, IAttackObject
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
-        m_refTriggerObject = GetComponent<ITriggerable>();
+        m_refCircleCollider = GetComponent<CircleCollider>();
     }
 
     protected virtual void OnEnable()
     {
-        if(m_refTriggerObject != null)
-            m_refTriggerObject.OnHitTargetEnter += AttackMonster;
+        if(m_refCircleCollider != null)
+            m_refCircleCollider.OnHitTargetEnter += AttackMonster;
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush += RunArriveActions;
@@ -73,8 +73,8 @@ public class Bullet : MonoBehaviour, IAttackObject
     }
     protected virtual void OnDisable()
     {
-        if(m_refTriggerObject != null)
-            m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
+        if(m_refCircleCollider != null)
+            m_refCircleCollider.OnHitTargetEnter -= AttackMonster;
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush -= RunArriveActions;
@@ -123,17 +123,18 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_listWeaponHitActions = _listHitActions;
     }
 
-
-    protected virtual void FixedUpdate()
+   
+    // Rigidbody 없이 Transform을 직접 옮김 (CircleCollider가 PhysX에 안 의존하므로
+    // 트리거 판정용 Rigidbody가 더 이상 필요 없음). LateUpdate에서 도는 ColliderManager보다
+    // 항상 먼저 실행되니 이번 프레임 최신 위치로 판정됨
+    protected virtual void Update()
     {
-        Vector3 vNextPos = m_refRigidbody.position + transform.forward * m_tShotInfo.Speed * Time.fixedDeltaTime;
-        m_refRigidbody.MovePosition(vNextPos);
-
+        transform.position += transform.forward * m_tShotInfo.Speed * Time.deltaTime;
     }
 
-    protected virtual void AttackMonster(Collider other)
+    protected virtual void AttackMonster(CircleCollider _refOther)
     {
-        var iDamageable = other.GetComponent<IDamageable>();
+        var iDamageable = _refOther.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
             ++m_tShotInfo.HitCount;
@@ -163,7 +164,7 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_tShotInfo = _tShotInfo;
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
-        m_refTriggerObject.LayerMask = _refAttackInfo.HitLayers;
+        m_refCircleCollider.LayerMask = _refAttackInfo.HitLayers;
     }
 
 

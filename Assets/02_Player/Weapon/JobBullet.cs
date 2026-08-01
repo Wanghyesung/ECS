@@ -17,11 +17,6 @@ public class JobBullet : Bullet
         m_iJobIndex = BulletMoveManager.m_Instance.RegisterPermanent(this);
     }
 
-    protected override void FixedUpdate()
-    {
-        // 위치 계산/적용 전부 BulletMoveManager가 처리하므로 여기서는 아무것도 하지 않음
-    }
-
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         base.SetAttack(_refAttackInfo, _refShotInfo);

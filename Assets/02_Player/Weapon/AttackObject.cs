@@ -8,7 +8,7 @@ using UnityEngine;
  *///////////////////////////////////////////
 
 [RequireComponent(typeof(PoolObject))]
-[RequireComponent(typeof(ITriggerable))]
+[RequireComponent(typeof(CircleCollider))]
 
 public class AttackObject : MonoBehaviour, IAttackObject
 {
@@ -21,7 +21,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
     public AttackInfo AttackInfo => m_refAttackInfo;
 
     private PoolObject m_refPoolObj;
-    private ITriggerable m_refTriggerObject;
+    private CircleCollider m_refCircleCollider;
     private tShotInfo m_tShotInfo;
 
     // FeatureSO 등 외부에서 부여한 명중 시 능력치. Weapon.ApplyGrantedActions와 동일한 계약
@@ -30,23 +30,23 @@ public class AttackObject : MonoBehaviour, IAttackObject
     private void Awake()
     {
         m_refPoolObj = GetComponent<PoolObject>();
-        m_refTriggerObject = GetComponent<ITriggerable>();
+        m_refCircleCollider = GetComponent<CircleCollider>();
     }
 
     private void OnEnable()
     {
-        if (m_refTriggerObject != null)
-            m_refTriggerObject.OnHitTargetEnter += AttackMonster;
+        if (m_refCircleCollider != null)
+            m_refCircleCollider.OnHitTargetEnter += AttackMonster;
     }
 
     private void OnDisable()
     {
-        if (m_refTriggerObject != null)
-            m_refTriggerObject.OnHitTargetEnter -= AttackMonster;
+        if (m_refCircleCollider != null)
+            m_refCircleCollider.OnHitTargetEnter -= AttackMonster;
     }
-    private void AttackMonster(Collider other)
+    private void AttackMonster(CircleCollider _refOther)
     {
-        var iDamageable = other.GetComponent<IDamageable>();
+        var iDamageable = _refOther.GetComponent<IDamageable>();
         if (iDamageable != null)
         {
             ++m_tShotInfo.HitCount;
@@ -88,7 +88,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
     {
         m_refAttackInfo.Damage = _refAttackInfo.Damage; //SO로 추가 딜 가능
         m_refPoolObj.SetAliveTime(m_refAttackInfo.AliveTime);
-        m_refTriggerObject.LayerMask = m_refAttackInfo.HitLayers;
+        m_refCircleCollider.LayerMask = m_refAttackInfo.HitLayers;
 
         m_tShotInfo = _refShotInfo;
         m_tShotInfo.HitCount = 0;

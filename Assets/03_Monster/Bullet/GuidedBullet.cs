@@ -15,16 +15,15 @@ public class GuidedBullet : Bullet
         base.Awake();
     }
 
-    protected override void FixedUpdate()
+    protected override void Update()
     {
         if (m_tShotInfo.TargetTr != null)
         {
             Vector3 vDir = (m_tShotInfo.TargetTr.position - transform.position).normalized;
-            Quaternion qTargetRot = Quaternion.LookRotation(vDir);
-            m_refRigidbody.MoveRotation(qTargetRot);
+            transform.rotation = Quaternion.LookRotation(vDir);
         }
 
-        base.FixedUpdate();
+        base.Update();
     }
 
 
@@ -33,8 +32,8 @@ public class GuidedBullet : Bullet
         base.SetAttack(_refAttackInfo, _refShotInfo);
     }
 
-    protected override void AttackMonster(Collider other)
+    protected override void AttackMonster(CircleCollider _refOther)
     {
-        base.AttackMonster(other);
+        base.AttackMonster(_refOther);
     }
 }

@@ -17,11 +17,6 @@ public class JobGuidedBullet : Bullet
         m_iGuidedJobIndex = GuidedMoveManager.m_Instance.RegisterPermanent(this);
     }
 
-    protected override void FixedUpdate()
-    {
-        // 위치/회전 계산·적용 전부 GuidedMoveManager가 처리하므로 여기서는 아무것도 하지 않음
-    }
-
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         base.SetAttack(_refAttackInfo, _refShotInfo);
@@ -39,9 +34,9 @@ public class JobGuidedBullet : Bullet
             GuidedMoveManager.m_Instance.Deactivate(m_iGuidedJobIndex);
     }
 
-    protected override void AttackMonster(Collider other)
+    protected override void AttackMonster(CircleCollider _refOther)
     {
-        base.AttackMonster(other);
+        base.AttackMonster(_refOther);
     }
 
     // GuidedMoveManager가 Job 완료 후 호출. 원본 GuidedBullet과 동일하게 Rigidbody API로 적용

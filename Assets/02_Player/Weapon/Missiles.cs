@@ -19,16 +19,16 @@ public class Missiles : Bullet
         base.Awake();
     }
 
-    protected override void FixedUpdate()
+    protected override void Update()
     {
         UpdateDirMissile();
-        base.FixedUpdate();
+        base.Update();
     }
 
     private void UpdateDirMissile()
     {
-       
-        m_fElapsedTime += Time.fixedDeltaTime;
+
+        m_fElapsedTime += Time.deltaTime;
         Vector3 vTargetPos = Vector3.zero;
 
         if (m_bTraceTarget == true && m_tShotInfo.TargetTr != null)
@@ -40,7 +40,7 @@ public class Missiles : Bullet
         float fDist = vToTarget.magnitude;
 
         // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
-        float fMoveDist = m_tShotInfo.Speed * Time.fixedDeltaTime;
+        float fMoveDist = m_tShotInfo.Speed * Time.deltaTime;
         float fArriveDist = Mathf.Max(fMoveDist, m_refAttackInfo.ProximityRadius);
         if (fDist <= fArriveDist)
         {
@@ -57,18 +57,18 @@ public class Missiles : Bullet
         float fDistAccel = (m_fTargetLength / fDist) * fBaseSpeed * 0.5f;
         float fRotateSpeed = fBaseSpeed + fDistAccel;
 
-        float fStep = fRotateSpeed * Time.fixedDeltaTime;
+        float fStep = fRotateSpeed * Time.deltaTime;
         float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
 
         Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
-        m_refRigidbody.MoveRotation(Quaternion.LookRotation(vNewForward));
+        transform.rotation = Quaternion.LookRotation(vNewForward);
         m_tShotInfo.MoveDir = vNewForward;
     }
 
 
-    protected override void AttackMonster(Collider other)
+    protected override void AttackMonster(CircleCollider _refOther)
     {
-        base.AttackMonster(other);
+        base.AttackMonster(_refOther);
     }
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
