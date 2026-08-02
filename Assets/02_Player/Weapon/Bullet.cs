@@ -81,7 +81,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     }
 
     // 반납 시점(OnDisable)에 이동 Job을 비활성화
-    protected virtual void DeactivateMoveJob()
+    protected virtual void UnactivateMoveJob()
     {
         if (m_iMoveManagerIndex >= 0)
             BulletMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
@@ -105,7 +105,7 @@ public class Bullet : MonoBehaviour, IAttackObject
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush -= RunArriveActions;
 
-        DeactivateMoveJob();
+        UnactivateMoveJob();
     }
 
     private void RunArriveActions()

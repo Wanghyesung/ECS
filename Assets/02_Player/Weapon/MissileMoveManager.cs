@@ -60,6 +60,7 @@ public class MissileMoveManager : MonoBehaviour
 
     private JobHandle m_tHandle;
     private bool m_bScheduled = false;
+    private bool m_bDisposed = false;
 
     private void Awake()
     {
@@ -126,6 +127,9 @@ public class MissileMoveManager : MonoBehaviour
         float _fProximityRadius, float _fRotationSpeed, float _fMaxRotationSpeed, float _fRotateSpeedRate,
         bool _bTraceTarget, Transform _refTargetTr, Vector3 _vFixedTargetPos)
     {
+        if (m_bDisposed)
+            return;
+
         m_listSpeed[_iIndex] = _fSpeed;
         m_listElapsedTime[_iIndex] = 0f;
         m_listTargetLength[_iIndex] = _fTargetLength;
@@ -143,9 +147,13 @@ public class MissileMoveManager : MonoBehaviour
         m_listActive[_iIndex] = true;
     }
 
-    // Missiles.OnDisable()(풀 반납 시점)에서 호출
+    // Missiles.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른 오브젝트의
+    // OnDisable이 이 매니저의 OnDestroy(NativeList Dispose) 이후에 불릴 수 있어서 가드 필요
     public void Deactivate(int _iIndex)
     {
+        if (m_bDisposed)
+            return;
+
         m_listActive[_iIndex] = false;
         m_listTargetTr[_iIndex] = null;
     }
@@ -215,7 +223,7 @@ public class MissileMoveManager : MonoBehaviour
 
             if (m_listArrived[i])
             {
-                refOwner.MarkArrived();
+                refOwner.Arrived();
                 m_listActive[i] = false; // OnDisable이 실제로 뜨기 전까지 한두 스텝 남는 중복 처리를 막음
             }
         }
@@ -223,6 +231,8 @@ public class MissileMoveManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        m_bDisposed = true;
+
         if (m_bScheduled)
             m_tHandle.Complete();
 

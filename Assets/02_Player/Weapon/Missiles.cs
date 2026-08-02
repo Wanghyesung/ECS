@@ -40,7 +40,7 @@ public class Missiles : Bullet
             m_bTraceTarget, m_tShotInfo.TargetTr, m_tShotInfo.TargetPos);
     }
 
-    protected override void DeactivateMoveJob()
+    protected override void UnactivateMoveJob()
     {
         if (m_iMoveManagerIndex >= 0)
             MissileMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
@@ -54,7 +54,7 @@ public class Missiles : Bullet
 
     // MissileMoveManager가 도착 판정을 받으면 호출. AliveTime을 0으로 만들어
     // PoolObject.Update()가 다음 틱에 자연스럽게 풀로 반납하게 함
-    public void MarkArrived()
+    public void Arrived()
     {
         m_refPoolObj.SetAliveTime(0.0f);
     }

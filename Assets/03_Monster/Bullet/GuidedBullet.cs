@@ -27,7 +27,7 @@ public class GuidedBullet : Bullet
         GuidedMoveManager.m_Instance.Activate(m_iMoveManagerIndex, m_tShotInfo.Speed, m_tShotInfo.TargetTr);
     }
 
-    protected override void DeactivateMoveJob()
+    protected override void UnactivateMoveJob()
     {
         if (m_iMoveManagerIndex >= 0)
             GuidedMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);

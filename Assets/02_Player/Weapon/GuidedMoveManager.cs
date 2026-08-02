@@ -46,6 +46,7 @@ public class GuidedMoveManager : MonoBehaviour
 
     private JobHandle m_tHandle;
     private bool m_bScheduled = false;
+    private bool m_bDisposed = false;
 
     private void Awake()
     {
@@ -86,14 +87,21 @@ public class GuidedMoveManager : MonoBehaviour
     // GuidedBullet.SetAttack()(발사 시점)에서 호출
     public void Activate(int _iIndex, float _fSpeed, Transform _refTargetTr)
     {
+        if (m_bDisposed)
+            return;
+
         m_listSpeed[_iIndex] = _fSpeed;
         m_listTargetTr[_iIndex] = _refTargetTr;
         m_listActive[_iIndex] = true;
     }
 
-    // GuidedBullet.OnDisable()(풀 반납 시점)에서 호출
+    // GuidedBullet.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른
+    // 오브젝트의 OnDisable이 이 매니저의 OnDestroy(NativeList Dispose) 이후에 불릴 수 있어서 가드 필요
     public void Deactivate(int _iIndex)
     {
+        if (m_bDisposed)
+            return;
+
         m_listActive[_iIndex] = false;
         m_listTargetTr[_iIndex] = null;
     }
@@ -145,6 +153,8 @@ public class GuidedMoveManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        m_bDisposed = true;
+
         if (m_bScheduled)
             m_tHandle.Complete();
 

@@ -19,6 +19,32 @@ public class ObjectPool : MonoBehaviour
     private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new Dictionary<PoolObject, Queue<GameObject>>();
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
+    // PoolObject별 알아서 매 프레임 카운트다운하는 대신, "이 시각에 반납"만 예약해두고
+    // 이 매니저가 큐 맨 앞(가장 이른 만료 시각)만 확인하는 방식 (ObjectSpawner와 동일한 패턴)
+    private PriorityQueue<tTimeData> m_PQTimer;
+
+    private struct tTimeData
+    {
+        public float fPushTime;
+        public PoolObject refPoolObj;
+        public int iGeneration;
+
+        public tTimeData(float _fExpireTime, PoolObject _refPoolObj, int _iGeneration)
+        {
+            fPushTime = _fExpireTime;
+            refPoolObj = _refPoolObj;
+            iGeneration = _iGeneration;
+        }
+    }
+
+    private struct tExpireTimeComparer : IComparer<tTimeData>
+    {
+        public int Compare(tTimeData x, tTimeData y)
+        {
+            return x.fPushTime.CompareTo(y.fPushTime);
+        }
+    }
+
     private int m_iLoadCount = 0;
     private void Awake()
     {
@@ -27,6 +53,47 @@ public class ObjectPool : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(this);
+
+        m_PQTimer = new PriorityQueue<tTimeData>(new tExpireTimeComparer());
+    }
+
+    private void Start()
+    {
+        UpdateExpireQueue(this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private async UniTaskVoid UpdateExpireQueue(CancellationToken _tToken)
+    {
+        while (true)
+        {
+            if (m_PQTimer.Count <= 0)
+            {
+                await UniTask.Yield(_tToken);
+                continue;
+            }
+
+            // 가장 이른 만료 시각만 확인
+            var tTimeData = m_PQTimer.Peek();
+            if (tTimeData.fPushTime - Time.time > 0.0f)
+            {
+                await UniTask.Yield(_tToken);
+                continue;
+            }
+
+            m_PQTimer.Dequeue();
+
+            // 예약 이후 수동 Push -> 재사용(Pop)됐으면 Generation이 달라져 있음 - 낡은 예약이라 무시
+            if (tTimeData.refPoolObj.Generation == tTimeData.iGeneration)
+                PushObject(tTimeData.refPoolObj.gameObject);
+        }
+    }
+
+    // PoolObject.Pop()/SetAliveTime()에서 호출 - 지정한 시간 뒤 자동으로 풀에 반납되도록 예약.
+    // 0 이하를 넘기면 "즉시 반납"(다음 체크 때 바로 처리)으로 취급 - "자동 예약 안 함"이
+    // 필요한 경우(Pop()의 기본값 폴백)는 호출부에서 걸러줌
+    public void ScheduleTime(PoolObject _refPoolObj, float _fAliveTime)
+    {
+        m_PQTimer.Enqueue(new tTimeData(Time.time + _fAliveTime, _refPoolObj, _refPoolObj.Generation));
     }
 
     //_refProgress: 풀 프리팹 하나 완료될 때마다 (완료 개수 / 전체 개수)를 보고 (0~1). 로딩 화면 진행바용
