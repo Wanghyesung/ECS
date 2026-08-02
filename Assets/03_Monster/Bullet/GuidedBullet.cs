@@ -5,7 +5,9 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
               GuidedBullet
-기능 : 타겟을 향해가는 총알
+기능 : 타겟을 향해가는 총알.
+       위치/방향 계산과 Transform 적용까지 전부 GuidedMoveManager의 Job(TransformAccessArray)이
+       한다. 여기선 발사 시점에 필요한 정보(속도, 타겟)를 매니저에 넘기기만 하면 됨.
  *///////////////////////////////////////////
 
 public class GuidedBullet : Bullet
@@ -15,17 +17,21 @@ public class GuidedBullet : Bullet
         base.Awake();
     }
 
-    protected override void Update()
+    protected override int RegisterMoveJob()
     {
-        if (m_tShotInfo.TargetTr != null)
-        {
-            Vector3 vDir = (m_tShotInfo.TargetTr.position - transform.position).normalized;
-            transform.rotation = Quaternion.LookRotation(vDir);
-        }
-
-        base.Update();
+        return GuidedMoveManager.m_Instance.RegisterPermanent(this);
     }
 
+    protected override void ActivateMoveJob()
+    {
+        GuidedMoveManager.m_Instance.Activate(m_iMoveManagerIndex, m_tShotInfo.Speed, m_tShotInfo.TargetTr);
+    }
+
+    protected override void DeactivateMoveJob()
+    {
+        if (m_iMoveManagerIndex >= 0)
+            GuidedMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
+    }
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {

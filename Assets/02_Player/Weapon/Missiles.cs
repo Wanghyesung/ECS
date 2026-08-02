@@ -5,13 +5,14 @@ using UnityEngine.Events;
 
 /*///////////////////////////////////////////
                 Missiles
-기능 : 지정된 위치로 회전하면서 목적지로 이동 후 공격
+기능 : 지정된 위치로 회전하면서 목적지로 이동 후 공격.
+       위치/방향 계산과 Transform 적용까지 전부 MissileMoveManager의 Job(TransformAccessArray)이
+       한다. 여기선 발사 시점에 필요한 정보를 매니저에 넘기고, Job이 못 하는 매니지드 오브젝트
+       호출(넉백 방향 동기화/도착 시 풀 반납)만 콜백으로 받는다.
  *///////////////////////////////////////////
 
 public class Missiles : Bullet
 {
-    private float m_fElapsedTime;
-    private float m_fTargetLength;
     [SerializeField] private bool m_bTraceTarget = false;
 
     protected override void Awake()
@@ -19,52 +20,44 @@ public class Missiles : Bullet
         base.Awake();
     }
 
-    protected override void Update()
+    protected override int RegisterMoveJob()
     {
-        UpdateDirMissile();
-        base.Update();
+        return MissileMoveManager.m_Instance.RegisterPermanent(this);
     }
 
-    private void UpdateDirMissile()
+    protected override void ActivateMoveJob()
     {
-
-        m_fElapsedTime += Time.deltaTime;
-        Vector3 vTargetPos = Vector3.zero;
-
+        Vector3 vTargetPos = m_tShotInfo.TargetPos;
         if (m_bTraceTarget == true && m_tShotInfo.TargetTr != null)
             vTargetPos = m_tShotInfo.TargetTr.position;
-        else
-            vTargetPos = m_tShotInfo.TargetPos;
 
-        Vector3 vToTarget = vTargetPos - transform.position;
-        float fDist = vToTarget.magnitude;
+        float fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
 
-        // 이번 스텝에 실제로 이동할 거리보다 남은 거리가 짧으면 목표를 지나치기 전에 도착 처리
-        float fMoveDist = m_tShotInfo.Speed * Time.deltaTime;
-        float fArriveDist = Mathf.Max(fMoveDist, m_refAttackInfo.ProximityRadius);
-        if (fDist <= fArriveDist)
-        {
-            m_refPoolObj.SetAliveTime(0.0f);
-            return;
-        }
-        Vector3 vDir = vToTarget / fDist;
-        float fDot = Mathf.Clamp(Vector3.Dot(transform.forward, vDir), -1f, 1f);
-        float fAngle = Mathf.Acos(fDot) * Mathf.Rad2Deg;
-
-        // 시간 기반 가속 + 거리 기반 가속 합산, MaxRotationSpeed로 상한
-        float fTimeAccel = m_refAttackInfo.RotateSpeedRate * m_fElapsedTime;
-        float fBaseSpeed = Mathf.Min(m_refAttackInfo.RotationSpeed + fTimeAccel, m_refAttackInfo.MaxRotationSpeed);
-        float fDistAccel = (m_fTargetLength / fDist) * fBaseSpeed * 0.5f;
-        float fRotateSpeed = fBaseSpeed + fDistAccel;
-
-        float fStep = fRotateSpeed * Time.deltaTime;
-        float t = (fAngle > 0.001f) ? Mathf.Clamp01(fStep / fAngle) : 1f;
-
-        Vector3 vNewForward = Vector3.Slerp(transform.forward, vDir, t);
-        transform.rotation = Quaternion.LookRotation(vNewForward);
-        m_tShotInfo.MoveDir = vNewForward;
+        MissileMoveManager.m_Instance.Activate(
+            m_iMoveManagerIndex, m_tShotInfo.Speed, fTargetLength,
+            m_refAttackInfo.ProximityRadius, m_refAttackInfo.RotationSpeed,
+            m_refAttackInfo.MaxRotationSpeed, m_refAttackInfo.RotateSpeedRate,
+            m_bTraceTarget, m_tShotInfo.TargetTr, m_tShotInfo.TargetPos);
     }
 
+    protected override void DeactivateMoveJob()
+    {
+        if (m_iMoveManagerIndex >= 0)
+            MissileMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
+    }
+
+    // MissileMoveManager가 Job 완료 후 매 스텝 최신 진행방향을 되돌려줌 (피격 시 넉백 방향 계산용)
+    public void SyncMoveDir(Vector3 _vMoveDir)
+    {
+        m_tShotInfo.MoveDir = _vMoveDir;
+    }
+
+    // MissileMoveManager가 도착 판정을 받으면 호출. AliveTime을 0으로 만들어
+    // PoolObject.Update()가 다음 틱에 자연스럽게 풀로 반납하게 함
+    public void MarkArrived()
+    {
+        m_refPoolObj.SetAliveTime(0.0f);
+    }
 
     protected override void AttackMonster(CircleCollider _refOther)
     {
@@ -73,15 +66,6 @@ public class Missiles : Bullet
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-       base.SetAttack(_refAttackInfo, _refShotInfo);
-
-        m_fElapsedTime = 0f;
-
-        Vector3 vTargetPos = _refShotInfo.TargetPos;
-
-        if (m_bTraceTarget == true && _refShotInfo.TargetTr != null)
-            vTargetPos = _refShotInfo.TargetTr.position;
-
-        m_fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
+        base.SetAttack(_refAttackInfo, _refShotInfo);
     }
 }

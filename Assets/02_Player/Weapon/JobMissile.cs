@@ -16,7 +16,7 @@ public class JobMissile : Bullet
     protected override void Awake()
     {
         base.Awake();
-        m_iJobIndex = MissileMoveManager.m_Instance.RegisterPermanent(this);
+        //m_iJobIndex = MissileMoveManager.m_Instance.RegisterPermanent(this);
     }
 
 
@@ -31,8 +31,7 @@ public class JobMissile : Bullet
         float fTargetLength = Mathf.Max((vTargetPos - transform.position).magnitude, 0.01f);
 
         MissileMoveManager.m_Instance.Activate(
-            m_iJobIndex, transform.position, transform.forward,
-            _refShotInfo.Speed, fTargetLength,
+            m_iJobIndex,  _refShotInfo.Speed, fTargetLength,
             _refAttackInfo.ProximityRadius, _refAttackInfo.RotationSpeed,
             _refAttackInfo.MaxRotationSpeed, _refAttackInfo.RotateSpeedRate,
             m_bTraceTarget, _refShotInfo.TargetTr, _refShotInfo.TargetPos);

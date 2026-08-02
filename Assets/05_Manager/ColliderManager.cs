@@ -8,24 +8,22 @@ using UnityEngine;
        - 레이어 0~31 각각에 대응하는 List<CircleCollider>(그 레이어에 속한 활성 콜라이더)를
          Awake 시점에 전부 미리 만들어둔다. 레이어 종류는 32개로 고정돼 있으니 통째로 미리
          만들어도 비용이 전혀 없음.
-       - 이 리스트들은 매 프레임 다시 채우지 않는다. CircleCollider가 Activate/UnActivate될
-         때(=발사/반납 시점) 그 즉시 자기 레이어 리스트에 추가/제거된다. 제거는 "내가 그
-         리스트에서 몇 번째 자리인지"를 ID 기준으로 따로 기록해뒀다가 스왑백으로 O(1)에 처리
-         (선형 탐색/람다 캡처 없음 - GC Alloc 방지).
        - 어떤 레이어끼리 충돌할지는 개별 콜라이더가 아니라 이 매니저가 중앙에서 결정한다
          (Unity 프로젝트 세팅의 Physics 레이어 충돌 매트릭스와 동일한 개념).
        - 공간 그리드(셀 분할)는 쓰지 않는다. 총알처럼 개체 수가 많은 쪽과 몬스터처럼 개체 수가
          적은 쪽이 충돌하는 게임 특성상, 레이어 리스트끼리 전부 대조하는 게 그리드보다 더 빠름.
        - 쌍(A,B) 정보(m_hashPairInfo)는 "실제로 겹친 순간"에만 생성하고, 겹침이 끝나면
          (Exit) 바로 제거한다. 겹친 적 없는 쌍은 매 프레임 검사만 하고 아무 기록도 안 남긴다
-         - 그렇지 않으면 검사한 모든 쌍(총알 하나가 스쳐 지나간 몬스터 전부 포함)이 영원히
-         쌓이는 누수가 된다.
        - 콜라이더별로 "현재 관여 중인 쌍" ID 목록(m_listOther)을 별도로 들고 있다가,
          UnActivate 시 그 쌍 기록들을 즉시 정리한다(겹친 채로 반납되면 Exit도 쏴줌).
        - Bullet 등은 Update에서 Transform을 직접 이동하므로, 그게 전부 끝나 위치가 확정된
          뒤인 LateUpdate에서 판정한다.
  *///////////////////////////////////////////
 
+// BulletMoveManager/MissileMoveManager/GuidedMoveManager는 각자 LateUpdate에서 Job을
+// Complete()하고 결과를 Transform에 적용한다. 이 판정은 그 이후, 즉 이번 프레임 최신
+// 위치가 전부 반영된 뒤에 돌아야 하므로 기본 실행 순서보다 뒤로 고정해둔다
+[DefaultExecutionOrder(1000)]
 public class ColliderManager : MonoBehaviour
 {
     public static ColliderManager m_Instance = null;

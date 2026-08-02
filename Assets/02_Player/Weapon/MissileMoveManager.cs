@@ -3,31 +3,40 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Jobs;
 using System.Collections.Generic;
 
 /*///////////////////////////////////////////
               MissileMoveManager
-목적 : JobMissile(가속 회전으로 유도되다 목표 근처에서 도착 처리되는 총알) 전용 이동 매니저.
+목적 : Missiles(가속 회전으로 유도되다 목표 근처에서 도착 처리되는 총알) 전용 이동 매니저.
+       별도의 JobMissile 서브클래스 없이 Missiles가 직접 이 매니저에 등록됨.
 
-       Job은 위치/방향 계산만 NativeArray로 하고(Transform은 안 건드림), Complete() 이후
-       메인 스레드에서 Rigidbody.MoveRotation + MovePosition으로 적용한다.
-       (Job이 Transform을 직접 쓰면 Physics.SyncColliderTransform 동기화 비용이 새로
-       발생하는 걸 확인해서, Rigidbody 경로로 되돌린 버전)
+       TransformAccessArray를 써서 Job이 Transform(위치+회전)에 직접 쓴다. 프리팹에
+       Rigidbody/Collider가 이미 없어서 Physics.SyncColliderTransform 비용이 없으므로
+       안전하게 쓸 수 있음.
 
        원본의 Vector3.Slerp(forward, dir, t)는 쿼터니언이 아니라 두 단위벡터 사이의
        구면보간이라, Burst 안에서 벡터 슬러프 공식을 직접 계산한다(회전각 기반 사인 보간).
-       그래서 Job 안에서는 쿼터니언을 아예 안 쓰고, 최종 forward만 메인 스레드에서
-       Quaternion.LookRotation으로 변환해 적용한다.
+       최종 forward가 나오면 quaternion.LookRotationSafe로 회전을 만들어 바로 Transform에
+       쓴다 - Unity.Mathematics.quaternion은 Burst에서 쓰라고 만들어진 타입이라 안전함
+       (UnityEngine.Quaternion과는 암시적으로 상호 변환됨).
 
-       도착 판정/넉백 방향 동기화는 이전과 동일하게 Complete() 이후 메인 스레드에서 처리한다.
+       도착 판정(MarkArrived)/넉백 방향 동기화(SyncMoveDir)는 매니지드 오브젝트 호출이라
+       Job 안에서 못 하므로, Complete() 이후 메인 스레드에서 활성 슬롯만 순회하며 처리한다.
+       위치/회전은 이미 Job이 다 써놨으니 이 루프는 그 두 가지 부수효과만 처리하면 됨.
+
+       [DefaultExecutionOrder(500)]: Unity는 서로 다른 스크립트의 Update() 순서를 보장하지
+       않는다. 총알을 쏘는 Weapon 쪽 Update()가 이 매니저의 Update()보다 먼저 끝나야
+       Activate()가 "이미 Schedule되어 아직 Complete 안 된" NativeList를 건드리는 경합이
+       안 생긴다 - 그래서 기본 순서(0)보다 확실히 뒤로 미뤄둠 (ColliderManager의 1000보다는 앞)
  *///////////////////////////////////////////
 
+[DefaultExecutionOrder(500)]
 public class MissileMoveManager : MonoBehaviour
 {
     public static MissileMoveManager m_Instance = null;
 
-    private NativeList<float3> m_listPos;
-    private NativeList<float3> m_listForward;
+    private TransformAccessArray m_transformArray;
 
     private NativeList<float> m_listSpeed;
     private NativeList<float> m_listElapsedTime;
@@ -42,12 +51,15 @@ public class MissileMoveManager : MonoBehaviour
     private NativeList<float3> m_listMoveDirOut;
     private NativeList<bool> m_listActive;
 
-    private List<JobMissile> m_listOwnerAtIndex;
+    private List<Missiles> m_listOwnerAtIndex;
     private List<Transform> m_listTargetTr;
     private List<bool> m_listTraceTarget;
     private List<Vector3> m_listFixedTargetPos;
 
     [SerializeField] private int m_iInitialCapacity = 256;
+
+    private JobHandle m_tHandle;
+    private bool m_bScheduled = false;
 
     private void Awake()
     {
@@ -60,8 +72,7 @@ public class MissileMoveManager : MonoBehaviour
         m_Instance = this;
         DontDestroyOnLoad(this);
 
-        m_listPos = new NativeList<float3>(m_iInitialCapacity, Allocator.Persistent);
-        m_listForward = new NativeList<float3>(m_iInitialCapacity, Allocator.Persistent);
+        m_transformArray = new TransformAccessArray(m_iInitialCapacity);
 
         m_listSpeed = new NativeList<float>(m_iInitialCapacity, Allocator.Persistent);
         m_listElapsedTime = new NativeList<float>(m_iInitialCapacity, Allocator.Persistent);
@@ -76,19 +87,18 @@ public class MissileMoveManager : MonoBehaviour
         m_listMoveDirOut = new NativeList<float3>(m_iInitialCapacity, Allocator.Persistent);
         m_listActive = new NativeList<bool>(m_iInitialCapacity, Allocator.Persistent);
 
-        m_listOwnerAtIndex = new List<JobMissile>(m_iInitialCapacity);
+        m_listOwnerAtIndex = new List<Missiles>(m_iInitialCapacity);
         m_listTargetTr = new List<Transform>(m_iInitialCapacity);
         m_listTraceTarget = new List<bool>(m_iInitialCapacity);
         m_listFixedTargetPos = new List<Vector3>(m_iInitialCapacity);
     }
 
-    // JobMissile.Awake()에서 총알 생애주기 중 딱 한 번만 호출
-    public int RegisterPermanent(JobMissile _refOwner)
+    // Missiles.Awake()에서 총알 생애주기 중 딱 한 번만 호출
+    public int RegisterPermanent(Missiles _refOwner)
     {
         int iIndex = m_listSpeed.Length;
 
-        m_listPos.Add(float3.zero);
-        m_listForward.Add(new float3(0f, 0f, 1f));
+        m_transformArray.Add(_refOwner.transform);
 
         m_listSpeed.Add(0f);
         m_listElapsedTime.Add(0f);
@@ -111,14 +121,11 @@ public class MissileMoveManager : MonoBehaviour
         return iIndex;
     }
 
-    // JobMissile.SetAttack()(발사 시점)에서 호출
-    public void Activate(int _iIndex, Vector3 _vPos, Vector3 _vForward, float _fSpeed, float _fTargetLength,
+    // Missiles.SetAttack()(발사 시점)에서 호출
+    public void Activate(int _iIndex, float _fSpeed, float _fTargetLength,
         float _fProximityRadius, float _fRotationSpeed, float _fMaxRotationSpeed, float _fRotateSpeedRate,
         bool _bTraceTarget, Transform _refTargetTr, Vector3 _vFixedTargetPos)
     {
-        m_listPos[_iIndex] = new float3(_vPos.x, _vPos.y, _vPos.z);
-        m_listForward[_iIndex] = new float3(_vForward.x, _vForward.y, _vForward.z);
-
         m_listSpeed[_iIndex] = _fSpeed;
         m_listElapsedTime[_iIndex] = 0f;
         m_listTargetLength[_iIndex] = _fTargetLength;
@@ -136,14 +143,14 @@ public class MissileMoveManager : MonoBehaviour
         m_listActive[_iIndex] = true;
     }
 
-    // JobMissile.OnDisable()(풀 반납 시점)에서 호출
+    // Missiles.OnDisable()(풀 반납 시점)에서 호출
     public void Deactivate(int _iIndex)
     {
         m_listActive[_iIndex] = false;
         m_listTargetTr[_iIndex] = null;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         int iCount = m_listSpeed.Length;
         if (iCount == 0)
@@ -167,8 +174,6 @@ public class MissileMoveManager : MonoBehaviour
 
         var job = new MissileMoveJob
         {
-            ArrPos = m_listPos.AsArray(),
-            ArrForward = m_listForward.AsArray(),
             ArrSpeed = m_listSpeed.AsArray(),
             ArrElapsedTime = m_listElapsedTime.AsArray(),
             ArrTargetLength = m_listTargetLength.AsArray(),
@@ -180,18 +185,30 @@ public class MissileMoveManager : MonoBehaviour
             ArrArrived = m_listArrived.AsArray(),
             ArrMoveDirOut = m_listMoveDirOut.AsArray(),
             ArrActive = m_listActive.AsArray(),
-            FDeltaTime = Time.fixedDeltaTime
+            FDeltaTime = Time.deltaTime
         };
 
-        job.Schedule(iCount, 64).Complete();
+        m_tHandle = job.Schedule(m_transformArray);
+        m_bScheduled = true;
+    }
 
-        // 부수효과(넉백 방향 동기화, 도착 시 풀 반납, 실제 이동 적용)는 여기 메인 스레드에서 처리
+    private void LateUpdate()
+    {
+        if (!m_bScheduled)
+            return;
+
+        m_tHandle.Complete();
+        m_bScheduled = false;
+
+        // 위치/회전은 Job이 이미 다 써놨으니, 여기선 매니지드 오브젝트 호출이 필요한
+        // 부수효과(넉백 방향 동기화, 도착 시 풀 반납)만 처리
+        int iCount = m_listSpeed.Length;
         for (int i = 0; i < iCount; ++i)
         {
             if (!m_listActive[i])
                 continue;
 
-            JobMissile refOwner = m_listOwnerAtIndex[i];
+            Missiles refOwner = m_listOwnerAtIndex[i];
 
             float3 vDirOut = m_listMoveDirOut[i];
             refOwner.SyncMoveDir(new Vector3(vDirOut.x, vDirOut.y, vDirOut.z));
@@ -200,23 +217,16 @@ public class MissileMoveManager : MonoBehaviour
             {
                 refOwner.MarkArrived();
                 m_listActive[i] = false; // OnDisable이 실제로 뜨기 전까지 한두 스텝 남는 중복 처리를 막음
-                continue; // 도착한 스텝은 이동하지 않았으니 Apply 생략
             }
-
-            float3 vPos = m_listPos[i];
-            float3 vFwd = m_listForward[i];
-            Vector3 vPosUnity = new Vector3(vPos.x, vPos.y, vPos.z);
-            Vector3 vFwdUnity = new Vector3(vFwd.x, vFwd.y, vFwd.z);
-
-            // 여기는 메인 스레드라 Quaternion.LookRotation을 그대로 써도 안전함
-            refOwner.ApplyMove(vPosUnity, Quaternion.LookRotation(vFwdUnity));
         }
     }
 
     private void OnDestroy()
     {
-        if (m_listPos.IsCreated) m_listPos.Dispose();
-        if (m_listForward.IsCreated) m_listForward.Dispose();
+        if (m_bScheduled)
+            m_tHandle.Complete();
+
+        if (m_transformArray.isCreated) m_transformArray.Dispose();
 
         if (m_listSpeed.IsCreated) m_listSpeed.Dispose();
         if (m_listElapsedTime.IsCreated) m_listElapsedTime.Dispose();
@@ -233,11 +243,8 @@ public class MissileMoveManager : MonoBehaviour
     }
 
     [BurstCompile]
-    private struct MissileMoveJob : IJobParallelFor
+    private struct MissileMoveJob : IJobParallelForTransform
     {
-        public NativeArray<float3> ArrPos;
-        public NativeArray<float3> ArrForward;
-
         [ReadOnly] public NativeArray<float> ArrSpeed;
         public NativeArray<float> ArrElapsedTime;
         [ReadOnly] public NativeArray<float> ArrTargetLength;
@@ -253,7 +260,7 @@ public class MissileMoveManager : MonoBehaviour
 
         public float FDeltaTime;
 
-        public void Execute(int index)
+        public void Execute(int index, TransformAccess _transform)
         {
             if (!ArrActive[index])
                 return;
@@ -262,7 +269,7 @@ public class MissileMoveManager : MonoBehaviour
             float fElapsed = ArrElapsedTime[index] + FDeltaTime;
             ArrElapsedTime[index] = fElapsed;
 
-            float3 vPos = ArrPos[index];
+            float3 vPos = _transform.position;
             float3 vToTarget = ArrTargetPos[index] - vPos;
             float fDist = math.length(vToTarget);
 
@@ -278,7 +285,8 @@ public class MissileMoveManager : MonoBehaviour
             }
 
             float3 vDir = vToTarget / fDist;
-            float3 vCurForward = ArrForward[index];
+            quaternion qRot = _transform.rotation;
+            float3 vCurForward = math.mul(qRot, new float3(0f, 0f, 1f));
 
             float fDot = math.clamp(math.dot(vCurForward, vDir), -1f, 1f);
             float fAngleDeg = math.degrees(math.acos(fDot));
@@ -309,8 +317,8 @@ public class MissileMoveManager : MonoBehaviour
                 vNewForward = vDir;
             }
 
-            ArrForward[index] = vNewForward;
-            ArrPos[index] = vPos + vNewForward * fSpeed * FDeltaTime;
+            _transform.position = vPos + vNewForward * fSpeed * FDeltaTime;
+            _transform.rotation = quaternion.LookRotationSafe(vNewForward, math.up());
             ArrMoveDirOut[index] = vNewForward;
         }
     }

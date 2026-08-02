@@ -50,6 +50,7 @@ public class CircleCollider : MonoBehaviour
         Layer = gameObject.layer;
         ColliderManager.m_Instance.RegisterCollider(this);
     }
+    
 
     private void OnEnable()
     {

@@ -21,7 +21,7 @@ public class JobBullet : Bullet
     {
         base.SetAttack(_refAttackInfo, _refShotInfo);
 
-        BulletMoveManager.m_Instance.Activate(m_iJobIndex, transform.position, transform.forward, _refShotInfo.Speed);
+        //BulletMoveManager.m_Instance.Activate(m_iJobIndex, transform.position, transform.forward, _refShotInfo.Speed);
     }
 
     protected override void OnDisable()

@@ -14,7 +14,7 @@ public class JobGuidedBullet : Bullet
     protected override void Awake()
     {
         base.Awake();
-        m_iGuidedJobIndex = GuidedMoveManager.m_Instance.RegisterPermanent(this);
+        //m_iGuidedJobIndex = GuidedMoveManager.m_Instance.RegisterPermanent(this);
     }
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
@@ -22,8 +22,7 @@ public class JobGuidedBullet : Bullet
         base.SetAttack(_refAttackInfo, _refShotInfo);
 
         GuidedMoveManager.m_Instance.Activate(
-            m_iGuidedJobIndex, transform.position, transform.forward,
-            _refShotInfo.Speed, _refShotInfo.TargetTr);
+            m_iGuidedJobIndex, _refShotInfo.Speed, _refShotInfo.TargetTr);
     }
 
     protected override void OnDisable()

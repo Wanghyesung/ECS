@@ -1,33 +1,43 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.Jobs;
 
 /*///////////////////////////////////////////
               BulletMoveManager
-목적 : 직선으로만 움직이는 JobBullet의 이동을 한곳에 모아 Job(Burst)으로 일괄 계산한다.
+목적 : 직선으로만 움직이는 Bullet(플레인 총알)의 이동을 한곳에 모아 Job(Burst)으로
+       일괄 계산한다. 별도의 JobBullet 서브클래스 없이 Bullet이 직접 이 매니저에 등록됨.
 
-       이전엔 Job이 TransformAccessArray를 통해 Transform을 직접 썼는데, 이러면 Rigidbody API를
-       거치지 않은 "물리 엔진 몰래 이동"이 되어 매 스텝 Physics.SyncColliderTransform 동기화 비용이
-       새로 발생했다. 그래서 이번엔 Job은 순수 위치 계산만 NativeArray로 하고, 계산 결과를
-       Complete() 이후 메인 스레드에서 Rigidbody.MovePosition으로 적용한다(=예전 방식과 동일한
-       "물리 엔진이 아는 이동" 경로 유지, 계산만 병렬화).
+       TransformAccessArray를 써서 Job이 Transform에 직접 쓴다. 프리팹에 Rigidbody/Collider가
+       이미 없어서(PhysX 트리거를 CircleCollider로 대체) Physics.SyncColliderTransform 비용이
+       발생하지 않으므로, 메인 스레드에서 결과를 리스트 인덱싱+함수 호출로 다시 적용하는
+       과정(ApplyMove) 없이 Job이 끝나는 즉시(Complete) 위치가 이미 반영돼 있음.
+
+       Update()에서 Schedule만 하고, Complete는 LateUpdate에서 한다 - 그 사이(다른 모든
+       스크립트의 Update 구간)만큼 워커 스레드에서 실제로 겹쳐 돌 시간을 벌기 위함.
+       ColliderManager.LateUpdate()가 최신 위치로 판정해야 하므로, ColliderManager에는
+       [DefaultExecutionOrder]로 이 매니저보다 나중에 돌도록 순서를 고정해뒀다.
+
+       [DefaultExecutionOrder(500)]: Unity는 서로 다른 스크립트의 Update() 순서를 보장하지
+       않는다. 총알을 쏘는 Weapon 쪽 Update()가 이 매니저의 Update()보다 먼저 끝나야
+       Activate()가 "이미 Schedule되어 아직 Complete 안 된" NativeList를 건드리는 경합이
+       안 생긴다 - 그래서 기본 순서(0)보다 확실히 뒤로 미뤄둠 (ColliderManager의 1000보다는 앞)
  *///////////////////////////////////////////
 
+[DefaultExecutionOrder(500)]
 public class BulletMoveManager : MonoBehaviour
 {
     public static BulletMoveManager m_Instance = null;
 
-    private NativeList<float3> m_listPos;
-    private NativeList<float3> m_listForward;
+    private TransformAccessArray m_transformArray;
     private NativeList<float> m_listSpeed;
     private NativeList<bool> m_listActive;
 
-    private List<JobBullet> m_listOwnerAtIndex;
+    [SerializeField] private int m_iInitialCapacity = 5120;
 
-    [SerializeField] private int m_iInitialCapacity = 2048;
+    private JobHandle m_tHandle;
+    private bool m_bScheduled = false;
 
     private void Awake()
     {
@@ -40,95 +50,90 @@ public class BulletMoveManager : MonoBehaviour
         m_Instance = this;
         DontDestroyOnLoad(this);
 
-        m_listPos = new NativeList<float3>(m_iInitialCapacity, Allocator.Persistent);
-        m_listForward = new NativeList<float3>(m_iInitialCapacity, Allocator.Persistent);
+        m_transformArray = new TransformAccessArray(m_iInitialCapacity);
         m_listSpeed = new NativeList<float>(m_iInitialCapacity, Allocator.Persistent);
         m_listActive = new NativeList<bool>(m_iInitialCapacity, Allocator.Persistent);
-
-        m_listOwnerAtIndex = new List<JobBullet>(m_iInitialCapacity);
     }
 
-    // JobBullet.Awake()에서 총알 생애주기 중 딱 한 번만 호출
-    public int RegisterPermanent(JobBullet _refOwner)
+    // Bullet.Awake()에서 총알 생애주기 중 딱 한 번만 호출
+    public int RegisterPermanent(Bullet _refOwner)
     {
         int iIndex = m_listSpeed.Length;
 
-        m_listPos.Add(float3.zero);
-        m_listForward.Add(new float3(0f, 0f, 1f));
+        m_transformArray.Add(_refOwner.transform);
         m_listSpeed.Add(0f);
         m_listActive.Add(false);
-
-        m_listOwnerAtIndex.Add(_refOwner);
 
         return iIndex;
     }
 
-    // JobBullet.SetAttack()(발사 시점)에서 호출
-    public void Activate(int _iIndex, Vector3 _vPos, Vector3 _vForward, float _fSpeed)
+    // Bullet.SetAttack()(발사 시점)에서 호출
+    public void Activate(int _iIndex, float _fSpeed)
     {
-        m_listPos[_iIndex] = new float3(_vPos.x, _vPos.y, _vPos.z);
-        m_listForward[_iIndex] = new float3(_vForward.x, _vForward.y, _vForward.z);
         m_listSpeed[_iIndex] = _fSpeed;
         m_listActive[_iIndex] = true;
     }
 
-    // JobBullet.OnDisable()(풀 반납 시점)에서 호출
+    // Bullet.OnDisable()(풀 반납 시점)에서 호출
     public void Deactivate(int _iIndex)
     {
         m_listActive[_iIndex] = false;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        int iCount = m_listSpeed.Length;
-        if (iCount == 0)
+        if (m_listSpeed.Length == 0)
             return;
 
-        var job = new StraightMoveJob
+        var job = new MoveJob
         {
-            ArrPos = m_listPos.AsArray(),
-            ArrForward = m_listForward.AsArray(),
             ArrSpeed = m_listSpeed.AsArray(),
             ArrActive = m_listActive.AsArray(),
-            FDeltaTime = Time.fixedDeltaTime
+            FDeltaTime = Time.deltaTime
         };
 
-        job.Schedule(iCount, 64).Complete();
+        m_tHandle = job.Schedule(m_transformArray);
+        m_bScheduled = true;
+    }
 
-        // 계산된 위치를 Rigidbody.MovePosition으로 적용 (물리 엔진이 아는 이동 경로 유지)
-        for (int i = 0; i < iCount; ++i)
-        {
-            if (!m_listActive[i])
-                continue;
+    // Job이 TransformAccessArray로 Transform에 직접 썼으므로 Complete만 하면 끝
+    private void LateUpdate()
+    {
+        if (!m_bScheduled)
+            return;
 
-            float3 vPos = m_listPos[i];
-            m_listOwnerAtIndex[i].ApplyMove(new Vector3(vPos.x, vPos.y, vPos.z));
-        }
+        m_tHandle.Complete();
+        m_bScheduled = false;
     }
 
     private void OnDestroy()
     {
-        if (m_listPos.IsCreated) m_listPos.Dispose();
-        if (m_listForward.IsCreated) m_listForward.Dispose();
-        if (m_listSpeed.IsCreated) m_listSpeed.Dispose();
-        if (m_listActive.IsCreated) m_listActive.Dispose();
+        if (m_bScheduled)
+            m_tHandle.Complete();
+
+        if (m_transformArray.isCreated)
+            m_transformArray.Dispose();
+        if (m_listSpeed.IsCreated)
+            m_listSpeed.Dispose();
+        if (m_listActive.IsCreated)
+            m_listActive.Dispose();
     }
 
+    // NativeArray/TransformAccess만 참조하는 순수 struct - class/List 등 관리 객체는 여기 들어올 수 없음
     [BurstCompile]
-    private struct StraightMoveJob : IJobParallelFor
+    private struct MoveJob : IJobParallelForTransform
     {
-        public NativeArray<float3> ArrPos;
-        [ReadOnly] public NativeArray<float3> ArrForward;
         [ReadOnly] public NativeArray<float> ArrSpeed;
         [ReadOnly] public NativeArray<bool> ArrActive;
         public float FDeltaTime;
 
-        public void Execute(int index)
+        public void Execute(int index, TransformAccess _transform)
         {
             if (!ArrActive[index])
                 return;
 
-            ArrPos[index] += ArrForward[index] * ArrSpeed[index] * FDeltaTime;
+            Vector3 vForward = _transform.rotation * Vector3.forward;
+            _transform.position += vForward * ArrSpeed[index] * FDeltaTime;
         }
     }
 }

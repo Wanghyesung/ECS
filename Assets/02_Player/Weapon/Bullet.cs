@@ -53,12 +53,38 @@ public class Bullet : MonoBehaviour, IAttackObject
     private List<SOBulletAction> m_listWeaponArriveActions;
     private List<SOBulletAction> m_listWeaponHitActions;
 
+    // 이동 계산 매니저(BulletMoveManager 등) 안에서 이 총알이 몇 번째 슬롯인지
+    // (풀 생애주기 중 Awake에서 딱 한 번만 배정). 하위 클래스도 DeactivateMoveJob 등에서 써야 해서 protected
+    protected int m_iMoveManagerIndex = -1;
 
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
         m_refCircleCollider = GetComponent<CircleCollider>();
+
+        m_iMoveManagerIndex = RegisterMoveJob();
+    }
+
+    // 이동 Job 매니저에 슬롯을 배정받는다. Missiles/GuidedBullet은 각자 다른 매니저
+    // (MissileMoveManager/GuidedMoveManager)에 등록하도록 오버라이드함
+    protected virtual int RegisterMoveJob()
+    {
+        return BulletMoveManager.m_Instance.RegisterPermanent(this);
+    }
+
+    // 발사 시점(SetAttack)에 이동 Job을 활성화. Missiles/GuidedBullet은 타겟 등 추가 정보를
+    // 실어야 해서 오버라이드함
+    protected virtual void ActivateMoveJob()
+    {
+        BulletMoveManager.m_Instance.Activate(m_iMoveManagerIndex, m_tShotInfo.Speed);
+    }
+
+    // 반납 시점(OnDisable)에 이동 Job을 비활성화
+    protected virtual void DeactivateMoveJob()
+    {
+        if (m_iMoveManagerIndex >= 0)
+            BulletMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
     }
 
     protected virtual void OnEnable()
@@ -78,6 +104,8 @@ public class Bullet : MonoBehaviour, IAttackObject
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush -= RunArriveActions;
+
+        DeactivateMoveJob();
     }
 
     private void RunArriveActions()
@@ -123,14 +151,6 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_listWeaponHitActions = _listHitActions;
     }
 
-   
-    // Rigidbody 없이 Transform을 직접 옮김 (CircleCollider가 PhysX에 안 의존하므로
-    // 트리거 판정용 Rigidbody가 더 이상 필요 없음). LateUpdate에서 도는 ColliderManager보다
-    // 항상 먼저 실행되니 이번 프레임 최신 위치로 판정됨
-    protected virtual void Update()
-    {
-        transform.position += transform.forward * m_tShotInfo.Speed * Time.deltaTime;
-    }
 
     protected virtual void AttackMonster(CircleCollider _refOther)
     {
@@ -164,6 +184,8 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_tShotInfo = _tShotInfo;
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
+
+        ActivateMoveJob();
     }
 
 
