@@ -158,10 +158,8 @@ GameObject:
   - component: {fileID: 5154601718934095941}
   - component: {fileID: 7304655943035773325}
   - component: {fileID: 7100391378737244450}
-  - component: {fileID: 8714179848935399806}
-  - component: {fileID: 7640906341208612219}
-  - component: {fileID: 3580043219707684258}
   - component: {fileID: 7345396145052410490}
+  - component: {fileID: 1029126036613662927}
   m_Layer: 11
   m_Name: BossMissile
   m_TagString: Untagged
@@ -265,72 +263,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
---- !u!54 &8714179848935399806
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5482934032008921225}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!65 &7640906341208612219
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5482934032008921225}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.7, z: 2}
-  m_Center: {x: 0, y: 0, z: 2.92}
---- !u!114 &3580043219707684258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5482934032008921225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &7345396145052410490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -343,3 +275,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1029126036613662927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5482934032008921225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fRadius: 1.2
+  m_vOffset: {x: 0, y: 0, z: 3.13}
+  m_bShowDebugGizmo: 1
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}

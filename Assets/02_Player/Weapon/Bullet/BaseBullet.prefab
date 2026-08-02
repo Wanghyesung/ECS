@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fRadius: 0.57
-  m_tHitLayer:
+  m_tLayer:
     serializedVersion: 2
     m_Bits: 256
   m_vOffset: {x: 0, y: 0, z: 0.5}

@@ -88,7 +88,6 @@ public class AttackObject : MonoBehaviour, IAttackObject
     {
         m_refAttackInfo.Damage = _refAttackInfo.Damage; //SO로 추가 딜 가능
         m_refPoolObj.SetAliveTime(m_refAttackInfo.AliveTime);
-        m_refCircleCollider.LayerMask = m_refAttackInfo.HitLayers;
 
         m_tShotInfo = _refShotInfo;
         m_tShotInfo.HitCount = 0;

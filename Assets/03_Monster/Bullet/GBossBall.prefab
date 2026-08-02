@@ -9697,9 +9697,7 @@ GameObject:
   - component: {fileID: 6260129206335529814}
   - component: {fileID: 8464619574724396953}
   - component: {fileID: 856771050238163266}
-  - component: {fileID: 3167203205081735591}
-  - component: {fileID: 2747596931255988514}
-  - component: {fileID: 2250228202428190407}
+  - component: {fileID: 5402213506563401384}
   m_Layer: 11
   m_Name: GBossBall
   m_TagString: Untagged
@@ -14549,57 +14547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
---- !u!136 &3167203205081735591
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3270864465402891538}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 3.5
-  m_Height: 1.42
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &2747596931255988514
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3270864465402891538}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &2250228202428190407
+--- !u!114 &5402213506563401384
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14608,12 +14556,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3270864465402891538}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  m_fRadius: 25.8
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}

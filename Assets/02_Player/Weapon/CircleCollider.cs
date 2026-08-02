@@ -15,7 +15,6 @@ using UnityEngine;
 public class CircleCollider : MonoBehaviour
 {
     [SerializeField] private float m_fRadius = 0.5f;
-    [SerializeField] private LayerMask m_tHitLayer = ~0;
     // 모델 피벗이 실제 판정 중심과 다를 때(예: 몬스터 피벗이 발밑) 로컬 공간 기준으로 보정
     [SerializeField] private Vector3 m_vOffset = Vector3.zero;
 
@@ -27,35 +26,41 @@ public class CircleCollider : MonoBehaviour
     public event Action<CircleCollider> OnHitTargetStay;
     public event Action<CircleCollider> OnHitTargetExit;
 
-    public LayerMask LayerMask
-    {
-        get { return m_tHitLayer; }
-        set { m_tHitLayer = value; }
-    }
-
     public float Radius => m_fRadius;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
     public Vector3 Center => transform.position + transform.rotation * m_vOffset;
 
+    // 어떤 레이어끼리 충돌할지는 더 이상 개별 콜라이더가 안 들고, ColliderManager의
+    // 레이어 충돌 매트릭스가 중앙에서 결정함 (Unity Physics 설정과 동일한 개념).
+    // 여기서는 gameObject.layer를 캐싱만 해서 매 프레임 반복 조회를 피함
+    public int Layer { get; private set; }
+
     // 생애주기 동안 고정되는 자체 ID. ColliderManager가 쌍(pair) 키를 만들 때 이 ID를 사용
     private static int NEXT_ID = 0;
+
+    private bool m_bIsActive = false;
+    public bool IsActive => m_bIsActive;
+
     public int ID { get; private set; }
 
     private void Awake()
     {
         ID = NEXT_ID++;
-        ColliderManager.m_Instance.RegisterPermanent(this, ID);
+        Layer = gameObject.layer;
+        ColliderManager.m_Instance.RegisterCollider(this);
     }
 
     private void OnEnable()
     {
-        ColliderManager.m_Instance.Activate(ID);
+        m_bIsActive = true;
+        ColliderManager.m_Instance.Activate(this);
     }
 
     private void OnDisable()
     {
-        ColliderManager.m_Instance.UnActivate(ID);
+        m_bIsActive = false;
+        ColliderManager.m_Instance.UnActivate(this);
     }
 
     // ColliderManager가 쌍(pair) 상태를 판정한 뒤 Enter/Stay/Exit에 맞춰 호출

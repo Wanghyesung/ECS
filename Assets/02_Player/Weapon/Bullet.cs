@@ -164,7 +164,6 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_tShotInfo = _tShotInfo;
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
-        m_refCircleCollider.LayerMask = _refAttackInfo.HitLayers;
     }
 
 

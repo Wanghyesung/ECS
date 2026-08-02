@@ -9,11 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8988269331226630958}
-  - component: {fileID: 1103900961376843452}
-  - component: {fileID: 5712852358287351825}
   - component: {fileID: 3199988943176517146}
   - component: {fileID: 8831816598057634405}
-  - component: {fileID: 5075137921112169814}
+  - component: {fileID: 6450445366068033355}
   m_Layer: 11
   m_Name: MonBaseBullet_P
   m_TagString: Untagged
@@ -37,54 +35,6 @@ Transform:
   - {fileID: 6588349167904935172}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1103900961376843452
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686826197364226317}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!65 &5712852358287351825
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686826197364226317}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.5, z: 1.4}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3199988943176517146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,7 +63,7 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
   m_arrArriveActions: []
   m_arrHitActions: []
---- !u!114 &5075137921112169814
+--- !u!114 &6450445366068033355
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,15 +72,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1686826197364226317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  m_fRadius: 0.74
+  m_vOffset: {x: 0, y: 0, z: -1.34}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6541238411945328377
 GameObject:
   m_ObjectHideFlags: 0

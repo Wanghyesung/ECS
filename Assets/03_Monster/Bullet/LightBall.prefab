@@ -9588,10 +9588,8 @@ GameObject:
   - component: {fileID: 1258719409408052081}
   - component: {fileID: 608710404131405355}
   - component: {fileID: 2196477257383221072}
-  - component: {fileID: 537172212668676843}
   - component: {fileID: 4813924074177353454}
-  - component: {fileID: -817209721816472325}
-  - component: {fileID: 7575176214736215464}
+  - component: {fileID: 1683029815033602963}
   m_Layer: 11
   m_Name: LightBall
   m_TagString: Untagged
@@ -14429,33 +14427,6 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 1537050859280269764, guid: 7b3ad5ff946adff4ebaf658f0419778c, type: 3}
   m_arrArriveActions: []
   m_arrHitActions: []
---- !u!54 &537172212668676843
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8854180982353188001}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &4813924074177353454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14469,30 +14440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fAliveTime: 3
---- !u!136 &-817209721816472325
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8854180982353188001}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 7
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7575176214736215464
+--- !u!114 &1683029815033602963
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14501,15 +14449,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8854180982353188001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e63bba2d334de18498ef6bfdfbc1ad80, type: 3}
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  m_fRadius: 3.36
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 1
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &8862786846838705675
 GameObject:
   m_ObjectHideFlags: 0
