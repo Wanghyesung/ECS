@@ -47,6 +47,7 @@ public class ObjectInfo
 {
     public eEntityState State;
 
+    public long MaxHP;
     public long CurrentHP;
 
     public float Speed;
@@ -106,9 +107,12 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private void Start()
     {
         m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+        m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
+        PlayerPreLoadData.ApplyTo(this);
+
 
         m_refHPSliderImage.OnFillCompleted += Dead;
-        m_refHPSliderImage.SetRange(m_SOObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
+        m_refHPSliderImage.SetRange(m_refObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
 
         // EXP는 Player 소유가 아닌 BattleManager 소유 지표라 이벤트 구독으로만 UI 갱신
 
@@ -215,7 +219,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
         m_refObjectInfo.CurrentHP -= iFinalDamage;
-        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_SOObjectInfo.MaxHP);
+        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_refObjectInfo.MaxHP);
         m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
     }
 
@@ -400,6 +404,13 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.CurrentHP += _lValue;
         if (m_refObjectInfo.CurrentHP >= m_SOObjectInfo.MaxHP)
             m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+    }
+
+    public void AddMaxHP(long _lValue)
+    {
+        m_refObjectInfo.MaxHP += _lValue;
+        if (m_refObjectInfo.MaxHP >= m_SOObjectInfo.MaxHP)
+            m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
     }
 
     public void UpAttackRatio(float _fRatio)

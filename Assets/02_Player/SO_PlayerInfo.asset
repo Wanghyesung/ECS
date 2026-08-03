@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectName: Player
   Description: "\uAE30\uBCF8 \uD50C\uB808\uC774\uC5B4"
-  MaxHP: 100
+  MaxHP: 1000
   MaxSpeed: 3
+  MaxAtack: 1000
+  MaxDefense: 100
