@@ -129,7 +129,7 @@ public class Container : BaseButtonUI , ISelectDataable
     {
         m_vViewOriginPos = m_refContentView.anchoredPosition;
 
-        Build();
+        //Build();
     }
 
     public void Init()
@@ -148,6 +148,8 @@ public class Container : BaseButtonUI , ISelectDataable
 
             m_refFrameRectTrasnform = pFrameObejct?.GetComponent<RectTransform>();
         }
+
+        Build();
     }
 
     //FeatureManager.OnFeatureSelect(Action<SOFeature,int>) 시그니처에 맞춘 전용 래퍼
@@ -274,7 +276,8 @@ public class Container : BaseButtonUI , ISelectDataable
         //이미 보유 중인 기능인지(=레벨업) 확인
         int iIdx = pCategoryData.ListData.IndexOf(_SOData);
 
-        if (iIdx == -1)
+        //처음보는 데이터거나 중복이 허용될 경우
+        if (iIdx == -1 || pCategoryData.IsCanDuplication)
         {
             //처음 흭득 -> 남는 자리에 새로 추가
             if (pCategoryData.IsFull == true)
@@ -300,9 +303,9 @@ public class Container : BaseButtonUI , ISelectDataable
         OnAddEvt?.Invoke(_SOData);
         return true;
     }
-    
-   
-    
+        
+        
+        
     public SOData FindData(SOData _SOData)
     {
         CategoryData pCategoryData = GetCategoryData(_SOData.DataType);
