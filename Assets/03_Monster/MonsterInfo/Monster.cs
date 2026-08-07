@@ -95,13 +95,13 @@ public class Monster : MonoBehaviour, IDamageable
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
     }
-
+    
     private void OnEnable()
     {
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
-        m_refPoolObj.SetAliveTime(float.MaxValue);
+        
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush += ResetState;
@@ -128,6 +128,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        m_refPoolObj.SetAliveTime(float.MaxValue);
         // DeleteTem
         var player = FindObjectOfType<Player>();
         if (player == null) 

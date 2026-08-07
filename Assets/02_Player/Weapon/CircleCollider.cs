@@ -43,25 +43,45 @@ public class CircleCollider : MonoBehaviour
     public bool IsActive => m_bIsActive;
 
     public int ID { get; private set; }
+    private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
 
     private void Awake()
     {
         ID = NEXT_ID++;
         Layer = gameObject.layer;
-        ColliderManager.m_Instance.RegisterCollider(this);
     }
-    
+
+    private void Start()
+    {
+        ColliderManager.m_Instance.RegisterCollider(this);
+
+        // 씬에 미리 배치된 오브젝트는 OnEnable이 ColliderManager.Awake()보다 먼저 돌 수 있어
+        // Activate가 씹혔을 수 있음 - Start는 씬의 모든 Awake 이후 호출이 보장되므로 여기서 보정
+        if (m_bIsActive && m_bActivated == false)
+            Activate();
+    }
 
     private void OnEnable()
     {
         m_bIsActive = true;
+        if (ColliderManager.m_Instance != null)
+            Activate();
+    }
+
+    private void Activate()
+    {
         ColliderManager.m_Instance.Activate(this);
+        m_bActivated = true;
     }
 
     private void OnDisable()
     {
         m_bIsActive = false;
-        ColliderManager.m_Instance.UnActivate(this);
+        if (m_bActivated)
+        {
+            ColliderManager.m_Instance.UnActivate(this);
+            m_bActivated = false;
+        }
     }
 
     // ColliderManager가 쌍(pair) 상태를 판정한 뒤 Enter/Stay/Exit에 맞춰 호출
