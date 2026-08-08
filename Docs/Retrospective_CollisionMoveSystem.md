@@ -107,6 +107,37 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
   반납"을 요청하는데, 최초 구현은 `<= 0`이면 예약 자체를 무시해서 도착한 미사일이 영영 안
   돌아가는 문제가 될 뻔했음 — 구현을 마무리하며 다시 살펴보다 발견해서 실제로 겪기 전에 수정.
 
+### 2-11. ColliderManager 재측정 — 진짜 병목은 그리드가 아니라 Center 재계산이었다
+총알 이동을 Job으로 전환한 뒤 몬스터를 실제로 두고 다시 재보니, 몬스터 25마리인데
+`ColliderManager`만 14ms가 나옴(몬스터 30마리 기준이었던 이전 1.88ms보다 오히려 훨씬 큼).
+원인을 좁히는 과정:
+
+1. **같은 레이어끼리(총알-총알) 충돌 체크가 켜져 있는지 의심** → 확인 결과 레이어 매트릭스는
+   몬스터-총알만 체크하도록 설정돼 있었음. 배제.
+2. **`CheckPair`가 안 겹치는 쌍도 매번 `Dictionary.TryGetValue`를 호출하고 있던 것을 발견** →
+   거리 비교에서 안 겹치면 Dictionary를 아예 안 건드리고 바로 return하도록 수정. 실제로
+   겹친 쌍만 `m_hashPairInfo`에 남기고, 프레임 끝에 그 쌍들만(작은 집합) 순회해서 Exit
+   판정하는 `ExitStalePairs()`로 분리(최초 커밋의 그리드 버전이 쓰던 `ExitPair()` 패턴과
+   사실상 동일한 구조 — 지난 재작성 때 하나로 합치며 이 최적화가 같이 빠졌던 것으로 보임).
+3. 이 수정 이후 재측정했더니 **20ms로 오히려 더 나빠짐** — 수정이 잘못됐거나, 단순히 더
+   무거운 실전 조건(총알 수 증가 등)에서 잰 것인지 구분이 안 되는 상황이었음. Unity
+   에디터의 프로파일러를 직접 볼 방법이 없어서, `CheckSameLayer`/`CheckCrossLayer`/
+   `ExitStalePairs`에 각각 `ProfilerMarker`를 심어 Deep Profile 없이도 구간별 비용을
+   정확히 볼 수 있게 함.
+4. 마커 결과: `CheckCrossLayer`가 13.55ms로 `LateUpdate` 전체(13.57ms)의 사실상 전부.
+   `ExitStalePairs`는 화면에 안 잡힐 정도로 작아서, 2번 수정은 문제가 아니었고(오히려 잘
+   작동 중) 순수 후보 쌍을 도는 `CheckCrossLayer` 자체가 병목이라는 게 확정됨.
+5. **진짜 원인 발견**: `CircleCollider.Center`(`transform.position + transform.rotation *
+   m_vOffset`, 쿼터니언 곱셈 포함)가 `CheckPair`에서 쌍마다 매번 다시 계산되고 있었음 —
+   총알 하나가 몬스터 수만큼, 몬스터 하나가 총알 수만큼 반복 계산되는 구조라 총알×몬스터
+   조합 수만큼(수만~수십만 회) 쿼터니언 곱셈이 낭비되고 있었음.
+6. **수정**: `CircleCollider`에 프레임당 한 번만 계산해서 캐시하는 값(`CenterPos()`로
+   갱신, `CachedCenter`로 조회)을 추가하고, `ColliderManager`가 판정 루프 돌기 전에
+   `RefreshAllCenters()`로 활성 콜라이더마다 딱 한 번씩 갱신 → `CheckPair`는 캐시값만 읽음.
+7. **결과**: `RefreshAllCenters`(정상적으로 필요한 O(총알+몬스터) 비용) = 1.58ms,
+   `CheckCrossLayer`는 타임라인에서 옆 항목과 겹쳐 보일 정도로 작아짐. 그리드나 Burst
+   전환 같은 큰 구조 변경 없이, 캐싱 하나로 해결됨.
+
 ---
 
 ## 3. 잘 됐던 접근
@@ -119,6 +150,10 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
 - **작업 전 명시적 확인 절차**: "체크해달라"와 "고쳐달라"를 구분해서 요청 → 리뷰만 하고 코드는
   안 건드리다가, 명시적으로 수정 요청이 있을 때만 실제 수정. 세션 중반 이후로는 이 경계가
   잘 지켜짐.
+- **불확실할 땐 추측 대신 계측**: 수정 후 오히려 20ms로 나빠졌을 때, "내 수정이 잘못됐다"고
+  바로 결론 내리지 않고 `ProfilerMarker`로 구간을 쪼개서 확인부터 함 — 결과적으로 그 수정은
+  문제가 아니었고, 훨씬 작은 원인(Center 재계산)이 진짜 병목이었다는 걸 정확히 찾아냄. 그리드나
+  Burst 같은 큰 구조 변경으로 바로 안 가고, 캐싱 하나로 끝난 사례.
 
 ---
 
@@ -174,10 +209,12 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
 | 총알 이동 Job(TransformAccessArray) 전환 후 | 정성적으로 체감 개선 확인, 정확한 ms 재측정은 아직 안 함 |
 | 풀 만료 PriorityQueue 전환 | 매 프레임 전체 풀 오브젝트 순회(O(N))를 만료 이벤트당 O(log n)으로 대체 — 아직 프로파일러로 재확인 전 |
 | **전체 종합 (Job/Burst + 풀 만료 전환 이후)** | **`PlayerLoop`(`BehaviourUpdate` 포함) 기준 최초 Mono 방식 7~8ms → 2~3ms로 약 2배 감소** — 프로파일러로 직접 확인 |
+| 몬스터 실제 배치 후 재측정, 몬스터 25마리 | `ColliderManager` 단독 14ms → Dictionary 접근 최소화 수정 후 20ms(다른 조건에서 측정된 것으로 추정, 회귀 아님) — `ProfilerMarker`로 확인한 결과 `CheckCrossLayer`가 13.55ms로 거의 전부 |
+| `Center` 캐싱 적용 후 | `RefreshAllCenters`(정상 비용) = 1.58ms, `CheckCrossLayer`는 타임라인에서 거의 안 보일 만큼 감소 — 그리드/Burst 없이 캐싱만으로 해결 |
 
 **아직 실측으로 재확인 안 된 것**:
 - Job(TransformAccessArray) 전환 후 `BehaviourUpdate`/`PoolUpdate` 각각의 개별 ms 기여도
-- `CheckPair`의 `Center` 캐싱 최적화(논의만 하고 미적용) 적용 시 실제 이득
+- `Center` 캐싱 적용 후 전체 프레임(`PlayerLoop`) 기준 최종 ms (`ColliderManager` 자체는 확인됨)
 - 이번 측정은 에디터 Play Mode 프로파일러 기준(`EditorLoop` 오버헤드 포함)이라, 실제 빌드
   기준 수치는 별도로 확인 필요
 
@@ -311,10 +348,10 @@ SoA(자료구조) → Burst(그 자료구조를 도는 루프를 네이티브+SI
 
 ## 8. 다음에 확인/검토할 것
 
-- [ ] Job 전환 + 풀 만료 전환 이후 프로파일러로 `BehaviourUpdate`/`PoolUpdate`/
-      `ColliderManager.LateUpdate` 재측정
-- [ ] `ColliderManager.CheckPair`의 `Center` 프로퍼티(쿼터니언 곱셈) 캐싱 적용 여부 결정
-      (섹션 2-6에서 논의만 하고 보류)
+- [x] `ColliderManager.CheckPair`의 `Center` 프로퍼티(쿼터니언 곱셈) 캐싱 적용 —
+      섹션 2-11에서 적용 완료, `CheckCrossLayer` 13.55ms → 거의 0 수준으로 감소 확인
+- [ ] Job 전환 + 풀 만료 전환 + Center 캐싱 전환 이후 프로파일러로 `BehaviourUpdate`/
+      `PoolUpdate`/`PlayerLoop` 전체 기준 최종 ms 재측정
 - [ ] 몬스터 수가 더 늘어나는 시나리오(50~100마리)에서 레이어 매트릭스 순수 리스트 방식이
       여전히 그리드보다 나은지 재검증
 - [ ] `JobBullet`/`JobMissile`/`JobGuidedBullet`, `MissileMoveManager`/`GuidedMoveManager`의
