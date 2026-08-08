@@ -31,6 +31,18 @@ public class CircleCollider : MonoBehaviour
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
     public Vector3 Center => transform.position + transform.rotation * m_vOffset;
 
+    private Vector3 m_vCachedCenter;
+
+    // Center는 쿼터니언 곱셈이 들어있어 쌍마다 반복 조회하면 낭비가 크다(총알 하나가 몬스터
+    // 수만큼, 몬스터 하나가 총알 수만큼 매번 다시 계산됨). ColliderManager가 판정 루프 돌기
+    // 전에 활성 콜라이더마다 딱 한 번씩 RefreshCenter를 불러 캐시해두고, CheckPair는 이 값만 읽음
+    public Vector3 CachedCenter => m_vCachedCenter;
+
+    public void CenterPos()
+    {
+        m_vCachedCenter = transform.position + transform.rotation * m_vOffset;
+    }
+
     // 어떤 레이어끼리 충돌할지는 더 이상 개별 콜라이더가 안 들고, ColliderManager의
     // 레이어 충돌 매트릭스가 중앙에서 결정함 (Unity Physics 설정과 동일한 개념).
     // 여기서는 gameObject.layer를 캐싱만 해서 매 프레임 반복 조회를 피함

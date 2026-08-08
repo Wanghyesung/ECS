@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -12,10 +13,19 @@ using UnityEngine;
          (Unity 프로젝트 세팅의 Physics 레이어 충돌 매트릭스와 동일한 개념).
        - 공간 그리드(셀 분할)는 쓰지 않는다. 총알처럼 개체 수가 많은 쪽과 몬스터처럼 개체 수가
          적은 쪽이 충돌하는 게임 특성상, 레이어 리스트끼리 전부 대조하는 게 그리드보다 더 빠름.
-       - 쌍(A,B) 정보(m_hashPairInfo)는 "실제로 겹친 순간"에만 생성하고, 겹침이 끝나면
-         (Exit) 바로 제거한다. 겹친 적 없는 쌍은 매 프레임 검사만 하고 아무 기록도 안 남긴다
+       - m_hashPairInfo에 "쌍(A,B) 항목이 존재한다" = "지금 겹치고 있다"는 뜻으로 통일했다.
+         CheckPair는 거리 비교로 안 겹치는 게 확인되면 Dictionary를 아예 안 건드리고 바로
+         return한다 - 대부분의 검사(총알-몬스터 후보 쌍 대부분은 안 겹침)가 해싱/버킷 탐색
+         없이 순수 산술 비교만으로 끝난다는 뜻. 실제로 겹친 쌍만 m_hashConfirmedPair에
+         표시해두고, 매 프레임 끝에 m_hashPairInfo(항상 "지금 겹치는 쌍"만 들어있어 작음)를
+         순회하며 이번 프레임에 재확인 안 된 것만 Exit 처리한다(ExitStalePairs) -
+         "쌍 전체 후보"가 아니라 "실제로 겹치는 쌍"에서만 Dictionary 비용이 발생함.
        - 콜라이더별로 "현재 관여 중인 쌍" ID 목록(m_listOther)을 별도로 들고 있다가,
          UnActivate 시 그 쌍 기록들을 즉시 정리한다(겹친 채로 반납되면 Exit도 쏴줌).
+       - CircleCollider.Center는 쿼터니언 곱셈이 들어있어 쌍마다 반복 조회하면 낭비가 크다
+         (총알 하나가 몬스터 수만큼, 몬스터 하나가 총알 수만큼 매번 다시 계산됨). 판정 루프
+         돌기 전에 RefreshAllCenters로 활성 콜라이더마다 프레임당 딱 한 번만 계산해서
+         캐시해두고, CheckPair는 CachedCenter만 읽는다.
        - Bullet 등은 Update에서 Transform을 직접 이동하므로, 그게 전부 끝나 위치가 확정된
          뒤인 LateUpdate에서 판정한다.
  *///////////////////////////////////////////
@@ -41,14 +51,29 @@ public class ColliderManager : MonoBehaviour
     // ID -> 지금 이 ID와 실제로 겹쳐있다고 기록된 상대 ID들. UnActivate 시 관련 쌍 정리용
     private List<HashSet<int>> m_listOther;
 
-    // 쌍(A,B) -> 실제로 겹친 순간에만 생성되는 정보. struct라 Dictionary에 다시 써줘야 갱신됨
+    // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거)
     private Dictionary<long, tColliderPair> m_hashPairInfo;
+
+    // 이번 프레임에 실제로 겹친 것으로 재확인된 쌍 키. ExitStalePairs에서 "재확인 안 된 것"
+    // 판별용으로만 쓰고 매 프레임 끝에 비움 (실제로 겹치는 쌍 수만큼만 존재 - 작은 집합)
+    private HashSet<long> m_hashConfirmedPair;
+
+    // ExitStalePairs가 m_hashPairInfo를 순회하며 지울 키를 모아두는 재사용 버퍼
+    // (Dictionary를 순회하며 바로 Remove할 수 없어서 필요. 매 프레임 새로 할당 안 함)
+    private List<long> m_listExitBuffer;
+
+    // 프로파일러 Hierarchy 뷰에서 Deep Profile 없이도 구간별 비용을 이름 붙여서 볼 수 있게
+    // 하는 마커. CheckPair는 프레임당 수만 번 불리므로 마커 자체의 오버헤드가 측정을
+    // 왜곡할 수 있어 넣지 않음(CheckSameLayer/CheckCrossLayer 상위 레벨에서만 구분)
+    //private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
+    //private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
+    //private static readonly ProfilerMarker s_tMarkerExitStale = new ProfilerMarker("ColliderManager.ExitStalePairs");
+    //private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.RefreshAllCenters");
 
     private struct tColliderPair
     {
         public CircleCollider ColliderA;
         public CircleCollider ColliderB;
-        public bool OnCollision;
     }
 
     private void Awake()
@@ -70,6 +95,8 @@ public class ColliderManager : MonoBehaviour
         m_listOther = new List<HashSet<int>>();
 
         m_hashPairInfo = new Dictionary<long, tColliderPair>();
+        m_hashConfirmedPair = new HashSet<long>();
+        m_listExitBuffer = new List<long>();
     }
 
     private static long MakePairKey(int _iA, int _iB)
@@ -88,7 +115,7 @@ public class ColliderManager : MonoBehaviour
     }
 
     // ID 기준 보조 리스트 크기를 맞춰줌 (등록 순서 = ID 순서라 사실상 Add와 동일하게 채워짐)
-    private void EnsureCapacity(int _iID)
+    private void ResizeCapacity(int _iID)
     {
         while (m_listIndexInLayerList.Count <= _iID)
         {
@@ -100,13 +127,13 @@ public class ColliderManager : MonoBehaviour
     // CircleCollider.Awake()에서 생애주기 중 딱 한 번만 호출. 레이어 리스트엔 아직 안 들어감(Activate가 담당)
     public void RegisterCollider(CircleCollider _refCollider)
     {
-        EnsureCapacity(_refCollider.ID);
+        ResizeCapacity(_refCollider.ID);
     }
 
     // CircleCollider.OnEnable()에서 호출 - 그 즉시 자기 레이어 리스트에 편입
     public void Activate(CircleCollider _refCollider)
     {
-        EnsureCapacity(_refCollider.ID);
+        ResizeCapacity(_refCollider.ID);
 
         List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
         m_listIndexInLayerList[_refCollider.ID] = listLayer.Count;
@@ -128,18 +155,16 @@ public class ColliderManager : MonoBehaviour
         m_listIndexInLayerList[refMoved.ID] = iMyIndex;
         m_listIndexInLayerList[iID] = -1;
 
-        // 이 콜라이더가 관여하던 쌍 기록을 전부 정리 (겹친 채로 반납되면 Exit도 쏴줌)
+        // 이 콜라이더가 관여하던 쌍 기록을 전부 정리 (겹친 채로 반납되면 Exit도 쏴줌).
+        // m_hashPairInfo에 항목이 있다는 것 자체가 "지금 겹치는 중"이라는 뜻이라 별도 플래그 확인 불필요
         HashSet<int> hashOther = m_listOther[iID];
         foreach (int iOtherID in hashOther)
         {
             long lKey = MakePairKey(iID, iOtherID);
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
             {
-                if (tPair.OnCollision)
-                {
-                    tPair.ColliderA.OnExitCollider(tPair.ColliderB);
-                    tPair.ColliderB.OnExitCollider(tPair.ColliderA);
-                }
+                tPair.ColliderA.OnExitCollider(tPair.ColliderB);
+                tPair.ColliderB.OnExitCollider(tPair.ColliderA);
                 m_hashPairInfo.Remove(lKey);
             }
             m_listOther[iOtherID].Remove(iID);
@@ -150,10 +175,13 @@ public class ColliderManager : MonoBehaviour
     private void LateUpdate()
     {
         CheckOverlaps();
+        ExitStalePairs();
     }
 
     private void CheckOverlaps()
     {
+        PreLoadCenter();
+
         // 레이어 0~31을 이중 순회(A<=B), 매트릭스에서 충돌하는 조합만 실제로 대조
         for (int iLayerA = 0; iLayerA < 32; ++iLayerA)
         {
@@ -178,8 +206,25 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
+    // Center(쿼터니언 곱셈 포함)를 쌍마다 다시 계산하지 않도록, 활성 콜라이더마다 프레임당
+    // 딱 한 번만 미리 계산해서 캐시해둔다 (총알 하나가 몬스터 수만큼 반복 계산되던 것을 방지)
+    private void PreLoadCenter()
+    {
+        //using (s_tMarkerRefreshCenter.Auto())
+        //{
+        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        {
+            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+                listLayer[i].CenterPos();
+        }
+        //}
+    }
+
     private void CheckSameLayer(List<CircleCollider> _listCollider)
     {
+        //using (s_tMarkerSameLayer.Auto())
+        //{
         for (int a = 0; a < _listCollider.Count; ++a)
         {
             CircleCollider refI = _listCollider[a];
@@ -187,10 +232,13 @@ public class ColliderManager : MonoBehaviour
             for (int b = a + 1; b < _listCollider.Count; ++b)
                 CheckPair(refI, _listCollider[b]);
         }
+        //}
     }
 
     private void CheckCrossLayer(List<CircleCollider> _listA, List<CircleCollider> _listB)
     {
+        //using (s_tMarkerCrossLayer.Auto())
+        //{
         for (int a = 0; a < _listA.Count; ++a)
         {
             CircleCollider refA = _listA[a];
@@ -198,54 +246,65 @@ public class ColliderManager : MonoBehaviour
             for (int b = 0; b < _listB.Count; ++b)
                 CheckPair(refA, _listB[b]);
         }
+        //}
     }
 
     private void CheckPair(CircleCollider _refA, CircleCollider _refB)
     {
-        float fDistSq = (_refB.Center - _refA.Center).sqrMagnitude;
+        float fDistSq = (_refB.CachedCenter - _refA.CachedCenter).sqrMagnitude;
         float fRadiusSum = _refA.Radius + _refB.Radius;
-        bool bCollision = fDistSq <= fRadiusSum * fRadiusSum; // 거리가 반지름 합 이하일 때 겹침
+
+        // 안 겹치면 Dictionary는 아예 안 건드리고 바로 끝 - 후보 쌍 대부분이 여기서 끝남
+        if (fDistSq > fRadiusSum * fRadiusSum)
+            return;
 
         long lKey = MakePairKey(_refA.ID, _refB.ID);
-        bool bFound = m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair);
+        m_hashConfirmedPair.Add(lKey);
 
-        if (!bFound)
+        if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
         {
-            // 겹친 적도 없는데 기록만 만들면 검사한 모든 쌍이 영원히 쌓이는 누수가 되므로,
-            // 실제로 겹칠 때만 새로 만든다
-            if (!bCollision)
-                return;
-
-            tPair = new tColliderPair { ColliderA = _refA, ColliderB = _refB, OnCollision = false };
-            m_listOther[_refA.ID].Add(_refB.ID);
-            m_listOther[_refB.ID].Add(_refA.ID);
-        }
-
-        if (bCollision)
-        {
-            if (tPair.OnCollision)
-            {
-                tPair.ColliderA.OnStayCollider(tPair.ColliderB);
-                tPair.ColliderB.OnStayCollider(tPair.ColliderA);
-            }
-            else
-            {
-                tPair.OnCollision = true;
-                tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
-                tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
-            }
-
-            m_hashPairInfo[lKey] = tPair; // struct라 값이 바뀌면 다시 써줘야 Dictionary에 반영됨
+            tPair.ColliderA.OnStayCollider(tPair.ColliderB);
+            tPair.ColliderB.OnStayCollider(tPair.ColliderA);
         }
         else
         {
-            // bFound==false && bCollision==false는 위에서 이미 return 했으므로 여기 온 건 항상 bFound==true
+            tPair = new tColliderPair { ColliderA = _refA, ColliderB = _refB };
+            m_hashPairInfo.Add(lKey, tPair);
+            m_listOther[_refA.ID].Add(_refB.ID);
+            m_listOther[_refB.ID].Add(_refA.ID);
+
+            tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
+            tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
+        }
+    }
+
+    // m_hashPairInfo(=지금 겹치는 쌍만 들어있는 작은 집합)를 순회하며, 이번 프레임에
+    // CheckPair로 재확인 안 된 것만 Exit 처리. "안 겹치는 후보 쌍 전체"가 아니라
+    // "실제로 겹치던 쌍"만 순회하니 총알-몬스터 후보 수와 무관하게 항상 저렴함
+    private void ExitStalePairs()
+    {
+        //using (s_tMarkerExitStale.Auto())
+        //{
+        m_listExitBuffer.Clear();
+
+        foreach (var tKv in m_hashPairInfo)
+        {
+            if (!m_hashConfirmedPair.Contains(tKv.Key))
+                m_listExitBuffer.Add(tKv.Key);
+        }
+
+        for (int i = 0; i < m_listExitBuffer.Count; ++i)
+        {
+            long lKey = m_listExitBuffer[i];
+            tColliderPair tPair = m_hashPairInfo[lKey];
+
             tPair.ColliderA.OnExitCollider(tPair.ColliderB);
             tPair.ColliderB.OnExitCollider(tPair.ColliderA);
 
             m_hashPairInfo.Remove(lKey);
-            m_listOther[_refA.ID].Remove(_refB.ID);
-            m_listOther[_refB.ID].Remove(_refA.ID);
+            m_listOther[tPair.ColliderA.ID].Remove(tPair.ColliderB.ID);
+            m_listOther[tPair.ColliderB.ID].Remove(tPair.ColliderA.ID);
         }
     }
+
 }
