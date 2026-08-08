@@ -15,7 +15,6 @@ public class EquipController : MonoBehaviour
     private struct tPickData
     {
         public SOData TargetData;
-        
     }
 
     public static EquipController m_Instance = null;
@@ -39,6 +38,7 @@ public class EquipController : MonoBehaviour
     {
         m_refInventoryContainer.OnSelectSlotView += PickInventorySlot;
         m_refPlusButton.OnClickEvt += PushInterface;
+        m_refEquipInterface.OnAddData += PushAndApply;
 
         //m_refInventoryContainer.OnSelectEvt += AddData;
         //m_refInterFaceContainer.OnSelectEvt += PushAndApply;
@@ -48,6 +48,8 @@ public class EquipController : MonoBehaviour
     {
         m_refInventoryContainer.OnSelectSlotView -= PickInventorySlot;
         m_refPlusButton.OnClickEvt -= PushInterface;
+        m_refEquipInterface.OnAddData -= PushAndApply;
+
     }
 
     private void OnEnable()
@@ -67,11 +69,7 @@ public class EquipController : MonoBehaviour
         if (refItemData == null)
             return;
 
-        Player refPlayer = Player.CurrentPlayer;
-        var listValue = refItemData.ListValue;
-
-        for (int i = 0; i < listValue.Count; ++i)
-            ApplyItemData(refPlayer, listValue[i]);
+        PlayerPreLoadData.AddStatRange(refItemData.ListValue);
     }
 
     private void PushInterface()
@@ -96,28 +94,6 @@ public class EquipController : MonoBehaviour
     //    RectTransform refButtonTr = (RectTransform)m_refPlusButton.transform;
     //    refButtonTr.position = vAnchorPos;
     //}
-
-    private void ApplyItemData(Player _refPlayer, tStatValue _tModifier)
-    {
-        switch (_tModifier.Type)
-        {
-            case eStatType.HP:
-                _refPlayer.AddHP((long)_tModifier.Value);
-                break;
-            case eStatType.Attack:
-                _refPlayer.AddAttack((int)_tModifier.Value);
-                break;
-            case eStatType.Defense:
-                _refPlayer.AddDefense(_tModifier.Value);
-                break;
-            case eStatType.Speed:
-                _refPlayer.AddSpeed(_tModifier.Value);
-                break;
-            case eStatType.BulletSpeed:
-                _refPlayer.UpBulletSpeed(_tModifier.Value);
-                break;
-        }
-    }
 
     private void PickInventorySlot(SlotView _refSlotView)
     {

@@ -12,7 +12,7 @@ public class LobyOption : MonoBehaviour
     [SerializeField] private Image m_refSelectImage;
     [SerializeField] private float m_fMoveTime;
 
-    private int m_iCurSelectIdx;
+    private int m_iCurSelectIdx = -1;
     private List<Action> m_listClickAction = new();
 
     private void Start()

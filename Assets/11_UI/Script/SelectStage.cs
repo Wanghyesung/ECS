@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -21,6 +22,8 @@ public class SelectStage : MonoBehaviour
     [SerializeField] private float m_fPageOffset = 500f;
     [SerializeField] private float m_fTweenDuration = 0.3f;
 
+    [SerializeField] private TextMeshProUGUI m_refStageNameText;
+    [SerializeField] private TextMeshProUGUI m_refStageLevelText;
    
     private int m_iViewIdx = 0;   //현재 캐러셀에서 보고 있는 위치
     private bool m_bSwap = false;
@@ -62,7 +65,7 @@ public class SelectStage : MonoBehaviour
             return;
 
         ++m_iViewIdx;
-        TweenToView();
+        MoveToView();
     }
 
     private void MovePrev()
@@ -71,11 +74,10 @@ public class SelectStage : MonoBehaviour
             return;
 
         --m_iViewIdx;
-        
-        TweenToView();
+        MoveToView();
     }
 
-    private void TweenToView()
+    private void MoveToView()
     {
         m_bSwap = true;
 
@@ -83,6 +85,9 @@ public class SelectStage : MonoBehaviour
         m_refContentView.DOAnchorPosX(fTargetX, m_fTweenDuration)
             .SetEase(Ease.OutCubic)
             .OnComplete(() => m_bSwap = false);
+
+        m_refStageNameText.text = m_listStageImage[m_iViewIdx].name;
+        m_refStageLevelText.text = (m_iViewIdx+1).ToString();
     }
 
  
