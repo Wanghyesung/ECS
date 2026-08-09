@@ -41,6 +41,7 @@ public class CircleCollider : MonoBehaviour
     public void CenterPos()
     {
         m_vCachedCenter = transform.position + transform.rotation * m_vOffset;
+        m_vCachedCenter.y = 0.0f;
     }
 
     // 어떤 레이어끼리 충돌할지는 더 이상 개별 콜라이더가 안 들고, ColliderManager의

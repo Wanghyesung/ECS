@@ -14,12 +14,12 @@ using UnityEngine;
        - 공간 그리드(셀 분할)는 쓰지 않는다. 총알처럼 개체 수가 많은 쪽과 몬스터처럼 개체 수가
          적은 쪽이 충돌하는 게임 특성상, 레이어 리스트끼리 전부 대조하는 게 그리드보다 더 빠름.
        - m_hashPairInfo에 "쌍(A,B) 항목이 존재한다" = "지금 겹치고 있다"는 뜻으로 통일했다.
-         CheckPair는 거리 비교로 안 겹치는 게 확인되면 Dictionary를 아예 안 건드리고 바로
-         return한다 - 대부분의 검사(총알-몬스터 후보 쌍 대부분은 안 겹침)가 해싱/버킷 탐색
-         없이 순수 산술 비교만으로 끝난다는 뜻. 실제로 겹친 쌍만 m_hashConfirmedPair에
-         표시해두고, 매 프레임 끝에 m_hashPairInfo(항상 "지금 겹치는 쌍"만 들어있어 작음)를
-         순회하며 이번 프레임에 재확인 안 된 것만 Exit 처리한다(ExitStalePairs) -
-         "쌍 전체 후보"가 아니라 "실제로 겹치는 쌍"에서만 Dictionary 비용이 발생함.
+         CheckPair 하나가 Enter/Stay/Exit을 전부 그 자리에서 직접 처리한다: 안 겹치는데
+         Dictionary에 남아있으면 그게 바로 이번 프레임에 떨어진 것이므로 즉시 Exit, 겹치는데
+         없으면 Enter, 겹치는데 있으면 Stay. 별도의 "이번 프레임에 재확인됐는지" 집합이나
+         프레임 끝 별도 패스가 없어서 "지우는 걸 깜빡한다" 종류의 버그 자체가 성립 안 함
+         (다만 안 겹치는 후보 쌍도 항상 Dictionary 조회 한 번은 하게 됨 - 대부분 안 겹치는
+         총알-몬스터 후보 쌍 특성상 트레이드오프임).
        - 콜라이더별로 "현재 관여 중인 쌍" ID 목록(m_listOther)을 별도로 들고 있다가,
          UnActivate 시 그 쌍 기록들을 즉시 정리한다(겹친 채로 반납되면 Exit도 쏴줌).
        - CircleCollider.Center는 쿼터니언 곱셈이 들어있어 쌍마다 반복 조회하면 낭비가 크다
@@ -28,6 +28,8 @@ using UnityEngine;
          캐시해두고, CheckPair는 CachedCenter만 읽는다.
        - Bullet 등은 Update에서 Transform을 직접 이동하므로, 그게 전부 끝나 위치가 확정된
          뒤인 LateUpdate에서 판정한다.
+       - 레이어 리스트에서의 실제 제거(스왑백)는 판정 순회 중에는 절대 안 하고 다음 프레임
+         Update() 맨 앞에서 한꺼번에 처리한다 (m_listPendingDelete 주석 참고).
  *///////////////////////////////////////////
 
 // BulletMoveManager/MissileMoveManager/GuidedMoveManager는 각자 LateUpdate에서 Job을
@@ -45,29 +47,27 @@ public class ColliderManager : MonoBehaviour
     // 레이어(0~31) -> 그 레이어에 속한 활성 콜라이더 목록. Awake에서 32개 전부 미리 생성
     private List<CircleCollider>[] m_arrCollider;
 
+    // UnActivate로 예약된, 다음 프레임 Update() 맨 앞에서 한꺼번에 지워줄 콜라이더들.
+    // 판정 순회(LateUpdate) 도중 바로 지우면 CheckSameLayer/CheckCrossLayer가 인덱스로 순회
+    // 중인 리스트가 흔들려서, 방금 지운 자리로 스왑되어 들어온(원래 리스트 맨 뒤에 있던) 다른
+    // 콜라이더가 이번 프레임 판정에서 통째로 스킵될 수 있음 - 그래서 즉시 안 지우고 예약만 해둠
+    private List<CircleCollider> m_listPendingDelete;
+
     // ID -> 그 콜라이더가 자기 레이어 리스트에서 몇 번째 자리인지 (UnActivate 스왑백 O(1) 제거용)
     private List<int> m_listIndexInLayerList;
 
     // ID -> 지금 이 ID와 실제로 겹쳐있다고 기록된 상대 ID들. UnActivate 시 관련 쌍 정리용
     private List<HashSet<int>> m_listOther;
 
-    // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거)
+    // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거).
+    // Enter/Stay/Exit 판정을 전부 CheckPair 안에서 이 Dictionary 하나로 직접 처리한다.
     private Dictionary<long, tColliderPair> m_hashPairInfo;
-
-    // 이번 프레임에 실제로 겹친 것으로 재확인된 쌍 키. ExitStalePairs에서 "재확인 안 된 것"
-    // 판별용으로만 쓰고 매 프레임 끝에 비움 (실제로 겹치는 쌍 수만큼만 존재 - 작은 집합)
-    private HashSet<long> m_hashConfirmedPair;
-
-    // ExitStalePairs가 m_hashPairInfo를 순회하며 지울 키를 모아두는 재사용 버퍼
-    // (Dictionary를 순회하며 바로 Remove할 수 없어서 필요. 매 프레임 새로 할당 안 함)
-    private List<long> m_listExitBuffer;
 
     // 프로파일러 Hierarchy 뷰에서 Deep Profile 없이도 구간별 비용을 이름 붙여서 볼 수 있게
     // 하는 마커. CheckPair는 프레임당 수만 번 불리므로 마커 자체의 오버헤드가 측정을
     // 왜곡할 수 있어 넣지 않음(CheckSameLayer/CheckCrossLayer 상위 레벨에서만 구분)
     //private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
     //private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
-    //private static readonly ProfilerMarker s_tMarkerExitStale = new ProfilerMarker("ColliderManager.ExitStalePairs");
     //private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.RefreshAllCenters");
 
     private struct tColliderPair
@@ -91,12 +91,11 @@ public class ColliderManager : MonoBehaviour
         for (int i = 0; i < 32; ++i)
             m_arrCollider[i] = new List<CircleCollider>();
 
+        m_listPendingDelete = new List<CircleCollider>();
         m_listIndexInLayerList = new List<int>();
         m_listOther = new List<HashSet<int>>();
 
         m_hashPairInfo = new Dictionary<long, tColliderPair>();
-        m_hashConfirmedPair = new HashSet<long>();
-        m_listExitBuffer = new List<long>();
     }
 
     private static long MakePairKey(int _iA, int _iB)
@@ -130,30 +129,33 @@ public class ColliderManager : MonoBehaviour
         ResizeCapacity(_refCollider.ID);
     }
 
-    // CircleCollider.OnEnable()에서 호출 - 그 즉시 자기 레이어 리스트에 편입
+    // CircleCollider.OnEnable()/Start()에서 호출 - 그 즉시 자기 레이어 리스트에 편입.
+    // 죽은 직후(리스트 제거는 예약만 되고 아직 안 지워진 상태)에 바로 재발사되는 경우, 이미
+    // 리스트에 남아있는데 또 추가하면 같은 콜라이더가 두 자리를 차지하는 유령 항목이 생겨서
+    // m_listIndexInLayerList가 꼬이므로, 이미 등록돼 있으면(index가 -1이 아니면) 무시
     public void Activate(CircleCollider _refCollider)
     {
         ResizeCapacity(_refCollider.ID);
+
+        if (m_listIndexInLayerList[_refCollider.ID] >= 0)
+            return;
 
         List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
         m_listIndexInLayerList[_refCollider.ID] = listLayer.Count;
         listLayer.Add(_refCollider);
     }
 
-    // CircleCollider.OnDisable()에서 호출 - 그 즉시 자기 레이어 리스트에서 스왑백 제거
+    // CircleCollider.OnDisable()에서 호출.
+    // 쌍 기록 정리(Exit 이벤트 포함)는 리스트 순회와 무관해서 안전하니 여기서 바로 처리한다.
+    // 레이어 리스트에서의 실제 제거는 다음 프레임 Update() 맨 앞으로 예약만 해둔다 - 지금 당장
+    // (판정 순회 도중, 총알이 맞자마자 즉발로 풀 반납되는 재진입 호출 등으로) 스왑백 제거를
+    // 하면 CheckSameLayer/CheckCrossLayer가 인덱스로 순회 중인 그 리스트가 흔들려서, 방금 지운
+    // 자리로 스왑되어 들어온(원래 리스트 맨 뒤에 있던) 다른 콜라이더가 이번 프레임 판정에서
+    // 통째로 스킵될 수 있기 때문
     public void UnActivate(CircleCollider _refCollider)
     {
         int iID = _refCollider.ID;
-        List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
-
-        int iMyIndex = m_listIndexInLayerList[iID];
-        int iLastIndex = listLayer.Count - 1;
-
-        CircleCollider refMoved = listLayer[iLastIndex];
-        listLayer[iMyIndex] = refMoved;
-        listLayer.RemoveAt(iLastIndex);
-        m_listIndexInLayerList[refMoved.ID] = iMyIndex;
-        m_listIndexInLayerList[iID] = -1;
+        m_listPendingDelete.Add(_refCollider);
 
         // 이 콜라이더가 관여하던 쌍 기록을 전부 정리 (겹친 채로 반납되면 Exit도 쏴줌).
         // m_hashPairInfo에 항목이 있다는 것 자체가 "지금 겹치는 중"이라는 뜻이라 별도 플래그 확인 불필요
@@ -172,10 +174,43 @@ public class ColliderManager : MonoBehaviour
         hashOther.Clear();
     }
 
+    // 예약된 콜라이더를 레이어 리스트에서 스왑백 제거만 함 (쌍 정리는 이미 UnActivate에서 끝남)
+    private void DeleteCollider(CircleCollider _refCollider)
+    {
+        int iID = _refCollider.ID;
+        int iMyIndex = m_listIndexInLayerList[iID];
+        if (iMyIndex < 0)
+            return; // 이미 처리됨 (중복 예약 가드)
+
+        List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
+        int iLastIndex = listLayer.Count - 1;
+
+        CircleCollider refMoved = listLayer[iLastIndex];
+        listLayer[iMyIndex] = refMoved;
+        listLayer.RemoveAt(iLastIndex);
+        m_listIndexInLayerList[refMoved.ID] = iMyIndex;
+        m_listIndexInLayerList[iID] = -1;
+    }
+
+    private void Update()
+    {
+        // Update()는 LateUpdate(판정)보다 항상 먼저 돌므로, 여기서 다 지워두면
+        // 이번 프레임 CheckOverlaps 순회 중엔 리스트가 절대 안 흔들림.
+        // 예약 이후 재활성화(재발사 등)됐으면 IsActive가 다시 true가 되어 있으므로,
+        // 그 사이 다시 살아난 콜라이더까지 실수로 지우지 않도록 걸러줌
+        for (int i = 0; i < m_listPendingDelete.Count; ++i)
+        {
+            CircleCollider refCollider = m_listPendingDelete[i];
+            if (refCollider.IsActive == false)
+                DeleteCollider(refCollider);
+        }
+
+        m_listPendingDelete.Clear();
+    }
+
     private void LateUpdate()
     {
         CheckOverlaps();
-        ExitStalePairs();
     }
 
     private void CheckOverlaps()
@@ -251,15 +286,30 @@ public class ColliderManager : MonoBehaviour
 
     private void CheckPair(CircleCollider _refA, CircleCollider _refB)
     {
-        float fDistSq = (_refB.CachedCenter - _refA.CachedCenter).sqrMagnitude;
+        // 쿼터뷰: Y는 무시하고 XZ 평면 거리만으로 판정 (Bob 이펙트, 유도탄 넉백 등으로
+        // Y가 살짝 어긋나 있어도 판정이 새지 않게 함). sqrMagnitude 대신 x,z만 직접 계산
+        Vector3 vDelta = _refB.CachedCenter - _refA.CachedCenter;
+        float fDistSq = vDelta.x * vDelta.x + vDelta.z * vDelta.z;
         float fRadiusSum = _refA.Radius + _refB.Radius;
 
-        // 안 겹치면 Dictionary는 아예 안 건드리고 바로 끝 - 후보 쌍 대부분이 여기서 끝남
-        if (fDistSq > fRadiusSum * fRadiusSum)
-            return;
-
         long lKey = MakePairKey(_refA.ID, _refB.ID);
-        m_hashConfirmedPair.Add(lKey);
+
+        if (fDistSq > fRadiusSum * fRadiusSum)
+        {
+            // 안 겹침 - 직전까지 겹쳐있던 쌍이었다면(m_hashPairInfo에 있었다면) 여기서 바로 Exit.
+            // 별도 집합/프레임 끝 재확인 패스 없이 이 자리에서 바로 지우기 때문에 "지우는 걸
+            // 깜빡해서 Stay만 계속 걸리는" 부류의 버그가 구조적으로 발생할 수 없음
+            if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tOld))
+            {
+                m_hashPairInfo.Remove(lKey);
+                m_listOther[_refA.ID].Remove(_refB.ID);
+                m_listOther[_refB.ID].Remove(_refA.ID);
+
+                tOld.ColliderA.OnExitCollider(tOld.ColliderB);
+                tOld.ColliderB.OnExitCollider(tOld.ColliderA);
+            }
+            return;
+        }
 
         if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
         {
@@ -275,35 +325,6 @@ public class ColliderManager : MonoBehaviour
 
             tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
             tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
-        }
-    }
-
-    // m_hashPairInfo(=지금 겹치는 쌍만 들어있는 작은 집합)를 순회하며, 이번 프레임에
-    // CheckPair로 재확인 안 된 것만 Exit 처리. "안 겹치는 후보 쌍 전체"가 아니라
-    // "실제로 겹치던 쌍"만 순회하니 총알-몬스터 후보 수와 무관하게 항상 저렴함
-    private void ExitStalePairs()
-    {
-        //using (s_tMarkerExitStale.Auto())
-        //{
-        m_listExitBuffer.Clear();
-
-        foreach (var tKv in m_hashPairInfo)
-        {
-            if (!m_hashConfirmedPair.Contains(tKv.Key))
-                m_listExitBuffer.Add(tKv.Key);
-        }
-
-        for (int i = 0; i < m_listExitBuffer.Count; ++i)
-        {
-            long lKey = m_listExitBuffer[i];
-            tColliderPair tPair = m_hashPairInfo[lKey];
-
-            tPair.ColliderA.OnExitCollider(tPair.ColliderB);
-            tPair.ColliderB.OnExitCollider(tPair.ColliderA);
-
-            m_hashPairInfo.Remove(lKey);
-            m_listOther[tPair.ColliderA.ID].Remove(tPair.ColliderB.ID);
-            m_listOther[tPair.ColliderB.ID].Remove(tPair.ColliderA.ID);
         }
     }
 

@@ -8848,6 +8848,7 @@ MonoBehaviour:
   m_fMaxRollSpeedDecay: 8
   m_refObjectInfo:
     State: 0
+    MaxHP: 0
     CurrentHP: 0
     Speed: 0
     Attack: 0
@@ -24446,6 +24447,7 @@ MonoBehaviour:
   m_fMaxRollSpeedDecay: 8
   m_refObjectInfo:
     State: 0
+    MaxHP: 0
     CurrentHP: 0
     Speed: 0
     Attack: 0

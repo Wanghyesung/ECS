@@ -226,14 +226,13 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         Vector3 vDir = _refShotInfo.MoveDir;
+        vDir.y = 0.0f; // 쿼터뷰: 유도탄 등 아직 Y가 안 눌린 총알에 맞아도 넉백은 XZ 평면으로만
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
         float fPower = _refAttackInfo.AttackPower;
 
-        float fMagnitude = Mathf.Clamp(fPower / 50.0f, 0.0f, 2.0f);
-        
         if (m_refVisualPlayer != null)
         {
-            CameraManager.m_Instance.StartShakeCamera(fMagnitude);
+            CameraManager.m_Instance.StartShakeCamera();
             m_refVisualPlayer.PlayHitShake(vDir, fPower);
         }
 
