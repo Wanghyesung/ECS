@@ -17,7 +17,7 @@ public class PoolObject : MonoBehaviour, IPoolable
 {
     private PoolObject m_refOriginalPoolObj;
 
-    private int m_iPushCount = 0;
+    [SerializeField] private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
     public PoolObject PoolKey { get { return m_refOriginalPoolObj; } }
 

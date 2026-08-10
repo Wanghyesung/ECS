@@ -29,6 +29,7 @@ public class CircleCollider : MonoBehaviour
     public float Radius => m_fRadius;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
+    
     public Vector3 Center => transform.position + transform.rotation * m_vOffset;
 
     private Vector3 m_vCachedCenter;
@@ -52,12 +53,13 @@ public class CircleCollider : MonoBehaviour
     // 생애주기 동안 고정되는 자체 ID. ColliderManager가 쌍(pair) 키를 만들 때 이 ID를 사용
     private static int NEXT_ID = 0;
 
-    private bool m_bIsActive = false;
-    public bool IsActive => m_bIsActive;
 
     public int ID { get; private set; }
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
 
+    //0 En, 1 St, 2 Ex
+    public int Type = -1;
+    
     private void Awake()
     {
         ID = NEXT_ID++;
@@ -70,15 +72,16 @@ public class CircleCollider : MonoBehaviour
 
         // 씬에 미리 배치된 오브젝트는 OnEnable이 ColliderManager.Awake()보다 먼저 돌 수 있어
         // Activate가 씹혔을 수 있음 - Start는 씬의 모든 Awake 이후 호출이 보장되므로 여기서 보정
-        if (m_bIsActive && m_bActivated == false)
+        if (m_bActivated == false)
             Activate();
     }
 
     private void OnEnable()
     {
-        m_bIsActive = true;
         if (ColliderManager.m_Instance != null)
             Activate();
+
+        Type = -1;
     }
 
     private void Activate()
@@ -89,7 +92,6 @@ public class CircleCollider : MonoBehaviour
 
     private void OnDisable()
     {
-        m_bIsActive = false;
         if (m_bActivated)
         {
             ColliderManager.m_Instance.UnActivate(this);
@@ -119,6 +121,6 @@ public class CircleCollider : MonoBehaviour
             return;
 
         Gizmos.color = m_tGizmoColor;
-        Gizmos.DrawWireSphere(Center, m_fRadius);
+        Gizmos.DrawWireSphere(CachedCenter, m_fRadius);
     }
 }

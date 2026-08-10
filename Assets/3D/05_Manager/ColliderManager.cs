@@ -154,8 +154,17 @@ public class ColliderManager : MonoBehaviour
     // 통째로 스킵될 수 있기 때문
     public void UnActivate(CircleCollider _refCollider)
     {
-        int iID = _refCollider.ID;
         m_listPendingDelete.Add(_refCollider);
+    }
+
+    // 예약된 콜라이더를 레이어 리스트에서 스왑백 제거, ColliderExit호출, 충돌 쌍 제거
+    private void DeleteCollider(CircleCollider _refCollider)
+    {
+        int iID = _refCollider.ID;
+        int iMyIndex = m_listIndexInLayerList[iID];
+        if (iMyIndex < 0)
+            return; // 이미 처리됨 (중복 예약 가드)
+
 
         // 이 콜라이더가 관여하던 쌍 기록을 전부 정리 (겹친 채로 반납되면 Exit도 쏴줌).
         // m_hashPairInfo에 항목이 있다는 것 자체가 "지금 겹치는 중"이라는 뜻이라 별도 플래그 확인 불필요
@@ -168,19 +177,15 @@ public class ColliderManager : MonoBehaviour
                 tPair.ColliderA.OnExitCollider(tPair.ColliderB);
                 tPair.ColliderB.OnExitCollider(tPair.ColliderA);
                 m_hashPairInfo.Remove(lKey);
+
+                tPair.ColliderA.Type = 2;
+                tPair.ColliderB.Type = 2;
             }
             m_listOther[iOtherID].Remove(iID);
         }
-        hashOther.Clear();
-    }
 
-    // 예약된 콜라이더를 레이어 리스트에서 스왑백 제거만 함 (쌍 정리는 이미 UnActivate에서 끝남)
-    private void DeleteCollider(CircleCollider _refCollider)
-    {
-        int iID = _refCollider.ID;
-        int iMyIndex = m_listIndexInLayerList[iID];
-        if (iMyIndex < 0)
-            return; // 이미 처리됨 (중복 예약 가드)
+        hashOther.Clear();
+
 
         List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
         int iLastIndex = listLayer.Count - 1;
@@ -201,8 +206,7 @@ public class ColliderManager : MonoBehaviour
         for (int i = 0; i < m_listPendingDelete.Count; ++i)
         {
             CircleCollider refCollider = m_listPendingDelete[i];
-            if (refCollider.IsActive == false)
-                DeleteCollider(refCollider);
+            DeleteCollider(refCollider);
         }
 
         m_listPendingDelete.Clear();
@@ -289,42 +293,56 @@ public class ColliderManager : MonoBehaviour
         // 쿼터뷰: Y는 무시하고 XZ 평면 거리만으로 판정 (Bob 이펙트, 유도탄 넉백 등으로
         // Y가 살짝 어긋나 있어도 판정이 새지 않게 함). sqrMagnitude 대신 x,z만 직접 계산
         Vector3 vDelta = _refB.CachedCenter - _refA.CachedCenter;
-        float fDistSq = vDelta.x * vDelta.x + vDelta.z * vDelta.z;
+        float fDistSq = vDelta.sqrMagnitude;
         float fRadiusSum = _refA.Radius + _refB.Radius;
 
         long lKey = MakePairKey(_refA.ID, _refB.ID);
 
-        if (fDistSq > fRadiusSum * fRadiusSum)
+        //이번 프레임에 맞았다면
+        if (fDistSq <= fRadiusSum * fRadiusSum)
         {
-            // 안 겹침 - 직전까지 겹쳐있던 쌍이었다면(m_hashPairInfo에 있었다면) 여기서 바로 Exit.
-            // 별도 집합/프레임 끝 재확인 패스 없이 이 자리에서 바로 지우기 때문에 "지우는 걸
-            // 깜빡해서 Stay만 계속 걸리는" 부류의 버그가 구조적으로 발생할 수 없음
+            _refA.OnEnterCollider(_refB);
+            _refB.OnEnterCollider(_refA);
+            return;
+            if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
+            {
+                tPair.ColliderA.OnStayCollider(tPair.ColliderB);
+                tPair.ColliderB.OnStayCollider(tPair.ColliderA);
+
+                _refA.Type = 1;
+                _refB.Type = 1;
+            }
+            //이번 프레임에 처음 맞았다면
+            else
+            {
+                tPair = new tColliderPair { ColliderA = _refA, ColliderB = _refB };
+                m_hashPairInfo.Add(lKey, tPair);
+                m_listOther[_refA.ID].Add(_refB.ID);
+                m_listOther[_refB.ID].Add(_refA.ID);
+
+                tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
+                tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
+
+                _refA.Type = 0;
+                _refB.Type = 0;
+            }
+        }
+
+        else
+        {
+            //저번 프레임에서도 맞았다면
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tOld))
             {
                 m_hashPairInfo.Remove(lKey);
                 m_listOther[_refA.ID].Remove(_refB.ID);
                 m_listOther[_refB.ID].Remove(_refA.ID);
 
+                _refA.Type = 2;
+                _refB.Type = 2;
+
                 tOld.ColliderA.OnExitCollider(tOld.ColliderB);
                 tOld.ColliderB.OnExitCollider(tOld.ColliderA);
             }
-            return;
-        }
-
-        if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
-        {
-            tPair.ColliderA.OnStayCollider(tPair.ColliderB);
-            tPair.ColliderB.OnStayCollider(tPair.ColliderA);
-        }
-        else
-        {
-            tPair = new tColliderPair { ColliderA = _refA, ColliderB = _refB };
-            m_hashPairInfo.Add(lKey, tPair);
-            m_listOther[_refA.ID].Add(_refB.ID);
-            m_listOther[_refB.ID].Add(_refA.ID);
-
-            tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
-            tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
         }
     }
 

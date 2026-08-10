@@ -63,6 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &3613304018432001097
 MonoBehaviour:
@@ -95,12 +96,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fRadius: 0.57
-  m_tLayer:
-    serializedVersion: 2
-    m_Bits: 256
   m_vOffset: {x: 0, y: 0, z: 0.46}
-  m_bShowDebugGizmo: 0
+  m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
+  Type: -1
 --- !u!1 &2032281024586094169
 GameObject:
   m_ObjectHideFlags: 0
