@@ -203,7 +203,7 @@ public class ObjectPool : MonoBehaviour
             return null;
         }
 
-        refObject.transform.SetParent(null);
+        //refObject.transform.SetParent(null);
         iPool.Pop();
         refObject.gameObject.SetActive(true);
 
@@ -223,7 +223,7 @@ public class ObjectPool : MonoBehaviour
             return;
 
         refPoolObj.Push();
-        _refGameObj.transform.SetParent(transform);
+        //_refGameObj.transform.SetParent(transform);
         _refGameObj.gameObject.SetActive(false);
 
         queValue.Enqueue(_refGameObj);

@@ -40638,9 +40638,9 @@ GameObject:
   - component: {fileID: 6685922635759219881}
   - component: {fileID: 4324890989181530095}
   - component: {fileID: 3167987171606123751}
-  - component: {fileID: 6109567326005496573}
   - component: {fileID: 7607403709495519335}
   - component: {fileID: 3982470965335869779}
+  - component: {fileID: 2432941410462199483}
   m_Layer: 8
   m_Name: BossMonster
   m_TagString: Untagged
@@ -40658,7 +40658,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 23.5, y: 68.9, z: 163.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 329178456683991530}
@@ -40690,6 +40690,7 @@ MonoBehaviour:
     TargetTr: {fileID: 0}
     ObjInfo:
       State: 1
+      MaxHP: 0
       CurrentHP: 0
       Speed: 20
       Attack: 0
@@ -40795,27 +40796,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refRootNode: {fileID: 11400000, guid: ddef41eddcad7ea43abea72b304f42e6, type: 2}
   m_refOwner: {fileID: 4324890989181530095}
---- !u!65 &6109567326005496573
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6812492139672946058}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 50, y: 30, z: 200}
-  m_Center: {x: 0, y: 16.18, z: 0}
 --- !u!54 &7607403709495519335
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -40855,7 +40835,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iPushCount: 0
   m_fAliveTime: 3
+--- !u!114 &2432941410462199483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6812492139672946058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fRadius: 32.5
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 1
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6867361734819938341
 GameObject:
   m_ObjectHideFlags: 0

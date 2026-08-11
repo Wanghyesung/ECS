@@ -166,10 +166,8 @@ public class Bullet : MonoBehaviour, IAttackObject
         if (m_refHitEffectObj != null)
         {
             GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
-            if (refHitEffect == null)
-                return;
-
-            refHitEffect.transform.position = transform.position;
+            if (refHitEffect != null)
+                refHitEffect.transform.position = transform.position;
         }
 
         if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)

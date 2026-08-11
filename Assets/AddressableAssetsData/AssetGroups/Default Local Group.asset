@@ -17,6 +17,11 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 638cc06f32670094a85ec8b27617c532
   m_SerializeEntries:
+  - m_GUID: 044f850e66c2dcc45b1b99dcb173275e
+    m_Address: Assets/3D/03_Monster/PreFab/BaseMonster.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 06babf01eeaad3c4ba3750b558b4e6fe
     m_Address: Assets/02_Player/Weapon/Bullet/PlayerTemplateBullet.prefab
     m_ReadOnly: 0
@@ -124,11 +129,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b24e55e95e59f4a48ad2cf093ce1ddb0
     m_Address: Assets/03_Monster/PreFab/BaseMonster1.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b644cdf74c787cb44980d4383b4eb91a
-    m_Address: Assets/03_Monster/PreFab/BaseMonster0.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

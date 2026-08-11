@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fRadius: 0.57
-  m_vOffset: {x: 0, y: 0, z: 0.46}
+  m_vOffset: {x: 0, y: 0, z: 0}
   m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
   Type: -1

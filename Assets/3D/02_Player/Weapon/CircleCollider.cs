@@ -45,6 +45,7 @@ public class CircleCollider : MonoBehaviour
         m_vCachedCenter.y = 0.0f;
     }
 
+
     // 어떤 레이어끼리 충돌할지는 더 이상 개별 콜라이더가 안 들고, ColliderManager의
     // 레이어 충돌 매트릭스가 중앙에서 결정함 (Unity Physics 설정과 동일한 개념).
     // 여기서는 gameObject.layer를 캐싱만 해서 매 프레임 반복 조회를 피함
@@ -56,9 +57,6 @@ public class CircleCollider : MonoBehaviour
 
     public int ID { get; private set; }
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
-
-    //0 En, 1 St, 2 Ex
-    public int Type = -1;
     
     private void Awake()
     {
@@ -80,8 +78,6 @@ public class CircleCollider : MonoBehaviour
     {
         if (ColliderManager.m_Instance != null)
             Activate();
-
-        Type = -1;
     }
 
     private void Activate()
@@ -121,6 +117,8 @@ public class CircleCollider : MonoBehaviour
             return;
 
         Gizmos.color = m_tGizmoColor;
+        // 실제 판정에 쓰이는 값(Y=0 고정된 CachedCenter)을 그대로 그려서, 눈에 보이는 원이랑
+        // 진짜 판정용 원이 다른 자리에 있는 건 아닌지(Y 어긋남 등) 바로 비교 가능하게 함
         Gizmos.DrawWireSphere(CachedCenter, m_fRadius);
     }
 }

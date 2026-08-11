@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_Monster0Data
   m_EditorClassIdentifier: 
   PrefabRef:
-    m_AssetGUID: b644cdf74c787cb44980d4383b4eb91a
+    m_AssetGUID: 044f850e66c2dcc45b1b99dcb173275e
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

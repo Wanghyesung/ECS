@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Profiling;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -48,9 +47,7 @@ public class ColliderManager : MonoBehaviour
     private List<CircleCollider>[] m_arrCollider;
 
     // UnActivate로 예약된, 다음 프레임 Update() 맨 앞에서 한꺼번에 지워줄 콜라이더들.
-    // 판정 순회(LateUpdate) 도중 바로 지우면 CheckSameLayer/CheckCrossLayer가 인덱스로 순회
-    // 중인 리스트가 흔들려서, 방금 지운 자리로 스왑되어 들어온(원래 리스트 맨 뒤에 있던) 다른
-    // 콜라이더가 이번 프레임 판정에서 통째로 스킵될 수 있음 - 그래서 즉시 안 지우고 예약만 해둠
+    // 이미 맞은 얘들은 호출까지는 보장하기 위해서 LateUpdate에서 사라져도 바로 사라지지 않게. 다음 프레임에서 삭제되게
     private List<CircleCollider> m_listPendingDelete;
 
     // ID -> 그 콜라이더가 자기 레이어 리스트에서 몇 번째 자리인지 (UnActivate 스왑백 O(1) 제거용)
@@ -62,13 +59,6 @@ public class ColliderManager : MonoBehaviour
     // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거).
     // Enter/Stay/Exit 판정을 전부 CheckPair 안에서 이 Dictionary 하나로 직접 처리한다.
     private Dictionary<long, tColliderPair> m_hashPairInfo;
-
-    // 프로파일러 Hierarchy 뷰에서 Deep Profile 없이도 구간별 비용을 이름 붙여서 볼 수 있게
-    // 하는 마커. CheckPair는 프레임당 수만 번 불리므로 마커 자체의 오버헤드가 측정을
-    // 왜곡할 수 있어 넣지 않음(CheckSameLayer/CheckCrossLayer 상위 레벨에서만 구분)
-    //private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
-    //private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
-    //private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.RefreshAllCenters");
 
     private struct tColliderPair
     {
@@ -178,8 +168,6 @@ public class ColliderManager : MonoBehaviour
                 tPair.ColliderB.OnExitCollider(tPair.ColliderA);
                 m_hashPairInfo.Remove(lKey);
 
-                tPair.ColliderA.Type = 2;
-                tPair.ColliderB.Type = 2;
             }
             m_listOther[iOtherID].Remove(iID);
         }
@@ -201,12 +189,16 @@ public class ColliderManager : MonoBehaviour
     {
         // Update()는 LateUpdate(판정)보다 항상 먼저 돌므로, 여기서 다 지워두면
         // 이번 프레임 CheckOverlaps 순회 중엔 리스트가 절대 안 흔들림.
-        // 예약 이후 재활성화(재발사 등)됐으면 IsActive가 다시 true가 되어 있으므로,
-        // 그 사이 다시 살아난 콜라이더까지 실수로 지우지 않도록 걸러줌
+        // 예약 이후 재활성화(재발사 등)됐으면 gameObject.activeInHierarchy가 다시 true가 되어
+        // 있으므로, 그 사이 다시 살아난 콜라이더까지 실수로 지우지 않도록 걸러줌
         for (int i = 0; i < m_listPendingDelete.Count; ++i)
         {
             CircleCollider refCollider = m_listPendingDelete[i];
-            DeleteCollider(refCollider);
+
+            // 예약 이후(같은 프레임 or 다음 Update 전에) 재사용으로 다시 활성화됐으면 지우면 안 됨 -
+            // 지금 실제로 비활성 상태인 것만 진짜로 삭제
+            if (refCollider.gameObject.activeInHierarchy == false)
+                DeleteCollider(refCollider);
         }
 
         m_listPendingDelete.Clear();
@@ -245,25 +237,18 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
-    // Center(쿼터니언 곱셈 포함)를 쌍마다 다시 계산하지 않도록, 활성 콜라이더마다 프레임당
-    // 딱 한 번만 미리 계산해서 캐시해둔다 (총알 하나가 몬스터 수만큼 반복 계산되던 것을 방지)
     private void PreLoadCenter()
     {
-        //using (s_tMarkerRefreshCenter.Auto())
-        //{
         for (int iLayer = 0; iLayer < 32; ++iLayer)
         {
             List<CircleCollider> listLayer = m_arrCollider[iLayer];
             for (int i = 0; i < listLayer.Count; ++i)
                 listLayer[i].CenterPos();
         }
-        //}
     }
 
     private void CheckSameLayer(List<CircleCollider> _listCollider)
     {
-        //using (s_tMarkerSameLayer.Auto())
-        //{
         for (int a = 0; a < _listCollider.Count; ++a)
         {
             CircleCollider refI = _listCollider[a];
@@ -271,13 +256,10 @@ public class ColliderManager : MonoBehaviour
             for (int b = a + 1; b < _listCollider.Count; ++b)
                 CheckPair(refI, _listCollider[b]);
         }
-        //}
     }
 
     private void CheckCrossLayer(List<CircleCollider> _listA, List<CircleCollider> _listB)
     {
-        //using (s_tMarkerCrossLayer.Auto())
-        //{
         for (int a = 0; a < _listA.Count; ++a)
         {
             CircleCollider refA = _listA[a];
@@ -285,7 +267,6 @@ public class ColliderManager : MonoBehaviour
             for (int b = 0; b < _listB.Count; ++b)
                 CheckPair(refA, _listB[b]);
         }
-        //}
     }
 
     private void CheckPair(CircleCollider _refA, CircleCollider _refB)
@@ -295,22 +276,18 @@ public class ColliderManager : MonoBehaviour
         Vector3 vDelta = _refB.CachedCenter - _refA.CachedCenter;
         float fDistSq = vDelta.sqrMagnitude;
         float fRadiusSum = _refA.Radius + _refB.Radius;
+        float fRadiusSumSq = fRadiusSum * fRadiusSum;
 
         long lKey = MakePairKey(_refA.ID, _refB.ID);
-
+        bool bOverlapping = fDistSq <= fRadiusSumSq;
         //이번 프레임에 맞았다면
-        if (fDistSq <= fRadiusSum * fRadiusSum)
+        if (bOverlapping)
         {
-            _refA.OnEnterCollider(_refB);
-            _refB.OnEnterCollider(_refA);
-            return;
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
             {
                 tPair.ColliderA.OnStayCollider(tPair.ColliderB);
                 tPair.ColliderB.OnStayCollider(tPair.ColliderA);
 
-                _refA.Type = 1;
-                _refB.Type = 1;
             }
             //이번 프레임에 처음 맞았다면
             else
@@ -323,8 +300,6 @@ public class ColliderManager : MonoBehaviour
                 tPair.ColliderA.OnEnterCollider(tPair.ColliderB);
                 tPair.ColliderB.OnEnterCollider(tPair.ColliderA);
 
-                _refA.Type = 0;
-                _refB.Type = 0;
             }
         }
 
@@ -337,13 +312,50 @@ public class ColliderManager : MonoBehaviour
                 m_listOther[_refA.ID].Remove(_refB.ID);
                 m_listOther[_refB.ID].Remove(_refA.ID);
 
-                _refA.Type = 2;
-                _refB.Type = 2;
 
                 tOld.ColliderA.OnExitCollider(tOld.ColliderB);
                 tOld.ColliderB.OnExitCollider(tOld.ColliderA);
             }
         }
+    }
+
+    // Physics.Raycast 대체용 - CircleCollider(PhysX 없음) 대상으로 레이 판정. Aim 등 화면 좌표
+    // 기반 조준/커서 판정에서 사용. LayerMask는 값 타입이라 할당 없이 그대로 넘길 수 있음
+    // (호출부에서 원하는 레이어를 미리 비트마스크로 조합해서 넘겨줌)
+    public bool RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, LayerMask _tMask, out CircleCollider _refHit)
+    {
+        _vOrigin.y = 0.0f;
+        _vDir.y = 0.0f;
+        _vDir.Normalize();
+
+        CircleCollider refClosest = null;
+        float fClosestT = float.MaxValue;
+
+        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        {
+            if ((_tMask.value & (1 << iLayer)) == 0)
+                continue;
+
+            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+            {
+                CircleCollider refCollider = listLayer[i];
+                Vector3 vToCenter = refCollider.CachedCenter - _vOrigin;
+
+                float fT = Mathf.Clamp(Vector3.Dot(vToCenter, _vDir), 0f, _fMaxLength);
+                Vector3 vClosePoint = _vOrigin + _vDir * fT;
+                float fDistSq = (vClosePoint - refCollider.CachedCenter).sqrMagnitude;
+
+                if (fDistSq <= refCollider.Radius * refCollider.Radius && fT < fClosestT)
+                {
+                    fClosestT = fT;
+                    refClosest = refCollider;
+                }
+            }
+        }
+
+        _refHit = refClosest;
+        return refClosest != null;
     }
 
 }

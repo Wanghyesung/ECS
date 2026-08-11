@@ -215,7 +215,10 @@ public class Monster : MonoBehaviour, IDamageable
             float fRevElaps = 1.0f - (fElapsed / fDuration);
             Vector3 vDelta = vDir * fNockPower * fRevElaps * Time.deltaTime;
 
-
+            if (vDelta != Vector3.zero)
+            {
+                int a = 10;
+            }
             transform.position += vDelta;
 
             fElapsed += Time.deltaTime;

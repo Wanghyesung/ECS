@@ -46,7 +46,7 @@ public class Aim : MonoBehaviour
         {
             vTargetPos = tRay.GetPoint(fEnter);
 
-            bool bHitTarget = Physics.Raycast(tRay, out RaycastHit tHit, m_fMaxLength, m_tLayerMask);
+            bool bHitTarget = ColliderManager.m_Instance.RaycastMask(tRay.origin, tRay.direction, m_fMaxLength, m_tLayerMask, out CircleCollider refHit);
             ChangeCollor(bHitTarget);
         }
         else

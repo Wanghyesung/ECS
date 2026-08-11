@@ -41,10 +41,10 @@ public class SOChargeFireDirNode : SONode
 
             float fTheta = 2f * Mathf.PI * GOLDEN_RATIO * i;
 
-            float x = Mathf.Cos(fTheta) * fRadiusAtY;
-            float z = Mathf.Sin(fTheta) * fRadiusAtY;
+            float x = Mathf.Cos(fTheta); //* fRadiusAtY;
+            float z = Mathf.Sin(fTheta); // * fRadiusAtY;
 
-            Vector3 vDir = new Vector3(x, y, z);
+            Vector3 vDir = new Vector3(x, 0.0f/*y*/, z);
 
             refAttackWeapon.FireAndRotate(vDir, refSpawnInfo.SpawnFowardOffset);
         }

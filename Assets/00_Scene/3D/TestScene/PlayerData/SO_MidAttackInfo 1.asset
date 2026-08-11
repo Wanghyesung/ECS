@@ -15,7 +15,7 @@ MonoBehaviour:
   Description: 
   WeaponType: 1
   PoolPrefab: {fileID: 6256924035152576670, guid: 952ddf33030d7c7469a6ed635ad6b14f, type: 3}
-  Damage: 0
+  Damage: 2
   AttackPower: 5
   Cooldown: 0.02
   Speed: 180
@@ -23,8 +23,8 @@ MonoBehaviour:
   AliveTime: 2
   HitCount: 1
   HitStep: 1
-  KnockbackForce: 10
-  KnockbackDuration: 0.5
+  KnockbackForce: 0
+  KnockbackDuration: 0
   StunDuration: 0
   BaseRotationSpeed: 0
   MaxRotationSpeed: 0

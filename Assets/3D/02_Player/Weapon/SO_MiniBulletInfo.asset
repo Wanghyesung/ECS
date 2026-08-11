@@ -23,8 +23,8 @@ MonoBehaviour:
   AliveTime: 1.5
   HitCount: 1
   HitStep: 1
-  KnockbackForce: 1
-  KnockbackDuration: 1
+  KnockbackForce: 0
+  KnockbackDuration: 0
   StunDuration: 0
   BaseRotationSpeed: 0
   MaxRotationSpeed: 0
