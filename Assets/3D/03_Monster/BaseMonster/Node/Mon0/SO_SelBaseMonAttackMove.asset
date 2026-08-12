@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: SO_SelBaseMonAttackMove
   m_EditorClassIdentifier: 
   listNode:
+  - {fileID: 11400000, guid: 56120ce90cd7d2548b57cd545f3534d4, type: 2}
   - {fileID: 11400000, guid: 230f5c731b7db9c4baa55b2ae02c7ea6, type: 2}
   - {fileID: 11400000, guid: 071818dc822b4474ba45abca7fc03a48, type: 2}

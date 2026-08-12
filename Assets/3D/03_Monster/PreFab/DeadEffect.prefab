@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9133788740257520005
 Transform:
   m_ObjectHideFlags: 0
@@ -4920,6 +4920,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refParticle: {fileID: 8498160084200130027}
+  m_fReferenceSize: 10
+  m_fMinSizeRatio: 0.5
+  m_fMaxSizeRatio: 3
 --- !u!114 &4305478783281764729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10448,7 +10451,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 100
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 1
     rotation3D: 0
@@ -15348,7 +15351,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 3000
+    maxNumParticles: 50
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -20190,7 +20193,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 20
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0

@@ -15,8 +15,5 @@ MonoBehaviour:
   listNode:
   - {fileID: 11400000, guid: fdac404e3427c1f4690c9741bc0d5dc6, type: 2}
   - {fileID: 11400000, guid: b274823cf7b5be54a9b6ad3d8d3f0d51, type: 2}
-  - {fileID: 11400000, guid: 348ec992be2c5e8458186fa14ba4f2c6, type: 2}
   m_fMinDuration: 3
   m_fMaxDuration: 7
-  m_fPauseMinTime: 1
-  m_fPauseMaxTime: 2

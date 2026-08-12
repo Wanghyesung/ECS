@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 428428616ca63674db6320bf362344af, type: 3}
-  m_Name: SO_SeqBaseMove
+  m_Script: {fileID: 11500000, guid: 9c4263bbb9f4a4c49af8c2c8f2938655, type: 3}
+  m_Name: SO_CheckLengthIn60
   m_EditorClassIdentifier: 
-  listNode:
-  - {fileID: 11400000, guid: 00eb7a28d05e4394ca97a91f6e411693, type: 2}
-  - {fileID: 11400000, guid: b274823cf7b5be54a9b6ad3d8d3f0d51, type: 2}
+  m_bIsIn: 1
+  m_fCheckLength: 60

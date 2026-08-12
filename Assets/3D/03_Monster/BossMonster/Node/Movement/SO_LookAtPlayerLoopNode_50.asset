@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 428428616ca63674db6320bf362344af, type: 3}
-  m_Name: SO_SeqBaseMove
+  m_Script: {fileID: 11500000, guid: 533c5b2e89d6a3642a4d6345b8bdee78, type: 3}
+  m_Name: SO_LookAtPlayerLoopNode_50
   m_EditorClassIdentifier: 
-  listNode:
-  - {fileID: 11400000, guid: 00eb7a28d05e4394ca97a91f6e411693, type: 2}
-  - {fileID: 11400000, guid: b274823cf7b5be54a9b6ad3d8d3f0d51, type: 2}
+  m_fRotateSpeed: 50

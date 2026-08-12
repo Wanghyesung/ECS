@@ -11,16 +11,16 @@ GameObject:
   - component: {fileID: 7815957592480908238}
   - component: {fileID: 5982013232056484471}
   - component: {fileID: 8659477376450560499}
-  - component: {fileID: 3720217411031324799}
   - component: {fileID: 5343842837644146064}
   - component: {fileID: 2966755597795771774}
+  - component: {fileID: 2426752405583497770}
   m_Layer: 8
   m_Name: BaseMonster1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7815957592480908238
 Transform:
   m_ObjectHideFlags: 0
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -31.477684, y: 12.7, z: 33.3}
-  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7961622341496619772}
@@ -58,6 +58,7 @@ MonoBehaviour:
     TargetTr: {fileID: 0}
     ObjInfo:
       State: 0
+      MaxHP: 0
       CurrentHP: 0
       Speed: 0
       Attack: 0
@@ -113,6 +114,7 @@ MonoBehaviour:
     ChargeParticle: {fileID: 0}
     SpawnParticleTransform: {fileID: 0}
     SpawnWaitTime: 0
+  m_refDeadEffect: {fileID: 4305478783281764729, guid: 76ea03231ba9f6344b051549bc0dba86, type: 3}
 --- !u!114 &8659477376450560499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,27 +129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refRootNode: {fileID: 11400000, guid: bfd9aac6f707b464987730cb679378fb, type: 2}
   m_refOwner: {fileID: 0}
---- !u!65 &3720217411031324799
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1057032643028932093}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 7.61, y: 2, z: 10}
-  m_Center: {x: 0, y: 0, z: -0.47}
 --- !u!54 &5343842837644146064
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -187,7 +168,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 2966755597795771774}
+  m_iPushCount: 0
   m_fAliveTime: 0
+--- !u!114 &2426752405583497770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057032643028932093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fRadius: 8.7
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 1
+  m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &2068938778717374474
 GameObject:
   m_ObjectHideFlags: 0
