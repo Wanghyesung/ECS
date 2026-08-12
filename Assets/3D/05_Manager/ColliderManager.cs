@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -59,6 +60,19 @@ public class ColliderManager : MonoBehaviour
     // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거).
     // Enter/Stay/Exit 판정을 전부 CheckPair 안에서 이 Dictionary 하나로 직접 처리한다.
     private Dictionary<long, tColliderPair> m_hashPairInfo;
+
+    // Stay 처리 비용만 따로 떼서 프로파일러(CPU Usage > Hierarchy)에서 확인하기 위한 마커.
+    // Deep Profile 없이도 이 이름으로 항목이 잡힘. CheckPair 자체를 감싸지 않는 이유는 프레임당
+    // 수만 번 불려서 마커 오버헤드가 측정을 왜곡할 수 있기 때문 - Stay 발생 쌍만 상대적으로
+    // 적어서 여기엔 감싸도 괜찮음
+    private static readonly ProfilerMarker s_tMarkerStay = new ProfilerMarker("ColliderManager.OnStay");
+
+    // ColliderManager.LateUpdate() 안에서 어느 구간이 무거운지(센터 캐싱 / 같은 레이어 대조
+    // / 레이어 간 대조) 나눠서 보기 위한 마커. 이 세 개는 레이어 단위로만 불려서 프레임당
+    // 호출 횟수가 적으니 마커 오버헤드로 측정이 왜곡될 걱정 없음
+    private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.PreLoadCenter");
+    private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
+    private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
 
     private struct tColliderPair
     {
@@ -239,33 +253,42 @@ public class ColliderManager : MonoBehaviour
 
     private void PreLoadCenter()
     {
-        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        using (s_tMarkerRefreshCenter.Auto())
         {
-            List<CircleCollider> listLayer = m_arrCollider[iLayer];
-            for (int i = 0; i < listLayer.Count; ++i)
-                listLayer[i].CenterPos();
+            for (int iLayer = 0; iLayer < 32; ++iLayer)
+            {
+                List<CircleCollider> listLayer = m_arrCollider[iLayer];
+                for (int i = 0; i < listLayer.Count; ++i)
+                    listLayer[i].CenterPos();
+            }
         }
     }
 
     private void CheckSameLayer(List<CircleCollider> _listCollider)
     {
-        for (int a = 0; a < _listCollider.Count; ++a)
+        using (s_tMarkerSameLayer.Auto())
         {
-            CircleCollider refI = _listCollider[a];
+            for (int a = 0; a < _listCollider.Count; ++a)
+            {
+                CircleCollider refI = _listCollider[a];
 
-            for (int b = a + 1; b < _listCollider.Count; ++b)
-                CheckPair(refI, _listCollider[b]);
+                for (int b = a + 1; b < _listCollider.Count; ++b)
+                    CheckPair(refI, _listCollider[b]);
+            }
         }
     }
 
     private void CheckCrossLayer(List<CircleCollider> _listA, List<CircleCollider> _listB)
     {
-        for (int a = 0; a < _listA.Count; ++a)
+        using (s_tMarkerCrossLayer.Auto())
         {
-            CircleCollider refA = _listA[a];
+            for (int a = 0; a < _listA.Count; ++a)
+            {
+                CircleCollider refA = _listA[a];
 
-            for (int b = 0; b < _listB.Count; ++b)
-                CheckPair(refA, _listB[b]);
+                for (int b = 0; b < _listB.Count; ++b)
+                    CheckPair(refA, _listB[b]);
+            }
         }
     }
 
@@ -285,9 +308,11 @@ public class ColliderManager : MonoBehaviour
         {
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
             {
-                tPair.ColliderA.OnStayCollider(tPair.ColliderB);
-                tPair.ColliderB.OnStayCollider(tPair.ColliderA);
-
+                using (s_tMarkerStay.Auto())
+                {
+                    tPair.ColliderA.OnStayCollider(tPair.ColliderB);
+                    tPair.ColliderB.OnStayCollider(tPair.ColliderA);
+                }
             }
             //이번 프레임에 처음 맞았다면
             else

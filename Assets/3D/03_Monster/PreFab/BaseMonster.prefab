@@ -80,7 +80,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1307193634272024218}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
@@ -165,6 +165,7 @@ MonoBehaviour:
     ChargeParticle: {fileID: 0}
     SpawnParticleTransform: {fileID: 0}
     SpawnWaitTime: 0
+  m_refDeadEffect: {fileID: 4305478783281764729, guid: 76ea03231ba9f6344b051549bc0dba86, type: 3}
 --- !u!114 &2361050775080599342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 5599183521212392682}
   m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &3407333176789987888
@@ -205,7 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fRadius: 21.9
+  m_fRadius: 8.7
   m_vOffset: {x: 0, y: 0, z: 0}
   m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}

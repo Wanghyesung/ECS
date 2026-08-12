@@ -37,11 +37,4 @@ public class JobGuidedBullet : Bullet
     {
         base.AttackMonster(_refOther);
     }
-
-    // GuidedMoveManager가 Job 완료 후 호출. 원본 GuidedBullet과 동일하게 Rigidbody API로 적용
-    public void ApplyMove(Vector3 _vNewPos, Quaternion _qNewRot)
-    {
-        m_refRigidbody.MoveRotation(_qNewRot);
-        m_refRigidbody.MovePosition(_vNewPos);
-    }
 }

@@ -221,7 +221,7 @@ public class MissileMoveManager : MonoBehaviour
             float3 vDirOut = m_listMoveDirOut[i];
             refOwner.SyncMoveDir(new Vector3(vDirOut.x, vDirOut.y, vDirOut.z));
 
-            if (m_listArrived[i])
+            if (m_listArrived[i] == true)
             {
                 refOwner.Arrived();
                 m_listActive[i] = false; // OnDisable이 실제로 뜨기 전까지 한두 스텝 남는 중복 처리를 막음

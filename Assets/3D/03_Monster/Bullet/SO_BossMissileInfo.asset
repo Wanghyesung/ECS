@@ -30,7 +30,7 @@ MonoBehaviour:
   BaseRotationSpeed: 20
   MaxRotationSpeed: 360
   RotationAccelRate: 30
-  ProximityRadius: 1.5
+  ProximityRadius: 2.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

@@ -210,6 +210,16 @@ public class ObjectPool : MonoBehaviour
         return refObject;
     }
 
+    public GameObject GetObject(PoolObject _refPrefabPoolObj, Vector3 _vSpawnPos)
+    {
+        GameObject refObj = GetObject(_refPrefabPoolObj);
+        if (refObj == null)
+            return null;
+
+        refObj.transform.position = _vSpawnPos;
+        return refObj;
+    }
+
     public void PushObject(GameObject _refGameObj)
     {
         PoolObject refPoolObj = _refGameObj.GetComponent<PoolObject>();

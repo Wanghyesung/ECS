@@ -27,11 +27,11 @@ public class RandomFeatureCard : BaseButtonUI
     private Coroutine m_CORotate = null;
 
 
-    public void Setup(SOData _refData)
+    public void Setup(SOData _SOData)
     {
-        m_SOData = _refData;
+        m_SOData = _SOData;
 
-        m_refTargetSprite = _refData.Icon;
+        m_refTargetSprite = _SOData.Icon;
         gameObject.SetActive(true);
 
         m_refImage.sprite = m_refOriginSprite;

@@ -72,6 +72,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76ea03231ba9f6344b051549bc0dba86
+    m_Address: Assets/3D/03_Monster/PreFab/DeadEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77c48dcea02eed349a6aae5734247312
     m_Address: Assets/02_Player/Weapon/Bullet/PlayerMisssileBullet.prefab
     m_ReadOnly: 0

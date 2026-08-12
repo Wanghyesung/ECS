@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 
@@ -70,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
         if (vAimDir.sqrMagnitude > 0.0001f)
         {
             Quaternion qTargetRot = Quaternion.LookRotation(vAimDir);
-            transform.rotation = qTargetRot;
+            transform.rotation = Quaternion.Slerp(transform.rotation, qTargetRot, Time.timeScale);
             //transform.rotation = Quaternion.RotateTowards(transform.rotation, qTargetRot, m_fAngleSpeed * Time.deltaTime);
         }
 
@@ -81,12 +82,14 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         // 부스트 종료 시(m_fBoostValue == 1.0f) 가산 속도가 정확히 0이 되도록 -1.0f를 뺀 값을 사용
-        Vector3 vBoostSpeed = new Vector3(m_fBostDir, 0.0f, 0.0f) * (m_fBoostValue - 1.0f);
-
+        
+        float fBoostSpeed = m_fBostDir * (m_fBoostValue - 1.0f);
+        Vector3 vBoostSpeed = transform.right * fBoostSpeed;
         // 회전(조준 방향)과 무관하게, 입력을 월드 XZ축에 그대로 매핑해서 이동
         Vector3 vMove = new Vector3(m_vInput.x, 0.0f, m_vInput.y);
 
-        Vector3 vNewPos = m_refRigidbody.position + (vMove * m_fMoveSpeed * m_fBoostValue + vBoostSpeed * m_fMoveSpeed) * Time.fixedDeltaTime;
+        Vector3 vNewPos = m_refRigidbody.position + 
+            (vMove * m_fMoveSpeed * m_fBoostValue + vBoostSpeed * m_fMoveSpeed) * Time.fixedDeltaTime;
 
         m_refRigidbody.MovePosition(vNewPos);
     }

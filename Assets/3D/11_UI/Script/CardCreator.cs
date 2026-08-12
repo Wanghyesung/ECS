@@ -18,8 +18,6 @@ public class CardCreator : MonoBehaviour
     [SerializeField] private SOJokerCard m_SOJokerCard;        //조커카드 표시 데이터(아이콘 등)
     [SerializeField] private RectTransform m_refCenterAnchor; //결과 연출 시 이동할 화면 중앙 위치
 
-    [SerializeField] private Player m_refPlayer;
-
     [SerializeField] private TextMeshProUGUI m_refJokerSuccessText;
     [SerializeField] private TextMeshProUGUI m_refCurrentLevel;
     //[SerializeField] private 
@@ -67,7 +65,7 @@ public class CardCreator : MonoBehaviour
         if (_SOData is not SOFeature SOFeature)
             return;
 
-        FeatureManager.m_Instance.SelectFeature(SOFeature, m_refPlayer);
+        FeatureManager.m_Instance.SelectFeature(SOFeature, Player.CurrentPlayer);
 
         Close();
 

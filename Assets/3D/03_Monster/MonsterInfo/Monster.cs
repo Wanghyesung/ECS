@@ -74,6 +74,11 @@ public class Monster : MonoBehaviour, IDamageable
 
     private PoolObject m_refPoolObj;
 
+    //몬스터가 죽을 때 생성되는 연출
+    [SerializeField] private PoolObject m_refDeadEffect;
+
+    // DeadEffect 크기 비례용 - 모듈형 파츠(Wing/MainBody 등) 전체 Renderer를 합산한 바운드 크기.
+    private float m_fMonsterSize = 0f;
     // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적 이벤트로 공유)
     public static event Action<int> OnMonsterDied;
 
@@ -94,6 +99,21 @@ public class Monster : MonoBehaviour, IDamageable
 
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
+
+        CacheMonsterSize();
+    }
+
+    private void CacheMonsterSize()
+    {
+        Renderer[] arrRenderers = GetComponentsInChildren<Renderer>();
+        if (arrRenderers.Length == 0)
+            return;
+
+        Bounds tBounds = arrRenderers[0].bounds;
+        for (int i = 1; i < arrRenderers.Length; ++i)
+            tBounds.Encapsulate(arrRenderers[i].bounds);
+
+        m_fMonsterSize = tBounds.size.magnitude;
     }
     
     private void OnEnable()
@@ -173,6 +193,9 @@ public class Monster : MonoBehaviour, IDamageable
         if (m_refBlackBoard.ObjInfo.CurrentHP <= 0)
         {
             Dead();
+            GameObject refDeadEffect = ObjectPool.m_Instance.GetObject(m_refDeadEffect, transform.position);
+            refDeadEffect.GetComponent<HitEffect>()?.SetSize(m_fMonsterSize);
+
             return;
         }
 

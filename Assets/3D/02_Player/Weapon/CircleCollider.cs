@@ -119,6 +119,6 @@ public class CircleCollider : MonoBehaviour
         Gizmos.color = m_tGizmoColor;
         // 실제 판정에 쓰이는 값(Y=0 고정된 CachedCenter)을 그대로 그려서, 눈에 보이는 원이랑
         // 진짜 판정용 원이 다른 자리에 있는 건 아닌지(Y 어긋남 등) 바로 비교 가능하게 함
-        Gizmos.DrawWireSphere(CachedCenter, m_fRadius);
+        Gizmos.DrawWireSphere(Center, m_fRadius);
     }
 }

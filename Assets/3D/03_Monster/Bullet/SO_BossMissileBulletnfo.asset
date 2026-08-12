@@ -26,8 +26,8 @@ MonoBehaviour:
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0
-  BaseRotationSpeed: 40
-  MaxRotationSpeed: 360
+  BaseRotationSpeed: 100
+  MaxRotationSpeed: 720
   RotationAccelRate: 10
   ProximityRadius: 1.5
   CriticalChance: 0

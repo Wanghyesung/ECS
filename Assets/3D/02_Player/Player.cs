@@ -149,9 +149,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         tInputInfo tInfo = InputManager.m_Instance.InputInfo;
         bool bOnSpace = tInfo.OnSpace;
-        bool bInputX = tInfo.MoveDir.x != 0;
 
-        if (bOnSpace == true && bInputX == true)
+        if (bOnSpace == true)
             MoveRoll();
 
 
@@ -183,9 +182,14 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             return;
 
         m_fLastRollTime = Time.time;
-        float fRollDir = InputManager.m_Instance.InputInfo.MoveDir.x;
+        // 대각선 입력도 좌/우 성분으로 자연스럽게 투영되도록 조준 방향(transform.right) 기준 내적으로 부호 판정
+        Vector2 vMoveInput = InputManager.m_Instance.InputInfo.MoveDir;
+        Vector3 vKeyDir = new Vector3(vMoveInput.x, 0.0f, vMoveInput.y);
+        float fRollDir = Vector3.Dot(vKeyDir, transform.right);
         if (Mathf.Approximately(fRollDir, 0.0f) == true)
             fRollDir = 1.0f;
+        else
+            fRollDir = Mathf.Sign(fRollDir);
 
         m_refVisualPlayer.PlayMaxRoll(fRollDir, m_fMaxRollDuration);
         m_refMovement.ApplySpeedBoost(fRollDir, m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
