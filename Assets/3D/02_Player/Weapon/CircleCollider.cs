@@ -42,7 +42,6 @@ public class CircleCollider : MonoBehaviour
     public void CenterPos()
     {
         m_vCachedCenter = transform.position + transform.rotation * m_vOffset;
-        m_vCachedCenter.y = 0.0f;
     }
 
 
@@ -117,8 +116,8 @@ public class CircleCollider : MonoBehaviour
             return;
 
         Gizmos.color = m_tGizmoColor;
-        // 실제 판정에 쓰이는 값(Y=0 고정된 CachedCenter)을 그대로 그려서, 눈에 보이는 원이랑
-        // 진짜 판정용 원이 다른 자리에 있는 건 아닌지(Y 어긋남 등) 바로 비교 가능하게 함
+        // 실제 판정에 쓰이는 값(CachedCenter)과 같은 계산식(Center)을 그대로 그려서, 눈에 보이는 원이랑
+        // 진짜 판정용 원이 다른 자리에 있는 건 아닌지 바로 비교 가능하게 함
         Gizmos.DrawWireSphere(Center, m_fRadius);
     }
 }

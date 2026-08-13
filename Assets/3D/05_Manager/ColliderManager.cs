@@ -294,8 +294,7 @@ public class ColliderManager : MonoBehaviour
 
     private void CheckPair(CircleCollider _refA, CircleCollider _refB)
     {
-        // 쿼터뷰: Y는 무시하고 XZ 평면 거리만으로 판정 (Bob 이펙트, 유도탄 넉백 등으로
-        // Y가 살짝 어긋나 있어도 판정이 새지 않게 함). sqrMagnitude 대신 x,z만 직접 계산
+        // 3D 전체 거리(X/Y/Z)로 겹침 판정. 구(sphere) 대 구 판정과 동일한 공식
         Vector3 vDelta = _refB.CachedCenter - _refA.CachedCenter;
         float fDistSq = vDelta.sqrMagnitude;
         float fRadiusSum = _refA.Radius + _refB.Radius;
@@ -349,8 +348,6 @@ public class ColliderManager : MonoBehaviour
     // (호출부에서 원하는 레이어를 미리 비트마스크로 조합해서 넘겨줌)
     public bool RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, LayerMask _tMask, out CircleCollider _refHit)
     {
-        _vOrigin.y = 0.0f;
-        _vDir.y = 0.0f;
         _vDir.Normalize();
 
         CircleCollider refClosest = null;
@@ -381,6 +378,37 @@ public class ColliderManager : MonoBehaviour
 
         _refHit = refClosest;
         return refClosest != null;
+    }
+
+    // Physics.OverlapSphere 대체용 - CircleCollider(PhysX 없음) 대상으로 반경 내 최근접 판정.
+    // TargetScanner 등 위치 기반 최근접 타겟 탐색에서 사용. 3D 전체 거리로 판정
+    public bool FindNearest(Vector3 _vPos, float _fRadius, LayerMask _tMask, out CircleCollider _refHit)
+    {
+        CircleCollider refNearest = null;
+        float fNearestDistSq = float.MaxValue;
+        float fRadiusSq = _fRadius * _fRadius;
+
+        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        {
+            if ((_tMask.value & (1 << iLayer)) == 0)
+                continue;
+
+            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+            {
+                CircleCollider refCollider = listLayer[i];
+                float fDistSq = (refCollider.CachedCenter - _vPos).sqrMagnitude;
+
+                if (fDistSq <= fRadiusSq && fDistSq < fNearestDistSq)
+                {
+                    fNearestDistSq = fDistSq;
+                    refNearest = refCollider;
+                }
+            }
+        }
+
+        _refHit = refNearest;
+        return refNearest != null;
     }
 
 }

@@ -1,62 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
+/*///////////////////////////////////////////
+              TargetScanner
+목적 : 플레이어 주변의 몬스터를 파싱하는 역할
+ *///////////////////////////////////////////
 public class TargetScanner : MonoBehaviour
 {
     private Transform m_refNearTargetTr;
     public Transform Target => m_refNearTargetTr;
 
     [SerializeField] private float m_fFindTime; //몇초 주기로 타겟을 찾을지
-    private WaitForSeconds m_refWaitSecond = null;
-
-    private Coroutine m_COFindTarget = null;
-
-    private Collider[] m_arrNearCollider = new Collider[30];
     [SerializeField] private float m_fFindRadius;
 
     [SerializeField] LayerMask m_tFindLayer;
 
+    private CancellationTokenSource m_refCTS;
+
     private void Awake()
     {
-        m_refWaitSecond = new WaitForSeconds(m_fFindTime);
+        m_refCTS = new CancellationTokenSource();
     }
-    private void OnEnable()
+    private void Start()
     {
-        m_COFindTarget = StartCoroutine(CoFindTarget());
+        FindTargetLoop(m_refCTS.Token).Forget();
     }
 
     private void OnDisable()
     {
-        System.Array.Clear(m_arrNearCollider, 0, m_arrNearCollider.Length);
+        m_refCTS.Cancel();
+        m_refCTS.Dispose();
+        m_refNearTargetTr = null;
     }
 
-    private IEnumerator CoFindTarget()
+    private async UniTaskVoid FindTargetLoop(CancellationToken _token)
     {
-        while(true)
+        TimeSpan tInterval = TimeSpan.FromSeconds(m_fFindTime);
+
+        while (true)
         {
-            Physics.OverlapSphereNonAlloc(transform.position, m_fFindRadius, m_arrNearCollider, m_tFindLayer);
+            ColliderManager.m_Instance.FindNearest(transform.position, m_fFindRadius, m_tFindLayer, out CircleCollider refNearest);
+            m_refNearTargetTr = refNearest != null ? refNearest.transform : null;
 
-            Transform refTarget = null;
-            float fBestDist = float.MaxValue;
-            Vector3 vPos = transform.position;
-
-            foreach (var refMon in m_arrNearCollider)
-            {
-                if (refMon == null || refMon.gameObject.activeSelf == false)
-                    continue;
-                
-                float fDist = Vector3.SqrMagnitude(refMon.transform.position - vPos);
-                if (fDist < fBestDist)
-                {
-                    fBestDist = fDist;
-                    refTarget = refMon.transform;
-                }
-            }
-
-            m_refNearTargetTr = refTarget;
-            yield return m_refWaitSecond;
+            await UniTask.Delay(tInterval, cancellationToken: _token);
         }
     }
-
 }

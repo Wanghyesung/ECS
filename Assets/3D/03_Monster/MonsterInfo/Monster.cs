@@ -225,7 +225,6 @@ public class Monster : MonoBehaviour, IDamageable
 
 
         Vector3 vDir = _refShotInfo.MoveDir;
-        vDir.y = 0.0f; // 쿼터뷰: 유도탄 등 아직 Y가 안 눌린 총알에 맞아도 넉백은 XZ 평면으로만
         float fPower = _refAttackInfo.AttackPower;
         m_refVisualObj?.PlayHitShake(vDir, fPower);
 

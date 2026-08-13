@@ -98,7 +98,6 @@ public class Weapon : MonoBehaviour
         }
 
         Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
-        vLookDir.y = 0.0f; // 쿼터뷰: 총알은 XZ 평면으로만 이동
         Quaternion qRot = (m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f)
             ? Quaternion.LookRotation(vLookDir)
             : m_refFireTr.rotation;
@@ -133,8 +132,6 @@ public class Weapon : MonoBehaviour
             Vector3 vAxis = Quaternion.AngleAxis(fSpinAngle, vBaseDir) * vSpokeAxis;//실제로 회전시킬 대상인 3D 화살표
             Vector3 vDir = Quaternion.AngleAxis(fConeAngle, vAxis) * vBaseDir;
 
-            // 쿼터뷰: 원뿔로 퍼지던 산탄을 XZ 평면 위 부채꼴로 눌러줌
-            vDir.y = 0.0f;
             if (vDir.sqrMagnitude < 0.0001f)
                 vDir = vBaseDir;
 
@@ -155,7 +152,6 @@ public class Weapon : MonoBehaviour
 
     public void FireAndRotate(Vector3 _vDir, float _fFowardOffset)
     {
-        _vDir.y = 0.0f; // 쿼터뷰: 총알은 XZ 평면으로만 이동
         if (_vDir.sqrMagnitude < 0.0001f)
             _vDir = m_refFireTr.forward;
 
