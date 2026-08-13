@@ -28,14 +28,10 @@ public class Aim : MonoBehaviour
     {
         Ray tRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0));
 
-        RaycastHit tHit;
-
-        if (Physics.Raycast(tRay, out tHit, m_fMaxLength, m_tLayerMask))
+        if (ColliderManager.m_Instance.RaycastMask(tRay.origin, tRay.direction, m_fMaxLength, m_tLayerMask, out CircleCollider refHit))
         {
-            GameObject refTarget = tHit.collider.gameObject;
             ChangeCollor(true);
-            return refTarget.transform.position;
-            //return tHit.point;
+            return refHit.transform.position;
         }
 
         ChangeCollor(false);

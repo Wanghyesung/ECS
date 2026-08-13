@@ -73,3 +73,10 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Claude Code local settings and session state
+.claude/settings.local.json
+.claude/state/*.json
+.claude/state/*.jsonl
+.claude/state/*.txt
+.claude/state/*.md

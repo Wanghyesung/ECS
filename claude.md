@@ -1,36 +1,68 @@
-# Project
-- Unity 2022.3.62f (URP) 기반 3D 우주선 슈팅 게임
-- 특징: 2D 종스크롤/횡스크롤 슈팅 게임의 직관적인 조작감과 규칙을 3D 그래픽 환경으로 구현 
-- 뷰/카메라: 쿼터뷰(탑다운 각도) + 직교투영(Orthographic) 카메라. 카메라는 플레이어 회전을 따라가지 않고 고정된 각도/거리를 유지함
-- 이동 축: 총알/몬스터/플레이어 모두 고정된 Y 높이에서 X, Z 평면으로만 이동함 (Y축 이동 없음). 과거엔 XYZ 전 축을 쓰는 진짜 3D 이동이었으나 쿼터뷰 전환으로 폐기됨
-- 조준: 마우스 커서가 가리키는 XZ 평면상의 지점이 조준 방향. 플레이어는 Y축 회전만으로 조준 방향을 바라보며, 이동은 그 바라보는 방향 기준 로컬 forward/right(=XZ 평면)로 처리됨
-- 맵 범위: 원점(0,0,0) 기준 좌우앞뒤(X, Z 축) ±500 (Y는 고정 높이)
+# CLAUDE.md - AI 어시스턴트를 위한 프로젝트 컨텍스트
 
-# Architecture & Systems
-- 플레이어 FSM (Finite State Machine): 플레이어 상태(Idle, Move, Dead) 
-- 몬스터 Behavior Tree (BT): Sequence, Selector, Action 노드로 구성된 트리 구조
-- Scriptable Object (SO) 기반 Action: 각 Action 로직은 SO로 작성되어 에디터에서 인스펙터로 할당 및 교체 가능해야 함
-- Blackboard System: 몬스터 간의 상태, 타겟 정보, 동적 변수(int, float, bool 등)를 공유하고 전달하기 위한 블랙보드 컴포넌트 필수 사용
-- 데이터 분리 규칙: SO는 '데이터와 에디터 세팅'만 가져야 하며, 런타임에 인스턴스별로 동적으로 변하는 상태값은 반드시 'Blackboard'나 런타임 노드 인스턴스에 저장할 것 (SO 데이터 오염 방지)4
+> `generate-claude-md.sh`에 의해 2026-08-13에 자동 생성됨.
+> 이 파일을 검토하고 프로젝트의 세부 사항에 맞게 수정하세요.
 
-- Object Pool: 자주 생성/삭제되는 미사일(Bullet), 이펙트(FX), 에너미(Enemy)에 필수 적용
-- Event System: 점수 갱신, 플레이어 피격, 게임 오버 등 UI와 시스템 간 느슨한 결합(Observer 패턴) 유지
+---
 
-# Coding Style & Conventions
-- 필드 네이밍: 멤버 변수는 `m_` 접두사 사용 (예: `m_vMoveSpeed`)
-- 매개변수는 '_' 사용 예시 ('Function(_fSpeed)))
-- 변수 앞에 접두사 float(f), int (i), Vector2,3 (v), List (list), Queue (que), dobudle (d), string (str), Dictionary (hash)
-- 클래스/메서드 네이밍: PascalCase 사용 (예: `PlayerController`)
+## 프로젝트 개요
 
-- 최적화: 
-  - Update 사용 최소화 (이벤트 기반 전환)
-  - GC Alloc 0 추구 (매 프레임 `new` 연산자 사용 금지, 문자열 연산 자제)
-  - 인스펙터 노출이 필요한 필드는 `[SerializeField]` 적극 활용
-  - 공유 변수는 스크립터블 오브젝트를 사용해서 메모리 최적화
-  
+| 속성 | 값 |
+|------|-----|
+| **Unity 버전** | 2022.3.62f2 |
+| **렌더 파이프라인** | URP |
+| **감지된 패키지** | Addressables, AI Navigation, Cinemachine, Recorder, 2D Sprite, Visual Scripting, Input System, TextMeshPro |
 
-# Rules for Claude Code
-- 코드를 수정하거나 리팩토링할 때 기존 구조를 최대한 깨뜨리지 않고 유지할 것.
-- 만약 성능적으로 더 좋은 방법이 있다면 기존 구조를 깨뜨려도 될 것.
-- 새로운 기능을 추가하거나 수정할 때, 그렇게 설계한 이유를 명확히 설명할 것.
-- 성능 저하(매 프레임 Alloc 발생 등)를 유발하는 구현은 지양하고 대안을 제시할 것.
+---
+
+## 아키텍처
+
+### 어셈블리 정의 (Assembly Definitions)
+
+- `UniTask.Editor` (Assets/Plugins/UniTask/Editor/UniTask.Editor.asmdef)
+- `UniTask.Addressables` — 의존성: com.unity.addressables, com.unity.addressables.cn (Assets/Plugins/UniTask/Runtime/External/Addressables/UniTask.Addressables.asmdef)
+- `UniTask.DOTween` — 의존성: com.demigiant.dotween (Assets/Plugins/UniTask/Runtime/External/DOTween/UniTask.DOTween.asmdef)
+- `UniTask.TextMeshPro` — 의존성: com.unity.textmeshpro, com.unity.ugui (Assets/Plugins/UniTask/Runtime/External/TextMeshPro/UniTask.TextMeshPro.asmdef)
+- `UniTask.Linq` (Assets/Plugins/UniTask/Runtime/Linq/UniTask.Linq.asmdef)
+- `UniTask` — 의존성: com.unity.modules.assetbundle, com.unity.modules.physics, com.unity.modules.physics2d, com.unity.modules.particlesystem, com.unity.ugui, com.unity.modules.unitywebrequest (Assets/Plugins/UniTask/Runtime/UniTask.asmdef)
+
+### 빌드에 포함된 씬
+
+_EditorBuildSettings에서 씬을 찾을 수 없습니다._
+
+---
+
+## 빌드 타겟
+
+<!-- 실제 타겟에 맞게 수정하세요 -->
+- **주 타겟:** PC / Mac Standalone
+- **부 타겟:** Android / iOS
+- **CI:** _여기에 CI 설정을 설명하세요_
+
+---
+
+## 컨벤션
+
+- `.claude/rules/` 아래의 규칙 파일에 정의된 코딩 표준을 따르세요.
+- public 멤버에는 PascalCase, private 필드에는 camelCase(언더스코어 접두사 포함)를 사용하세요.
+- `== "tag"`보다 `CompareTag()`를 우선 사용하세요.
+- 컴포넌트 참조는 `Awake()`/`Start()`에서 캐싱하고, 핫 루프에서는 절대 `GetComponent`를 호출하지 마세요.
+- 컴파일 속도를 빠르게 유지하기 위해 어셈블리 정의를 사용하세요.
+- 모든 직렬화된 에셋은 Unity YAML(Force Text) 직렬화를 사용해야 합니다.
+
+---
+
+## 로드할 스킬
+
+감지된 패키지를 기반으로, 다음 Claude 스킬/컨텍스트 파일을 로드하는 것을 고려하세요:
+
+- `unity-general`
+- `unity-addressables`
+- `unity-cinemachine`
+- `unity-input-system`
+
+---
+
+## 커스텀 노트
+
+<!-- AI 어시스턴트를 위한 프로젝트별 노트, 주의사항, 컨텍스트를 여기에 추가하세요. -->
