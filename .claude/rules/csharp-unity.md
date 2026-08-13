@@ -2,19 +2,17 @@
 
 ## 필드 선언
 
-- 인스펙터에 노출되는 필드는 `[SerializeField] private` — 절대 public을 쓰지 않습니다
-- private/protected 필드는 `_lowerCamelCase` 사용: `_moveSpeed`, `_health`
-- public 필드는 `lowerCamelCase` 사용: `moveSpeed`, `health`
-- 프로퍼티(public과 private 모두)는 `UpperCamelCase` 사용: `MoveSpeed`, `Health`
-- `static readonly` 필드는 `UpperCamelCase` 사용: `JumpHash`, `DefaultColor`
-- `const` 필드는 `UPPER_SNAKE_CASE` 사용: `MAX_HEALTH`, `MAX_PLAYER_COUNT`
-- 생성자나 Awake에서만 설정되는 필드는 `readonly` 사용
+- 필드 네이밍: 멤버 변수는 m_ 접두사 사용 (예: m_vMoveSpeed)
+- 매개변수는 '_' 사용 예시 ('Function(_fSpeed)))
+- 변수 앞에 접두사 float(f), int (i), Vector2,3 (v), List (list), Queue (que), dobudle (d), string (str), Dictionary (hash)
+- 클래스/메서드 네이밍: PascalCase 사용 (예: PlayerController)
+
 
 ```csharp
-[SerializeField] private float _moveSpeed = 5f;
-[SerializeField] private Transform _spawnPoint;
+[SerializeField] private float m_fMoveSpeed = 5f;
+[SerializeField] private Transform m_refSpawnPoint;
 
-private Rigidbody _rigidbody;
+private Rigidbody m_refRigidbody;
 private static readonly int JumpHash = Animator.StringToHash("Jump");
 private const int MAX_JUMP_COUNT = 3;
 ```
@@ -26,7 +24,6 @@ private const int MAX_JUMP_COUNT = 3;
 - 필드: 기본적으로 `private`. 인스펙터에서 반드시 설정해야 하는 필드에만 `[SerializeField] private`을 사용하세요. `[SerializeField]`를 미리 추측해서 추가하지 마세요 — 디자이너/개발자가 실제로 인스펙터에서 그 값을 조정해야 할 때만 사용하세요.
 - 메서드: 기본적으로 `private`. 다른 클래스가 실제로 호출할 때만 `public`으로 만드세요. "나중에 쓸모 있을지도 모른다"는 이유가 되지 않습니다.
 - 프로퍼티: 기본적으로 `private`. 다른 클래스가 읽을 때만 public getter를 노출하세요. 다른 클래스가 쓸 때만 public setter를 노출하세요.
-- 클래스/구조체: 어셈블리 내부에서는 기본적으로 `internal`. 다른 어셈블리에서 사용될 때만 `public`.
 - 중첩 타입: 외부 접근이 필요하지 않으면 `private`.
 
 **테스트 방법:** 무언가를 non-private으로 만들기 전에, 호출자를 특정하세요. 현재 코드베이스에서 구체적인 호출자를 명시할 수 없다면, `private`으로 남겨두세요. 에이전트는 추측성 public API 표면을 생성해서는 안 됩니다.
@@ -55,15 +52,15 @@ public sealed class EnemySystem
 **`[SerializeField]` 규율:**
 ```csharp
 // 나쁜 예 — 인스펙터 노출이 필요 없는 필드를 직렬화함
-[SerializeField] private int _currentHealth;      // 런타임 상태이지, 설정값이 아님 — 직렬화하지 마세요
-[SerializeField] private bool _isInitialized;     // 내부 플래그 — 직렬화하지 마세요
-[SerializeField] private Transform _cachedTransform; // 캐싱된 참조 — 직렬화하지 마세요
+[SerializeField] private int m_iCurrentHealth;           // 런타임 상태이지, 설정값이 아님 — 직렬화하지 마세요
+[SerializeField] private bool m_bIsInitialized;          // 내부 플래그 — 직렬화하지 마세요
+[SerializeField] private Transform m_refCachedTransform; // 캐싱된 참조 — 직렬화하지 마세요
 
 // 좋은 예 — 디자이너가 설정하는 것만 직렬화함
-[SerializeField] private float _moveSpeed = 5f;   // 디자이너가 인스펙터에서 조정함
-[SerializeField] private GameObject _bulletPrefab; // 인스펙터 참조로 설정됨
-private int _currentHealth;                         // 런타임 상태 — 그냥 private
-private bool _isInitialized;                        // 내부 플래그 — 그냥 private
+[SerializeField] private float m_fMoveSpeed = 5f;         // 디자이너가 인스펙터에서 조정함
+[SerializeField] private GameObject m_refBulletPrefab;      // 인스펙터 참조로 설정됨
+private int m_iCurrentHealth;                             // 런타임 상태 — 그냥 private
+private bool m_bIsInitialized;                            // 내부 플래그 — 그냥 private
 ```
 
 ## 타입과 네이밍
@@ -89,13 +86,13 @@ public sealed class PlayerController : MonoBehaviour
 
 ## 제어 흐름
 
-- 한 줄짜리 `if`/`for`/`while`이라도 항상 중괄호를 사용하세요
+- 한 줄짜리 `if`는 중괄호를 사용하지 마세요
 - 핫 패스(Update, FixedUpdate)에서는 `foreach`보다 `for`를 사용하세요
-- 축약된 루프 변수를 쓰지 마세요 — `for (int i = 0; ...)`가 아니라 `for (int enemyIndex = 0; ...)`
+- 축약된 루프 변수를 쓰세요 — `for (int i = 0; ...)`
 - 매직 스트링을 쓰지 마세요 — `nameof()`, `Animator.StringToHash()`, `Shader.PropertyToID()`를 사용하세요
 
 ## 기타
 
 - 게임플레이 코드에서는 LINQ를 사용하지 마세요
 - 문자열을 조합할 때는 `StringBuilder`를 사용하세요
-- `tag == "tag"`가 아니라 `CompareTag("tag")`를 사용하세요
+- tag 보다는 layermask를 사용하세요

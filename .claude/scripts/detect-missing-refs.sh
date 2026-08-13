@@ -8,7 +8,7 @@ set -euo pipefail
 # don't correspond to any .meta file in the project.
 #
 # Usage:
-#   ./scripts/detect-missing-refs.sh [--path <dir>]
+#   .claude/scripts/detect-missing-refs.sh [--path <dir>]
 #   Defaults to Assets/ under the nearest Unity project root.
 # =============================================================================
 
@@ -30,7 +30,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}detect-missing-refs.sh${RESET} - Find broken references in Unity YAML files.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/detect-missing-refs.sh [--path <dir>]
+  .claude/scripts/detect-missing-refs.sh [--path <dir>]
 
 ${BOLD}Options:${RESET}
   --path <dir>   Directory to scan (defaults to Assets/).

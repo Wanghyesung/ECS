@@ -1,7 +1,7 @@
 # CLAUDE.md - AI 어시스턴트를 위한 프로젝트 컨텍스트
 
-> `generate-claude-md.sh`에 의해 2026-08-13에 자동 생성됨.
-> 이 파일을 검토하고 프로젝트의 세부 사항에 맞게 수정하세요.
+> `generate-claude-md.sh`에 의해 2026-08-13에 자동 생성됨, 이후 기존 프로젝트 컨벤션을 반영해 수동으로 보강함.
+> 이 파일은 가볍게 유지합니다 — 세부 내용은 `.claude/docs/`와 `.claude/rules/`를 참고하세요.
 
 ---
 
@@ -13,9 +13,20 @@
 | **렌더 파이프라인** | URP |
 | **감지된 패키지** | Addressables, AI Navigation, Cinemachine, Recorder, 2D Sprite, Visual Scripting, Input System, TextMeshPro |
 
+**게임 기획:** 3D 슈팅 · 로그라이트. 자세한 내용(컨셉, 게임 루프, 조커 카드 시스템 등)은 `.claude/docs/game-design.md` 참고.
+
 ---
 
-## 아키텍처
+## Claude Code 작업 규칙
+
+- 코드를 수정하거나 리팩토링할 때 기존 구조를 최대한 깨뜨리지 않고 유지할 것.
+- 만약 성능적으로 더 좋은 방법이 있다면 기존 구조를 깨뜨려도 됨.
+- 새로운 기능을 추가하거나 수정할 때, 그렇게 설계한 이유를 명확히 설명할 것.
+- 성능 저하(매 프레임 Alloc 발생 등)를 유발하는 구현은 지양하고 대안을 제시할 것.
+
+---
+
+## 아키텍처 (엔진 감지 정보)
 
 ### 어셈블리 정의 (Assembly Definitions)
 
@@ -26,6 +37,8 @@
 - `UniTask.Linq` (Assets/Plugins/UniTask/Runtime/Linq/UniTask.Linq.asmdef)
 - `UniTask` — 의존성: com.unity.modules.assetbundle, com.unity.modules.physics, com.unity.modules.physics2d, com.unity.modules.particlesystem, com.unity.ugui, com.unity.modules.unitywebrequest (Assets/Plugins/UniTask/Runtime/UniTask.asmdef)
 
+게임 시스템 아키텍처(Behavior Tree, ScriptableObject Action, Blackboard, Object Pool, Event System 등)와 코드 레이어링(MVS/VContainer) 규칙은 `.claude/rules/architecture.md` 참고.
+
 ### 빌드에 포함된 씬
 
 _EditorBuildSettings에서 씬을 찾을 수 없습니다._
@@ -34,18 +47,16 @@ _EditorBuildSettings에서 씬을 찾을 수 없습니다._
 
 ## 빌드 타겟
 
-<!-- 실제 타겟에 맞게 수정하세요 -->
-- **주 타겟:** PC / Mac Standalone
-- **부 타겟:** Android / iOS
+- **주 타겟:** Windows
+- **부 타겟:** Android (최적화 시)
 - **CI:** _여기에 CI 설정을 설명하세요_
 
 ---
 
 ## 컨벤션
 
-- `.claude/rules/` 아래의 규칙 파일에 정의된 코딩 표준을 따르세요.
-- public 멤버에는 PascalCase, private 필드에는 camelCase(언더스코어 접두사 포함)를 사용하세요.
-- `== "tag"`보다 `CompareTag()`를 우선 사용하세요.
+- `.claude/rules/` 아래의 규칙 파일에 정의된 코딩 표준을 반드시 따르세요.
+- C# 네이밍/최적화 컨벤션(이 프로젝트는 `m_` 접두사 + 타입별 헝가리안 표기를 사용하는 고유 컨벤션임)은 `.claude/rules/csharp-unity.md` 참고.
 - 컴포넌트 참조는 `Awake()`/`Start()`에서 캐싱하고, 핫 루프에서는 절대 `GetComponent`를 호출하지 마세요.
 - 컴파일 속도를 빠르게 유지하기 위해 어셈블리 정의를 사용하세요.
 - 모든 직렬화된 에셋은 Unity YAML(Force Text) 직렬화를 사용해야 합니다.

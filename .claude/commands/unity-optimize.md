@@ -26,7 +26,7 @@ manage_profiler → memory snapshot
 - **메모리** — 큰 텍스처, 비압축 오디오, 누수된 Addressables
 
 ### 3단계: 코드 스캔
-`./scripts/validate-code-quality.sh`를 실행하여 다음을 찾습니다:
+`.claude/scripts/validate-code-quality.sh`를 실행하여 다음을 찾습니다:
 - Update 안의 GetComponent
 - 캐싱되지 않은 Camera.main
 - 게임플레이 코드 안의 LINQ

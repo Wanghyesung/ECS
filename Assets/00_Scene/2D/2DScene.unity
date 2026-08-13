@@ -6494,7 +6494,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &906325013
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10668,7 +10668,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   m_fMaxLength: 1000
-  m_refPlayer: {fileID: 3250488527711361830}
   m_refAimImage: {fileID: 1273005940}
 --- !u!114 &1273005940
 MonoBehaviour:
@@ -16412,6 +16411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refMainCamera: {fileID: 963194227}
   m_refPlayer: {fileID: 3250488527711361830}
+  m_vOffset: {x: 0, y: 5, z: -10}
   m_refBloodScreen: {fileID: 40183167}
 --- !u!1 &1887610822
 GameObject:
@@ -19193,7 +19193,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refVSObject: {fileID: 703703997}
-  m_refAim: {fileID: 1273005939}
   m_fMoveSpeed: 12
   m_fAngleSpeed: 25
 --- !u!114 &4420039787527282765

@@ -7,7 +7,7 @@ set -euo pipefail
 # Detects missing .meta files, orphaned .meta files, and duplicate GUIDs.
 #
 # Usage:
-#   ./scripts/validate-meta-integrity.sh [--staged|--all]
+#   .claude/scripts/validate-meta-integrity.sh [--staged|--all]
 #   --staged   Only check files staged in git (useful as a pre-commit hook).
 #   --all      Scan the entire Assets/ directory (default).
 # =============================================================================
@@ -30,7 +30,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}validate-meta-integrity.sh${RESET} - Check .meta file health in a Unity project.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/validate-meta-integrity.sh [--staged|--all]
+  .claude/scripts/validate-meta-integrity.sh [--staged|--all]
 
 ${BOLD}Flags:${RESET}
   --staged   Only check files staged in git.

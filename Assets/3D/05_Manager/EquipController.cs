@@ -27,8 +27,11 @@ public class EquipController : MonoBehaviour
     [SerializeField] private BaseButtonUI m_refPlusButton;
     private void Awake()
     {
-        if (m_Instance != null)
-            Destroy(this);
+        if (m_Instance != null && m_Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         m_Instance = this;
         DontDestroyOnLoad(this);

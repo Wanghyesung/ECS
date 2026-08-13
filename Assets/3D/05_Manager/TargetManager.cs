@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 /*///////////////////////////////////////////
                TargetManager
@@ -12,11 +11,14 @@ public class TargetManager : MonoBehaviour
     public static TargetManager m_Instance = null;
     private Monster m_refTarget = null;
 
-    //[SerializeField] private 
+    //[SerializeField] private
     private void Awake()
     {
-        if (m_Instance != null)
-            Destroy(this);
+        if (m_Instance != null && m_Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         m_Instance = this;
         DontDestroyOnLoad(this);

@@ -10,8 +10,11 @@ public class ContainerManager : MonoBehaviour
 
     private void Awake()
     {
-        if (m_Instance != null)
-            Destroy(this);
+        if (m_Instance != null && m_Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         m_Instance = this;
         DontDestroyOnLoad(this);

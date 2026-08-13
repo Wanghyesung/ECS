@@ -8,7 +8,7 @@ set -euo pipefail
 # patterns (singletons, coroutines), and injection misuse.
 #
 # Usage:
-#   ./scripts/validate-architecture.sh [--path <dir>]
+#   .claude/scripts/validate-architecture.sh [--path <dir>]
 #   Defaults to Assets/ under the nearest Unity project root.
 # =============================================================================
 
@@ -30,7 +30,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}validate-architecture.sh${RESET} - MVS architecture compliance checker.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/validate-architecture.sh [OPTIONS]
+  .claude/scripts/validate-architecture.sh [OPTIONS]
 
 ${BOLD}Options:${RESET}
   --path <dir>   Directory to scan (default: Assets/ under Unity project root)

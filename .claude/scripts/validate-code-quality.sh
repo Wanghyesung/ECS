@@ -8,7 +8,7 @@ set -euo pipefail
 # without requiring Roslyn or any .NET tooling.
 #
 # Usage:
-#   ./scripts/validate-code-quality.sh [--path <dir>]
+#   .claude/scripts/validate-code-quality.sh [--path <dir>]
 #   Defaults to Assets/ under the nearest Unity project root.
 # =============================================================================
 
@@ -30,7 +30,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}validate-code-quality.sh${RESET} - Grep-based C# code quality scanner for Unity.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/validate-code-quality.sh [--path <dir>]
+  .claude/scripts/validate-code-quality.sh [--path <dir>]
 
 ${BOLD}Options:${RESET}
   --path <dir>   Directory to scan (defaults to Assets/ in the project root).

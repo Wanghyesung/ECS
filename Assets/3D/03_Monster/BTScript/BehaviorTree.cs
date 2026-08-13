@@ -75,6 +75,9 @@ public class BlackBoard
     public Vector3 StrafeDir;
     public float StrafeTimer;
 
+    [Header("Wait")]
+    public float WaitTimer;
+
 }
 
 

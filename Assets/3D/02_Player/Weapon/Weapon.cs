@@ -69,16 +69,19 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
+        if (m_refAttackInfo == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError($"[{name}] 공격 SO 에셋설정을 안 함", this);
+            //UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+            return;
+        }
+
         m_fFireTime = m_refAttackInfo.CoolDown;
         m_fLastFireTime = Time.time;
-
-#if UNITY_EDITOR
-        if (m_refAttackInfo == null)
-            Debug.Log("공격 SO 에셋설정을 안 함");
-        //UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 
     public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)

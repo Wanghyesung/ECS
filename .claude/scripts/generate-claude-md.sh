@@ -7,7 +7,7 @@ set -euo pipefail
 # Detects Unity version, render pipeline, installed packages, assembly
 # definitions, and scene list to produce a comprehensive project context file.
 #
-# Usage: ./scripts/generate-claude-md.sh [project-dir]
+# Usage: .claude/scripts/generate-claude-md.sh [project-dir]
 #        Defaults to the current directory if no project-dir is given.
 # =============================================================================
 
@@ -29,7 +29,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}generate-claude-md.sh${RESET} - Auto-generate a CLAUDE.md for a Unity project.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/generate-claude-md.sh [project-dir]
+  .claude/scripts/generate-claude-md.sh [project-dir]
 
 ${BOLD}Arguments:${RESET}
   project-dir   Path to the Unity project root (defaults to current directory).

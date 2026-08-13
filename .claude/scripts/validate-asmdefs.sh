@@ -10,7 +10,7 @@ set -euo pipefail
 # Requires: jq
 #
 # Usage:
-#   ./scripts/validate-asmdefs.sh [--all]
+#   .claude/scripts/validate-asmdefs.sh [--all]
 #   --all   Include detailed per-assembly output.
 # =============================================================================
 
@@ -32,7 +32,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}validate-asmdefs.sh${RESET} - Assembly definition graph checker for Unity.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/validate-asmdefs.sh [--all]
+  .claude/scripts/validate-asmdefs.sh [--all]
 
 ${BOLD}Options:${RESET}
   --all    Show detailed per-assembly information.

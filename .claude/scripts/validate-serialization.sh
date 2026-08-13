@@ -8,7 +8,7 @@ set -euo pipefail
 # would silently reset values in scenes, prefabs, and ScriptableObjects.
 #
 # Usage:
-#   ./scripts/validate-serialization.sh [--path <dir>] [--staged]
+#   .claude/scripts/validate-serialization.sh [--path <dir>] [--staged]
 #   --path <dir>   Scan a specific directory (default: Assets/)
 #   --staged       Only check staged files (for pre-commit validation)
 # =============================================================================
@@ -31,7 +31,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}validate-serialization.sh${RESET} - Detect renamed serialized fields missing FormerlySerializedAs.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/validate-serialization.sh [OPTIONS]
+  .claude/scripts/validate-serialization.sh [OPTIONS]
 
 ${BOLD}Options:${RESET}
   --path <dir>   Directory to scan (default: Assets/ under Unity project root)

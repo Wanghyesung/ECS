@@ -11,25 +11,25 @@ Unity 프로젝트에 대한 종합적인 감사를 실행합니다.
 ## 점검 항목
 
 ### 1. 메타 파일 무결성
-`./scripts/validate-meta-integrity.sh --all`을 실행합니다:
+`.claude/scripts/validate-meta-integrity.sh --all`을 실행합니다:
 - 모든 애셋에 `.meta` 파일이 존재하는지
 - 고아 `.meta` 파일이 없는지
 - 중복된 GUID가 없는지
 
 ### 2. 누락된 참조
-`./scripts/detect-missing-refs.sh`를 실행합니다:
+`.claude/scripts/detect-missing-refs.sh`를 실행합니다:
 - 씬/프리팹의 깨진 스크립트 참조
 - 누락된 애셋 GUID
 - null 직렬화 참조
 
 ### 3. 어셈블리 정의 그래프
-`./scripts/validate-asmdefs.sh`를 실행합니다:
+`.claude/scripts/validate-asmdefs.sh`를 실행합니다:
 - 순환 종속성이 없는지
 - Editor/Runtime이 제대로 분리되어 있는지
 - 모든 스크립트가 asmdef에 포함되어 있는지
 
 ### 4. 코드 품질
-`./scripts/validate-code-quality.sh`를 실행합니다:
+`.claude/scripts/validate-code-quality.sh`를 실행합니다:
 - Update에서의 GetComponent/Camera.main 사용
 - 게임플레이 코드 내 LINQ 사용
 - 핫 패스에서의 할당(allocation)

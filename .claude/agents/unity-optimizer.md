@@ -50,7 +50,7 @@ manage_graphics action:"get_rendering_stats" → draw calls, batches, triangles,
 Scan for common performance anti-patterns:
 ```bash
 # Run the code quality validator
-./scripts/validate-code-quality.sh
+.claude/scripts/validate-code-quality.sh
 ```
 
 Then Grep for specific patterns:

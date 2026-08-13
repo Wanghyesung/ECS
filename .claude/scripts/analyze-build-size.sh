@@ -8,7 +8,7 @@ set -euo pipefail
 # textures, uncompressed audio, and large meshes.
 #
 # Usage:
-#   ./scripts/analyze-build-size.sh [--log <path>]
+#   .claude/scripts/analyze-build-size.sh [--log <path>]
 #   Without --log, searches for the most recent Editor.log in platform-specific
 #   default locations.
 # =============================================================================
@@ -31,7 +31,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 ${BOLD}analyze-build-size.sh${RESET} - Parse Unity Editor.log for build size info.
 
 ${BOLD}Usage:${RESET}
-  ./scripts/analyze-build-size.sh [--log <path>]
+  .claude/scripts/analyze-build-size.sh [--log <path>]
 
 ${BOLD}Options:${RESET}
   --log <path>   Path to a specific Unity Editor.log file.
