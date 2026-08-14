@@ -38,8 +38,22 @@ public class GuidedBullet : Bullet
         base.SetAttack(_refAttackInfo, _refShotInfo);
     }
 
-    protected override void AttackMonster(CircleCollider _refOther)
+    protected override void Attack(CircleCollider _refOther)
     {
-        base.AttackMonster(_refOther);
+        base.Attack(_refOther);
+    }
+
+    // GuidedBullet도 Missiles와 마찬가지로 타겟을 향해 휘어가므로, 직선 근사 대신
+    // 실제로 쫓아가는 타겟 지점까지 직선으로 예고선을 그림 (ActivateMoveJob과 동일한 타겟)
+    protected override void UpdateLine()
+    {
+        if (m_tShotInfo.TargetTr == null)
+        {
+            base.UpdateLine();
+            return;
+        }
+
+        Vector3 vToTarget = m_tShotInfo.TargetTr.position - transform.position;
+        m_refLineDrawer?.SetLine(transform.position, vToTarget, vToTarget.magnitude);
     }
 }

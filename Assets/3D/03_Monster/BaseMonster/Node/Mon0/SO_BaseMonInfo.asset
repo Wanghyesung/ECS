@@ -16,4 +16,4 @@ MonoBehaviour:
   Description: 
   MaxHP: 100
   MaxSpeed: 3
-  ExpReward: 10
+  ExpReward: 5

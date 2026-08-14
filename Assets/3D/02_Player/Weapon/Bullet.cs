@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /*///////////////////////////////////////////
                 IAttackObject
@@ -41,8 +42,11 @@ public class Bullet : MonoBehaviour, IAttackObject
     // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
 
-    [SerializeField] private PoolObject m_refHitEffectObj;
+    // protected: Missiles/GuidedBullet이 UpdateLine()을 오버라이드해서 직접 접근해야 함
+    [FormerlySerializedAs("m_refLineInfo")]
+    [SerializeField] protected BulletLineDrawer m_refLineDrawer; // 볼렛 예고선 담당 (일반 클래스라 인스펙터에 필드가 그대로 펼쳐짐)
 
+    [SerializeField] private PoolObject m_refHitEffectObj;
     // 프리팹 고유 동작. 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행. 인스펙터에서 조합, 런타임에 안 건드림
     [SerializeField] private SOBulletAction[] m_arrArriveActions;
     // 프리팹 고유 동작. 실제로 대상에 데미지를 입힌 순간(=명중)에만 실행. 인스펙터에서 조합, 런타임에 안 건드림
@@ -64,7 +68,9 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refCircleCollider = GetComponent<CircleCollider>();
 
         m_iMoveManagerIndex = RegisterMoveJob();
+
     }
+
 
     // 이동 Job 매니저에 슬롯을 배정받는다. Missiles/GuidedBullet은 각자 다른 매니저
     // (MissileMoveManager/GuidedMoveManager)에 등록하도록 오버라이드함
@@ -90,7 +96,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected virtual void OnEnable()
     {
         if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter += AttackMonster;
+            m_refCircleCollider.OnHitTargetEnter += Attack;
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush += RunArriveActions;
@@ -100,10 +106,12 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected virtual void OnDisable()
     {
         if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter -= AttackMonster;
+            m_refCircleCollider.OnHitTargetEnter -= Attack;
 
         if (m_refPoolObj != null)
             m_refPoolObj.OnPush -= RunArriveActions;
+
+        m_refLineDrawer?.CutLine();
 
         UnactivateMoveJob();
     }
@@ -152,7 +160,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     }
 
 
-    protected virtual void AttackMonster(CircleCollider _refOther)
+    protected virtual void Attack(CircleCollider _refOther)
     {
         var iDamageable = _refOther.GetComponent<IDamageable>();
         if (iDamageable != null)
@@ -183,10 +191,18 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_tShotInfo.MoveDir = transform.forward;
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         ActivateMoveJob();
+
+        UpdateLine();
+    }
+
+    // 예고선 방향/거리 계산 - 직선으로만 날아가는 기본 볼렛 기준. 유도탄처럼 곡선으로 휘는 총알은
+    // 이 직선 근사가 실제 경로와 안 맞으므로 Missiles/GuidedBullet에서 타겟 방향 기준으로 오버라이드함
+    protected virtual void UpdateLine()
+    {
+        m_refLineDrawer?.SetLine(transform.position, m_tShotInfo.MoveDir, m_tShotInfo.Speed * m_refAttackInfo.AliveTime);
     }
 
 
-    // 풀에서 공격 오브젝트를 꺼내 위치/회전을 세팅하고 SetAttack까지 호출하는 스폰 로직을 한 곳에 모아,
     // Weapon뿐 아니라 BulletAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
     public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {

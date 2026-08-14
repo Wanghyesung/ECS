@@ -99,8 +99,7 @@ public class Weapon : MonoBehaviour
 
         Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
         Quaternion qRot = (m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f)
-            ? Quaternion.LookRotation(vLookDir)
-            : m_refFireTr.rotation;
+            ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
         qRot = ApplyInaccuracy(qRot);
 
         GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);

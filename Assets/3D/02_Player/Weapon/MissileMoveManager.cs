@@ -308,7 +308,7 @@ public class MissileMoveManager : MonoBehaviour
             float fRotateSpeed = fBaseSpeed + fDistAccel;
 
             float fStep = fRotateSpeed * FDeltaTime;
-            float t = (fAngleDeg > 0.001f) ? math.clamp(fStep / fAngleDeg, 0f, 1f) : 1f;
+            float t = math.clamp(fStep / fAngleDeg, 0f, 1f);
 
             // Vector3.Slerp(forward, dir, t)와 동일한 결과를 내는 구면보간 공식(두 단위벡터 사이).
             // 쿼터니언 없이 순수 벡터/사인 연산만으로 계산 가능해서 Burst에서도 완전히 안전함

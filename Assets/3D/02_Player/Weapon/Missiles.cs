@@ -59,13 +59,25 @@ public class Missiles : Bullet
         m_refPoolObj.SetAliveTime(0.0f);
     }
 
-    protected override void AttackMonster(CircleCollider _refOther)
+    protected override void Attack(CircleCollider _refOther)
     {
-        base.AttackMonster(_refOther);
+        base.Attack(_refOther);
     }
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         base.SetAttack(_refAttackInfo, _refShotInfo);
+    }
+
+    // 미사일은 곡선으로 유도되므로 초기 방향×속도 직선 근사가 아니라, 실제로 노리는
+    // 타겟 지점까지 직선으로 예고선을 그림 (ActivateMoveJob과 동일한 타겟 계산)
+    protected override void UpdateLine()
+    {
+        Vector3 vTargetPos = m_tShotInfo.TargetPos;
+        if (m_bTraceTarget == true && m_tShotInfo.TargetTr != null)
+            vTargetPos = m_tShotInfo.TargetTr.position;
+
+        Vector3 vToTarget = vTargetPos - transform.position;
+        m_refLineDrawer?.SetLine(transform.position, vToTarget, vToTarget.magnitude);
     }
 }

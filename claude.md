@@ -70,8 +70,6 @@ _EditorBuildSettings에서 씬을 찾을 수 없습니다._
 
 - `unity-general`
 - `unity-addressables`
-- `unity-cinemachine`
-- `unity-input-system`
 
 ---
 

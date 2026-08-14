@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac9acc8c22500884e83c87952a21110f, type: 3}
-  m_Name: SOMon5Info
+  m_Script: {fileID: 11500000, guid: 9742a6790236bd74bb3499c0950fb330, type: 3}
+  m_Name: SO_BulletLine Data
   m_EditorClassIdentifier: 
-  ObjectName: StarSparrow5
-  Description: "\uC77C\uBC18 \uBAAC\uC2A4\uD130 - StarSparrow5 (Tier 3)"
-  MaxHP: 220
-  MaxSpeed: 5.2
-  MaxAtack: 1600
-  MaxDefense: 160
-  ExpReward: 125
+  PrefabRef:
+    m_AssetGUID: d6d526a2e5bdaab4186d376b22214728
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  PreLoad: 50
+  Max: 50

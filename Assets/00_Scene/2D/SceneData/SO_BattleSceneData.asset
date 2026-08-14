@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b70b19fe14fa6f649b0a8a03a8da76c2, type: 3}
-  m_Name: SO_MainSceneData
+  m_Name: SO_BattleSceneData
   m_EditorClassIdentifier: 
   SceneAddress:
-    m_AssetGUID: 9fc0d4010bbf28b4594072e72b8655ab
+    m_AssetGUID: 3dd784d78402a024baa4b1327d9a92e6
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
@@ -52,4 +52,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1c7e11829a9367b4aa2239e3dfc81d68, type: 2}
   - {fileID: 11400000, guid: 919354ed1c5b6264d95183e975473618, type: 2}
   - {fileID: 11400000, guid: e6ddd8ac7d39a99438e20ace9a22e3e9, type: 2}
-  - {fileID: 11400000, guid: 8ba86a45a74aa9348b6d91ffe4f4fc9c, type: 2}

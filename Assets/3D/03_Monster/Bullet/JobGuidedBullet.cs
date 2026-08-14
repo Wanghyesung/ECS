@@ -33,8 +33,8 @@ public class JobGuidedBullet : Bullet
             GuidedMoveManager.m_Instance.Deactivate(m_iGuidedJobIndex);
     }
 
-    protected override void AttackMonster(CircleCollider _refOther)
+    protected override void Attack(CircleCollider _refOther)
     {
-        base.AttackMonster(_refOther);
+        base.Attack(_refOther);
     }
 }

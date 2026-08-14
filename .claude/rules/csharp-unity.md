@@ -96,3 +96,11 @@ public sealed class PlayerController : MonoBehaviour
 - 게임플레이 코드에서는 LINQ를 사용하지 마세요
 - 문자열을 조합할 때는 `StringBuilder`를 사용하세요
 - tag 보다는 layermask를 사용하세요
+- using 밑에 부분에 해당 클래스의 목적을 서술하세요
+```using System ...
+/*///////////////////////////////////////////
+                BulletLine
+목적 : 원통형 메쉬를 시작점~끝점 사이에 걸치도록 Transform을 맞춰
+       볼렛 예고선(텔레그래프)으로 사용하는 오브젝트
+ *///////////////////////////////////////////
+```

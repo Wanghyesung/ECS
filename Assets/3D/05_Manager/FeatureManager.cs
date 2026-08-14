@@ -28,7 +28,7 @@ public class FeatureManager : MonoBehaviour, ICountable
     public event Action<SOFeature, int> OnFeatureDelete;
 
 
-    [SerializeField] private List<SOFeature> m_listTemFeautre; //임시로 넣은 플레이어 기능
+    [SerializeField] private List<SOFeature> m_listPreLoadFeautre; //임시로 넣은 플레이어 기능
 
 
     private void Awake()
@@ -50,9 +50,9 @@ public class FeatureManager : MonoBehaviour, ICountable
     private void Start()
     {
         Player refTarget = Player.CurrentPlayer;
-        for (int i = 0; i < m_listTemFeautre.Count; ++i)
+        for (int i = 0; i < m_listPreLoadFeautre.Count; ++i)
         {
-            SOFeature SOTarget = m_listTemFeautre[i];
+            SOFeature SOTarget = m_listPreLoadFeautre[i];
             int iIndex = (int)SOTarget.ID;
             m_arrFeatureLevel[iIndex]++;
 

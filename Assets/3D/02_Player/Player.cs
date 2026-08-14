@@ -94,6 +94,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private static Player ThisPlayer = null;
     public static Player CurrentPlayer {  get { return ThisPlayer; } }
 
+    [SerializeField] private bool TestLock = false;
     private void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
@@ -154,7 +155,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             MoveRoll();
 
 
-        //if (Input.GetKey(KeyCode.Q))
+        if (TestLock == true) return;
+
         Fire();
     }
 
@@ -185,12 +187,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         // 대각선 입력도 좌/우 성분으로 자연스럽게 투영되도록 조준 방향(transform.right) 기준 내적으로 부호 판정
         Vector2 vMoveInput = InputManager.m_Instance.InputInfo.MoveDir;
         Vector3 vKeyDir = new Vector3(vMoveInput.x, 0.0f, vMoveInput.y);
-        float fRollDir = Vector3.Dot(vKeyDir, transform.right);
-        if (Mathf.Approximately(fRollDir, 0.0f) == true)
-            fRollDir = 1.0f;
-        else
-            fRollDir = Mathf.Sign(fRollDir);
-
+        float fRollDir = vKeyDir.x > 0 ? 1.0f : -1.0f;
+        
         m_refVisualPlayer.PlayMaxRoll(fRollDir, m_fMaxRollDuration);
         m_refMovement.ApplySpeedBoost(fRollDir, m_fMaxRollSpeedBoost, m_fMaxRollSpeedDecay);
     }

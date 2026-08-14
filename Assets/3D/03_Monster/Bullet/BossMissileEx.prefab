@@ -9813,7 +9813,6 @@ GameObject:
   - component: {fileID: 4307556228713796831}
   - component: {fileID: 5619866206326051306}
   - component: {fileID: 1627351260098366072}
-  - component: {fileID: 8473768691774064354}
   m_Layer: 11
   m_Name: BossMissileEx
   m_TagString: Untagged
@@ -14723,6 +14722,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refParticle: {fileID: 0}
+  m_fReferenceSize: 10
+  m_fMinSizeRatio: 0.5
+  m_fMaxSizeRatio: 3
 --- !u!114 &1627351260098366072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14735,30 +14737,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
+  m_iPushCount: 0
   m_fAliveTime: 3
---- !u!136 &8473768691774064354
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1593626601665573489}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 15
-  m_Height: 15
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1648221310138481614
 GameObject:
   m_ObjectHideFlags: 0

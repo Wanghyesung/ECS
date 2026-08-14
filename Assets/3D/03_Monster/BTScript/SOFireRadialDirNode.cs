@@ -14,10 +14,11 @@ public class SOFireRadialDirNode : SONode
     private readonly float GOLDEN_RATIO = ((1f + Mathf.Sqrt(5f)) / 2f);
     public override eNodeState Execute(BlackBoard _refBB)
     {
-     
+
         SpawnInfo refSpawnInfo = _refBB.CurrentAttackSpawn;
         if (refSpawnInfo == null)
             return eNodeState.Failure;
+
 
         Weapon refAttackWeapon = refSpawnInfo.Weapon;
         int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
@@ -40,7 +41,7 @@ public class SOFireRadialDirNode : SONode
 
             Vector3 vDir = new Vector3(x, y, z);
 
-            refAttackWeapon.FireAndRotate(vDir, refSpawnInfo.SpawnFowardOffset);  
+            refAttackWeapon.FireAndRotate(vDir, refSpawnInfo.SpawnFowardOffset);
         }
 
         return eNodeState.Success;

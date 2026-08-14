@@ -2057,7 +2057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_listSceneData:
-  - {fileID: 11400000, guid: ecdfc2152e0780846946e2a7c6c47490, type: 2}
+  - {fileID: 11400000, guid: c8fed43626c2c4147943629ba9fe63e3, type: 2}
   m_refLoadingOverlay: {fileID: 686088827}
   m_strFirstSceneName: LobyScene
 --- !u!4 &406389754

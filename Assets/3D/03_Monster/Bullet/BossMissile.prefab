@@ -176,7 +176,7 @@ Transform:
   m_GameObject: {fileID: 5482934032008921225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 23.5, y: 101.600006, z: 91.06}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -245,6 +245,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e31ce016b8fd048b75caba502cd067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
   m_refHitEffectObj: {fileID: 0}
   m_arrArriveActions:
   - {fileID: 11400000, guid: d5af5173816b0bb458bc9713eba374ff, type: 2}
@@ -262,6 +265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &7345396145052410490
 MonoBehaviour:
