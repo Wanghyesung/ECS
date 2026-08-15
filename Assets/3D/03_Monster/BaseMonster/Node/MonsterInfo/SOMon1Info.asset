@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectName: New Monster
   Description: 
-  MaxHP: 200000
+  MaxHP: 200
   MaxSpeed: 5
   MaxAtack: 1000
   MaxDefense: 100
-  ExpReward: 10
+  ExpReward: 100

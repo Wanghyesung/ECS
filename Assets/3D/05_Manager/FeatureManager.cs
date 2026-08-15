@@ -88,7 +88,8 @@ public class FeatureManager : MonoBehaviour, ICountable
 
     // _iCount : 이번에 보여줄 후보 개수 (상황에 따라 가변으로 호출부에서 결정)
     // 후보가 _iCount보다 적으면 있는 만큼만 반환 (호출부에서 남는 카드 슬롯 처리)
-    public List<SOFeature> RequestFeature(int _iCount)
+    // _arrTierMultiplier : 인덱스 = eFeatureTier, 각 SOFeature.Weight에 곱할 배율. null이면 등급 무관 균등 랜덤(레벨업 3택 등 기존 동작)
+    public List<SOFeature> RequestFeature(int _iCount, float[] _arrTierMultiplier = null)
     {
         m_listPoolBuffer.Clear();
 
@@ -114,7 +115,7 @@ public class FeatureManager : MonoBehaviour, ICountable
         
         for (int i = 0; i < iPickCount; ++i)
         {
-            int iPickedIdx = PickWeightedIndex(m_listPoolBuffer);
+            int iPickedIdx = PickWeightedIndex(m_listPoolBuffer, _arrTierMultiplier);
             m_listResultBuffer.Add(m_listPoolBuffer[iPickedIdx]);
 
             // 순서 상관없으니 마지막 원소와 교체 후 마지막을 제거 (앞당김 셔프트 없이 O(1))
@@ -126,23 +127,30 @@ public class FeatureManager : MonoBehaviour, ICountable
         return m_listResultBuffer;
     }
 
-    private int PickWeightedIndex(List<SOFeature> _listPool)
+    // _arrTierMultiplier가 null이면 등급 배율 없이 SOFeature.Weight만 사용(기존 동작과 동일)
+    private int PickWeightedIndex(List<SOFeature> _listPool, float[] _arrTierMultiplier)
     {
-        int iTotalWeight = 0;
+        float fTotalWeight = 0f;
         for (int i = 0; i < _listPool.Count; ++i)
-            iTotalWeight += _listPool[i].Weight;
+            fTotalWeight += GetEffectiveWeight(_listPool[i], _arrTierMultiplier);
 
-        int iRandomValue = UnityEngine.Random.Range(0, iTotalWeight);
-        int iAccum = 0;
+        float fRandomValue = UnityEngine.Random.Range(0f, fTotalWeight);
+        float fAccum = 0f;
 
         for (int i = 0; i < _listPool.Count; ++i)
         {
-            iAccum += _listPool[i].Weight;
-            if (iRandomValue < iAccum)
+            fAccum += GetEffectiveWeight(_listPool[i], _arrTierMultiplier);
+            if (fRandomValue < fAccum)
                 return i;
         }
 
         return _listPool.Count - 1;
+    }
+
+    private float GetEffectiveWeight(SOFeature _SOFeature, float[] _arrTierMultiplier)
+    {
+        float fMultiplier = (_arrTierMultiplier == null) ? 1f : _arrTierMultiplier[(int)_SOFeature.Tier];
+        return _SOFeature.Weight * fMultiplier;
     }
 
     public int GetLevel(eFeatureID _eID)

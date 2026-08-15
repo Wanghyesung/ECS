@@ -96,6 +96,9 @@ public class Container : BaseButtonUI , ISelectDataable
     public event Action<SlotView> OnSelectSlotView;
     public event Action OnFullEvt;
 
+    // 등급 색상처럼 특정 도메인에만 해당하는 표시는 구독자가 알아서 판단해서 처리)
+    public event Action<SOData, SlotView> OnSlotBound;
+
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
     private Image m_refFrameImage;
@@ -512,8 +515,9 @@ public class Container : BaseButtonUI , ISelectDataable
             int iCount = 1;
             if(ICountSource != null)
                      iCount = ICountSource.GetCount(refFeat);
-           
+
             m_listView[i].Bind(refFeat, iDataIdx, iCount);
+            OnSlotBound?.Invoke(refFeat, m_listView[i]);
         }
     }
 

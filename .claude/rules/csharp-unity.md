@@ -4,7 +4,8 @@
 
 - 필드 네이밍: 멤버 변수는 m_ 접두사 사용 (예: m_vMoveSpeed)
 - 매개변수는 '_' 사용 예시 ('Function(_fSpeed)))
-- 변수 앞에 접두사 float(f), int (i), Vector2,3 (v), List (list), Queue (que), dobudle (d), string (str), Dictionary (hash)
+- 변수 앞에 접두사 float(f), int (i), Vector2,3 (v), List (list), Queue (que), dobudle (d), string (str), Dictionary (hash), struct(t), enum(e)
+- 매개변수는 '_' + 타입 접두사를 조합해서 사용 (예: `enum eFeatureTier`를 받는 매개변수는 `_eTier`, `struct Color`를 받는 매개변수는 `_tColor`)
 - 클래스/메서드 네이밍: PascalCase 사용 (예: PlayerController)
 
 

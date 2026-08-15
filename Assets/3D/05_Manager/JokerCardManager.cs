@@ -19,6 +19,9 @@ public class JokerCardManager : MonoBehaviour
     private int m_iLevel = 0;
     public int Level => m_iLevel;
 
+    // ApplySuccess()에서 재사용하는 등급별 배율 버퍼 (호출마다 알록 방지, 인덱스 = eFeatureTier)
+    private float[] m_arrTierMultiplierBuffer = new float[(int)eFeatureTier.End];
+
     private List<SOFeature> m_listPendingFeature = new List<SOFeature>();
     public IReadOnlyList<SOFeature> PendingFeature => m_listPendingFeature;
 
@@ -45,6 +48,11 @@ public class JokerCardManager : MonoBehaviour
         m_refSelectContainer.OnSelectEvt += AddData;
 
         m_refPickContainer.OnSelectEvt += DeleteData;
+
+        //Container/SlotView는 SOData 범용이라 등급을 모름 - 조커 후보 슬롯에 뜨는 등급 색상은
+        //SOFeature/Tier를 이미 알고 있는 이쪽(JokerCardManager)에서 판단해서 밀어준다
+        m_refSelectContainer.OnSlotBound += ApplyTierColor;
+        m_refPickContainer.OnSlotBound += ApplyTierColor;
     }
 
 
@@ -65,7 +73,11 @@ public class JokerCardManager : MonoBehaviour
         m_refSelectContainer.gameObject.SetActive(true);
 
         m_iLevel++;
-        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel));
+
+        for (int i = 0; i < m_arrTierMultiplierBuffer.Length; ++i)
+            m_arrTierMultiplierBuffer[i] = m_SOJokerCard.GetTierWeight((eFeatureTier)i, m_iLevel);
+
+        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel), m_arrTierMultiplierBuffer);
         for (int i = 0; i < m_listPendingFeature.Count; ++i)
             m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
 
@@ -95,7 +107,13 @@ public class JokerCardManager : MonoBehaviour
         m_refPickContainer.DeleteData(_SOData);
     }
 
-    //유니티 이벤트로 직렬화해서 연결 (Container UI의 CloseButton)
+    private void ApplyTierColor(SOData _SOData, SlotView _refSlot)
+    {
+        Color tColorTier = _SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
+        _refSlot.SetTierColor(tColorTier);
+    }
+
+    //유니티 이벤트로 직렬화해서 연결 (Container UI의 PickButton)
     public void PickData()
     {
         CategoryData refData = m_refPickContainer.GetCategoryData(eDataType.Features);

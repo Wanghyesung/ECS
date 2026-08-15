@@ -25,8 +25,20 @@ public class SOJokerCard : SOData
     [Tooltip("x = 연속 성공 횟수, y = 실패 시 잃을 카드 수")]
     [SerializeField] private AnimationCurve m_refLostCardCoun;
 
+    [Tooltip("인덱스 = eFeatureTier, x = 조커 레벨, y = 그 등급 SOFeature.Weight에 곱할 배율")]
+    [SerializeField] private AnimationCurve[] m_arrTierWeight = new AnimationCurve[(int)eFeatureTier.End];
+
     public float GetSuccessValue(int _iLevel) => Mathf.Clamp01(m_refSuccessChance.Evaluate(_iLevel));
     public int GetCandidateCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refCandidateCount.Evaluate(_iLevel)));
     public int GetPickCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refPickCount.Evaluate(_iLevel)));
     public int GetLostCount(int _iLevel) => Mathf.Max(0, Mathf.RoundToInt(m_refLostCardCoun.Evaluate(_iLevel)));
+
+    public float GetTierWeight(eFeatureTier _eTier, int _iLevel)
+    {
+        AnimationCurve refCurve = m_arrTierWeight[(int)_eTier];
+        if (refCurve == null)
+            return 0f;
+
+        return Mathf.Max(0f, refCurve.Evaluate(_iLevel));
+    }
 }

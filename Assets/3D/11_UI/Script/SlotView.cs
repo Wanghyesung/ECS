@@ -12,7 +12,7 @@ public class SlotView : BaseButtonUI
     //하이라이트도 나중에 추가
     [SerializeField] protected Image m_refIcon = null;
     [SerializeField] protected TextMeshProUGUI m_refCountBadgeText = null;
-
+    [SerializeField] private Color m_tStartColor = Color.white;
 
     protected int m_iID = -1;
     protected int m_iSlotIdx = -1; //내 컨테이너에서 몇번째 슬롯인지
@@ -33,6 +33,8 @@ public class SlotView : BaseButtonUI
         //만약 Icon이 없다면 터트리게
         if (m_refIcon == null)
             m_refIcon = GetComponent<Image>();
+
+        SetTierColor(m_tStartColor);
     }
 
     
@@ -89,6 +91,16 @@ public class SlotView : BaseButtonUI
 
         SetCount(_iCount);
         m_iSlotIdx = _iSlotIdx;
+    }
+
+    //등급 색상 표시 여부/색상은 이 슬롯을 쓰는 Container가 결정해서 밀어줌 (SlotView는 그리기만 담당)
+    //별도 프레임 이미지 없이 아이콘 자체를 틴트한다
+    public void SetTierColor(Color _tColor)
+    {
+        if (m_refIcon == null)
+            return;
+
+        m_refIcon.color = _tColor;
     }
 
     //Container가 바인딩 시점/흭득 이벤트에서 밀어주는 카운트를 받아 뱃지에 반영

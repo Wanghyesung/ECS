@@ -21,7 +21,7 @@ public class CardCreator : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_refJokerSuccessText;
     [SerializeField] private TextMeshProUGUI m_refCurrentLevel;
     //[SerializeField] private 
-    private void Awake()
+    private void Start()
     {
         for (int i = 0; i < m_arrCard.Length; ++i)
         {

@@ -36,6 +36,7 @@ public class RandomFeatureCard : BaseButtonUI
 
         m_refImage.sprite = m_refOriginSprite;
         m_refImage.raycastTarget = false;
+        m_refImage.color = _SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
 
         m_CORotate = StartCoroutine(CORotate());
     }

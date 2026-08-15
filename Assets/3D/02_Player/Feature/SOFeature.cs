@@ -33,13 +33,14 @@ public enum eAcquireType
 }
 
 [Serializable]
-public enum eFetureTier
+public enum eFeatureTier
 {
     Common,
     Uncommon,
     Rare,
     Epic,
     Legendary,
+    End,
 }
 
 /*///////////////////////////////////////////
@@ -64,6 +65,9 @@ public abstract class SOFeature : SOData
     [Tooltip("후보 추첨 시 가중치. 전부 1이면 균등 랜덤")]
     [SerializeField] private int m_iWeight = 1;
     public int Weight => m_iWeight;
+
+    [SerializeField] private eFeatureTier m_eTier = eFeatureTier.Common;
+    public eFeatureTier Tier => m_eTier;
 
     [Tooltip("이 기능의 최대 레벨. 0이면 제한 없음")]
     [SerializeField] private int m_iMaxLevel = 0;

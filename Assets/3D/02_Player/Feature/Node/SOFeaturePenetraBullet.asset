@@ -17,5 +17,6 @@ MonoBehaviour:
   m_eID: 4
   m_eAcquireType: 1
   m_iWeight: 1
+  m_eTier: 2
   m_iMaxLevel: 1
   m_eTargetWeaponType: 1

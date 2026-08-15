@@ -94,7 +94,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4722671552197709300}
   - component: {fileID: 8583650029236344668}
-  - component: {fileID: 2817275645259737535}
   m_Layer: 10
   m_Name: Trail
   m_TagString: Untagged
@@ -230,18 +229,6 @@ TrailRenderer:
   m_Autodestruct: 1
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
---- !u!114 &2817275645259737535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6394407813886149156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &9179064186966730555
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,6 +241,7 @@ GameObject:
   - component: {fileID: 4057737550011718064}
   - component: {fileID: 2776694687007666598}
   - component: {fileID: 2377714725555137205}
+  - component: {fileID: 5813634844315772493}
   m_Layer: 11
   m_Name: MonBaseMissile_R
   m_TagString: Untagged
@@ -327,3 +315,15 @@ MonoBehaviour:
   m_vOffset: {x: 0, y: 0, z: 1.26}
   m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &5813634844315772493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9179064186966730555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a85070680503e24e8c95e05d8979524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
