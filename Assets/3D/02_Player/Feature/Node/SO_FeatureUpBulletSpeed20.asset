@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_strDescription: Up Bullet Speed
   m_sprIcon: {fileID: -118184348, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
-  m_eID: 1
+  m_eID: 13
   m_eAcquireType: 0
   m_iWeight: 1
+  m_eTier: 0
   m_iMaxLevel: 3
   m_fSpeedIncrease: 20

@@ -17,5 +17,6 @@ MonoBehaviour:
   m_eID: 11
   m_eAcquireType: 0
   m_iWeight: 1
+  m_eTier: 0
   m_iMaxLevel: 3
   m_fSpeedRatio: 0.1

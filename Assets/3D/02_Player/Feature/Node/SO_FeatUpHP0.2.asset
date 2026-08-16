@@ -17,4 +17,5 @@ MonoBehaviour:
   m_eID: 10
   m_eAcquireType: 0
   m_iWeight: 1
+  m_eTier: 0
   m_fUpHpRatio: 0.2

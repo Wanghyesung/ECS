@@ -1,6 +1,7 @@
 // RandomFeatureCard.cs
 using System;
 using System.Collections;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -18,6 +19,7 @@ public class RandomFeatureCard : BaseButtonUI
     [SerializeField] private Sprite m_refTargetSprite = null;
     [SerializeField] private Sprite m_refOriginSprite = null; //현재 보여주는 이미지
     [SerializeField] protected Image m_refImage = null;
+    [SerializeField] protected Image m_refSlotImage = null;
 
     [SerializeField] private float m_fShowTime = 2.0f;
     private SOData m_SOData = null;
@@ -26,6 +28,10 @@ public class RandomFeatureCard : BaseButtonUI
     public event Action<SOData> OnCardClicked;
     private Coroutine m_CORotate = null;
 
+    private void Awake()
+    {
+        m_refSlotImage = GetComponent<Image>();
+    }
 
     public void Setup(SOData _SOData)
     {
@@ -36,7 +42,6 @@ public class RandomFeatureCard : BaseButtonUI
 
         m_refImage.sprite = m_refOriginSprite;
         m_refImage.raycastTarget = false;
-        m_refImage.color = _SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
 
         m_CORotate = StartCoroutine(CORotate());
     }
@@ -64,5 +69,7 @@ public class RandomFeatureCard : BaseButtonUI
         m_refImage.sprite = m_refTargetSprite;
         m_refImage.raycastTarget = true;
         m_CORotate = null;
+
+        m_refSlotImage.color = m_SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
     }
 }

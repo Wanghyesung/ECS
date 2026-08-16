@@ -10,11 +10,11 @@ public static class FeatureTierUI
 {
     private static readonly Color[] m_arrTierColor =
     {
-        new Color(0.75f, 0.75f, 0.75f), // Common
-        new Color(0.35f, 0.75f, 0.35f), // Uncommon
-        new Color(0.30f, 0.55f, 0.95f), // Rare
-        new Color(0.65f, 0.35f, 0.90f), // Epic
-        new Color(0.95f, 0.70f, 0.20f), // Legendary
+        Color.white,                // Common
+        new Color(0.3f, 0.9f, 0.3f), // Uncommon
+        new Color(0.3f, 0.5f, 1.0f), // Rare
+        new Color(1.0f, 0.9f, 0.2f), // Epic
+        new Color(0.95f, 0.2f, 0.2f), // Legendary
     };
 
     public static Color GetColor(eFeatureTier _eTier)

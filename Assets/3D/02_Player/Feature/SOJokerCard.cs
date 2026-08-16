@@ -41,4 +41,11 @@ public class SOJokerCard : SOData
 
         return Mathf.Max(0f, refCurve.Evaluate(_iLevel));
     }
+
+    // _arrBuffer: 인덱스 = eFeatureTier인 재사용 버퍼. 호출부(JokerCardManager/CardCreator)가 소유한 배열을 그대로 채워줌 (GC Alloc 없음)
+    public void UpdateTierWeight(float[] _arrBuffer, int _iLevel)
+    {
+        for (int i = 0; i < _arrBuffer.Length; ++i)
+            _arrBuffer[i] = GetTierWeight((eFeatureTier)i, _iLevel);
+    }
 }

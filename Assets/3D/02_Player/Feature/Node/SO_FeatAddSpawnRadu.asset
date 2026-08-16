@@ -17,6 +17,7 @@ MonoBehaviour:
   m_eID: 2
   m_eAcquireType: 0
   m_iWeight: 1
+  m_eTier: 3
   m_iMaxLevel: 1
   m_eTargetWeaponType: 1
   m_SOBulletAction: {fileID: 11400000, guid: 801101aa3b69f9142b92a6cae65934ca, type: 2}

@@ -20,7 +20,10 @@ public class CardCreator : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI m_refJokerSuccessText;
     [SerializeField] private TextMeshProUGUI m_refCurrentLevel;
-    //[SerializeField] private 
+
+    // ShowChoices()에서 재사용하는 등급별 배율 버퍼 (호출마다 알록 방지, 인덱스 = eFeatureTier)
+    private float[] m_arrTierMultiplierBuffer = new float[(int)eFeatureTier.End];
+    //[SerializeField] private
     private void Start()
     {
         for (int i = 0; i < m_arrCard.Length; ++i)
@@ -51,7 +54,9 @@ public class CardCreator : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        var listChoices = FeatureManager.m_Instance.RequestFeature(m_arrCard.Length);
+        //레벨업 3택도 조커 레벨에 따른 등급 배율을 그대로 반영 (조커 스트릭이 쌓일수록 3택도 좋아짐)
+        m_SOJokerCard.UpdateTierWeight(m_arrTierMultiplierBuffer, JokerCardManager.m_Instance.Level);
+        var listChoices = FeatureManager.m_Instance.RequestFeature(m_arrCard.Length, m_arrTierMultiplierBuffer);
 
         for (int i = 0; i < m_arrCard.Length; ++i)
             m_arrCard[i].Setup(listChoices[i]);

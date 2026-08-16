@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Mesh;
 
 /*///////////////////////////////////////////
                 JokerCardManager
@@ -28,8 +29,9 @@ public class JokerCardManager : MonoBehaviour
     // 현재 내가 적용한 기능들
     //private List<SOFeature> m_listApplyFeature = new List<SOFeature>();
 
-    [SerializeField] private Container m_refPickContainer;   //내가 고를 기능
-    [SerializeField] private Container m_refSelectContainer; //내가 선택한 기능
+    [SerializeField] private Container m_refPickContainer;   //내가 고른 기능
+    [SerializeField] private Container m_refSelectContainer; //내가 선택할 수 있는 기능
+    [SerializeField] private Container m_refFeatContainer; //내가 가지고 있는 기능
 
     private void Awake()
     {
@@ -51,12 +53,13 @@ public class JokerCardManager : MonoBehaviour
 
         //Container/SlotView는 SOData 범용이라 등급을 모름 - 조커 후보 슬롯에 뜨는 등급 색상은
         //SOFeature/Tier를 이미 알고 있는 이쪽(JokerCardManager)에서 판단해서 밀어준다
-        m_refSelectContainer.OnSlotBound += ApplyTierColor;
-        m_refPickContainer.OnSlotBound += ApplyTierColor;
+        m_refFeatContainer.OnSlotBind += ApplyTierColor;
+        m_refSelectContainer.OnSlotBind += ApplyTierColor;
+        m_refPickContainer.OnSlotBind += ApplyTierColor;
     }
 
 
-    // 도박 판정만 수행 (side effect 없음) - 연출과 결과 반영 시점을 분리하기 위해 호출부가 결과를 들고 있다가 애니메이션 이후에 Apply*를 호출한다.
+    // 도박 판정만 수행 
     public bool RollGamble(SOJokerCard _SOJokerCard)
     {
         if (_SOJokerCard == null)
@@ -74,8 +77,8 @@ public class JokerCardManager : MonoBehaviour
 
         m_iLevel++;
 
-        for (int i = 0; i < m_arrTierMultiplierBuffer.Length; ++i)
-            m_arrTierMultiplierBuffer[i] = m_SOJokerCard.GetTierWeight((eFeatureTier)i, m_iLevel);
+        //내 조커 레벨에 맞게 나오는 티어 가중치 변경
+        m_SOJokerCard.UpdateTierWeight(m_arrTierMultiplierBuffer, m_iLevel);
 
         m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel), m_arrTierMultiplierBuffer);
         for (int i = 0; i < m_listPendingFeature.Count; ++i)
@@ -107,10 +110,13 @@ public class JokerCardManager : MonoBehaviour
         m_refPickContainer.DeleteData(_SOData);
     }
 
+    // 실제 SOFeature 카드가 뜬 슬롯에만 등급색을 입힌다 - 빈 슬롯 리셋은 SlotView가 자체적으로 처리
     private void ApplyTierColor(SOData _SOData, SlotView _refSlot)
     {
-        Color tColorTier = _SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
-        _refSlot.SetTierColor(tColorTier);
+        if (_SOData is not SOFeature refFeature)
+            return;
+
+        _refSlot.SetTierColor(FeatureTierUI.GetColor(refFeature.Tier));
     }
 
     //유니티 이벤트로 직렬화해서 연결 (Container UI의 PickButton)
