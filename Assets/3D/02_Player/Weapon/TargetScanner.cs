@@ -19,12 +19,12 @@ public class TargetScanner : MonoBehaviour
 
     private CancellationTokenSource m_refCTS;
 
-    private void Awake()
+    // Start가 아니라 OnEnable에서 스캔을 켬 - Start는 오브젝트 생애주기 중 단 한 번만 불려서,
+    // 드론처럼 SetActive로 껐다 켜지는 오브젝트는 재활성화 후 스캔이 영영 재개되지 않았음
+    // (RadarSystem.cs와 동일한 수정)
+    private void OnEnable()
     {
         m_refCTS = new CancellationTokenSource();
-    }
-    private void Start()
-    {
         FindTargetLoop(m_refCTS.Token).Forget();
     }
 

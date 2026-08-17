@@ -1,6 +1,6 @@
 ---
 name: addressables
-description: "Addressables 에셋 로딩 — LoadAssetAsync, 핸들 생명주기, 라벨, 원격 카탈로그, 메모리 관리. 에셋 로딩과 메모리 최적화 작업에 사용합니다."
+description: "Addressables 에셋 로딩 — LoadAssetAsync, 핸들 생명주기, 라벨, 원격 카탈로그, 메모리 관리. '어드레서블(Addressable)을 통해 ~ 로드/관리한다'처럼 Addressable 기반 에셋 로딩·메모리 최적화를 언급할 때 사용합니다."
 globs: ["**/Addressable*.cs", "**/*Address*"]
 ---
 

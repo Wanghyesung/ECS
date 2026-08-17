@@ -98,6 +98,11 @@
             "type": "command",
             "command": ".claude/hooks/suggest-verify.sh",
             "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/edit-changelog.sh",
+            "timeout": 3000
           }
         ]
       },
@@ -184,6 +189,11 @@
             "type": "command",
             "command": ".claude/hooks/notify.sh",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/toast-alert.sh",
+            "timeout": 3000
           }
         ]
       }

@@ -1,6 +1,6 @@
 ---
 name: unitask
-description: "Unity를 위한 UniTask async/await — 무할당(zero-alloc) 비동기, 취소 토큰(CancellationToken), PlayerLoop 통합, 비동기 LINQ. 취소 지원과 더 깔끔한 비동기 코드를 위해 코루틴 대신 사용할 것."
+description: "Unity를 위한 UniTask async/await — 무할당(zero-alloc) 비동기, 취소 토큰(CancellationToken), PlayerLoop 통합, 비동기 LINQ. '비동기 작업', '코루틴' 같은 단어가 언급되거나 코루틴을 UniTask로 대체해야 할 때 사용합니다."
 globs: ["**/UniTask*", "**/*Async*.cs", "**/Cysharp*"]
 ---
 

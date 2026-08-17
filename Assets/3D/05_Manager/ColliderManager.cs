@@ -380,6 +380,31 @@ public class ColliderManager : MonoBehaviour
         return refClosest != null;
     }
 
+    // Physics.OverlapSphereNonAlloc 대체용 - CircleCollider(PhysX 없음) 대상으로 반경 내 전체 목록 판정.
+    // 레이더 등 "화면 안 위협 하나"가 아니라 "범위 내 전부"가 필요한 곳에서 사용.
+    // 호출부가 들고 있는 리스트를 재사용하도록 넘겨받아 채우는 방식이라 매 호출 할당이 없음(Clear만 함)
+    public void FindAllInRadius(Vector3 _vPos, float _fRadius, LayerMask _tMask, List<CircleCollider> _listResult)
+    {
+        _listResult.Clear();
+        float fRadiusSq = _fRadius * _fRadius;
+
+        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        {
+            if ((_tMask.value & (1 << iLayer)) == 0)
+                continue;
+
+            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+            {
+                CircleCollider refCollider = listLayer[i];
+                float fDistSq = (refCollider.CachedCenter - _vPos).sqrMagnitude;
+
+                if (fDistSq <= fRadiusSq)
+                    _listResult.Add(refCollider);
+            }
+        }
+    }
+
     // Physics.OverlapSphere 대체용 - CircleCollider(PhysX 없음) 대상으로 반경 내 최근접 판정.
     // TargetScanner 등 위치 기반 최근접 타겟 탐색에서 사용. 3D 전체 거리로 판정
     public bool FindNearest(Vector3 _vPos, float _fRadius, LayerMask _tMask, out CircleCollider _refHit)

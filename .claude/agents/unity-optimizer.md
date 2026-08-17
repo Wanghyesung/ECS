@@ -3,7 +3,7 @@ name: unity-optimizer
 description: "Unity 성능을 프로파일링하고 최적화합니다. MCP 프로파일러로 프레임 타이밍, 메모리 스냅샷, 렌더링 통계를 확인합니다. CPU/GPU 병목, GC 스파이크, 드로우 콜 문제, 셰이더 변형 과다를 찾아냅니다."
 model: opus
 color: orange
-tools: Read, Write, Edit, Glob, Grep, mcp__unityMCP__*
+tools: Read, Write, Edit, Glob, Grep, ToolSearch, mcp__UnityMCP__*
 skills: performance
 ---
 
