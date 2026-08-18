@@ -159,6 +159,7 @@ public sealed class RadarSystem : MonoBehaviour
 
         for (int i = 0; i < iCount && iArrowIndex < iMaxArrows; ++i)
         {
+            //내 뷰포트 안 쪽 오브젝트는 스킵
             Vector3 vViewport = m_refCamera.WorldToViewportPoint(m_listResult[i].CachedCenter);
             bool bOnScreen = vViewport.z > 0f && vViewport.x >= 0f && vViewport.x <= 1f && vViewport.y >= 0f && vViewport.y <= 1f;
             if (bOnScreen)

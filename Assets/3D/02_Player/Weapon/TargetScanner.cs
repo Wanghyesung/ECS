@@ -37,7 +37,9 @@ public class TargetScanner : MonoBehaviour
 
     private async UniTaskVoid FindTargetLoop(CancellationToken _token)
     {
+
         TimeSpan tInterval = TimeSpan.FromSeconds(m_fFindTime);
+        await UniTask.WaitUntil(() => ColliderManager.m_Instance != null, cancellationToken : _token);
 
         while (true)
         {

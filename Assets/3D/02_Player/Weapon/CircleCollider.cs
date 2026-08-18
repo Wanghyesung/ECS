@@ -56,7 +56,7 @@ public class CircleCollider : MonoBehaviour
 
     public int ID { get; private set; }
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
-    
+
     private void Awake()
     {
         ID = NEXT_ID++;
