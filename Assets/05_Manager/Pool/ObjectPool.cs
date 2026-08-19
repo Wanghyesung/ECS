@@ -23,7 +23,10 @@ public class ObjectPool : MonoBehaviour
     private void Awake()
     {
         if (m_Instance != null)
+        {
             Destroy(this);
+            return; // 필수 - 없으면 파괴 예정인 이 인스턴스가 아래에서 m_Instance를 덮어씀
+        }
 
         m_Instance = this;
         DontDestroyOnLoad(this);

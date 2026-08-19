@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9742a6790236bd74bb3499c0950fb330, type: 3}
-  m_Name: SO_MidBullet Data
+  m_Script: {fileID: 11500000, guid: b70b19fe14fa6f649b0a8a03a8da76c2, type: 3}
+  m_Name: SOSceneData
   m_EditorClassIdentifier: 
-  PrefabRef:
-    m_AssetGUID: fba1f25a91a4948488941097bed386f8
+  SceneAddress:
+    m_AssetGUID: 
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  PreLoad: 500
-  Max: 499
+  PoolDataList: []

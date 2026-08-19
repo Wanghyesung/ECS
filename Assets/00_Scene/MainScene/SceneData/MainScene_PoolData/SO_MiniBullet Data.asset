@@ -17,5 +17,5 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  PreLoad: 200
+  PreLoad: 400
   Max: 200
