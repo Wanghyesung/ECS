@@ -2,6 +2,16 @@
 
 > Claude Code가 세션 중 발견했지만 아직 고치지 않은 문제를 기록하는 곳. 새 항목은 위에 추가하고, 고치면 해당 항목에 `[해결됨]`을 표시하고 커밋/PR을 남긴 뒤 지우지 말고 남겨둘 것 (재발 방지 기록).
 
+## 여러 매니저 싱글톤이 `DontDestroyOnLoad only works for root GameObjects` 에러를 매 Play 진입마다 던짐 (2026-08-19, 운석 Box-Circle 충돌 판정 작업 중 Play Mode 검증하다 발견)
+
+**근본 원인:** `BattleManager.cs:40`, `InputManager.cs:46`, `ObjectPool.cs:58`, `CameraManager.cs:29`, `FeatureManager.cs:43`, `ContainerManager.cs:20` — 이 6개 싱글톤 매니저가 전부 `Awake()`에서 `DontDestroyOnLoad(gameObject)`(또는 `this`)를 호출하는데, `DontDestroyOnLoad`는 루트(부모 없는) GameObject에만 적용 가능하다는 Unity 제약이 있다. 이 매니저들의 GameObject가 BattleScene 안에서 어떤 부모(오브젝트 구조 정리용 컨테이너 등) 아래 자식으로 배치돼 있어서 매번 이 에러가 난다.
+
+**실제 영향:** Play Mode 진입/씬 로드마다 콘솔에 에러 6개가 찍힌다. `DontDestroyOnLoad` 자체는 조용히 무시되고(예외로 죽지 않음) 해당 오브젝트는 그냥 씬 전환 시 파괴되는데, 이 매니저들이 원래 "씬 넘어가도 살아남아야 하는" 부트스트랩 매니저로 설계됐다면(`architecture.md`의 싱글톤 가이드 참고) 실제로 씬 전환을 하는 순간 사라져서 `NullReferenceException`으로 이어질 잠재 위험이 있다. 이번 세션 검증 범위(BattleScene 단일 씬, 씬 전환 없음)에서는 크래시로 이어지지 않아서 발견만 하고 넘어감.
+
+**아직 고치지 않은 이유:** 운석 충돌 판정 작업(`ColliderManager`/`BaseCollider` 등) 범위 밖의 기존 씬 구조 문제 — 이번 세션에서 건드린 어떤 코드와도 무관하게(내가 만든 `BaseCollider`/`ObbCollider`는 `DontDestroyOnLoad`를 아예 호출하지 않음) 원래부터 있던 것으로 확인됨.
+
+**제안하는 해결책:** 6개 매니저 GameObject를 BattleScene에서 부모 없는 루트로 옮기거나(단순), `DontDestroyOnLoad(transform.root.gameObject)`로 호출부를 바꿔 루트 오브젝트 기준으로 동작하게 하거나(각 매니저가 정말 루트여야 하는지 씬 구조 의도 확인 필요), 애초에 부트스트랩 씬 패턴(`architecture.md` "씬 구성" 참고)으로 이 매니저들을 옮기는 방향도 검토.
+
 ## `ChargeWeapon.Tick()`의 상태 전이(edge) 로직에 대한 테스트 공백 (2026-08-18, `unity-verifier` REFACTOR 패스에서 발견)
 
 **근본 원인:** 이번 TDD 사이클은 순수 함수(`CalcChargeRatio`, `CalcScaledStat`, `CircleCollider.SetRadiusMultiplier`)만 테스트 대상으로 삼았음(계획서에서 의도적으로 스코프를 좁힘 — 이 프로젝트에 테스트 인프라가 전혀 없어서 첫 TDD 대상을 씬 없이 도는 로직으로 한정). `ChargeWeapon.Tick()`의 rising/falling edge 판정, 쿨다운 게이팅, `OnDisable` 리셋 같은 상태 머신 자체는 테스트가 없음.

@@ -208,7 +208,8 @@ GameObject:
   - component: {fileID: 7112700}
   - component: {fileID: 7112702}
   - component: {fileID: 7112701}
-  m_Layer: 0
+  - component: {fileID: 7112703}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_4_2937
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,6 +282,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7112699}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &7112703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4024951, y: 3.1641417, z: 3.594115}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &7722144
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +309,8 @@ GameObject:
   - component: {fileID: 7722145}
   - component: {fileID: 7722147}
   - component: {fileID: 7722146}
-  m_Layer: 0
+  - component: {fileID: 7722148}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_5_6146
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,6 +383,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7722144}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &7722148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7722144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.7089071, y: 2.567874, z: 2.6844578}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &13433895
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +613,8 @@ GameObject:
   - component: {fileID: 24665744}
   - component: {fileID: 24665746}
   - component: {fileID: 24665745}
-  m_Layer: 0
+  - component: {fileID: 24665747}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_17_2288
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -652,6 +687,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 24665743}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &24665747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 24665743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6856077, y: 3.586645, z: 2.8589303}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &25371230
 GameObject:
   m_ObjectHideFlags: 0
@@ -972,7 +1023,8 @@ GameObject:
   - component: {fileID: 35907442}
   - component: {fileID: 35907444}
   - component: {fileID: 35907443}
-  m_Layer: 0
+  - component: {fileID: 35907445}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_0_4930
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1045,6 +1097,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 35907441}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &35907445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35907441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8231525, y: 2.3501692, z: 2.3207023}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &40183165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1131,7 +1199,8 @@ GameObject:
   - component: {fileID: 42421063}
   - component: {fileID: 42421065}
   - component: {fileID: 42421064}
-  m_Layer: 0
+  - component: {fileID: 42421066}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_0_5585
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1204,6 +1273,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42421062}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &42421066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42421062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3432148, y: 3.7224133, z: 2.7086418}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &44115662
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,7 +1503,8 @@ GameObject:
   - component: {fileID: 57836655}
   - component: {fileID: 57836657}
   - component: {fileID: 57836656}
-  m_Layer: 0
+  - component: {fileID: 57836658}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_19_7911
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1491,6 +1577,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57836654}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &57836658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57836654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2158968, y: 3.6583936, z: 2.8189256}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &62899712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1502,7 +1604,8 @@ GameObject:
   - component: {fileID: 62899713}
   - component: {fileID: 62899715}
   - component: {fileID: 62899714}
-  m_Layer: 0
+  - component: {fileID: 62899716}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_9_3946
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1575,6 +1678,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62899712}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &62899716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62899712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.357705, y: 2.6986802, z: 3.371163}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &64790627
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,7 +1758,8 @@ GameObject:
   - component: {fileID: 64854815}
   - component: {fileID: 64854817}
   - component: {fileID: 64854816}
-  m_Layer: 0
+  - component: {fileID: 64854818}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_11_8880
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1712,6 +1832,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64854814}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &64854818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64854814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4438143, y: 2.527629, z: 2.0519397}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &67461143
 GameObject:
   m_ObjectHideFlags: 0
@@ -1723,7 +1859,8 @@ GameObject:
   - component: {fileID: 67461144}
   - component: {fileID: 67461146}
   - component: {fileID: 67461145}
-  m_Layer: 0
+  - component: {fileID: 67461147}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_8_3539
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1796,6 +1933,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67461143}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &67461147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67461143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2064116, y: 3.1806693, z: 3.226978}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &68416485
 GameObject:
   m_ObjectHideFlags: 0
@@ -2083,7 +2236,8 @@ GameObject:
   - component: {fileID: 99749365}
   - component: {fileID: 99749367}
   - component: {fileID: 99749366}
-  m_Layer: 0
+  - component: {fileID: 99749368}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_14_8256
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2156,6 +2310,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 99749364}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &99749368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 99749364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5819438, y: 3.541519, z: 3.1501665}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &105332898
 GameObject:
   m_ObjectHideFlags: 0
@@ -2327,7 +2497,8 @@ GameObject:
   - component: {fileID: 139321896}
   - component: {fileID: 139321898}
   - component: {fileID: 139321897}
-  m_Layer: 0
+  - component: {fileID: 139321899}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_5_3966
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2400,6 +2571,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 139321895}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &139321899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139321895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6242588, y: 3.0124152, z: 3.4107232}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &148718039
 GameObject:
   m_ObjectHideFlags: 0
@@ -3025,7 +3212,8 @@ GameObject:
   - component: {fileID: 170685195}
   - component: {fileID: 170685197}
   - component: {fileID: 170685196}
-  m_Layer: 0
+  - component: {fileID: 170685198}
+  m_Layer: 7
   m_Name: Mine Sample 2_5_9818
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3098,6 +3286,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170685194}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &170685198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170685194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.1823802, y: 1.7912774, z: 1.9308331}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &171606567
 GameObject:
   m_ObjectHideFlags: 0
@@ -3162,7 +3366,8 @@ GameObject:
   - component: {fileID: 171932024}
   - component: {fileID: 171932026}
   - component: {fileID: 171932025}
-  m_Layer: 0
+  - component: {fileID: 171932027}
+  m_Layer: 7
   m_Name: Mine Sample 2_8_8626
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3235,6 +3440,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 171932023}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &171932027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171932023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.8848543, y: 2.3637145, z: 2.4021792}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &177593157
 GameObject:
   m_ObjectHideFlags: 0
@@ -3556,7 +3777,8 @@ GameObject:
   - component: {fileID: 204349753}
   - component: {fileID: 204349755}
   - component: {fileID: 204349754}
-  m_Layer: 0
+  - component: {fileID: 204349756}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_7_3475
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3629,6 +3851,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 204349752}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &204349756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204349752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6859457, y: 2.7091367, z: 3.660623}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &205672593
 GameObject:
   m_ObjectHideFlags: 0
@@ -4381,7 +4619,8 @@ GameObject:
   - component: {fileID: 244106847}
   - component: {fileID: 244106849}
   - component: {fileID: 244106848}
-  m_Layer: 0
+  - component: {fileID: 244106850}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_3_9908
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4454,6 +4693,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 244106846}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &244106850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244106846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2562277, y: 3.8849726, z: 3.4649363}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &249133495
 GameObject:
   m_ObjectHideFlags: 0
@@ -4518,7 +4773,8 @@ GameObject:
   - component: {fileID: 251876867}
   - component: {fileID: 251876869}
   - component: {fileID: 251876868}
-  m_Layer: 0
+  - component: {fileID: 251876870}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_12_3708
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4591,6 +4847,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 251876866}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &251876870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251876866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4215276, y: 3.201411, z: 2.8927233}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &255912499
 GameObject:
   m_ObjectHideFlags: 0
@@ -4602,7 +4874,8 @@ GameObject:
   - component: {fileID: 255912500}
   - component: {fileID: 255912502}
   - component: {fileID: 255912501}
-  m_Layer: 0
+  - component: {fileID: 255912503}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_9_8564
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4675,6 +4948,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255912499}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &255912503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255912499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.0283527, y: 2.787833, z: 3.751666}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &257673828
 GameObject:
   m_ObjectHideFlags: 0
@@ -5058,7 +5347,8 @@ GameObject:
   - component: {fileID: 272343673}
   - component: {fileID: 272343675}
   - component: {fileID: 272343674}
-  m_Layer: 0
+  - component: {fileID: 272343676}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_12_2738
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5131,6 +5421,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 272343672}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &272343676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272343672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.7467532, y: 3.8018036, z: 3.2211244}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &274910243
 GameObject:
   m_ObjectHideFlags: 0
@@ -6084,7 +6390,8 @@ GameObject:
   - component: {fileID: 317032105}
   - component: {fileID: 317032107}
   - component: {fileID: 317032106}
-  m_Layer: 0
+  - component: {fileID: 317032108}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_7_4686
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6157,6 +6464,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 317032104}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &317032108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317032104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2364433, y: 2.0004354, z: 3.6033897}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &324412726
 GameObject:
   m_ObjectHideFlags: 0
@@ -6168,7 +6491,8 @@ GameObject:
   - component: {fileID: 324412727}
   - component: {fileID: 324412729}
   - component: {fileID: 324412728}
-  m_Layer: 0
+  - component: {fileID: 324412730}
+  m_Layer: 7
   m_Name: Mine Sample 2_1_4350
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6241,6 +6565,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324412726}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &324412730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324412726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.0657265, y: 2.3870683, z: 2.51099}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &324685384
 GameObject:
   m_ObjectHideFlags: 0
@@ -6337,7 +6677,8 @@ GameObject:
   - component: {fileID: 330204926}
   - component: {fileID: 330204928}
   - component: {fileID: 330204927}
-  m_Layer: 0
+  - component: {fileID: 330204929}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_15_3227
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6410,6 +6751,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330204925}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &330204929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330204925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.455188, y: 3.8574684, z: 3.1168761}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &334171045
 GameObject:
   m_ObjectHideFlags: 0
@@ -6744,7 +7101,8 @@ GameObject:
   - component: {fileID: 342570408}
   - component: {fileID: 342570410}
   - component: {fileID: 342570409}
-  m_Layer: 0
+  - component: {fileID: 342570411}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_4_9204
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6817,6 +7175,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 342570407}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &342570411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342570407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.079063, y: 3.5935395, z: 3.5082424}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &346757042
 GameObject:
   m_ObjectHideFlags: 0
@@ -7009,7 +7383,8 @@ GameObject:
   - component: {fileID: 348897534}
   - component: {fileID: 348897536}
   - component: {fileID: 348897535}
-  m_Layer: 0
+  - component: {fileID: 348897537}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_11_7229
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7082,6 +7457,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348897533}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &348897537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348897533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.223758, y: 3.8862057, z: 3.5222833}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &350945842
 GameObject:
   m_ObjectHideFlags: 0
@@ -7093,7 +7484,8 @@ GameObject:
   - component: {fileID: 350945843}
   - component: {fileID: 350945845}
   - component: {fileID: 350945844}
-  m_Layer: 0
+  - component: {fileID: 350945846}
+  m_Layer: 7
   m_Name: Mine Sample 1_3_8115
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7166,6 +7558,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 350945842}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &350945846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350945842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.6802437, y: 2.0362308, z: 1.9348904}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &364790756
 GameObject:
   m_ObjectHideFlags: 0
@@ -7895,7 +8303,8 @@ GameObject:
   - component: {fileID: 414337680}
   - component: {fileID: 414337682}
   - component: {fileID: 414337681}
-  m_Layer: 0
+  - component: {fileID: 414337683}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_7_1594
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7968,6 +8377,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 414337679}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &414337683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414337679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2473562, y: 2.9071226, z: 3.4686625}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &417925351
 GameObject:
   m_ObjectHideFlags: 0
@@ -8245,7 +8670,8 @@ GameObject:
   - component: {fileID: 433394454}
   - component: {fileID: 433394456}
   - component: {fileID: 433394455}
-  m_Layer: 0
+  - component: {fileID: 433394457}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_15_5866
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8318,6 +8744,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 433394453}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &433394457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433394453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.758371, y: 2.9651618, z: 2.8701038}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1001 &438961339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8402,7 +8844,8 @@ GameObject:
   - component: {fileID: 445031062}
   - component: {fileID: 445031064}
   - component: {fileID: 445031063}
-  m_Layer: 0
+  - component: {fileID: 445031065}
+  m_Layer: 7
   m_Name: Mine Sample 1_1_9890
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8475,6 +8918,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 445031061}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &445031065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 445031061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.5126377, y: 1.4948547, z: 1.4574832}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &452781750
 GameObject:
   m_ObjectHideFlags: 0
@@ -9067,7 +9526,8 @@ GameObject:
   - component: {fileID: 483598804}
   - component: {fileID: 483598806}
   - component: {fileID: 483598805}
-  m_Layer: 0
+  - component: {fileID: 483598807}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_14_4290
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9140,6 +9600,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 483598803}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &483598807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483598803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.779749, y: 3.4391625, z: 3.883947}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &495972616
 GameObject:
   m_ObjectHideFlags: 0
@@ -9544,7 +10020,8 @@ GameObject:
   - component: {fileID: 508151507}
   - component: {fileID: 508151509}
   - component: {fileID: 508151508}
-  m_Layer: 0
+  - component: {fileID: 508151510}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_1_2506
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9617,6 +10094,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 508151506}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &508151510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508151506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4848099, y: 2.1587324, z: 2.9038525}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &512724109
 GameObject:
   m_ObjectHideFlags: 0
@@ -9660,7 +10153,8 @@ GameObject:
   - component: {fileID: 518782200}
   - component: {fileID: 518782202}
   - component: {fileID: 518782201}
-  m_Layer: 0
+  - component: {fileID: 518782203}
+  m_Layer: 7
   m_Name: Mine Sample 1_7_9212
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9733,6 +10227,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518782199}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &518782203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518782199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.098982, y: 2.067603, z: 2.2431462}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &521732962
 GameObject:
   m_ObjectHideFlags: 0
@@ -9819,7 +10329,8 @@ GameObject:
   - component: {fileID: 523394144}
   - component: {fileID: 523394146}
   - component: {fileID: 523394145}
-  m_Layer: 0
+  - component: {fileID: 523394147}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_0_6065
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9892,6 +10403,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523394143}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &523394147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523394143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6337585, y: 2.5077162, z: 3.2292395}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &526332998
 GameObject:
   m_ObjectHideFlags: 0
@@ -9903,7 +10430,8 @@ GameObject:
   - component: {fileID: 526332999}
   - component: {fileID: 526333001}
   - component: {fileID: 526333000}
-  m_Layer: 0
+  - component: {fileID: 526333002}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_11_7531
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9976,6 +10504,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 526332998}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &526333002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526332998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2905004, y: 3.2497907, z: 3.6133904}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &532073777
 GameObject:
   m_ObjectHideFlags: 0
@@ -10040,7 +10584,8 @@ GameObject:
   - component: {fileID: 537917630}
   - component: {fileID: 537917632}
   - component: {fileID: 537917631}
-  m_Layer: 0
+  - component: {fileID: 537917633}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_0_5331
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10113,6 +10658,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 537917629}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &537917633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537917629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4222114, y: 3.5772393, z: 3.7935357}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &550637909
 GameObject:
   m_ObjectHideFlags: 0
@@ -10252,7 +10813,8 @@ GameObject:
   - component: {fileID: 557822772}
   - component: {fileID: 557822774}
   - component: {fileID: 557822773}
-  m_Layer: 0
+  - component: {fileID: 557822775}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_8_9849
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10325,6 +10887,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 557822771}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &557822775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557822771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4517136, y: 3.8004088, z: 3.3681514}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &571993974
 GameObject:
   m_ObjectHideFlags: 0
@@ -10336,7 +10914,8 @@ GameObject:
   - component: {fileID: 571993975}
   - component: {fileID: 571993977}
   - component: {fileID: 571993976}
-  m_Layer: 0
+  - component: {fileID: 571993978}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_13_9621
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10409,6 +10988,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 571993974}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &571993978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 571993974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.437245, y: 3.5782819, z: 3.0784144}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &576462939
 GameObject:
   m_ObjectHideFlags: 0
@@ -11831,7 +12426,8 @@ GameObject:
   - component: {fileID: 667228555}
   - component: {fileID: 667228557}
   - component: {fileID: 667228556}
-  m_Layer: 0
+  - component: {fileID: 667228558}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_10_1795
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11904,6 +12500,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 667228554}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &667228558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667228554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.502758, y: 3.265541, z: 3.5166898}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &668520139
 GameObject:
   m_ObjectHideFlags: 0
@@ -12126,7 +12738,8 @@ GameObject:
   - component: {fileID: 675052436}
   - component: {fileID: 675052438}
   - component: {fileID: 675052437}
-  m_Layer: 0
+  - component: {fileID: 675052439}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_18_8473
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12199,6 +12812,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675052435}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &675052439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675052435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3383756, y: 3.3049643, z: 3.8712432}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &676790822
 GameObject:
   m_ObjectHideFlags: 0
@@ -13037,7 +13666,8 @@ GameObject:
   - component: {fileID: 723090169}
   - component: {fileID: 723090171}
   - component: {fileID: 723090170}
-  m_Layer: 0
+  - component: {fileID: 723090172}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_8_8046
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13110,6 +13740,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723090168}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &723090172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723090168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.620573, y: 3.5814834, z: 3.8541873}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &725980654
 GameObject:
   m_ObjectHideFlags: 0
@@ -13227,7 +13873,8 @@ GameObject:
   - component: {fileID: 734782344}
   - component: {fileID: 734782346}
   - component: {fileID: 734782345}
-  m_Layer: 0
+  - component: {fileID: 734782347}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_12_6841
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13300,6 +13947,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734782343}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &734782347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734782343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3511596, y: 3.5594184, z: 3.4637415}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &736388746
 GameObject:
   m_ObjectHideFlags: 0
@@ -13311,7 +13974,8 @@ GameObject:
   - component: {fileID: 736388747}
   - component: {fileID: 736388749}
   - component: {fileID: 736388748}
-  m_Layer: 0
+  - component: {fileID: 736388750}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_0_5140
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13384,6 +14048,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 736388746}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &736388750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736388746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.7435312, y: 3.0069475, z: 2.6890907}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &740539056
 GameObject:
   m_ObjectHideFlags: 0
@@ -13395,7 +14075,8 @@ GameObject:
   - component: {fileID: 740539057}
   - component: {fileID: 740539059}
   - component: {fileID: 740539058}
-  m_Layer: 0
+  - component: {fileID: 740539060}
+  m_Layer: 7
   m_Name: Mine Sample 2_7_3314
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13468,6 +14149,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 740539056}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &740539060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740539056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.3479533, y: 2.3338156, z: 2.1711423}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &742861332
 GameObject:
   m_ObjectHideFlags: 0
@@ -13818,7 +14515,8 @@ GameObject:
   - component: {fileID: 764285588}
   - component: {fileID: 764285590}
   - component: {fileID: 764285589}
-  m_Layer: 0
+  - component: {fileID: 764285591}
+  m_Layer: 7
   m_Name: Tinniuq Planet (Background)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13891,6 +14589,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 764285587}
   m_Mesh: {fileID: 4300000, guid: 614d5d16c663aaf4e8a724ee026d8cf0, type: 3}
+--- !u!114 &764285591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764285587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 17.981174, y: 14.412973, z: 18.70277}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &766119886
 GameObject:
   m_ObjectHideFlags: 0
@@ -14243,7 +14957,8 @@ GameObject:
   - component: {fileID: 783239006}
   - component: {fileID: 783239008}
   - component: {fileID: 783239007}
-  m_Layer: 0
+  - component: {fileID: 783239009}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_17_1501
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14316,6 +15031,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 783239005}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &783239009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783239005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.323974, y: 3.585607, z: 2.3458526}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &785109349
 GameObject:
   m_ObjectHideFlags: 0
@@ -14665,7 +15396,8 @@ GameObject:
   - component: {fileID: 793380756}
   - component: {fileID: 793380758}
   - component: {fileID: 793380757}
-  m_Layer: 0
+  - component: {fileID: 793380759}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_11_9134
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14738,6 +15470,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 793380755}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &793380759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 793380755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.587111, y: 3.2966654, z: 3.3270938}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &795575401
 GameObject:
   m_ObjectHideFlags: 0
@@ -14801,7 +15549,8 @@ GameObject:
   - component: {fileID: 798217568}
   - component: {fileID: 798217570}
   - component: {fileID: 798217569}
-  m_Layer: 0
+  - component: {fileID: 798217571}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_6_1830
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14874,6 +15623,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 798217567}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &798217571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798217567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7358437, y: 3.6831973, z: 2.5345507}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &803182961
 GameObject:
   m_ObjectHideFlags: 0
@@ -14960,7 +15725,8 @@ GameObject:
   - component: {fileID: 806740048}
   - component: {fileID: 806740050}
   - component: {fileID: 806740049}
-  m_Layer: 0
+  - component: {fileID: 806740051}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_8_3116
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15033,6 +15799,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806740047}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &806740051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806740047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.5422945, y: 3.5242655, z: 2.3589091}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &808969722
 GameObject:
   m_ObjectHideFlags: 0
@@ -15076,7 +15858,8 @@ GameObject:
   - component: {fileID: 826986126}
   - component: {fileID: 826986128}
   - component: {fileID: 826986127}
-  m_Layer: 0
+  - component: {fileID: 826986129}
+  m_Layer: 7
   m_Name: Mine Sample 1_2_5008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15149,6 +15932,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 826986125}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &826986129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826986125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.1053996, y: 2.2273967, z: 2.0876274}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &829409175
 GameObject:
   m_ObjectHideFlags: 0
@@ -15288,7 +16087,8 @@ GameObject:
   - component: {fileID: 840407353}
   - component: {fileID: 840407355}
   - component: {fileID: 840407354}
-  m_Layer: 0
+  - component: {fileID: 840407356}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_6_4047
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15361,6 +16161,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 840407352}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &840407356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840407352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7702708, y: 3.6271262, z: 3.6622996}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &842373412
 GameObject:
   m_ObjectHideFlags: 0
@@ -15372,7 +16188,8 @@ GameObject:
   - component: {fileID: 842373413}
   - component: {fileID: 842373415}
   - component: {fileID: 842373414}
-  m_Layer: 0
+  - component: {fileID: 842373416}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_3_1288
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15445,6 +16262,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 842373412}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &842373416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842373412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6293643, y: 2.5264149, z: 3.7566335}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &846199753
 GameObject:
   m_ObjectHideFlags: 0
@@ -15933,7 +16766,8 @@ GameObject:
   - component: {fileID: 887682175}
   - component: {fileID: 887682177}
   - component: {fileID: 887682176}
-  m_Layer: 0
+  - component: {fileID: 887682178}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_7_6406
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16006,6 +16840,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 887682174}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &887682178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887682174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3252668, y: 3.5837934, z: 3.115911}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &887771510
 GameObject:
   m_ObjectHideFlags: 0
@@ -16197,7 +17047,8 @@ GameObject:
   - component: {fileID: 897216136}
   - component: {fileID: 897216138}
   - component: {fileID: 897216137}
-  m_Layer: 0
+  - component: {fileID: 897216139}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_14_1681
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16270,6 +17121,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897216135}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &897216139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897216135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.381347, y: 3.2320752, z: 3.6942985}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &898091016
 GameObject:
   m_ObjectHideFlags: 0
@@ -16713,7 +17580,8 @@ GameObject:
   - component: {fileID: 936099494}
   - component: {fileID: 936099496}
   - component: {fileID: 936099495}
-  m_Layer: 0
+  - component: {fileID: 936099497}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_2_3709
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16786,6 +17654,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 936099493}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &936099497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936099493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.100672, y: 3.7404568, z: 3.8099763}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &936170814
 GameObject:
   m_ObjectHideFlags: 0
@@ -16958,7 +17842,8 @@ GameObject:
   - component: {fileID: 943014570}
   - component: {fileID: 943014572}
   - component: {fileID: 943014571}
-  m_Layer: 0
+  - component: {fileID: 943014573}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_11_8873
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17031,6 +17916,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 943014569}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &943014573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943014569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.480508, y: 2.4338372, z: 2.761353}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &950472040
 GameObject:
   m_ObjectHideFlags: 0
@@ -17943,7 +18844,8 @@ GameObject:
   - component: {fileID: 972907921}
   - component: {fileID: 972907923}
   - component: {fileID: 972907922}
-  m_Layer: 0
+  - component: {fileID: 972907924}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_12_1405
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18016,6 +18918,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 972907920}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &972907924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972907920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.9712765, y: 3.39415, z: 3.4536986}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &982871790
 GameObject:
   m_ObjectHideFlags: 0
@@ -18027,7 +18945,8 @@ GameObject:
   - component: {fileID: 982871791}
   - component: {fileID: 982871793}
   - component: {fileID: 982871792}
-  m_Layer: 0
+  - component: {fileID: 982871794}
+  m_Layer: 7
   m_Name: Mine Sample 1_4_5770
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18100,6 +19019,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 982871790}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &982871794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982871790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.218842, y: 2.1676702, z: 1.8763075}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1001 &987624427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18403,7 +19338,8 @@ GameObject:
   - component: {fileID: 1000658047}
   - component: {fileID: 1000658049}
   - component: {fileID: 1000658048}
-  m_Layer: 0
+  - component: {fileID: 1000658050}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_16_7480
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18476,6 +19412,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000658046}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1000658050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000658046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7906015, y: 3.648896, z: 3.2934017}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1002192935
 GameObject:
   m_ObjectHideFlags: 0
@@ -18487,7 +19439,8 @@ GameObject:
   - component: {fileID: 1002192936}
   - component: {fileID: 1002192938}
   - component: {fileID: 1002192937}
-  m_Layer: 0
+  - component: {fileID: 1002192939}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_10_3845
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18560,6 +19513,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002192935}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1002192939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002192935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.2088883, y: 2.985367, z: 3.330907}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1010915753
 GameObject:
   m_ObjectHideFlags: 0
@@ -18900,7 +19869,8 @@ GameObject:
   - component: {fileID: 1031064124}
   - component: {fileID: 1031064126}
   - component: {fileID: 1031064125}
-  m_Layer: 0
+  - component: {fileID: 1031064127}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_15_3124
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18973,6 +19943,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1031064123}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1031064127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031064123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4151185, y: 2.3124785, z: 3.078595}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1031458785
 GameObject:
   m_ObjectHideFlags: 0
@@ -18984,7 +19970,8 @@ GameObject:
   - component: {fileID: 1031458786}
   - component: {fileID: 1031458788}
   - component: {fileID: 1031458787}
-  m_Layer: 0
+  - component: {fileID: 1031458789}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_3_3928
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19057,6 +20044,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1031458785}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1031458789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031458785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.1322227, y: 3.8384488, z: 3.8845382}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1031837529
 GameObject:
   m_ObjectHideFlags: 0
@@ -19605,7 +20608,8 @@ GameObject:
   - component: {fileID: 1067361899}
   - component: {fileID: 1067361901}
   - component: {fileID: 1067361900}
-  m_Layer: 0
+  - component: {fileID: 1067361902}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_3_5039
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19678,6 +20682,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067361898}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1067361902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067361898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.3544302, y: 2.4083848, z: 3.4069517}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1070279487
 GameObject:
   m_ObjectHideFlags: 0
@@ -19689,7 +20709,8 @@ GameObject:
   - component: {fileID: 1070279488}
   - component: {fileID: 1070279490}
   - component: {fileID: 1070279489}
-  m_Layer: 0
+  - component: {fileID: 1070279491}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_4_3859
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19762,6 +20783,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1070279487}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1070279491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070279487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3469465, y: 3.3876686, z: 3.8876536}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1073351846
 GameObject:
   m_ObjectHideFlags: 0
@@ -19773,7 +20810,8 @@ GameObject:
   - component: {fileID: 1073351847}
   - component: {fileID: 1073351849}
   - component: {fileID: 1073351848}
-  m_Layer: 0
+  - component: {fileID: 1073351850}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_17_5756
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19846,6 +20884,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1073351846}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1073351850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073351846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.459087, y: 3.2815683, z: 3.6255026}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1073995765
 GameObject:
   m_ObjectHideFlags: 0
@@ -19910,7 +20964,8 @@ GameObject:
   - component: {fileID: 1074641867}
   - component: {fileID: 1074641869}
   - component: {fileID: 1074641868}
-  m_Layer: 0
+  - component: {fileID: 1074641870}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_1_4719
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19983,6 +21038,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1074641866}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1074641870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074641866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.526884, y: 3.7241704, z: 2.856108}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1084740891
 GameObject:
   m_ObjectHideFlags: 0
@@ -19994,7 +21065,8 @@ GameObject:
   - component: {fileID: 1084740892}
   - component: {fileID: 1084740894}
   - component: {fileID: 1084740893}
-  m_Layer: 0
+  - component: {fileID: 1084740895}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_2_3900
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20067,6 +21139,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1084740891}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1084740895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084740891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8080738, y: 3.6510072, z: 2.982987}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1084896702
 GameObject:
   m_ObjectHideFlags: 0
@@ -20282,7 +21370,7 @@ MonoBehaviour:
   - serializedVersion: 2
     m_Bits: 0
   - serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   - serializedVersion: 2
     m_Bits: 0
   - serializedVersion: 2
@@ -20296,9 +21384,9 @@ MonoBehaviour:
   - serializedVersion: 2
     m_Bits: 0
   - serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 384
   - serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 136
   - serializedVersion: 2
     m_Bits: 0
   - serializedVersion: 2
@@ -20425,7 +21513,8 @@ GameObject:
   - component: {fileID: 1093463755}
   - component: {fileID: 1093463757}
   - component: {fileID: 1093463756}
-  m_Layer: 0
+  - component: {fileID: 1093463758}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_12_3423
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20498,6 +21587,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1093463754}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1093463758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093463754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.300159, y: 2.3075533, z: 3.3551154}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1102099501
 GameObject:
   m_ObjectHideFlags: 0
@@ -21024,7 +22129,8 @@ GameObject:
   - component: {fileID: 1126342509}
   - component: {fileID: 1126342511}
   - component: {fileID: 1126342510}
-  m_Layer: 0
+  - component: {fileID: 1126342512}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_2_6757
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21097,6 +22203,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1126342508}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1126342512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126342508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4834042, y: 3.164651, z: 2.2810998}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1131513651
 GameObject:
   m_ObjectHideFlags: 0
@@ -21108,7 +22230,8 @@ GameObject:
   - component: {fileID: 1131513652}
   - component: {fileID: 1131513654}
   - component: {fileID: 1131513653}
-  m_Layer: 0
+  - component: {fileID: 1131513655}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_3_2850
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21181,6 +22304,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1131513651}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1131513655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131513651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8039453, y: 3.4186661, z: 3.2481654}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1147037119
 GameObject:
   m_ObjectHideFlags: 0
@@ -21192,7 +22331,8 @@ GameObject:
   - component: {fileID: 1147037120}
   - component: {fileID: 1147037122}
   - component: {fileID: 1147037121}
-  m_Layer: 0
+  - component: {fileID: 1147037123}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_8_8462
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21265,6 +22405,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1147037119}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1147037123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147037119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3725247, y: 2.364849, z: 2.0299625}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1170122545
 GameObject:
   m_ObjectHideFlags: 0
@@ -21381,7 +22537,8 @@ GameObject:
   - component: {fileID: 1176329429}
   - component: {fileID: 1176329431}
   - component: {fileID: 1176329430}
-  m_Layer: 0
+  - component: {fileID: 1176329432}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_1_9852
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21454,6 +22611,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176329428}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1176329432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176329428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.9687395, y: 3.3366544, z: 3.3085108}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1178200870
 GameObject:
   m_ObjectHideFlags: 0
@@ -21668,7 +22841,8 @@ GameObject:
   - component: {fileID: 1179856424}
   - component: {fileID: 1179856426}
   - component: {fileID: 1179856425}
-  m_Layer: 0
+  - component: {fileID: 1179856427}
+  m_Layer: 7
   m_Name: Mine Sample 2_6_6083
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21741,6 +22915,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1179856423}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1179856427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179856423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.5211399, y: 2.6248937, z: 2.4489603}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1180457623
 GameObject:
   m_ObjectHideFlags: 0
@@ -21947,7 +23137,8 @@ GameObject:
   - component: {fileID: 1185208722}
   - component: {fileID: 1185208724}
   - component: {fileID: 1185208723}
-  m_Layer: 0
+  - component: {fileID: 1185208725}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_5_7175
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22020,6 +23211,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1185208721}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1185208725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185208721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.7328255, y: 3.617233, z: 3.2482712}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1194893404
 GameObject:
   m_ObjectHideFlags: 0
@@ -22084,7 +23291,8 @@ GameObject:
   - component: {fileID: 1200788098}
   - component: {fileID: 1200788100}
   - component: {fileID: 1200788099}
-  m_Layer: 0
+  - component: {fileID: 1200788101}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_9_7313
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22157,6 +23365,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200788097}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1200788101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200788097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3262508, y: 2.8589606, z: 3.6653643}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1203559848
 GameObject:
   m_ObjectHideFlags: 0
@@ -22377,7 +23601,8 @@ GameObject:
   - component: {fileID: 1222761288}
   - component: {fileID: 1222761290}
   - component: {fileID: 1222761289}
-  m_Layer: 0
+  - component: {fileID: 1222761291}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_13_4355
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22450,6 +23675,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1222761287}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1222761291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1222761287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.750399, y: 2.972821, z: 3.322074}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1229306364
 GameObject:
   m_ObjectHideFlags: 0
@@ -22898,7 +24139,8 @@ GameObject:
   - component: {fileID: 1257090079}
   - component: {fileID: 1257090081}
   - component: {fileID: 1257090080}
-  m_Layer: 0
+  - component: {fileID: 1257090082}
+  m_Layer: 7
   m_Name: Mine Sample 1_8_4042
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22971,6 +24213,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1257090078}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1257090082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257090078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.6262528, y: 1.9842283, z: 1.9118712}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1258235450
 GameObject:
   m_ObjectHideFlags: 0
@@ -23584,7 +24842,8 @@ GameObject:
   - component: {fileID: 1283537666}
   - component: {fileID: 1283537668}
   - component: {fileID: 1283537667}
-  m_Layer: 0
+  - component: {fileID: 1283537669}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_13_5793
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23657,6 +24916,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1283537665}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1283537669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1283537665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.678646, y: 2.8458734, z: 2.4926949}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1284296844
 GameObject:
   m_ObjectHideFlags: 0
@@ -23668,7 +24943,8 @@ GameObject:
   - component: {fileID: 1284296845}
   - component: {fileID: 1284296847}
   - component: {fileID: 1284296846}
-  m_Layer: 0
+  - component: {fileID: 1284296848}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_15_7212
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23741,6 +25017,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1284296844}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1284296848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284296844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.9899812, y: 3.0091376, z: 2.6589575}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1284329277
 GameObject:
   m_ObjectHideFlags: 0
@@ -23909,7 +25201,8 @@ GameObject:
   - component: {fileID: 1297639905}
   - component: {fileID: 1297639907}
   - component: {fileID: 1297639906}
-  m_Layer: 0
+  - component: {fileID: 1297639908}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_5_5623
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23982,6 +25275,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1297639904}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1297639908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297639904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4529727, y: 3.502253, z: 3.224817}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1300027929
 GameObject:
   m_ObjectHideFlags: 0
@@ -24213,7 +25522,8 @@ GameObject:
   - component: {fileID: 1314024905}
   - component: {fileID: 1314024907}
   - component: {fileID: 1314024906}
-  m_Layer: 0
+  - component: {fileID: 1314024908}
+  m_Layer: 7
   m_Name: Mine Sample 2_2_6087
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24286,6 +25596,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314024904}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1314024908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314024904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.5342004, y: 2.4483361, z: 2.5962563}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1316306345
 GameObject:
   m_ObjectHideFlags: 0
@@ -24372,7 +25698,8 @@ GameObject:
   - component: {fileID: 1316647241}
   - component: {fileID: 1316647243}
   - component: {fileID: 1316647242}
-  m_Layer: 0
+  - component: {fileID: 1316647244}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_16_2170
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24445,6 +25772,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316647240}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1316647244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316647240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6937695, y: 2.8086052, z: 3.494529}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1320625849
 GameObject:
   m_ObjectHideFlags: 0
@@ -24509,7 +25852,8 @@ GameObject:
   - component: {fileID: 1323371283}
   - component: {fileID: 1323371285}
   - component: {fileID: 1323371284}
-  m_Layer: 0
+  - component: {fileID: 1323371286}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_15_3145
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24582,6 +25926,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323371282}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1323371286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323371282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3695679, y: 3.8995552, z: 3.430725}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1325268207
 GameObject:
   m_ObjectHideFlags: 0
@@ -24804,7 +26164,8 @@ GameObject:
   - component: {fileID: 1334385014}
   - component: {fileID: 1334385016}
   - component: {fileID: 1334385015}
-  m_Layer: 0
+  - component: {fileID: 1334385017}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_5_8132
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24877,6 +26238,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1334385013}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1334385017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1334385013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.9668407, y: 3.4918127, z: 3.4562073}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1336360629
 GameObject:
   m_ObjectHideFlags: 0
@@ -24888,7 +26265,8 @@ GameObject:
   - component: {fileID: 1336360630}
   - component: {fileID: 1336360632}
   - component: {fileID: 1336360631}
-  m_Layer: 0
+  - component: {fileID: 1336360633}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_0_9068
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24961,6 +26339,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1336360629}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1336360633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336360629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8112466, y: 3.339611, z: 3.6591458}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1344935220
 GameObject:
   m_ObjectHideFlags: 0
@@ -25021,7 +26415,8 @@ GameObject:
   - component: {fileID: 1354401535}
   - component: {fileID: 1354401537}
   - component: {fileID: 1354401536}
-  m_Layer: 0
+  - component: {fileID: 1354401538}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_6_1539
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25094,6 +26489,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1354401534}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1354401538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354401534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.26369, y: 2.1637323, z: 1.9137458}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1355116409
 GameObject:
   m_ObjectHideFlags: 0
@@ -25498,7 +26909,8 @@ GameObject:
   - component: {fileID: 1372831004}
   - component: {fileID: 1372831006}
   - component: {fileID: 1372831005}
-  m_Layer: 0
+  - component: {fileID: 1372831007}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_8_1900
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25571,6 +26983,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1372831003}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1372831007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372831003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.412418, y: 3.497064, z: 2.280256}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1376913191
 GameObject:
   m_ObjectHideFlags: 0
@@ -25710,7 +27138,8 @@ GameObject:
   - component: {fileID: 1380635907}
   - component: {fileID: 1380635909}
   - component: {fileID: 1380635908}
-  m_Layer: 0
+  - component: {fileID: 1380635910}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_7_8973
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25783,6 +27212,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1380635906}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1380635910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1380635906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7104166, y: 3.407529, z: 2.2580786}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1381074232
 GameObject:
   m_ObjectHideFlags: 0
@@ -25847,7 +27292,8 @@ GameObject:
   - component: {fileID: 1381540403}
   - component: {fileID: 1381540405}
   - component: {fileID: 1381540404}
-  m_Layer: 0
+  - component: {fileID: 1381540406}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_10_6558
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25920,6 +27366,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381540402}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1381540406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381540402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.9810143, y: 3.6420946, z: 3.680409}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1386696525
 GameObject:
   m_ObjectHideFlags: 0
@@ -26074,7 +27536,8 @@ GameObject:
   - component: {fileID: 1396935160}
   - component: {fileID: 1396935162}
   - component: {fileID: 1396935161}
-  m_Layer: 0
+  - component: {fileID: 1396935163}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_11_8775
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26147,6 +27610,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1396935159}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1396935163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396935159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7052944, y: 2.5467553, z: 3.4660277}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1399490177
 GameObject:
   m_ObjectHideFlags: 0
@@ -26158,7 +27637,8 @@ GameObject:
   - component: {fileID: 1399490178}
   - component: {fileID: 1399490180}
   - component: {fileID: 1399490179}
-  m_Layer: 0
+  - component: {fileID: 1399490181}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_10_7494
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26231,6 +27711,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399490177}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1399490181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399490177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.632734, y: 2.8527899, z: 3.3673825}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1405190329
 GameObject:
   m_ObjectHideFlags: 0
@@ -26242,7 +27738,8 @@ GameObject:
   - component: {fileID: 1405190330}
   - component: {fileID: 1405190332}
   - component: {fileID: 1405190331}
-  m_Layer: 0
+  - component: {fileID: 1405190333}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_6_7402
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26315,6 +27812,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405190329}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1405190333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405190329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.321716, y: 2.7272065, z: 3.4746785}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1405356056
 GameObject:
   m_ObjectHideFlags: 0
@@ -26326,7 +27839,8 @@ GameObject:
   - component: {fileID: 1405356057}
   - component: {fileID: 1405356059}
   - component: {fileID: 1405356058}
-  m_Layer: 0
+  - component: {fileID: 1405356060}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_17_8274
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26399,6 +27913,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405356056}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1405356060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405356056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4591353, y: 1.8106849, z: 3.321448}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1407186453
 GameObject:
   m_ObjectHideFlags: 0
@@ -27252,7 +28782,8 @@ GameObject:
   - component: {fileID: 1447632643}
   - component: {fileID: 1447632645}
   - component: {fileID: 1447632644}
-  m_Layer: 0
+  - component: {fileID: 1447632646}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_7_6799
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27325,6 +28856,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1447632642}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1447632646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447632642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.7932167, y: 3.1287916, z: 2.202978}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1452413710
 GameObject:
   m_ObjectHideFlags: 0
@@ -27665,7 +29212,8 @@ GameObject:
   - component: {fileID: 1473747280}
   - component: {fileID: 1473747282}
   - component: {fileID: 1473747281}
-  m_Layer: 0
+  - component: {fileID: 1473747283}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_10_3696
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27738,6 +29286,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1473747279}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1473747283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1473747279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.1266243, y: 2.1659148, z: 2.0731175}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1474881240
 GameObject:
   m_ObjectHideFlags: 0
@@ -27935,7 +29499,8 @@ GameObject:
   - component: {fileID: 1487397024}
   - component: {fileID: 1487397026}
   - component: {fileID: 1487397025}
-  m_Layer: 0
+  - component: {fileID: 1487397027}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_15_2712
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28008,6 +29573,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1487397023}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1487397027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487397023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6864955, y: 3.0073144, z: 3.1268723}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1490138759
 GameObject:
   m_ObjectHideFlags: 0
@@ -29157,7 +30738,8 @@ GameObject:
   - component: {fileID: 1549486450}
   - component: {fileID: 1549486452}
   - component: {fileID: 1549486451}
-  m_Layer: 0
+  - component: {fileID: 1549486453}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_1_9882
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29230,6 +30812,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1549486449}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1549486453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549486449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.0998561, y: 2.0206695, z: 3.5582795}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1550160722
 GameObject:
   m_ObjectHideFlags: 0
@@ -29241,7 +30839,8 @@ GameObject:
   - component: {fileID: 1550160723}
   - component: {fileID: 1550160725}
   - component: {fileID: 1550160724}
-  m_Layer: 0
+  - component: {fileID: 1550160726}
+  m_Layer: 7
   m_Name: Mine Sample 1_6_4274
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29314,6 +30913,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550160722}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1550160726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550160722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.2444499, y: 2.031673, z: 1.9839947}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1550267963
 GameObject:
   m_ObjectHideFlags: 0
@@ -29501,7 +31116,8 @@ GameObject:
   - component: {fileID: 1564998867}
   - component: {fileID: 1564998869}
   - component: {fileID: 1564998868}
-  m_Layer: 0
+  - component: {fileID: 1564998870}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_14_4395
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29574,6 +31190,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564998866}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1564998870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564998866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.201026, y: 3.1299498, z: 3.7231328}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1565333537
 GameObject:
   m_ObjectHideFlags: 0
@@ -29742,7 +31374,8 @@ GameObject:
   - component: {fileID: 1578496513}
   - component: {fileID: 1578496515}
   - component: {fileID: 1578496514}
-  m_Layer: 0
+  - component: {fileID: 1578496516}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_4_9950
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29815,6 +31448,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1578496512}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1578496516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578496512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.684041, y: 2.659396, z: 2.6672497}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1584395674
 GameObject:
   m_ObjectHideFlags: 0
@@ -29879,7 +31528,8 @@ GameObject:
   - component: {fileID: 1585379405}
   - component: {fileID: 1585379407}
   - component: {fileID: 1585379406}
-  m_Layer: 0
+  - component: {fileID: 1585379408}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_19_2171
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29952,6 +31602,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1585379404}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1585379408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585379404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6200755, y: 2.7877197, z: 3.4075575}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1586018159
 GameObject:
   m_ObjectHideFlags: 0
@@ -29963,7 +31629,8 @@ GameObject:
   - component: {fileID: 1586018160}
   - component: {fileID: 1586018162}
   - component: {fileID: 1586018161}
-  m_Layer: 0
+  - component: {fileID: 1586018163}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_1_9672
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30036,6 +31703,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1586018159}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1586018163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586018159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.0857224, y: 3.6240695, z: 3.7428956}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1001 &1587312645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30929,7 +32612,8 @@ GameObject:
   - component: {fileID: 1653726848}
   - component: {fileID: 1653726850}
   - component: {fileID: 1653726849}
-  m_Layer: 0
+  - component: {fileID: 1653726851}
+  m_Layer: 7
   m_Name: Mine Sample 2_3_6986
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31002,6 +32686,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653726847}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1653726851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653726847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.2495334, y: 2.0736578, z: 1.7439922}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1669549253
 GameObject:
   m_ObjectHideFlags: 0
@@ -31222,7 +32922,8 @@ GameObject:
   - component: {fileID: 1674139216}
   - component: {fileID: 1674139218}
   - component: {fileID: 1674139217}
-  m_Layer: 0
+  - component: {fileID: 1674139219}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_9_2286
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31295,6 +32996,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1674139215}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1674139219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674139215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8079145, y: 3.7173204, z: 3.806862}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1676586911
 GameObject:
   m_ObjectHideFlags: 0
@@ -31306,7 +33023,8 @@ GameObject:
   - component: {fileID: 1676586912}
   - component: {fileID: 1676586914}
   - component: {fileID: 1676586913}
-  m_Layer: 0
+  - component: {fileID: 1676586915}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_13_3331
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31379,6 +33097,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1676586911}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1676586915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676586911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5286071, y: 3.859398, z: 3.272783}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1680847322
 GameObject:
   m_ObjectHideFlags: 0
@@ -31618,7 +33352,8 @@ GameObject:
   - component: {fileID: 1697922763}
   - component: {fileID: 1697922765}
   - component: {fileID: 1697922764}
-  m_Layer: 0
+  - component: {fileID: 1697922766}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_2_6712
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31691,6 +33426,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1697922762}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1697922766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697922762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4944417, y: 3.8704026, z: 3.6449573}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1704716378
 GameObject:
   m_ObjectHideFlags: 0
@@ -32295,7 +34046,8 @@ GameObject:
   - component: {fileID: 1736114776}
   - component: {fileID: 1736114778}
   - component: {fileID: 1736114777}
-  m_Layer: 0
+  - component: {fileID: 1736114779}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_6_6257
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32368,6 +34120,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1736114775}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1736114779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736114775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.187166, y: 3.3505523, z: 2.9823523}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1737771355
 GameObject:
   m_ObjectHideFlags: 0
@@ -32379,7 +34147,8 @@ GameObject:
   - component: {fileID: 1737771356}
   - component: {fileID: 1737771358}
   - component: {fileID: 1737771357}
-  m_Layer: 0
+  - component: {fileID: 1737771359}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_2_8753
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32452,6 +34221,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1737771355}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1737771359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737771355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6627603, y: 3.634043, z: 2.5377889}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1741263973
 GameObject:
   m_ObjectHideFlags: 0
@@ -32538,7 +34323,8 @@ GameObject:
   - component: {fileID: 1741674145}
   - component: {fileID: 1741674147}
   - component: {fileID: 1741674146}
-  m_Layer: 0
+  - component: {fileID: 1741674148}
+  m_Layer: 7
   m_Name: Mine Sample 2_4_6537
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32611,6 +34397,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741674144}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1741674148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741674144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.7295418, y: 2.1897156, z: 1.9990728}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1742946670
 GameObject:
   m_ObjectHideFlags: 0
@@ -32622,7 +34424,8 @@ GameObject:
   - component: {fileID: 1742946671}
   - component: {fileID: 1742946673}
   - component: {fileID: 1742946672}
-  m_Layer: 0
+  - component: {fileID: 1742946674}
+  m_Layer: 7
   m_Name: Mine Sample 2_0_5695
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32695,6 +34498,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1742946670}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1742946674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742946670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.718313, y: 2.2408268, z: 2.3151789}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1746054643
 GameObject:
   m_ObjectHideFlags: 0
@@ -33021,7 +34840,8 @@ GameObject:
   - component: {fileID: 1764204544}
   - component: {fileID: 1764204546}
   - component: {fileID: 1764204545}
-  m_Layer: 0
+  - component: {fileID: 1764204547}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_13_5162
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33094,6 +34914,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1764204543}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1764204547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764204543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.6743186, y: 2.7420647, z: 3.2642944}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1768621054
 GameObject:
   m_ObjectHideFlags: 0
@@ -33637,7 +35473,8 @@ GameObject:
   - component: {fileID: 1802918062}
   - component: {fileID: 1802918064}
   - component: {fileID: 1802918063}
-  m_Layer: 0
+  - component: {fileID: 1802918065}
+  m_Layer: 7
   m_Name: Mine Sample 1_9_3355
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33710,6 +35547,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1802918061}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1802918065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802918061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.9882835, y: 1.8937889, z: 1.725367}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1806035952
 GameObject:
   m_ObjectHideFlags: 0
@@ -33828,7 +35681,8 @@ GameObject:
   - component: {fileID: 1816345662}
   - component: {fileID: 1816345664}
   - component: {fileID: 1816345663}
-  m_Layer: 0
+  - component: {fileID: 1816345665}
+  m_Layer: 7
   m_Name: Mine Sample 1_5_6426
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33901,6 +35755,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1816345661}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1816345665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816345661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.0450592, y: 1.7292761, z: 1.8563446}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1816740727
 GameObject:
   m_ObjectHideFlags: 0
@@ -33912,7 +35782,8 @@ GameObject:
   - component: {fileID: 1816740728}
   - component: {fileID: 1816740730}
   - component: {fileID: 1816740729}
-  m_Layer: 0
+  - component: {fileID: 1816740731}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_5_3726
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33985,6 +35856,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1816740727}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1816740731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816740727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.4230058, y: 2.532497, z: 3.2588704}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1820251940
 GameObject:
   m_ObjectHideFlags: 0
@@ -34049,7 +35936,8 @@ GameObject:
   - component: {fileID: 1825296894}
   - component: {fileID: 1825296896}
   - component: {fileID: 1825296895}
-  m_Layer: 0
+  - component: {fileID: 1825296897}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_3_1472
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34122,6 +36010,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1825296893}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1825296897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825296893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.371884, y: 3.642944, z: 2.6719}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1826472962
 GameObject:
   m_ObjectHideFlags: 0
@@ -34810,7 +36714,8 @@ GameObject:
   - component: {fileID: 1857682794}
   - component: {fileID: 1857682796}
   - component: {fileID: 1857682795}
-  m_Layer: 0
+  - component: {fileID: 1857682797}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_12_6432
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34883,6 +36788,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857682793}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1857682797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857682793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.1449332, y: 3.659503, z: 3.0175865}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1001 &1860637947
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35015,7 +36936,8 @@ GameObject:
   - component: {fileID: 1870294388}
   - component: {fileID: 1870294390}
   - component: {fileID: 1870294389}
-  m_Layer: 0
+  - component: {fileID: 1870294391}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_9_1322
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35088,6 +37010,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1870294387}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1870294391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870294387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5846674, y: 3.4837234, z: 2.288173}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1879917364
 GameObject:
   m_ObjectHideFlags: 0
@@ -35752,7 +37690,8 @@ GameObject:
   - component: {fileID: 1903864128}
   - component: {fileID: 1903864130}
   - component: {fileID: 1903864129}
-  m_Layer: 0
+  - component: {fileID: 1903864131}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_9_4495
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35825,6 +37764,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903864127}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1903864131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903864127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3013036, y: 3.5361187, z: 1.9187051}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1908555142
 GameObject:
   m_ObjectHideFlags: 0
@@ -36176,7 +38131,8 @@ GameObject:
   - component: {fileID: 1915104313}
   - component: {fileID: 1915104315}
   - component: {fileID: 1915104314}
-  m_Layer: 0
+  - component: {fileID: 1915104316}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_18_8010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36249,6 +38205,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915104312}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1915104316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915104312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.757081, y: 3.2134736, z: 3.7495892}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1916201877
 GameObject:
   m_ObjectHideFlags: 0
@@ -36343,7 +38315,8 @@ GameObject:
   - component: {fileID: 1919182387}
   - component: {fileID: 1919182389}
   - component: {fileID: 1919182388}
-  m_Layer: 0
+  - component: {fileID: 1919182390}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_14_8564
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36416,6 +38389,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1919182386}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1919182390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919182386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.1889908, y: 3.5790539, z: 3.406207}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1926247758
 GameObject:
   m_ObjectHideFlags: 0
@@ -36427,7 +38416,8 @@ GameObject:
   - component: {fileID: 1926247759}
   - component: {fileID: 1926247761}
   - component: {fileID: 1926247760}
-  m_Layer: 0
+  - component: {fileID: 1926247762}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_1_8353
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36500,6 +38490,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1926247758}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1926247762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926247758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.120414, y: 3.1675289, z: 3.3862734}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1926351570
 GameObject:
   m_ObjectHideFlags: 0
@@ -36884,7 +38890,8 @@ GameObject:
   - component: {fileID: 1955642104}
   - component: {fileID: 1955642106}
   - component: {fileID: 1955642105}
-  m_Layer: 0
+  - component: {fileID: 1955642107}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_2_9034
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36957,6 +38964,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955642103}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1955642107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1955642103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5775168, y: 2.2584934, z: 3.1083345}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1967530839
 GameObject:
   m_ObjectHideFlags: 0
@@ -37021,7 +39044,8 @@ GameObject:
   - component: {fileID: 1972951595}
   - component: {fileID: 1972951597}
   - component: {fileID: 1972951596}
-  m_Layer: 0
+  - component: {fileID: 1972951598}
+  m_Layer: 7
   m_Name: Mine Sample 2_9_8396
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37094,6 +39118,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972951594}
   m_Mesh: {fileID: 4300002, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &1972951598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972951594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.2324827, y: 2.396623, z: 2.3833914}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1984934420
 GameObject:
   m_ObjectHideFlags: 0
@@ -37228,7 +39268,8 @@ GameObject:
   - component: {fileID: 1987475770}
   - component: {fileID: 1987475772}
   - component: {fileID: 1987475771}
-  m_Layer: 0
+  - component: {fileID: 1987475773}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_13_3409
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37301,6 +39342,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1987475769}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1987475773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987475769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8883822, y: 3.5987098, z: 3.697153}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1989723931
 GameObject:
   m_ObjectHideFlags: 0
@@ -37312,7 +39369,8 @@ GameObject:
   - component: {fileID: 1989723932}
   - component: {fileID: 1989723934}
   - component: {fileID: 1989723933}
-  m_Layer: 0
+  - component: {fileID: 1989723935}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_4_6185
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37385,6 +39443,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1989723931}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &1989723935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989723931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.7487223, y: 2.8572948, z: 2.9418943}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1994227641
 GameObject:
   m_ObjectHideFlags: 0
@@ -37768,7 +39842,8 @@ GameObject:
   - component: {fileID: 2020429016}
   - component: {fileID: 2020429018}
   - component: {fileID: 2020429017}
-  m_Layer: 0
+  - component: {fileID: 2020429019}
+  m_Layer: 7
   m_Name: Mine Sample 1_0_1326
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37841,6 +39916,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2020429015}
   m_Mesh: {fileID: 4300000, guid: 6ed599d7224ee9943b11064add7ed981, type: 3}
+--- !u!114 &2020429019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020429015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 1.858088, y: 1.868966, z: 1.3597267}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2027649399
 GameObject:
   m_ObjectHideFlags: 0
@@ -38477,7 +40568,8 @@ GameObject:
   - component: {fileID: 2055954387}
   - component: {fileID: 2055954389}
   - component: {fileID: 2055954388}
-  m_Layer: 0
+  - component: {fileID: 2055954390}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_16_8335
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38550,6 +40642,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2055954386}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2055954390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055954386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.1083426, y: 2.7482681, z: 3.7455623}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2074288000
 GameObject:
   m_ObjectHideFlags: 0
@@ -38561,7 +40669,8 @@ GameObject:
   - component: {fileID: 2074288001}
   - component: {fileID: 2074288003}
   - component: {fileID: 2074288002}
-  m_Layer: 0
+  - component: {fileID: 2074288004}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_10_7013
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38634,6 +40743,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074288000}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2074288004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074288000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.3172488, y: 3.455262, z: 3.586954}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2079485531
 GameObject:
   m_ObjectHideFlags: 0
@@ -38698,7 +40823,8 @@ GameObject:
   - component: {fileID: 2082359108}
   - component: {fileID: 2082359110}
   - component: {fileID: 2082359109}
-  m_Layer: 0
+  - component: {fileID: 2082359111}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_16_1087
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38771,6 +40897,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2082359107}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2082359111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082359107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5352347, y: 3.2471287, z: 3.5642023}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2088566795
 GameObject:
   m_ObjectHideFlags: 0
@@ -38977,7 +41119,8 @@ GameObject:
   - component: {fileID: 2096420805}
   - component: {fileID: 2096420807}
   - component: {fileID: 2096420806}
-  m_Layer: 0
+  - component: {fileID: 2096420808}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_4_2790
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39050,6 +41193,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096420804}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2096420808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096420804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.5043929, y: 2.9366572, z: 3.5327265}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2105230013
 GameObject:
   m_ObjectHideFlags: 0
@@ -39061,7 +41220,8 @@ GameObject:
   - component: {fileID: 2105230014}
   - component: {fileID: 2105230016}
   - component: {fileID: 2105230015}
-  m_Layer: 0
+  - component: {fileID: 2105230017}
+  m_Layer: 7
   m_Name: Asteroid Lava Blue_6_9226
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39134,6 +41294,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2105230013}
   m_Mesh: {fileID: 4300000, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2105230017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105230013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 3.6798873, y: 2.9707704, z: 3.1479788}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2105319428
 GameObject:
   m_ObjectHideFlags: 0
@@ -39518,7 +41694,8 @@ GameObject:
   - component: {fileID: 2140248731}
   - component: {fileID: 2140248733}
   - component: {fileID: 2140248732}
-  m_Layer: 0
+  - component: {fileID: 2140248734}
+  m_Layer: 7
   m_Name: Asteroid Lava Red_14_4934
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39591,6 +41768,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2140248730}
   m_Mesh: {fileID: 4300002, guid: 4514a249f7ca7d44b8eb4cbd48174504, type: 3}
+--- !u!114 &2140248734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140248730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9094710ba463c4e95c353cafe762bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_vBaseHalfExtent: {x: 2.8014488, y: 3.757239, z: 3.4622421}
+  m_vOffset: {x: 0, y: 0, z: 0}
+  m_bShowDebugGizmo: 0
+  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2141633474
 GameObject:
   m_ObjectHideFlags: 0

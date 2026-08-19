@@ -44,7 +44,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
         if (m_refCircleCollider != null)
             m_refCircleCollider.OnHitTargetEnter -= AttackMonster;
     }
-    private void AttackMonster(CircleCollider _refOther)
+    private void AttackMonster(BaseCollider _refOther)
     {
         var iDamageable = _refOther.GetComponent<IDamageable>();
         if (iDamageable != null)

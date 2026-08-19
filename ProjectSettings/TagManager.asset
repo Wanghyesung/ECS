@@ -17,8 +17,8 @@ TagManager:
   - TaretPlane
   - PlayerAttack
   - MonsterAttack
-  - 
-  - 
+  - PhysXBenchmark
+  - PhysXBulletDemo
   - 
   - 
   - 

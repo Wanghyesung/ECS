@@ -160,7 +160,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     }
 
 
-    protected virtual void Attack(CircleCollider _refOther)
+    protected virtual void Attack(BaseCollider _refOther)
     {
         var iDamageable = _refOther.GetComponent<IDamageable>();
         if (iDamageable != null)

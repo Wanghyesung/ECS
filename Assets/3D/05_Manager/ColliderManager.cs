@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using Unity.Profiling;
 using UnityEngine;
 
 /*///////////////////////////////////////////
               ColliderManager
-목적 : CircleCollider들을 PhysX 없이 자체적으로 원(구) 충돌 판정한다.
+목적 : BaseCollider(Circle/Obb)들을 PhysX 없이 자체적으로 충돌 판정한다.
 
-       - 레이어 0~31 각각에 대응하는 List<CircleCollider>(그 레이어에 속한 활성 콜라이더)를
+       - 레이어 0~31 각각에 대응하는 List<BaseCollider>(그 레이어에 속한 활성 콜라이더)를
          Awake 시점에 전부 미리 만들어둔다. 레이어 종류는 32개로 고정돼 있으니 통째로 미리
          만들어도 비용이 전혀 없음.
        - 어떤 레이어끼리 충돌할지는 개별 콜라이더가 아니라 이 매니저가 중앙에서 결정한다
@@ -21,11 +22,18 @@ using UnityEngine;
          (다만 안 겹치는 후보 쌍도 항상 Dictionary 조회 한 번은 하게 됨 - 대부분 안 겹치는
          총알-몬스터 후보 쌍 특성상 트레이드오프임).
        - 콜라이더별로 "현재 관여 중인 쌍" ID 목록(m_listOther)을 별도로 들고 있다가,
-         UnActivate 시 그 쌍 기록들을 즉시 정리한다(겹친 채로 반납되면 Exit도 쏴줌).
-       - CircleCollider.Center는 쿼터니언 곱셈이 들어있어 쌍마다 반복 조회하면 낭비가 크다
-         (총알 하나가 몬스터 수만큼, 몬스터 하나가 총알 수만큼 매번 다시 계산됨). 판정 루프
-         돌기 전에 RefreshAllCenters로 활성 콜라이더마다 프레임당 딱 한 번만 계산해서
-         캐시해두고, CheckPair는 CachedCenter만 읽는다.
+         UnActivate 시 그 쌍 기록들을 즉시 정리한다(겹친 채로 반납되면 Exit도 쏴줌). Circle/Obb
+         구분 없이 ID 하나로 통합돼 있어서 원-원/원-박스/박스-박스 쌍이 전부 이 하나의 정리
+         로직으로 처리된다.
+       - BaseCollider.Center는 도형별로 계산 비용이 다르다(Circle은 쿼터니언 곱셈 포함). 판정
+         루프 돌기 전에 RefreshAllCenters로 활성 콜라이더마다 프레임당 딱 한 번만 다형 호출해서
+         캐시해두고, CheckPair는 CachedCenter만 읽는다. Obb처럼 정적인 도형은 RefreshCenter가
+         빈 구현이라 사실상 공짜.
+       - 어떤 도형끼리(원-원/원-박스/박스-박스) 겹침을 계산할지는 s_arrNarrowPhase 디스패치
+         테이블이 eColliderShape 기준으로 결정한다. 레이어 하나에는 한 가지 도형만 들어간다는
+         전제 하에, 레이어 쌍(iLayerA, iLayerB) 조합당 딱 한 번만 테이블에서 함수를 뽑아 안쪽
+         N×M 루프 내내 재사용한다 - 쌍마다 델리게이트를 다시 조회하면 수십만 회 누적되어 무시
+         못 할 오버헤드가 되기 때문.
        - Bullet 등은 Update에서 Transform을 직접 이동하므로, 그게 전부 끝나 위치가 확정된
          뒤인 LateUpdate에서 판정한다.
        - 레이어 리스트에서의 실제 제거(스왑백)는 판정 순회 중에는 절대 안 하고 다음 프레임
@@ -44,12 +52,13 @@ public class ColliderManager : MonoBehaviour
     // Unity Physics 설정처럼 한쪽만 체크해도 인식되도록 양방향으로 확인함(IsLayerCollide 참고).
     [SerializeField] private LayerMask[] m_arrLayerCollisionMatrix = new LayerMask[32];
 
-    // 레이어(0~31) -> 그 레이어에 속한 활성 콜라이더 목록. Awake에서 32개 전부 미리 생성
-    private List<CircleCollider>[] m_arrCollider;
+    // 레이어(0~31) -> 그 레이어에 속한 활성 콜라이더 목록. Awake에서 32개 전부 미리 생성.
+    // Circle/Obb 공용 - 레이어 하나에는 한 가지 도형만 들어간다는 게 전제(§디스패치 테이블 참고)
+    private List<BaseCollider>[] m_arrCollider;
 
     // UnActivate로 예약된, 다음 프레임 Update() 맨 앞에서 한꺼번에 지워줄 콜라이더들.
     // 이미 맞은 얘들은 호출까지는 보장하기 위해서 LateUpdate에서 사라져도 바로 사라지지 않게. 다음 프레임에서 삭제되게
-    private List<CircleCollider> m_listPendingDelete;
+    private List<BaseCollider> m_listPendingDelete;
 
     // ID -> 그 콜라이더가 자기 레이어 리스트에서 몇 번째 자리인지 (UnActivate 스왑백 O(1) 제거용)
     private List<int> m_listIndexInLayerList;
@@ -59,6 +68,8 @@ public class ColliderManager : MonoBehaviour
 
     // 쌍(A,B) -> 항목이 존재 = 지금 겹치고 있다는 뜻 (Enter 시 생성, Exit 시 제거).
     // Enter/Stay/Exit 판정을 전부 CheckPair 안에서 이 Dictionary 하나로 직접 처리한다.
+    // Circle-Circle/Circle-Box/Box-Box 쌍 전부 이 Dictionary 하나로 통합 처리(ID 공간이
+    // BaseCollider에서 공유되므로 별도 Dictionary가 필요 없음)
     private Dictionary<long, tColliderPair> m_hashPairInfo;
 
     // Stay 처리 비용만 따로 떼서 프로파일러(CPU Usage > Hierarchy)에서 확인하기 위한 마커.
@@ -69,16 +80,29 @@ public class ColliderManager : MonoBehaviour
 
     // ColliderManager.LateUpdate() 안에서 어느 구간이 무거운지(센터 캐싱 / 같은 레이어 대조
     // / 레이어 간 대조) 나눠서 보기 위한 마커. 이 세 개는 레이어 단위로만 불려서 프레임당
-    // 호출 횟수가 적으니 마커 오버헤드로 측정이 왜곡될 걱정 없음
+    // 호출 횟수가 적으니 마커 오버헤드로 측정이 왜곡될 걱정 없음. Circle-Box 판정도 이제
+    // CheckSameLayer/CheckCrossLayer 안에 통합돼 있어서 별도 마커 없이 여기서 같이 잡힘
     private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.PreLoadCenter");
     private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
     private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
 
     private struct tColliderPair
     {
-        public CircleCollider ColliderA;
-        public CircleCollider ColliderB;
+        public BaseCollider ColliderA;
+        public BaseCollider ColliderB;
     }
+
+    // 도형 쌍(eColliderShape x eColliderShape)별 겹침 판정 함수 테이블. Circle=0, Box=1로
+    // 배열 인덱스에 그대로 캐스팅된다. [Box,Box]는 지금 레이어 와이어링상 절대 호출되지
+    // 않지만(Obstacle 레이어는 자기 자신과 충돌하도록 설정 안 함), 매트릭스가 잘못
+    // 설정되는 실수에 대비해 안전한 false 스텁으로 채워 둔다(NullReferenceException 방지).
+    // 각 칸은 "이 두 타입 조합으로만 호출된다"는 계약 하에 캐스팅하므로, 매트릭스 밖에서
+    // 함부로 재사용하지 말 것.
+    private static readonly Func<BaseCollider, BaseCollider, bool>[,] s_arrNarrowPhase =
+    {
+        { IsCircleCircleOverlap, IsCircleBoxOverlapPair },
+        { IsBoxCircleOverlapPair, IsBoxBoxOverlap },
+    };
 
     private void Awake()
     {
@@ -91,11 +115,11 @@ public class ColliderManager : MonoBehaviour
         m_Instance = this;
         DontDestroyOnLoad(this);
 
-        m_arrCollider = new List<CircleCollider>[32];
+        m_arrCollider = new List<BaseCollider>[32];
         for (int i = 0; i < 32; ++i)
-            m_arrCollider[i] = new List<CircleCollider>();
+            m_arrCollider[i] = new List<BaseCollider>();
 
-        m_listPendingDelete = new List<CircleCollider>();
+        m_listPendingDelete = new List<BaseCollider>();
         m_listIndexInLayerList = new List<int>();
         m_listOther = new List<HashSet<int>>();
 
@@ -127,42 +151,42 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
-    // CircleCollider.Awake()에서 생애주기 중 딱 한 번만 호출. 레이어 리스트엔 아직 안 들어감(Activate가 담당)
-    public void RegisterCollider(CircleCollider _refCollider)
+    // BaseCollider.Awake()에서 생애주기 중 딱 한 번만 호출. 레이어 리스트엔 아직 안 들어감(Activate가 담당)
+    public void RegisterCollider(BaseCollider _refCollider)
     {
         ResizeCapacity(_refCollider.ID);
     }
 
-    // CircleCollider.OnEnable()/Start()에서 호출 - 그 즉시 자기 레이어 리스트에 편입.
+    // BaseCollider.OnEnable()/Start()에서 호출 - 그 즉시 자기 레이어 리스트에 편입.
     // 죽은 직후(리스트 제거는 예약만 되고 아직 안 지워진 상태)에 바로 재발사되는 경우, 이미
     // 리스트에 남아있는데 또 추가하면 같은 콜라이더가 두 자리를 차지하는 유령 항목이 생겨서
     // m_listIndexInLayerList가 꼬이므로, 이미 등록돼 있으면(index가 -1이 아니면) 무시
-    public void Activate(CircleCollider _refCollider)
+    public void Activate(BaseCollider _refCollider)
     {
         ResizeCapacity(_refCollider.ID);
 
         if (m_listIndexInLayerList[_refCollider.ID] >= 0)
             return;
 
-        List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
+        List<BaseCollider> listLayer = m_arrCollider[_refCollider.Layer];
         m_listIndexInLayerList[_refCollider.ID] = listLayer.Count;
         listLayer.Add(_refCollider);
     }
 
-    // CircleCollider.OnDisable()에서 호출.
+    // BaseCollider.OnDisable()에서 호출.
     // 쌍 기록 정리(Exit 이벤트 포함)는 리스트 순회와 무관해서 안전하니 여기서 바로 처리한다.
     // 레이어 리스트에서의 실제 제거는 다음 프레임 Update() 맨 앞으로 예약만 해둔다 - 지금 당장
     // (판정 순회 도중, 총알이 맞자마자 즉발로 풀 반납되는 재진입 호출 등으로) 스왑백 제거를
     // 하면 CheckSameLayer/CheckCrossLayer가 인덱스로 순회 중인 그 리스트가 흔들려서, 방금 지운
     // 자리로 스왑되어 들어온(원래 리스트 맨 뒤에 있던) 다른 콜라이더가 이번 프레임 판정에서
     // 통째로 스킵될 수 있기 때문
-    public void UnActivate(CircleCollider _refCollider)
+    public void UnActivate(BaseCollider _refCollider)
     {
         m_listPendingDelete.Add(_refCollider);
     }
 
     // 예약된 콜라이더를 레이어 리스트에서 스왑백 제거, ColliderExit호출, 충돌 쌍 제거
-    private void DeleteCollider(CircleCollider _refCollider)
+    private void DeleteCollider(BaseCollider _refCollider)
     {
         int iID = _refCollider.ID;
         int iMyIndex = m_listIndexInLayerList[iID];
@@ -171,7 +195,8 @@ public class ColliderManager : MonoBehaviour
 
 
         // 이 콜라이더가 관여하던 쌍 기록을 전부 정리 (겹친 채로 반납되면 Exit도 쏴줌).
-        // m_hashPairInfo에 항목이 있다는 것 자체가 "지금 겹치는 중"이라는 뜻이라 별도 플래그 확인 불필요
+        // m_hashPairInfo에 항목이 있다는 것 자체가 "지금 겹치는 중"이라는 뜻이라 별도 플래그 확인 불필요.
+        // Circle-Circle이든 Circle-Box든 이 Dictionary 하나로 처리되므로 도형 구분 없이 동일하게 정리됨
         HashSet<int> hashOther = m_listOther[iID];
         foreach (int iOtherID in hashOther)
         {
@@ -189,10 +214,10 @@ public class ColliderManager : MonoBehaviour
         hashOther.Clear();
 
 
-        List<CircleCollider> listLayer = m_arrCollider[_refCollider.Layer];
+        List<BaseCollider> listLayer = m_arrCollider[_refCollider.Layer];
         int iLastIndex = listLayer.Count - 1;
 
-        CircleCollider refMoved = listLayer[iLastIndex];
+        BaseCollider refMoved = listLayer[iLastIndex];
         listLayer[iMyIndex] = refMoved;
         listLayer.RemoveAt(iLastIndex);
         m_listIndexInLayerList[refMoved.ID] = iMyIndex;
@@ -207,7 +232,7 @@ public class ColliderManager : MonoBehaviour
         // 있으므로, 그 사이 다시 살아난 콜라이더까지 실수로 지우지 않도록 걸러줌
         for (int i = 0; i < m_listPendingDelete.Count; ++i)
         {
-            CircleCollider refCollider = m_listPendingDelete[i];
+            BaseCollider refCollider = m_listPendingDelete[i];
 
             // 예약 이후(같은 프레임 or 다음 Update 전에) 재사용으로 다시 활성화됐으면 지우면 안 됨 -
             // 지금 실제로 비활성 상태인 것만 진짜로 삭제
@@ -230,7 +255,7 @@ public class ColliderManager : MonoBehaviour
         // 레이어 0~31을 이중 순회(A<=B), 매트릭스에서 충돌하는 조합만 실제로 대조
         for (int iLayerA = 0; iLayerA < 32; ++iLayerA)
         {
-            List<CircleCollider> listA = m_arrCollider[iLayerA];
+            List<BaseCollider> listA = m_arrCollider[iLayerA];
             if (listA.Count == 0)
                 continue;
 
@@ -239,14 +264,19 @@ public class ColliderManager : MonoBehaviour
                 if (!IsLayerCollider(iLayerA, iLayerB))
                     continue;
 
-                List<CircleCollider> listB = m_arrCollider[iLayerB];
+                List<BaseCollider> listB = m_arrCollider[iLayerB];
                 if (listB.Count == 0)
                     continue;
 
+                // 레이어 쌍 하나당 딱 한 번만 판정 함수를 뽑는다(대표 원소 기준) - 쌍마다
+                // 델리게이트를 다시 조회하면 수십만 회 누적되어 무시 못 할 오버헤드가 됨
+                Func<BaseCollider, BaseCollider, bool> fnOverlap =
+                    s_arrNarrowPhase[(int)listA[0].Shape, (int)listB[0].Shape];
+
                 if (iLayerA == iLayerB)
-                    CheckSameLayer(listA);
+                    CheckSameLayer(listA, fnOverlap);
                 else
-                    CheckCrossLayer(listA, listB);
+                    CheckCrossLayer(listA, listB, fnOverlap);
             }
         }
     }
@@ -257,54 +287,49 @@ public class ColliderManager : MonoBehaviour
         {
             for (int iLayer = 0; iLayer < 32; ++iLayer)
             {
-                List<CircleCollider> listLayer = m_arrCollider[iLayer];
+                List<BaseCollider> listLayer = m_arrCollider[iLayer];
                 for (int i = 0; i < listLayer.Count; ++i)
-                    listLayer[i].CenterPos();
+                    listLayer[i].RefreshCenter();
             }
         }
     }
 
-    private void CheckSameLayer(List<CircleCollider> _listCollider)
+    private void CheckSameLayer(List<BaseCollider> _listCollider, Func<BaseCollider, BaseCollider, bool> _fnOverlap)
     {
         using (s_tMarkerSameLayer.Auto())
         {
             for (int a = 0; a < _listCollider.Count; ++a)
             {
-                CircleCollider refI = _listCollider[a];
+                BaseCollider refI = _listCollider[a];
 
                 for (int b = a + 1; b < _listCollider.Count; ++b)
-                    CheckPair(refI, _listCollider[b]);
+                    CheckPair(refI, _listCollider[b], _fnOverlap);
             }
         }
     }
 
-    private void CheckCrossLayer(List<CircleCollider> _listA, List<CircleCollider> _listB)
+    private void CheckCrossLayer(List<BaseCollider> _listA, List<BaseCollider> _listB, Func<BaseCollider, BaseCollider, bool> _fnOverlap)
     {
         using (s_tMarkerCrossLayer.Auto())
         {
             for (int a = 0; a < _listA.Count; ++a)
             {
-                CircleCollider refA = _listA[a];
+                BaseCollider refA = _listA[a];
 
                 for (int b = 0; b < _listB.Count; ++b)
-                    CheckPair(refA, _listB[b]);
+                    CheckPair(refA, _listB[b], _fnOverlap);
             }
         }
     }
 
-    private void CheckPair(CircleCollider _refA, CircleCollider _refB)
+    private void CheckPair(BaseCollider _refA, BaseCollider _refB, Func<BaseCollider, BaseCollider, bool> _fnOverlap)
     {
-        // 3D 전체 거리(X/Y/Z)로 겹침 판정. 구(sphere) 대 구 판정과 동일한 공식
-        Vector3 vDelta = _refB.CachedCenter - _refA.CachedCenter;
-        float fDistSq = vDelta.sqrMagnitude;
-        float fRadiusSum = _refA.Radius + _refB.Radius;
-        float fRadiusSumSq = fRadiusSum * fRadiusSum;
+        bool bOverlapping = _fnOverlap(_refA, _refB);
 
-        long lKey = MakePairKey(_refA.ID, _refB.ID);
-        bool bOverlapping = fDistSq <= fRadiusSumSq;
         //이번 프레임에 맞았다면
         if (bOverlapping)
         {
+            long lKey = MakePairKey(_refA.ID, _refB.ID);
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
             {
                 using (s_tMarkerStay.Auto())
@@ -329,7 +354,15 @@ public class ColliderManager : MonoBehaviour
 
         else
         {
+            // _refA가 지금 아무와도 안 겹치는 중이면(총알처럼 개체 수가 많은 쪽은 한 순간에
+            // 겹치는 상대가 0~1개뿐인 게 보통) 이 쌍도 당연히 Dictionary에 기록이 없다는
+            // 뜻이므로 조회 자체를 건너뛴다 - 안 겹치는 쌍이 압도적으로 많은 구조라
+            // (총알 5000 x 운석 129 ≈ 66만 쌍 중 실제 겹침은 극소수) 이 한 줄이 큰 비용을 아낀다
+            if (m_listOther[_refA.ID].Count == 0)
+                return;
+
             //저번 프레임에서도 맞았다면
+            long lKey = MakePairKey(_refA.ID, _refB.ID);
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tOld))
             {
                 m_hashPairInfo.Remove(lKey);
@@ -343,9 +376,83 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
+    // ---- 도형별 겹침 판정 ----
+
+    // 원-원(구-구) 판정. 3D 전체 거리(X/Y/Z)로 겹침 판정
+    private static bool IsCircleCircleOverlap(BaseCollider _refA, BaseCollider _refB)
+    {
+        CircleCollider refCircleA = (CircleCollider)_refA;
+        CircleCollider refCircleB = (CircleCollider)_refB;
+
+        Vector3 vDelta = refCircleB.CachedCenter - refCircleA.CachedCenter;
+        float fDistSq = vDelta.sqrMagnitude;
+        float fRadiusSum = refCircleA.Radius + refCircleB.Radius;
+        return fDistSq <= fRadiusSum * fRadiusSum;
+    }
+
+    // 원(구)-OBB 판정 순수 함수. 구 중심을 박스의 로컬 축 3개에 투영(내적) -> half-extent로
+    // 클램프 -> 델타 제곱합을 반지름 제곱과 비교. 정규직교 기저라 로컬에서 잰 거리가 곧
+    // 실제 거리라 월드로 되돌릴 필요가 없음. 씬/스크립트 없이 EditMode 테스트로 직접 검증
+    // 가능하도록 public static으로 노출
+    public static bool IsCircleBoxOverlap(
+        Vector3 _vSphereCenter, float _fRadius,
+        Vector3 _vBoxCenter, Vector3 _vAxisX, Vector3 _vAxisY, Vector3 _vAxisZ, Vector3 _vHalfExtent)
+    {
+        Vector3 vDelta = _vSphereCenter - _vBoxCenter;
+
+        float fDx = Vector3.Dot(vDelta, _vAxisX);
+        float fDy = Vector3.Dot(vDelta, _vAxisY);
+        float fDz = Vector3.Dot(vDelta, _vAxisZ);
+
+        float fCx = Mathf.Clamp(fDx, -_vHalfExtent.x, _vHalfExtent.x);
+        float fCy = Mathf.Clamp(fDy, -_vHalfExtent.y, _vHalfExtent.y);
+        float fCz = Mathf.Clamp(fDz, -_vHalfExtent.z, _vHalfExtent.z);
+
+        float fEx = fDx - fCx;
+        float fEy = fDy - fCy;
+        float fEz = fDz - fCz;
+
+        return (fEx * fEx + fEy * fEy + fEz * fEz) <= _fRadius * _fRadius;
+    }
+
+    // 디스패치 테이블 [Circle,Box] 칸 전용 - _refA는 항상 CircleCollider, _refB는 항상 ObbCollider
+    private static bool IsCircleBoxOverlapPair(BaseCollider _refA, BaseCollider _refB)
+    {
+        CircleCollider refCircle = (CircleCollider)_refA;
+        ObbCollider refBox = (ObbCollider)_refB;
+
+        // 구-구 선판정(broad-phase)으로 명백히 먼 쌍을 먼저 걸러낸다. BoundingRadius는
+        // half-extent 대각선 길이라 실제 박스보다 넉넉한 상한이므로, 이 테스트를 통과 못 하면
+        // 진짜 OBB 판정(내적 3회+클램프)을 계산할 필요도 없이 100% 안 겹침 - 반대로 이 테스트를
+        // 통과했다고 꼭 겹치는 건 아니라 아래 정밀 판정으로 넘어감(오탐 없음, 누락도 없음)
+        float fBoundSum = refCircle.Radius + refBox.BoundingRadius;
+        if ((refCircle.CachedCenter - refBox.CachedCenter).sqrMagnitude > fBoundSum * fBoundSum)
+            return false;
+
+        return IsCircleBoxOverlap(
+            refCircle.CachedCenter, refCircle.Radius,
+            refBox.CachedCenter, refBox.AxisX, refBox.AxisY, refBox.AxisZ, refBox.HalfExtent);
+    }
+
+    // 디스패치 테이블 [Box,Circle] 칸 전용 - _refA는 항상 ObbCollider, _refB는 항상 CircleCollider.
+    // 인자만 바꿔 위 함수를 그대로 재사용
+    private static bool IsBoxCircleOverlapPair(BaseCollider _refA, BaseCollider _refB)
+    {
+        return IsCircleBoxOverlapPair(_refB, _refA);
+    }
+
+    // 지금 레이어 와이어링상 절대 호출되지 않음(운석끼리는 충돌 검사 안 함) - 매트릭스 설정
+    // 실수로 Obstacle 레이어가 자기 자신과 충돌하도록 켜지는 경우에 대비한 안전한 스텁.
+    // 실제로 운석끼리 충돌 판정이 필요해지면 여기에 OBB-OBB(SAT 등) 구현을 채울 것
+    private static bool IsBoxBoxOverlap(BaseCollider _refA, BaseCollider _refB)
+    {
+        return false;
+    }
+
     // Physics.Raycast 대체용 - CircleCollider(PhysX 없음) 대상으로 레이 판정. Aim 등 화면 좌표
     // 기반 조준/커서 판정에서 사용. LayerMask는 값 타입이라 할당 없이 그대로 넘길 수 있음
-    // (호출부에서 원하는 레이어를 미리 비트마스크로 조합해서 넘겨줌)
+    // (호출부에서 원하는 레이어를 미리 비트마스크로 조합해서 넘겨줌). Circle 전용 쿼리라
+    // m_arrCollider에서 CircleCollider인 것만 걸러서 본다(운석 등 Box는 대상 아님)
     public bool RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, LayerMask _tMask, out CircleCollider _refHit)
     {
         _vDir.Normalize();
@@ -358,10 +465,12 @@ public class ColliderManager : MonoBehaviour
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
 
-            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            List<BaseCollider> listLayer = m_arrCollider[iLayer];
             for (int i = 0; i < listLayer.Count; ++i)
             {
-                CircleCollider refCollider = listLayer[i];
+                if (!(listLayer[i] is CircleCollider refCollider))
+                    continue;
+
                 Vector3 vToCenter = refCollider.CachedCenter - _vOrigin;
 
                 float fT = Mathf.Clamp(Vector3.Dot(vToCenter, _vDir), 0f, _fMaxLength);
@@ -382,7 +491,8 @@ public class ColliderManager : MonoBehaviour
 
     // Physics.OverlapSphereNonAlloc 대체용 - CircleCollider(PhysX 없음) 대상으로 반경 내 전체 목록 판정.
     // 레이더 등 "화면 안 위협 하나"가 아니라 "범위 내 전부"가 필요한 곳에서 사용.
-    // 호출부가 들고 있는 리스트를 재사용하도록 넘겨받아 채우는 방식이라 매 호출 할당이 없음(Clear만 함)
+    // 호출부가 들고 있는 리스트를 재사용하도록 넘겨받아 채우는 방식이라 매 호출 할당이 없음(Clear만 함).
+    // Circle 전용 쿼리라 m_arrCollider에서 CircleCollider인 것만 걸러서 본다
     public void FindAllInRadius(Vector3 _vPos, float _fRadius, LayerMask _tMask, List<CircleCollider> _listResult)
     {
         _listResult.Clear();
@@ -393,10 +503,12 @@ public class ColliderManager : MonoBehaviour
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
 
-            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            List<BaseCollider> listLayer = m_arrCollider[iLayer];
             for (int i = 0; i < listLayer.Count; ++i)
             {
-                CircleCollider refCollider = listLayer[i];
+                if (!(listLayer[i] is CircleCollider refCollider))
+                    continue;
+
                 float fDistSq = (refCollider.CachedCenter - _vPos).sqrMagnitude;
 
                 if (fDistSq <= fRadiusSq)
@@ -406,7 +518,8 @@ public class ColliderManager : MonoBehaviour
     }
 
     // Physics.OverlapSphere 대체용 - CircleCollider(PhysX 없음) 대상으로 반경 내 최근접 판정.
-    // TargetScanner 등 위치 기반 최근접 타겟 탐색에서 사용. 3D 전체 거리로 판정
+    // TargetScanner 등 위치 기반 최근접 타겟 탐색에서 사용. 3D 전체 거리로 판정.
+    // Circle 전용 쿼리라 m_arrCollider에서 CircleCollider인 것만 걸러서 본다
     public bool FindNearest(Vector3 _vPos, float _fRadius, LayerMask _tMask, out CircleCollider _refHit)
     {
         CircleCollider refNearest = null;
@@ -418,10 +531,12 @@ public class ColliderManager : MonoBehaviour
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
 
-            List<CircleCollider> listLayer = m_arrCollider[iLayer];
+            List<BaseCollider> listLayer = m_arrCollider[iLayer];
             for (int i = 0; i < listLayer.Count; ++i)
             {
-                CircleCollider refCollider = listLayer[i];
+                if (!(listLayer[i] is CircleCollider refCollider))
+                    continue;
+
                 float fDistSq = (refCollider.CachedCenter - _vPos).sqrMagnitude;
 
                 if (fDistSq <= fRadiusSq && fDistSq < fNearestDistSq)

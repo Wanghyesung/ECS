@@ -59,7 +59,7 @@ public class Missiles : Bullet
         m_refPoolObj.SetAliveTime(0.0f);
     }
 
-    protected override void Attack(CircleCollider _refOther)
+    protected override void Attack(BaseCollider _refOther)
     {
         base.Attack(_refOther);
     }
