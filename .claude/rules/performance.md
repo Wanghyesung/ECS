@@ -41,9 +41,7 @@ private void Awake()
 | `new WaitForSeconds(n)` | 필드로 캐싱: `WaitForSeconds _wait = new(0.5f)` |
 | `string + string` | `StringBuilder` 또는 `string.Format` |
 | List가 아닌 것에 `foreach` | 인덱스를 사용한 `for` 루프 |
-| `LINQ` (`.Where`, `.Select`, `.Any`) | 수동 루프 |
 | `FindObjectOfType` | 캐싱된 참조 또는 SO 런타임 세트 |
-| `tag == "tag"` | `CompareTag("tag")` |
 | `SendMessage` / `BroadcastMessage` | 직접 참조 또는 이벤트 |
 | `Physics.RaycastAll` | 미리 할당된 배열과 함께 `Physics.RaycastNonAlloc` |
 

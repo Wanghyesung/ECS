@@ -47,7 +47,7 @@ public class GuidedMoveManager : MonoBehaviour
     private JobHandle m_tHandle;
     private bool m_bScheduled = false;
     private bool m_bDisposed = false;
-
+    private int COUNt = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -93,6 +93,9 @@ public class GuidedMoveManager : MonoBehaviour
         m_listSpeed[_iIndex] = _fSpeed;
         m_listTargetTr[_iIndex] = _refTargetTr;
         m_listActive[_iIndex] = true;
+
+        ++COUNt;
+
     }
 
     // GuidedBullet.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른
@@ -104,6 +107,8 @@ public class GuidedMoveManager : MonoBehaviour
 
         m_listActive[_iIndex] = false;
         m_listTargetTr[_iIndex] = null;
+        --COUNt;
+
     }
 
     private void Update()

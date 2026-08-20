@@ -38,10 +38,13 @@ public abstract class BaseCollider : MonoBehaviour
 
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
 
+    public bool StaticObject { get; protected set; }
     protected virtual void Awake()
     {
         ID = NEXT_ID++;
         Layer = gameObject.layer;
+
+        StaticObject = gameObject.isStatic;
     }
 
     // virtual 필수: ObbCollider처럼 서브클래스가 축/크기 계산용 Start()를 따로 둘 때,
@@ -79,7 +82,8 @@ public abstract class BaseCollider : MonoBehaviour
     }
 
     // ColliderManager.PreLoadCenter()가 판정 루프 전에 프레임당 한 번씩 호출.
-    // Circle은 실제로 CachedCenter를 갱신하고, Obb는 정적이라 빈 구현(기본값)을 그대로 씀
+    // Circle/Obb 둘 다 이걸 오버라이드해서 실제로 CachedCenter(Obb는 축도 함께)를 갱신함 -
+    // 기본 구현은 빈 채로 둬서, 다른 도형이 추가될 때 굳이 오버라이드 안 해도 안전하게 no-op
     public virtual void RefreshCenter() { }
 
     // ColliderManager가 쌍(pair) 상태를 판정한 뒤 Enter/Stay/Exit에 맞춰 호출

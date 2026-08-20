@@ -1,6 +1,6 @@
 # 충돌/이동/풀 시스템 리팩터링 회고
 
-- 기간: 2026-08-01 ~ 2026-08-02 세션
+- 기간: 2026-08-01 ~ 2026-08-02 세션, 2026-08-20 세션(총알 관통 버그 + 레이 판정 + 프로파일링)
 - 관련 시스템: `CircleCollider`, `ColliderManager`, `Bullet`/`Missiles`/`GuidedBullet`,
   `BulletMoveManager`/`MissileMoveManager`/`GuidedMoveManager`, `ObjectPool`/`PoolObject`
 - 관련 커밋: `93bc2df`, `2b8a7a4`, `d95b434` (+ 이 문서 작성 시점 기준 미커밋 변경분)
@@ -138,6 +138,153 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
    `CheckCrossLayer`는 타임라인에서 옆 항목과 겹쳐 보일 정도로 작아짐. 그리드나 Burst
    전환 같은 큰 구조 변경 없이, 캐싱 하나로 해결됨.
 
+### 2-12. 총알 관통(피격 판정 누락) 버그 — 가설 다섯 개, 실제 원인은 둘
+
+테스트 중 "총알이 몬스터를 맞아야 할 위치를 지나가는데 Enter가 안 뜬다"는 증상이
+재현됨. `ColliderManager`를 Enter만 반복 발동하는 테스트 코드 상태로 단순화해두고
+원인을 좁혀나감. 순서대로 가설을 세우고 하나씩 배제했다:
+
+1. **Y축 배제 로직 자체의 계산 오류** — 양쪽 좌표 모두 Y=0으로 고정한 뒤 계산하는
+   구조라 수학적으로 문제없음을 확인하고 배제.
+2. **유도탄류 총알의 회전이 오프셋 계산을 왜곡** — `CenterPos()`가 `transform.rotation *
+   m_vOffset`을 그대로 쓰는데, 목표를 추적하며 피치가 섞이는 회전이면 오프셋의 XZ 성분이
+   실제로 짧아지는 결함이 맞긴 함(`MissileMoveManager`/`GuidedMoveManager`가 타겟의 Y까지
+   포함한 3D 방향으로 `LookRotationSafe`를 계산하고 있어서). 다만 이번에 재현된 총알
+   (MidBullet)은 오프셋이 `(0,0,0)`이라 이 결함과는 무관함을 실측(Debug Inspector)으로 확인.
+3. **몬스터 피격 흔들림 연출(`VisualObject`)의 회전이 판정용 콜라이더에 영향** — 흔들림은
+   판정용 콜라이더가 없는 자식 오브젝트에만 적용되는 구조라 무관함을 확인.
+4. **콜라이더 등록 리스트 자체가 씹힘** — Debug Inspector로 개별 총알의 `m_bActivated`
+   상태와 `ColliderManager`의 실제 등록 리스트를 직접 대조. 처음 확인한 개체는 정상이었지만,
+   계속 대조하다 보니 "`m_bActivated=true`인데 실제 리스트엔 없는" 개체들을 발견 (섹션
+   2-13에서 실제 원인으로 확정).
+5. **터널링(이산 판정이 프레임 사이 이동 경로를 못 봄)** — "총알을 한 번에 여러 발(3연발)
+   쏠 때만 증상이 심해진다"는 관찰을 근거로, 프레임당 dt 스파이크와 겹치면 빠른 총알이
+   반지름 구간을 한 프레임에 건너뛸 수 있다고 판단. 직전/현재 프레임 위치를 잇는 선분과
+   반지름 합 사이 최단거리를 구하는 스윕(swept) 판정을 `CircleCollider`/`ColliderManager`에
+   추가 구현함.
+
+**이후 사용자가 실측(Debug Inspector로 개별 총알 대조)을 계속 반복한 끝에, "터널링은
+실제 원인이 아니었다"고 정정함.** 스윕 판정 자체는 논리적으로 성립하는 방어 코드였지만,
+이번 버그의 진짜 원인이 아니었고, 3연발 조건에서 증상이 심해진 건 아래 2-13의 등록
+타이밍 버그가 짧은 재사용 주기에서 더 잘 걸렸기 때문이었다. 스윕 판정 관련 코드는
+섹션 2-15에서 전부 제거함 — **틀린 진단 위에 쌓은 방어 코드를 한 번 완성까지 시켰다가
+되돌린 사례**로 남겨둔다.
+
+### 2-13. 실제 원인 1 — 재사용된 콜라이더를 삭제 예약이 그대로 지워버림
+
+`ColliderManager.Update()`가 예약된 삭제(`m_listPendingDelete`)를 처리할 때, 원래는
+"지금 진짜로 비활성 상태인 것만" 지우는 가드가 있었는데(`IsActive` 필드 기반), 세션
+중간에 그 필드가 다른 정리 작업 중 빠지면서 가드 없이 무조건 삭제하는 상태가 돼 있었음.
+
+문제 시나리오: 총알이 반납되며 삭제 예약이 걸림 → 삭제가 실제로 처리되기 전(다음
+프레임 `Update()`가 오기 전)에 같은 오브젝트가 빠르게 재사용(재발사)돼서 다시
+활성화됨(`m_bActivated=true`로 복귀) → 그런데도 다음 프레임 `Update()`가 그 낡은 삭제
+예약을 조건 없이 실행 → **방금 다시 날아가고 있는 총알을 판정 리스트에서 지워버림.**
+GameObject는 화면에서 멀쩡히 움직이지만 판정 시스템에서만 조용히 빠지니, 눈에는
+"매끄럽게 그냥 통과하는" 것처럼 보임 — 3연발처럼 재사용 주기가 짧은 무기일수록 이
+타이밍 창에 걸릴 확률이 높아서, 그게 "총알 수가 많을 때만 심해진다"는 관찰로
+이어졌던 것.
+
+**수정**: 삭제 실행 직전에 `refCollider.gameObject.activeInHierarchy`를 다시 확인해서,
+그 사이 재활성화된 것은 지우지 않도록 복구.
+
+### 2-14. 실제 원인 2 — 피격 이펙트 풀 고갈 시 조기 `return`이 총알 반납까지 건너뜀
+
+등록 타이밍 버그를 고친 뒤에도 일부 증상이 남아, `CheckPair`의 Enter 분기에 로그를
+심어 "진짜로 Enter가 안 뜨는지"부터 확인. 결과: **Enter도 뜨고 `TakeDamage`까지 정상
+실행되고 있었는데, 총알이 풀로 반납되지 않아 계속 날아가고 있었음.** 원인은
+`Bullet.AttackMonster()`:
+
+```csharp
+if (m_refHitEffectObj != null)
+{
+    GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
+    if (refHitEffect == null)
+        return;               // ← 이펙트 풀이 비어있으면 메서드 전체를 탈출
+    refHitEffect.transform.position = transform.position;
+}
+
+if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
+    ObjectPool.m_Instance.PushObject(gameObject);   // ← 위 return에 같이 스킵됨
+```
+
+피격 이펙트 풀이 고빈도 발사로 소진돼 `null`이 반환되면, 그 아래 있던 "총알을 풀로
+반납"하는 코드까지 통째로 건너뛰어짐. 총알은 이미 데미지를 입힌 뒤였지만(`Damage=0`으로
+테스트 중이라 눈에 보이는 피드백도 없었음) 풀로 안 돌아가고 계속 날아가서, "맞고도
+그냥 지나가는 것"처럼 보였음.
+
+**수정**: `if (refHitEffect != null) refHitEffect.transform.position = ...;`로 바꿔서,
+이펙트 풀 고갈 여부와 무관하게 아래 반납 로직은 항상 실행되도록 조건문 범위를 좁힘.
+
+### 2-15. 죽은 코드 정리
+
+원인이 확정된 뒤, 2-12에서 만들었다가 틀린 진단으로 판명된 스윕 판정 관련 코드를
+전부 제거: `CircleCollider`의 `PrevCachedCenter`/`m_bCenterInitialized` 필드,
+`SnapshotSpawnPosition()`, `ColliderManager`의 `IsSweepOverlap()`. 겸사겸사 이전부터
+남아있던 주석 처리된 `ProfilerMarker` 필드/`using(...).Auto()` 잔재(섹션 2-11 이전부터
+안 쓰던 것)와, 이번 디버깅용으로 임시로 심었던 `[REG-MISMATCH]`/`[START-NULL]` 로그도
+함께 정리.
+
+### 2-16. `RaycastMask` 추가 — `Aim`의 `Physics.Raycast` 대체
+
+`Aim.cs`가 조준 커서가 적 위에 있는지 판정할 때 `Physics.Raycast`를 쓰고 있었는데,
+몬스터에는 PhysX Collider가 아예 없으므로(이 시스템 자체가 PhysX를 걷어내는 게 목적)
+이 판정은 애초에 항상 실패했을 구조였음. `ColliderManager`에 레이-원 판정을 새로
+추가해서 대체:
+
+- 원리는 섹션 2-11에서 쓴 "선분-점 최단거리" 투영 공식과 동일한 계열 — 레이는 한쪽으로만
+  뻗으므로 매개변수 `t`를 `[0,1]` 대신 `[0, 최대사거리]`로 clamp.
+- 방향 벡터를 미리 정규화해두면 `dot(vToCenter, dir)`이 곧바로 "레이 원점에서 최근접점까지의
+  실제 거리(월드 단위)"가 되어, 별도 정규화 나눗셈 없이 그대로 clamp/비교에 쓸 수 있음.
+- 레이어 파라미터는 `params int[]`(호출부 리터럴 나열 시 매 프레임 배열 할당 발생 우려)
+  대신, 기존 `Aim.cs`에 이미 있던 `LayerMask` 필드를 그대로 재사용하는 방식으로
+  최종 결정 — 값 타입이라 할당이 전혀 없음.
+
+### 2-17. 프로파일링 중 반복된 오독 — Job System 수치를 여러 번 잘못 해석함
+
+`BulletMoveManager`/`GuidedMoveManager`/`MissileMoveManager` 각각의 부하를 재보는
+과정에서, 다음 오독들이 연달아 나왔고 그때그때 정정됨:
+
+1. **워커 스레드 시간을 합산 시도**: "워커 11개가 각각 0.1ms씩이니 3ms 아니냐"는 계산 —
+   병렬로 동시에 도는 스레드들의 시간을 순차 실행처럼 더한 것. 툴팁의 "accumulated
+   time"이 이미 전체 스레드 합계라는 걸 짚어서 정정.
+2. **"N instances"를 스레드당 개수로 오독**: "16 instances over 11 threads"를 "스레드마다
+   16개"로 읽은 것 — 실제로는 그 Job 호출 전체에서 처리한 총 개수.
+3. **활성 개수와 등록 슬롯 전체를 혼동**: "16 instances"가 지금 이 순간 활성 총알 수라고
+   판단했으나, 실제로는 그 프레임이 마침 한산했을 때 캡처된 값이었고, `m_listSpeed.Length`로
+   직접 확인해보니 등록 슬롯 전체는 1300개였음.
+4. **누적 카운터와 실시간 카운터 혼동**: `Activate()`에만 `++count`가 있는 줄 알고 "누적
+   발사 횟수"라고 판단했으나, `Deactivate()`에도 `--count`가 짝지어 있어 실제로는
+   "지금 이 순간 순증감(활성 개수)"을 제대로 추적하는 카운터였음 — `count=1002`가
+   등록 슬롯 1300개 기준으로 봤을 때 실제로 타당한 수치였음.
+5. **엔진 내장 Job을 자기 게임 코드로 착각**: `CullObjectsWithoutUmbra`(Unity 내장 렌더링
+   컬링), `JobMoverDemo:MoveJob`(프로젝트 내 `ECSDemo` 폴더의 Job vs MonoBehaviour 비교
+   학습용 데모, `BulletMoveManager`와 무관)를 순서대로 자기 총알 Job으로 오인.
+
+**결국 해결 방법은 툴팁 해석 논쟁을 그만두고, 코드에 직접 로그/카운터를 심어서
+실측하는 것**이었음 — 이후 확인들은 전부 이 방식으로 정리됨.
+
+### 2-18. `ColliderManager` 자체 프로파일링 — Stay/PreLoadCenter/CheckSameLayer/CheckCrossLayer 마커 재도입
+
+보스 1마리만 배치한 씬에서 Main Thread 타임라인 기준 `ColliderManager.LateUpdate()
+[Invoke] = 1.88ms` 확인(같은 프레임의 `ParticleSystem.Update = 1.84ms`와 비슷한 수준,
+전체 프레임 CPU 32.24ms 중). 섹션 2-11 때 지웠던 자리에, 이번엔 실제로 쓸 목적으로
+`ProfilerMarker` 4개를 다시 심음: `ColliderManager.OnStay`(Stay 발동 구간만), 그리고
+`PreLoadCenter`/`CheckSameLayer`/`CheckCrossLayer`(레이어 단위로만 불려서 마커 오버헤드
+걱정이 없는 구간들). `CheckSameLayer`(같은 레이어끼리, 즉 총알-총알 대조 — 매트릭스
+설정이 잘못돼 있으면 O(N²)로 튈 수 있는 구간)와 `CheckCrossLayer`(총알-보스, 순수
+물량 문제) 중 어느 쪽이 실제로 큰지는 다음 세션에서 확인 예정.
+
+곁가지로, "Job으로 이동시키는 것과 별개로 콜라이더에 BoxCollider(PhysX)를 썼다면
+됐을까"라는 질문도 나옴 — 답은 "포지션 동기화 자체는 됐겠지만 원래 풀려던 문제(PhysX
+시뮬레이션 비용)는 그대로 남았을 것"이었음. Job은 "이동 계산" 비용만 줄여주지 PhysX의
+브로드페이즈/내로우페이즈/트리거 콜백 비용은 콜라이더 존재 여부에만 달려있어서 별개임.
+게다가 **콜라이더만 있고 Rigidbody가 없으면 PhysX는 그걸 "정적(static)" 오브젝트로
+취급**해서, 그런 걸 매 프레임 움직이면 정적 브로드페이즈 트리를 매번 다시 계산해야 해
+오히려 Rigidbody 있는 동적 오브젝트를 움직이는 것보다 더 비쌈 — `MissileMoveManager.cs`
+주석에 이미 "Rigidbody/Collider가 없어서 `Physics.SyncColliderTransform` 비용이
+없다"고 적어뒀던 그 이유가 이번에 다시 한번 확인된 셈.
+
 ---
 
 ## 3. 잘 됐던 접근
@@ -154,6 +301,14 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
   바로 결론 내리지 않고 `ProfilerMarker`로 구간을 쪼개서 확인부터 함 — 결과적으로 그 수정은
   문제가 아니었고, 훨씬 작은 원인(Center 재계산)이 진짜 병목이었다는 걸 정확히 찾아냄. 그리드나
   Burst 같은 큰 구조 변경으로 바로 안 가고, 캐싱 하나로 끝난 사례.
+- **틀린 가설도 자신 있게 계속 검증했다**: 2-12의 터널링 가설은 스윕 판정까지 완성한 뒤
+  틀린 것으로 밝혀졌지만, 그 과정에서 Y축/오프셋 회전/피격 흔들림 가설을 실측으로 하나씩
+  배제해나간 순서 자체는 정상적인 디버깅 절차였음. 가설이 틀렸다고 그 절차가 낭비는 아니었고,
+  배제해나간 덕분에 남은 후보(등록 타이밍, 풀 고갈)로 좁혀질 수 있었음.
+- **프로파일러 수치를 코드로 직접 검증**: Job System의 "N instances" 같은 애매한 툴팁
+  문구를 두고 여러 번 잘못 해석했는데, 결국 해석 논쟁을 그만두고 코드에 카운터/로그를
+  직접 심어서(`++count`/`--count`, `m_listSpeed.Length`) 눈으로 확인하는 쪽으로 정리됨 —
+  섹션 2-17.
 
 ---
 
@@ -178,6 +333,15 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
    보장하지 않는다는 제약을 미리 감안하지 못했고, `OnDestroy`의 Dispose 순서 문제도 마찬가지로
    설계 단계에서 못 잡았음. 둘 다 에디터에서 실제 에러가 난 뒤에 진단하고 고치는 흐름이었음 —
    두 문제 모두 처음 설계할 때 좀 더 방어적으로 짜뒀으면 미리 막을 수 있었던 부분.
+6. **터널링 가설에 너무 오래 머묾**: 총알 관통 버그(섹션 2-12)에서, "다수 동시 발사 시
+   증상이 심해진다"는 관찰 하나로 터널링 가설을 세우고 스윕 판정까지 완성했는데, 실제로는
+   전혀 다른 원인(등록 타이밍 버그)이 같은 관찰 결과를 만들어내고 있었음. "화면이 매끄럽게
+   지나간다"는 사용자의 반박을 받고 나서야 재검토를 시작했는데, 애초에 "터널링이면 프레임이
+   튀는 순간 눈에 띄게 끊겨야 정상"이라는 반증 포인트를 스스로 먼저 떠올렸어야 했음.
+7. **Debug Inspector에서 "값이 정상으로 보인다"를 성급하게 결론으로 씀**: 등록 타이밍 버그를
+   찾는 과정에서, 처음 대조한 총알 한 개가 정상 상태였다는 이유로 "등록 문제는 아니다"라고
+   판단한 순간이 있었음. 실제로는 표본이 하나뿐이라 결론 내리기엔 일렀고, 사용자가 계속
+   여러 개체를 대조해본 뒤에야 등록이 어긋난 개체들이 실제로 발견됨.
 
 ## 5. 코드/방향 설정 과정에서 있었던 시행착오
 
@@ -211,12 +375,15 @@ Missiles/GuidedBullet은 Job 안에서의 쿼터니언 연산이 Burst에서 안
 | **전체 종합 (Job/Burst + 풀 만료 전환 이후)** | **`PlayerLoop`(`BehaviourUpdate` 포함) 기준 최초 Mono 방식 7~8ms → 2~3ms로 약 2배 감소** — 프로파일러로 직접 확인 |
 | 몬스터 실제 배치 후 재측정, 몬스터 25마리 | `ColliderManager` 단독 14ms → Dictionary 접근 최소화 수정 후 20ms(다른 조건에서 측정된 것으로 추정, 회귀 아님) — `ProfilerMarker`로 확인한 결과 `CheckCrossLayer`가 13.55ms로 거의 전부 |
 | `Center` 캐싱 적용 후 | `RefreshAllCenters`(정상 비용) = 1.58ms, `CheckCrossLayer`는 타임라인에서 거의 안 보일 만큼 감소 — 그리드/Burst 없이 캐싱만으로 해결 |
+| 보스 1마리 배치 후 재측정(2026-08-20) | Main Thread 기준 `ColliderManager.LateUpdate() = 1.88ms`(전체 프레임 CPU 32.24ms 중) — 같은 프레임 `ParticleSystem.Update = 1.84ms`와 비슷한 비중. `PreLoadCenter`/`CheckSameLayer`/`CheckCrossLayer` 세부 마커는 재도입만 하고 결과는 아직 미확인 |
 
 **아직 실측으로 재확인 안 된 것**:
 - Job(TransformAccessArray) 전환 후 `BehaviourUpdate`/`PoolUpdate` 각각의 개별 ms 기여도
 - `Center` 캐싱 적용 후 전체 프레임(`PlayerLoop`) 기준 최종 ms (`ColliderManager` 자체는 확인됨)
 - 이번 측정은 에디터 Play Mode 프로파일러 기준(`EditorLoop` 오버헤드 포함)이라, 실제 빌드
   기준 수치는 별도로 확인 필요
+- 보스 1마리 기준 재측정된 `ColliderManager.LateUpdate() = 1.88ms`가 `PreLoadCenter` /
+  `CheckSameLayer` / `CheckCrossLayer` 중 어디서 나오는지 (섹션 2-18, 마커만 재도입한 상태)
 
 ---
 
@@ -344,6 +511,24 @@ SoA(자료구조) → Burst(그 자료구조를 도는 루프를 네이티브+SI
 - 이런 부분 채택 방식을 흔히 "DOTS-lite"/하이브리드라고 부른다. 전체를 ECS로 갈아엎는
   비용 없이, 프로파일러로 실측 확인된 병목 한 곳에만 이 스택을 적용한 것.
 
+### 7-10. PhysX Collider 비용의 실체 — 정적(static) vs 동적(dynamic) 브로드페이즈
+
+이 프로젝트가 총알에서 PhysX Collider를 완전히 걷어낸 이유를 다시 정리해둔다(섹션 2-18에서
+질문이 나와 다시 짚음).
+
+- **Rigidbody가 있는 Collider = 동적 오브젝트**: PhysX가 "매 프레임 움직일 것"으로 가정하고,
+  움직임에 최적화된 동적 브로드페이즈 구조에서 관리한다.
+- **Rigidbody가 없는 Collider = 정적 오브젝트**: PhysX가 "안 움직일 것"으로 가정하고, 정적
+  브로드페이즈 트리에 넣는다. 이 트리는 안 움직이는 지형/구조물 기준으로 최적화돼 있어서,
+  여기 들어간 오브젝트를 스크립트/Job으로 매 프레임 옮기면 그때마다 트리를 다시 계산해야
+  해서 **오히려 동적 오브젝트를 옮기는 것보다 더 비싸다.**
+- 즉 "총알에 Collider만 달고 Rigidbody는 빼자"는 선택지는 이 셋 중 실제로는 제일 비싼
+  선택지였을 것 — 지금처럼 Collider 자체를 아예 안 쓰는 것만이 PhysX 시뮬레이션 비용을
+  0으로 만드는 방법이었다.
+- Job/Burst로 이동 계산을 병렬화하는 것과, Collider를 걷어내 PhysX 시뮬레이션 자체를
+  없애는 것은 **서로 다른 병목을 해결하는 별개의 최적화**다. 이동 계산이 아무리 빨라도
+  Collider가 존재하는 한 브로드페이즈/내로우페이즈/트리거 콜백 비용은 그대로 남는다.
+
 ---
 
 ## 8. 다음에 확인/검토할 것
@@ -356,3 +541,15 @@ SoA(자료구조) → Burst(그 자료구조를 도는 루프를 네이티브+SI
       여전히 그리드보다 나은지 재검증
 - [ ] `JobBullet`/`JobMissile`/`JobGuidedBullet`, `MissileMoveManager`/`GuidedMoveManager`의
       옛 Job 서브클래스 의존 여부 최종 정리(삭제 또는 완전 방치 여부 확정)
+- [x] 총알 관통(피격 판정 누락) 버그 — 실제 원인 두 가지(등록 삭제 타이밍, 이펙트 풀 고갈
+      조기 return) 확정 및 수정 완료. 섹션 2-12~2-14
+- [x] `Aim`의 `Physics.Raycast`를 `ColliderManager.RaycastMask`로 교체 — 섹션 2-16
+- [ ] 보스 1마리 기준 재측정된 `ColliderManager.LateUpdate() = 1.88ms`를 `PreLoadCenter`/
+      `CheckSameLayer`/`CheckCrossLayer` 마커로 실제 분해해서 어느 구간이 큰지 확인
+      (마커는 재도입 완료, 섹션 2-18)
+- [ ] `CheckSameLayer`가 유의미하게 크게 나오면, 레이어 충돌 매트릭스에 총알-총알처럼
+      굳이 안 부딪혀야 할 조합이 잘못 켜져 있는 건 아닌지 확인
+- [ ] `CheckCrossLayer`(총알-몬스터)가 크게 나오고 몬스터 수/총알 수가 더 늘어날 예정이면,
+      그때 가서 섹션 7의 Job/Burst 방식으로 판정 자체(겹침 여부 계산)를 병렬화할지 검토 —
+      단, Enter/Stay/Exit 이벤트 발동 자체는 managed 콜백이라 Job 안에서 못 하므로 "판정
+      계산은 Job, 이벤트 발동은 메인 스레드"로 나누는 구조가 필요함

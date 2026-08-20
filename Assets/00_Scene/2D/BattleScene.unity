@@ -1523,8 +1523,7 @@ Transform:
   m_LocalPosition: {x: 91.071884, y: -22.881653, z: 253.23029}
   m_LocalScale: {x: 6.3150926, y: 6.3150926, z: 6.3150926}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 408583110}
+  m_Children: []
   m_Father: {fileID: 1913867946}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &57836656
@@ -1591,8 +1590,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_vBaseHalfExtent: {x: 3.2158968, y: 3.6583936, z: 2.8189256}
   m_vOffset: {x: 0, y: 0, z: 0}
-  m_bShowDebugGizmo: 0
-  m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  m_bShowDebugGizmo: 1
+  m_tGizmoColor: {r: 0, g: 1, b: 0.0064702034, a: 1}
 --- !u!1 &62899712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2877,7 +2876,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &161302929
 Transform:
   m_ObjectHideFlags: 0
@@ -3958,7 +3957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &216538520
 Transform:
   m_ObjectHideFlags: 0
@@ -5656,7 +5655,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &280640786
 Transform:
   m_ObjectHideFlags: 0
@@ -8111,59 +8110,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 5, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &408583109
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 408583110}
-  - component: {fileID: 408583111}
-  m_Layer: 0
-  m_Name: Collider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &408583110
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408583109}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.000000021855694, y: 0.00000008742278, z: -1.9106855e-15, w: 1}
-  m_LocalPosition: {x: 0, y: 0.16, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 57836655}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &408583111
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 408583109}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2, y: 5, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &411233336
 GameObject:
   m_ObjectHideFlags: 0
@@ -9037,7 +8983,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 1
+  m_iBulletCount: 3
   m_fSpreadAngle: 1
 --- !u!1 &456280720
 GameObject:
@@ -13601,7 +13547,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 1
+  m_iBulletCount: 3
   m_fSpreadAngle: 30
 --- !u!1 &719089471
 GameObject:
@@ -13619,7 +13565,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &719089472
 Transform:
   m_ObjectHideFlags: 0
@@ -15502,7 +15448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &795575402
 Transform:
   m_ObjectHideFlags: 0
@@ -17829,7 +17775,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 1
+  m_iBulletCount: 3
   m_fSpreadAngle: 30
 --- !u!1 &943014569
 GameObject:
@@ -21427,6 +21373,8 @@ MonoBehaviour:
     m_Bits: 0
   - serializedVersion: 2
     m_Bits: 0
+  m_refPlayer: {fileID: 3250488527711361830}
+  m_fMaxBulletRange: 50
 --- !u!1 &1089083245
 GameObject:
   m_ObjectHideFlags: 0
@@ -28450,7 +28398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1412695963
 Transform:
   m_ObjectHideFlags: 0
@@ -29165,7 +29113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1472460816
 Transform:
   m_ObjectHideFlags: 0
@@ -37830,7 +37778,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 1
+  m_iBulletCount: 3
   m_fSpreadAngle: 1
 --- !u!1 &1909513066
 GameObject:

@@ -62,6 +62,7 @@ public class MissileMoveManager : MonoBehaviour
     private bool m_bScheduled = false;
     private bool m_bDisposed = false;
 
+    private int COUNt = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -145,6 +146,8 @@ public class MissileMoveManager : MonoBehaviour
         m_listFixedTargetPos[_iIndex] = _vFixedTargetPos;
 
         m_listActive[_iIndex] = true;
+
+        ++COUNt;
     }
 
     // Missiles.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른 오브젝트의
@@ -156,6 +159,8 @@ public class MissileMoveManager : MonoBehaviour
 
         m_listActive[_iIndex] = false;
         m_listTargetTr[_iIndex] = null;
+
+        --COUNt;
     }
 
     private void Update()

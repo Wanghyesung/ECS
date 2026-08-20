@@ -163,9 +163,9 @@ public class Bullet : MonoBehaviour, IAttackObject
     protected virtual void Attack(BaseCollider _refOther)
     {
         var iDamageable = _refOther.GetComponent<IDamageable>();
+        ++m_tShotInfo.HitCount;//TestCode 
         if (iDamageable != null)
         {
-            ++m_tShotInfo.HitCount;
             m_tShotInfo.HitPosition = transform.position;
             iDamageable.TakeDamage(m_refAttackInfo, m_tShotInfo);
             RunHitActions();

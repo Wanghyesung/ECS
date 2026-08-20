@@ -40,6 +40,7 @@ public class BulletMoveManager : MonoBehaviour
     private bool m_bScheduled = false;
     private bool m_bDisposed = false;
 
+    private int COUNt = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -65,6 +66,7 @@ public class BulletMoveManager : MonoBehaviour
         m_listSpeed.Add(0f);
         m_listActive.Add(false);
 
+       
         return iIndex;
     }
 
@@ -74,6 +76,7 @@ public class BulletMoveManager : MonoBehaviour
         if (m_bDisposed)
             return;
 
+        ++COUNt;
         m_listSpeed[_iIndex] = _fSpeed;
         m_listActive[_iIndex] = true;
     }
@@ -85,6 +88,7 @@ public class BulletMoveManager : MonoBehaviour
         if (m_bDisposed)
             return;
 
+        --COUNt;
         m_listActive[_iIndex] = false;
     }
 
