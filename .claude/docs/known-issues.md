@@ -2,6 +2,34 @@
 
 > Claude Code가 세션 중 발견했지만 아직 고치지 않은 문제를 기록하는 곳. 새 항목은 위에 추가하고, 고치면 해당 항목에 `[해결됨]`을 표시하고 커밋/PR을 남긴 뒤 지우지 말고 남겨둘 것 (재발 방지 기록).
 
+## `ColliderManager.m_fMaxBulletRange = 50`이 차지 샷/일반 총알의 실제 사거리보다 훨씬 짧음 (2026-08-21, 플레이어 차지 샷 무기 `unity-optimizer` 점검 중 발견)
+
+**근본 원인:** `BattleScene.unity`에 직렬화된 `ColliderManager.m_fMaxBulletRange = 50`은 `UpdateBoxGrids()`가 플레이어로부터 이 거리보다 먼 Box 콜라이더(운석 등)를 그리드 판정 대상에서 제외하는 컬링 반경이다. 그런데 실제 총알 사거리(`Speed × AliveTime`)를 계산해보면:
+- 차지 샷 완충탄: `(150±10) × MaxChargeSpeedScale(1.5) × AliveTime(2.5) ≈ 525~600`
+- 기존 베이스 무기(`SO_BaseAttackInfo`)도 이미 `240 × 2 = 480`
+
+즉 **차지 샷이 아니어도 기존 무기 사거리가 컬링 반경의 약 10배**다.
+
+**실제 영향:** 플레이어로부터 50 유닛보다 먼 운석은 총알이 시각적으로 명백히 관통해도 Box-Circle 판정 자체가 안 일어난다(그리드에서 아예 빠져 있으므로). 차지 샷은 사거리가 더 길어서 이 사각지대에 노출되는 범위가 더 넓다. 몬스터(Circle-Circle, 브루트포스 판정이라 이 컬링과 무관)에는 영향 없음 — 운석 등 Box 콜라이더 대상에만 해당.
+
+**이번 기능(차지 샷 무기)과의 관계:** 차지 샷이 만든 문제는 아님(기존 베이스 무기도 이미 컬링 반경을 크게 초과) — 다만 사거리를 1.5배 더 늘려 기존 사각지대를 더 넓힘.
+
+**아직 고치지 않은 이유:** 씬 전역 튜닝 값이라 차지 샷 기능 스코프 밖. `m_fMaxBulletRange`가 의도적으로 짧게 잡힌 이유(성능 우선 트레이드오프인지, 단순 설정 누락인지)를 기획 의도 확인 없이 임의로 바꾸지 않음.
+
+**제안하는 해결책:** `m_fMaxBulletRange`를 실제 최대 사거리(현재 기준 약 600) + 최대 Box `BoundingRadius`(약 42) 이상으로 올리는 것을 검토. `unity-optimizer` 실측 결과, 씬의 운석 분포(129개) 기준으로 이렇게 올려도 그리드 셀당 평균 밀도가 낮아(셀당 약 0.13개) 프레임 비용 증가는 미미할 것으로 예상됨(총알 1발당 `CheckPair` 약 3~4회 수준).
+
+## 씬에 미리 배치된 일부 몬스터가 죽을 때 `ObjectPool.PushObject`에서 `ArgumentNullException`(key null) 발생 (2026-08-21, 플레이어 차지 샷 무기 Play Mode 검증 중 발견)
+
+**근본 원인:** `ObjectPool.PushObject(GameObject)`(`Assets/3D/05_Manager/Pool/ObjectPool.cs:232`)는 `m_hashPool.TryGetValue(refPoolObj.PoolKey, ...)`로 반납할 큐를 찾는데, `PoolObject.PoolKey`(`Assets/3D/05_Manager/Pool/PoolObject.cs:22`)는 `m_refOriginalPoolObj`를 그대로 반환하는 게터다. `m_refOriginalPoolObj`는 오직 `ObjectPool`의 프리로드 경로(`LoadPoolAsync` 내부 루프, `ObjectPool.cs:163` `refInstancePoolObj.SetOriginalPoolObj(refPrefabPoolObj)`)에서만 채워진다 — 즉 **런타임에 `ObjectPool.GetObject()`로 꺼낸 인스턴스만 `PoolKey`가 채워져 있고, 에디터에서 씬에 미리 배치해둔(preplaced) 몬스터 인스턴스는 이 경로를 거치지 않아 `PoolKey`가 계속 `null`이다.** `Dictionary.TryGetValue(null, ...)`는 `ArgumentNullException`을 던진다.
+
+**실제 영향:** Play Mode에서 미사일(`Missiles`)이 이런 씬 배치 몬스터를 죽이면 `Monster.Dead()` → `ObjectPool.PushObject(gameObject)`에서 예외가 발생한다(재현 스택: `ColliderManager.LateUpdate → CheckOverlaps → CheckCrossLayer → CheckPair → BaseCollider.OnEnterCollider → Missiles.Attack → Bullet.Attack → Monster.TakeDamage → Monster.Dead`). 예외가 나는 시점은 이미 `ChangeState(eEntityState.Dead)`와 `OnMonsterDied` 이벤트 호출 *이후*라 게임 로직상 죽음 처리 자체는 진행되지만, 오브젝트가 풀에 반납되지 않고 `SetActive(false)`도 안 된 채로 예외가 전파되어 `ColliderManager.CheckOverlaps()`의 나머지 쌍 검사가 그 프레임에 중단될 수 있다.
+
+**이번 기능(차지 샷 무기)과의 관계:** 무관함 확인 완료. 스택 트레이스가 지나는 `Missiles.Attack`/`Bullet.Attack`/`Monster.Dead`/`ObjectPool.PushObject` 어디도 이번 세션에서 수정한 파일이 아니고, `ColliderManager.CheckCrossLayer`(브루트포스 경로)는 이번에 손댄 `CheckCrossLayerGrid`(Box 그리드 경로)와 다른 메서드다. 씬에 미리 배치된 몬스터가 원래부터 갖고 있던 구조적 문제이며, 차지 무기가 아니어도 기존 어떤 무기로 죽여도 재현될 것으로 보인다.
+
+**아직 고치지 않은 이유:** 이번 세션 작업 범위(차지 샷 무기 추가) 밖의 기존 몬스터 스폰 구조 문제.
+
+**제안하는 해결책:** `ObjectPool.PushObject`에 `refPoolObj.PoolKey == null` 가드를 추가해 예외 대신 조용히 반납을 건너뛰거나(반창고), 더 근본적으로는 씬에 미리 배치되는 몬스터도 `Awake`/`Start` 시점에 자기 프리팹을 `PoolKey`로 등록하도록 `Monster`/`PoolObject` 초기화 경로를 보완. 또는 애초에 몬스터를 씬에 미리 배치하지 않고 전부 `ObjectPool.GetObject()`로 스폰하는 정책으로 통일.
+
 ## 여러 매니저 싱글톤이 `DontDestroyOnLoad only works for root GameObjects` 에러를 매 Play 진입마다 던짐 (2026-08-19, 운석 Box-Circle 충돌 판정 작업 중 Play Mode 검증하다 발견)
 
 **근본 원인:** `BattleManager.cs:40`, `InputManager.cs:46`, `ObjectPool.cs:58`, `CameraManager.cs:29`, `FeatureManager.cs:43`, `ContainerManager.cs:20` — 이 6개 싱글톤 매니저가 전부 `Awake()`에서 `DontDestroyOnLoad(gameObject)`(또는 `this`)를 호출하는데, `DontDestroyOnLoad`는 루트(부모 없는) GameObject에만 적용 가능하다는 Unity 제약이 있다. 이 매니저들의 GameObject가 BattleScene 안에서 어떤 부모(오브젝트 구조 정리용 컨테이너 등) 아래 자식으로 배치돼 있어서 매번 이 에러가 난다.

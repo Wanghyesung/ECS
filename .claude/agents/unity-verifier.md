@@ -33,7 +33,6 @@ git diff --cached --name-only  # 스테이징된 변경 사항
 **자동 수정 가능한 이슈** (자동으로 수정):
 - 이름이 변경된 `[SerializeField]` 필드에 `[FormerlySerializedAs("oldName")]` 누락
 - Unity 오브젝트에 대한 `?.` 또는 `is null` → `== null` 체크로 교체
-- `tag == "string"` → `CompareTag("string")`
 - Update/FixedUpdate/LateUpdate 안의 `GetComponent<T>()` / `Camera.main` / `FindObjectOfType` → Awake에서 캐싱
 - 런타임 코드에서 `UnityEditor` 사용 시 `#if UNITY_EDITOR` 가드 누락
 - Update 안의 `new WaitForSeconds()` → 필드로 캐싱

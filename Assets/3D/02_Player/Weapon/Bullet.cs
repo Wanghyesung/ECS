@@ -61,11 +61,18 @@ public class Bullet : MonoBehaviour, IAttackObject
     // (풀 생애주기 중 Awake에서 딱 한 번만 배정). 하위 클래스도 DeactivateMoveJob 등에서 써야 해서 protected
     protected int m_iMoveManagerIndex = -1;
 
+    // 차지샷 등 SizeScale 적용용. 풀 재사용 시 배율이 누적되지 않도록 원본 스케일을 Awake에서 캐싱
+    private Vector3 m_vBaseScale = Vector3.one;
+    // m_vBaseScale이 이미 1배 상태로 캐싱되므로, 기본값을 1로 잡아두면 SizeScale을 안 쓰는
+    // 대다수 총알(몬스터 포함)은 생애 첫 발사에서도 무의미한 Transform 재대입을 안 하게 된다
+    private float m_fLastAppliedScale = 1f;
+
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
         m_refCircleCollider = GetComponent<CircleCollider>();
+        m_vBaseScale = transform.localScale;
 
         m_iMoveManagerIndex = RegisterMoveJob();
 
@@ -189,10 +196,29 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refAttackInfo = _refAttackInfo;
         m_tShotInfo = _tShotInfo;
         m_tShotInfo.MoveDir = transform.forward;
-        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
+        if (m_refPoolObj != null)
+            m_refPoolObj.SetAliveTime(_refAttackInfo.AliveTime);
         ActivateMoveJob();
 
+        ApplySizeScale(); // 반드시 UpdateLine()보다 먼저 - UpdateLine()이 lossyScale을 읽음
         UpdateLine();
+    }
+
+    // Missiles/GuidedBullet/JobBullet 등 Bullet 파생 클래스가 전부 base.SetAttack()을 호출하므로
+    // 이 메서드는 차지 무기뿐 아니라 프로젝트의 모든 총알(몬스터 포함)에서 매 발사마다 실행된다.
+    // 대다수는 fScale == 1(변화 없음)이라 불필요한 Transform 쓰기를 막는 가드를 둠
+    private void ApplySizeScale()
+    {
+        float fScale = m_tShotInfo.SizeScale > 0f ? m_tShotInfo.SizeScale : 1f;
+
+        if (fScale != m_fLastAppliedScale)
+        {
+            transform.localScale = m_vBaseScale * fScale;
+            m_fLastAppliedScale = fScale;
+        }
+
+        if (m_refCircleCollider != null) // `?.` 대신 명시적 null 체크 (serialization.md 규칙)
+            m_refCircleCollider.SetRadiusScale(fScale); // 대입뿐이라 매번 실행해도 무방
     }
 
     // 예고선 방향/거리 계산 - 직선으로만 날아가는 기본 볼렛 기준. 유도탄처럼 곡선으로 휘는 총알은
@@ -214,7 +240,8 @@ public class Bullet : MonoBehaviour, IAttackObject
         refObj.transform.rotation = _qRot;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        refAttackObj?.SetAttack(_refAttackInfo, _refShotInfo);
+        if (refAttackObj != null)
+            refAttackObj.SetAttack(_refAttackInfo, _refShotInfo);
 
         return refObj;
     }

@@ -138,8 +138,14 @@ public sealed class BoxColliderGrid
 
     // 무할당 - 총알 수만큼 매 프레임 다수 호출. 콜라이더가 셀 하나에만 속하므로 중복 없음.
     // 각 셀의 List<BaseCollider>를 그대로 순회하므로(ID를 거쳐 따로 찾아가지 않음) 그
-    // 셀 안에서는 연속 메모리 접근
-    public void NeighborColliders(Vector3 _vCenter, List<BaseCollider> _listResult)
+    // 셀 안에서는 연속 메모리 접근.
+    //
+    // _fQueryRadius: 쿼리하는 원(Circle) 콜라이더의 반지름. 기본 1겹(3x3x3) 탐색은 "모든 Box의
+    // BoundingRadius <= 셀크기(S)/2"라는 Build()의 전제 아래 "쿼리 반지름 r <= S/2"일 때만
+    // 안전하다(그래야 링 1겹 밖으로는 절대 겹칠 수 없음). 차지샷처럼 r이 커지면 필요한 링 수가
+    // 늘어나므로, "중심에서 k*S 이상 떨어진 셀은 절대 안 겹친다"는 조건 k*S >= r + S/2 를 풀어
+    // k >= r/S + 0.5 만큼 링을 확장한다. r=0(Box끼리 등 Circle이 아닌 쿼리)이면 기존과 동일하게 1링
+    public void NeighborColliders(Vector3 _vCenter, float _fQueryRadius, List<BaseCollider> _listResult)
     {
         _listResult.Clear();
         if (!m_bBuilt)
@@ -147,12 +153,15 @@ public sealed class BoxColliderGrid
 
         ComputeCellCoord(_vCenter, out int iCX, out int iCY, out int iCZ);
 
-        int iMinX = Mathf.Max(0, iCX - 1);
-        int iMaxX = Mathf.Min(m_iCountX - 1, iCX + 1);
-        int iMinY = Mathf.Max(0, iCY - 1);
-        int iMaxY = Mathf.Min(m_iCountY - 1, iCY + 1);
-        int iMinZ = Mathf.Max(0, iCZ - 1);
-        int iMaxZ = Mathf.Min(m_iCountZ - 1, iCZ + 1);
+        //반지름 범위보다 
+        int iOffset = Mathf.Max(1, Mathf.CeilToInt(_fQueryRadius / m_fCellSize + 0.5f));
+
+        int iMinX = Mathf.Max(0, iCX - iOffset);
+        int iMaxX = Mathf.Min(m_iCountX - 1, iCX + iOffset);
+        int iMinY = Mathf.Max(0, iCY - iOffset);
+        int iMaxY = Mathf.Min(m_iCountY - 1, iCY + iOffset);
+        int iMinZ = Mathf.Max(0, iCZ - iOffset);
+        int iMaxZ = Mathf.Min(m_iCountZ - 1, iCZ + iOffset);
 
         for (int ix = iMinX; ix <= iMaxX; ++ix)
         for (int iy = iMinY; iy <= iMaxY; ++iy)

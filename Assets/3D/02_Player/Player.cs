@@ -201,8 +201,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
-            if (m_listWeapon[i].CheckTime() == true)
-                m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
+            m_listWeapon[i].UpdateWeapon(vTargetPos, m_refTargetScnner.Target);
         }
     }
 

@@ -41,6 +41,7 @@ public class BulletMoveManager : MonoBehaviour
     private bool m_bDisposed = false;
 
     private int COUNt = 0;
+    private int imax = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -87,8 +88,14 @@ public class BulletMoveManager : MonoBehaviour
     {
         if (m_bDisposed)
             return;
-
+        
         --COUNt;
+        if(imax < COUNt)
+        {
+           imax = COUNt;
+            Debug.Log(imax);
+        }
+
         m_listActive[_iIndex] = false;
     }
 

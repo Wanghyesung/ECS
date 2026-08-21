@@ -132,6 +132,7 @@ public struct tShotInfo
     public Vector3 MoveDir;
     public Vector3 HitPosition;
     public float Speed;
+    public float SizeScale; // 이번 발사 한 발의 크기 배수(기본 1). Weapon.Fire()가 항상 명시적으로 채움
 
     public int HitCount;
     public float LastHitTime;

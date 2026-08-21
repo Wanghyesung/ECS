@@ -25,10 +25,16 @@ public class CircleCollider : BaseCollider
     [SerializeField] private bool m_bShowDebugGizmo = false;
     [SerializeField] private Color m_tGizmoColor = Color.green;
 
-    public float Radius => m_fRadius;
+    // 직렬화 안 함 - 차지샷 등 총알 발사마다 Bullet.ApplySizeScale()이 덮어씀. 기본값 1이라
+    // 총알이 아닌(몬스터/플레이어) CircleCollider에는 영향 없음
+    private float m_fRuntimeRadiusScale = 1f;
+
+    public float Radius => m_fRadius * m_fRuntimeRadiusScale;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
-    public Vector3 Center => transform.position + transform.rotation * m_vOffset;
+    public Vector3 Center => transform.position + transform.rotation * (m_vOffset * m_fRuntimeRadiusScale);
+
+    public void SetRadiusScale(float _fScale) => m_fRuntimeRadiusScale = _fScale;
 
     protected override void Awake()
     {
@@ -41,7 +47,7 @@ public class CircleCollider : BaseCollider
     // 전에 활성 콜라이더마다 딱 한 번씩 RefreshCenter를 불러 캐시해두고, CheckPair는 이 값만 읽음
     public override void RefreshCenter()
     {
-        CachedCenter = transform.position + transform.rotation * m_vOffset;
+        CachedCenter = Center; // Center 프로퍼티와 동일 식을 두 번 적지 않음 - 오프셋 스케일 로직이 한 곳에만 존재
     }
 
     private void OnDrawGizmos()
@@ -50,8 +56,8 @@ public class CircleCollider : BaseCollider
             return;
 
         Gizmos.color = m_tGizmoColor;
-        // 실제 판정에 쓰이는 값(CachedCenter)과 같은 계산식(Center)을 그대로 그려서, 눈에 보이는 원이랑
-        // 진짜 판정용 원이 다른 자리에 있는 건 아닌지 바로 비교 가능하게 함
-        Gizmos.DrawWireSphere(Center, m_fRadius);
+        // 실제 판정에 쓰이는 값(CachedCenter)과 같은 계산식(Center/Radius)을 그대로 그려서, 눈에 보이는
+        // 원이랑 진짜 판정용 원이 다른 자리/크기에 있는 건 아닌지 바로 비교 가능하게 함
+        Gizmos.DrawWireSphere(Center, Radius);
     }
 }

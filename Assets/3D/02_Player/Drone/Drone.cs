@@ -40,11 +40,8 @@ public class Drone : MonoBehaviour
 
     private void Fire()
     {
-        if (m_refWeapon.CheckTime() == false)
-            return;
-
         Transform refTarget = m_refTargetScanner.Target;
-        m_refWeapon.Fire(refTarget.position, refTarget);
+        m_refWeapon.UpdateWeapon(refTarget.position, refTarget);
     }
  
 }

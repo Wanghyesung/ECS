@@ -301,12 +301,15 @@ public class ColliderManager : MonoBehaviour
             for (int i = 0; i < _listOtherSide.Count; ++i)
             {
                 BaseCollider refOther = _listOtherSide[i];
-                _refGrid.NeighborColliders(refOther.CachedCenter, m_listGridNeighbor);
+                // Box-Box 크로스 레이어일 때도 이 함수를 타지만 IsBoxBoxOverlap이 항상 false라 실질적
+                // 쌍이 아니므로 반지름 0(=링 1겹)으로 둬도 무해. 나중에 OBB-OBB 판정을 구현하면 재검토할 것
+                float fQueryRadius = (refOther is CircleCollider refCircleOther) ? refCircleOther.Radius : 0f;
+                _refGrid.NeighborColliders(refOther.CachedCenter, fQueryRadius, m_listGridNeighbor);
 
                 for (int j = 0; j < m_listGridNeighbor.Count; ++j)
                 {
                     BaseCollider refBox = m_listGridNeighbor[j];
-                    if (_bBoxIsA)
+                    if (_bBoxIsA == true)
                         CheckPair(refBox, refOther);
                     else
                         CheckPair(refOther, refBox);
