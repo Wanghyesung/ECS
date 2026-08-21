@@ -38,7 +38,9 @@
 - `UniTask.Linq` (Assets/Plugins/UniTask/Runtime/Linq/UniTask.Linq.asmdef)
 - `UniTask` — 의존성: com.unity.modules.assetbundle, com.unity.modules.physics, com.unity.modules.physics2d, com.unity.modules.particlesystem, com.unity.ugui, com.unity.modules.unitywebrequest (Assets/Plugins/UniTask/Runtime/UniTask.asmdef)
 
-게임 시스템 아키텍처(Behavior Tree, ScriptableObject Action, Blackboard, Object Pool, Event System 등)와 코드 레이어링(MVS/VContainer) 규칙은 `.claude/rules/architecture.md` 참고.
+게임 시스템 아키텍처(Behavior Tree, ScriptableObject Action, Blackboard, Object Pool, Event System 등)와 코드 레이어링(MVS) 규칙은 `.claude/rules/architecture.md` 참고.
+
+---
 
 ### 빌드에 포함된 씬
 
@@ -68,8 +70,11 @@ _EditorBuildSettings에서 씬을 찾을 수 없습니다._
 
 감지된 패키지를 기반으로, 다음 Claude 스킬/컨텍스트 파일을 로드하는 것을 고려하세요:
 
-- `unity-general`
-- `unity-addressables`
+- `unitask` — 감지된 패키지 목록엔 없지만 `Assets/Plugins/UniTask`로 프로젝트 전역에 쓰임(코루틴 대체 필수 컨벤션, `.claude/rules/unity-specifics.md` 참고)
+- `addressables` — Addressables 패키지 감지됨
+- `dotween` — `UniTask.DOTween` asmdef로 확인됨(com.demigiant.dotween 의존)
+- `input-system` — Input System 패키지 감지됨(New Input System 필수 컨벤션, `.claude/rules/unity-specifics.md` 참고)
+- `object-pooling` — 이 프로젝트 전용 풀링 구조. 자주 생성/삭제되는 Bullet/FX/Enemy에 필수 적용(`.claude/rules/architecture.md` 참고)
 
 ---
 

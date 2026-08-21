@@ -1,52 +1,79 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 /*///////////////////////////////////////////
               BoxColliderGrid
-목적 : Shape==Box인 콜라이더 그룹 대상 정적 공간분할 그리드. 셀마다 List<BaseCollider>를
-       Build 시점에 전부 미리 만들어두고(그리드 범위가 정적으로 확정되므로 가능),
-       런타임에는 절대 새 List를 만들지 않는다 - Dictionary 해싱도 없고, 다른 ID를
-       쫓아가는 연결 리스트 방식(포인터 추적)도 아니고, 그냥 플랫 배열 인덱스로 바로
-       그 셀의 List에 접근한다.
+목적 : Shape==Box인 콜라이더 그룹 대상 정적 공간분할 그리드. 브로드페이즈 조회를
+       Burst Job(ColliderManager.CircleBoxOverlapJob)이 담당하게 되면서, 셀 내용을
+       관리형 List<BaseCollider>가 아니라 NativeArray<int> flat 구조(카운팅 소트)로
+       들고 있는다 - Job은 관리형 타입을 전혀 만질 수 없기 때문.
 
-       [,,] 다차원 배열이 아니라 1차원 배열 + 수동 플래튼(x + y*W + z*W*H)을 쓰는 이유:
-       C#/.NET에서 다차원 배열 인덱싱이 1차원 배열보다 느린 게 잘 알려진 특성이라,
-       "배열로 바로 접근"이라는 목적엔 1차원 쪽이 더 낫다.
+       구조: CellStart/CellCount(셀 개수만큼) + CellItems(박스 개수만큼)의 고전적인
+       카운팅 소트 결과물. CellItems에는 BaseCollider 참조도 ID도 아닌 "이번 프레임
+       Box SoA 배열에서의 dense 인덱스"가 들어간다 - 조회 측(Job)이 곧바로
+       BoxCenter[i]/BoxAxisX[i] 같은 연속 배열을 인덱싱할 수 있게 하기 위함.
 
-       그리드 범위(셀 개수/원점)는 Build 시점에 넘겨받은 Box 콜라이더들의 실제 분포
-       (CachedCenter ± BoundingRadius의 합집합)로 딱 한 번 정해진다("정적 분할") -
-       인스펙터로 따로 설정하지 않는다. 이후 콜라이더 개별 위치가 바뀌어도(정적이
-       아닌 Box) UpdateCell로 셀 소속만 갱신되고, 그리드 배열 자체의 크기/원점은
-       다시 계산하지 않는다. 그리드 범위 밖 위치는 가장 가까운 가장자리 셀로
-       클램프된다(경계 근처만 정밀도가 살짝 낮아질 뿐, 놓치는 쌍은 없음).
+       [,,] 다차원 배열이 아니라 1차원 + 수동 플래튼(x + y*W + z*W*H)을 쓰는 이유는
+       기존과 동일(다차원 인덱싱이 더 느림).
 
-       콜라이더 하나는 정확히 셀 하나에만 속해서(자기 중심이 속한 셀), 이웃 셀들이
-       서로 겹치는 원소가 없어 조회 시 별도 중복 제거가 필요 없다. 이웃 1겹
-       (3×3×3=27칸)만으로 실제 겹침을 놓치지 않으려면 셀 크기가 "겹칠 수 있는 두
-       콜라이더 반지름의 합"보다 커야 한다는 전제가 있음 - Build가 그 시점 최대
-       BoundingRadius 기준으로 셀 크기를 계산해서 책임진다.
+       그리드 범위(셀 개수/원점/셀 크기)는 Build 시점에 넘겨받은 Box 콜라이더들의 실제
+       분포(CachedCenter ± BoundingRadius의 합집합)로 딱 한 번 정해진다("정적 분할").
+       매 프레임 바뀌는 건 셀 소속(멤버십)뿐이고, 그건 BeginRebuild→AddItem→EndRebuild로
+       통째로 다시 계산한다(장애물 100개 규모라 증분 갱신보다 단순하고 충분히 쌈).
+       그리드 범위 밖 위치는 가장 가까운 가장자리 셀로 클램프된다.
+
+       "매 프레임 전체 재구성"이라 RemoveCollider 같은 개별 제거 API가 없다 - 사거리
+       컬링으로 빠지는 Box는 그냥 이번 프레임 AddItem 대상에서 제외하면 그만이고,
+       파괴/풀 반납된 Box도 다음 재구성에서 자연히 사라진다.
+
+       콜라이더 하나는 정확히 셀 하나에만 속해서(자기 중심이 속한 셀) 이웃 27칸 조회 시
+       중복 제거가 필요 없다. 이웃 1겹만으로 실제 겹침을 놓치지 않으려면 셀 크기가
+       "겹칠 수 있는 두 콜라이더 반지름의 합"보다 커야 한다는 전제가 있고, Build가 그
+       시점 최대 BoundingRadius*2로 셀 크기를 잡아 그걸 책임진다.
  *///////////////////////////////////////////
 public sealed class BoxColliderGrid
 {
     private const float MIN_CELL_SIZE = 1f;
-    private const int EMPTY = -1;
+    private const int MIN_ITEM_CAPACITY = 64;
 
-    private List<BaseCollider>[] m_arrCell;                                   // 플랫 셀 인덱스 -> 그 셀의 콜라이더 목록(Build 시 전부 미리 생성)
-    private readonly List<int> m_listColliderCellIndex = new List<int>();     // ID -> 현재 소속 셀의 플랫 인덱스(없으면 EMPTY)
+    // 셀 인덱스 -> CellItems에서 그 셀 구간이 시작하는 위치 / 그 셀의 아이템 개수
+    private NativeArray<int> m_arrCellStart;
+    private NativeArray<int> m_arrCellCount;
+
+    // 셀 순으로 정렬된 아이템(= Box SoA dense 인덱스) 목록
+    private NativeArray<int> m_arrCellItems;
+
+    // 재구성용 스크래치 - 아이템별 소속 셀 인덱스 / 셀별 다음 삽입 위치 커서
+    private NativeArray<int> m_arrScratchCellIndexPerItem;
+    private NativeArray<int> m_arrScratchCursor;
 
     private Vector3 m_vOrigin;
     private float m_fCellSize = MIN_CELL_SIZE;
-    private int m_iCountX;
-    private int m_iCountY;
-    private int m_iCountZ;
+    private int m_iCountX = 1;
+    private int m_iCountY = 1;
+    private int m_iCountZ = 1;
+    private int m_iTotalCell;
+    private int m_iItemCount;
     private bool m_bBuilt;
 
     public bool IsBuilt => m_bBuilt;
 
+    // Job이 자기 필드로 복사해가는 그리드 파라미터 - Job은 BoxColliderGrid 인스턴스
+    // 자체(관리형 클래스)를 들고 갈 수 없으므로 값만 넘겨받는다
+    public Vector3 Origin => m_vOrigin;
+    public float CellSize => m_fCellSize;
+    public int CountX => m_iCountX;
+    public int CountY => m_iCountY;
+    public int CountZ => m_iCountZ;
+    public int ItemCount => m_iItemCount;
+
+    public NativeArray<int> CellStart => m_arrCellStart;
+    public NativeArray<int> CellCount => m_arrCellCount;
+    public NativeArray<int> CellItems => m_arrCellItems;
+
     // Box 콜라이더 목록의 실제 분포로 그리드 범위를 딱 한 번 정한다("정적 분할").
-    // 셀마다 List<BaseCollider>를 여기서 전부 미리 만들어서, 런타임 중엔 신규 List
-    // 할당이 절대 안 일어나게 한다. 셀 크기는 그 시점 최대 BoundingRadius*2 -
-    // 이웃 1겹 검사만으로 놓치지 않기 위한 하한
+    // 셀 크기는 그 시점 최대 BoundingRadius*2 - 이웃 1겹 검사만으로 놓치지 않기 위한 하한
     public void Build(List<BaseCollider> _listBoxCollider)
     {
         m_bBuilt = false;
@@ -79,127 +106,140 @@ public sealed class BoxColliderGrid
         m_iCountY = Mathf.Max(1, Mathf.CeilToInt(vSize.y / m_fCellSize));
         m_iCountZ = Mathf.Max(1, Mathf.CeilToInt(vSize.z / m_fCellSize));
 
-        int iTotalCells = m_iCountX * m_iCountY * m_iCountZ;
-        m_arrCell = new List<BaseCollider>[iTotalCells];
-        for (int i = 0; i < iTotalCells; ++i)
-            m_arrCell[i] = new List<BaseCollider>();
+        m_iTotalCell = m_iCountX * m_iCountY * m_iCountZ;
 
-        // 배열이 새로 지어졌으니 이전에 알던 소속 기록은 전부 무효 - 호출부가
-        // Build 직후 대상 콜라이더마다 UpdateCell을 다시 불러 재등록해야 함
-        for (int i = 0; i < m_listColliderCellIndex.Count; ++i)
-            m_listColliderCellIndex[i] = EMPTY;
+        DisposeCellArrays();
+        m_arrCellStart = new NativeArray<int>(m_iTotalCell, Allocator.Persistent);
+        m_arrCellCount = new NativeArray<int>(m_iTotalCell, Allocator.Persistent);
+        m_arrScratchCursor = new NativeArray<int>(m_iTotalCell, Allocator.Persistent);
 
+        // 아직 아이템이 없어도 Job에 넘길 수 있게(할당 안 된 NativeArray를 Job 필드로
+        // 넘기면 안전 시스템이 예외를 던짐) 최소 용량으로 미리 잡아둔다
+        EnsureItemCapacity(MIN_ITEM_CAPACITY);
+
+        m_iItemCount = 0;
         m_bBuilt = true;
     }
 
-    // 무할당 삽입/이동 - 셀이 안 바뀐 대다수는 인덱스 계산 + 비교 1회로 끝남
-    public void UpdateCell(BaseCollider _refBoxCollider)
+    // --- 매 프레임 재구성(카운팅 소트) : BeginRebuild -> AddItem * N -> EndRebuild ---
+
+    // _iCount는 이번 프레임에 들어올 수 있는 아이템 수의 상한(컬링 전 개수)이면 충분
+    public void BeginRebuild(int _iCount)
     {
-        if (!m_bBuilt)
+        if (m_bBuilt == false)
             return;
 
-        int iID = _refBoxCollider.ID;
-        RegisterColliderIndex(iID);
+        EnsureItemCapacity(_iCount);
 
-        int iNewCellIndex = ComputeCellIndex(_refBoxCollider.CachedCenter);
-        int iOldCellIndex = m_listColliderCellIndex[iID];
-        if (iNewCellIndex == iOldCellIndex)
-            return;
+        for (int i = 0; i < m_iTotalCell; ++i)
+            m_arrCellCount[i] = 0;
 
-        if (iOldCellIndex != EMPTY)
-            RemoveCellList(m_arrCell[iOldCellIndex], _refBoxCollider);
-
-        m_arrCell[iNewCellIndex].Add(_refBoxCollider);
-        m_listColliderCellIndex[iID] = iNewCellIndex;
+        m_iItemCount = 0;
     }
 
-    // 범위 밖으로 빠졌거나(플레이어 거리 컬링) 파괴/풀 반납된 콜라이더를 그리드에서 뺀다
-    public void RemoveCollider(BaseCollider _refBoxCollider)
+    // _iDenseIndex는 호출부(ColliderManager)가 Box SoA에 쓰는 것과 동일한 인덱스여야 한다
+    public void AddItem(int _iDenseIndex, Vector3 _vWorldPos)
     {
-        int iID = _refBoxCollider.ID;
-        if (iID >= m_listColliderCellIndex.Count)
+        if (m_bBuilt == false)
             return;
 
-        int iCellIndex = m_listColliderCellIndex[iID];
-        if (iCellIndex == EMPTY)
-            return;
+        ComputeCellCoord(_vWorldPos, m_vOrigin, m_fCellSize, m_iCountX, m_iCountY, m_iCountZ,
+            out int iX, out int iY, out int iZ);
 
-        RemoveCellList(m_arrCell[iCellIndex], _refBoxCollider);
-        m_listColliderCellIndex[iID] = EMPTY;
+        int iCell = FlattenIndex(iX, iY, iZ, m_iCountX, m_iCountY);
+
+        m_arrScratchCellIndexPerItem[_iDenseIndex] = iCell;
+        m_arrCellCount[iCell] = m_arrCellCount[iCell] + 1;
+
+        // 호출부는 0부터 순서대로 넘기지만, 순서가 어긋나도 EndRebuild가 전 구간을 훑도록 상한을 잡는다
+        if (_iDenseIndex + 1 > m_iItemCount)
+            m_iItemCount = _iDenseIndex + 1;
     }
 
-    // 지금 그리드에 들어있는 상태인지 - Static 콜라이더가 이미 등록됐으면 재계산을
-    // 건너뛰기 위해 ColliderManager.RefreshBoxGrids가 확인용으로 사용
-    public bool Contains(BaseCollider _refBoxCollider)
+    // 프리픽스 합으로 셀별 시작 위치를 잡고, 아이템을 자기 셀 구간으로 흩뿌린다
+    public void EndRebuild()
     {
-        int iID = _refBoxCollider.ID;
-        return iID < m_listColliderCellIndex.Count && m_listColliderCellIndex[iID] != EMPTY;
-    }
-
-    // 무할당 - 총알 수만큼 매 프레임 다수 호출. 콜라이더가 셀 하나에만 속하므로 중복 없음.
-    // 각 셀의 List<BaseCollider>를 그대로 순회하므로(ID를 거쳐 따로 찾아가지 않음) 그
-    // 셀 안에서는 연속 메모리 접근
-    public void NeighborColliders(Vector3 _vCenter, List<BaseCollider> _listResult)
-    {
-        _listResult.Clear();
-        if (!m_bBuilt)
+        if (m_bBuilt == false)
             return;
 
-        ComputeCellCoord(_vCenter, out int iCX, out int iCY, out int iCZ);
-
-        int iMinX = Mathf.Max(0, iCX - 1);
-        int iMaxX = Mathf.Min(m_iCountX - 1, iCX + 1);
-        int iMinY = Mathf.Max(0, iCY - 1);
-        int iMaxY = Mathf.Min(m_iCountY - 1, iCY + 1);
-        int iMinZ = Mathf.Max(0, iCZ - 1);
-        int iMaxZ = Mathf.Min(m_iCountZ - 1, iCZ + 1);
-
-        for (int ix = iMinX; ix <= iMaxX; ++ix)
-        for (int iy = iMinY; iy <= iMaxY; ++iy)
-        for (int iz = iMinZ; iz <= iMaxZ; ++iz)
+        int iRunning = 0;
+        for (int i = 0; i < m_iTotalCell; ++i)
         {
-            List<BaseCollider> listCell = m_arrCell[FlattenIndex(ix, iy, iz)];
-            for (int i = 0; i < listCell.Count; ++i)
-                _listResult.Add(listCell[i]);
+            m_arrCellStart[i] = iRunning;
+            m_arrScratchCursor[i] = iRunning;
+            iRunning += m_arrCellCount[i];
+        }
+
+        for (int i = 0; i < m_iItemCount; ++i)
+        {
+            int iCell = m_arrScratchCellIndexPerItem[i];
+            int iSlot = m_arrScratchCursor[iCell];
+            m_arrCellItems[iSlot] = i;
+            m_arrScratchCursor[iCell] = iSlot + 1;
         }
     }
 
-    // 스왑백 제거(O(1)) - ColliderManager.DeleteCollider의 레이어 리스트 제거와 동일 관례.
-    // 셀 안 순서는 의미가 없으므로 맨 뒤 원소를 빈자리로 옮기고 자름
-    private static void RemoveCellList(List<BaseCollider> _listCell, BaseCollider _refCollider)
+    public void Dispose()
     {
-        int iIndex = _listCell.IndexOf(_refCollider);
-        if (iIndex < 0)
-            return;
+        DisposeCellArrays();
 
-        int iLastIndex = _listCell.Count - 1;
-        _listCell[iIndex] = _listCell[iLastIndex];
-        _listCell.RemoveAt(iLastIndex);
+        if (m_arrCellItems.IsCreated)
+            m_arrCellItems.Dispose();
+        if (m_arrScratchCellIndexPerItem.IsCreated)
+            m_arrScratchCellIndexPerItem.Dispose();
+
+        m_bBuilt = false;
+        m_iItemCount = 0;
     }
 
-    private void RegisterColliderIndex(int _iID)
-    {
-        while (m_listColliderCellIndex.Count <= _iID)
-            m_listColliderCellIndex.Add(EMPTY);
-    }
-
-    private int ComputeCellIndex(Vector3 _vWorldPos)
-    {
-        ComputeCellCoord(_vWorldPos, out int iX, out int iY, out int iZ);
-        return FlattenIndex(iX, iY, iZ);
-    }
+    // --- 좌표 계산(메인스레드 재구성과 Job이 반드시 같은 함수를 쓰도록 public static) ---
 
     // 그리드 범위 밖 위치는 가장 가까운 가장자리 셀로 클램프한다
-    private void ComputeCellCoord(Vector3 _vWorldPos, out int _iX, out int _iY, out int _iZ)
+    public static void ComputeCellCoord(
+        Vector3 _vWorldPos, Vector3 _vOrigin, float _fCellSize,
+        int _iCountX, int _iCountY, int _iCountZ,
+        out int _iX, out int _iY, out int _iZ)
     {
-        Vector3 vLocal = _vWorldPos - m_vOrigin;
-        _iX = Mathf.Clamp(Mathf.FloorToInt(vLocal.x / m_fCellSize), 0, m_iCountX - 1);
-        _iY = Mathf.Clamp(Mathf.FloorToInt(vLocal.y / m_fCellSize), 0, m_iCountY - 1);
-        _iZ = Mathf.Clamp(Mathf.FloorToInt(vLocal.z / m_fCellSize), 0, m_iCountZ - 1);
+        Vector3 vLocal = _vWorldPos - _vOrigin;
+        _iX = Mathf.Clamp(Mathf.FloorToInt(vLocal.x / _fCellSize), 0, _iCountX - 1);
+        _iY = Mathf.Clamp(Mathf.FloorToInt(vLocal.y / _fCellSize), 0, _iCountY - 1);
+        _iZ = Mathf.Clamp(Mathf.FloorToInt(vLocal.z / _fCellSize), 0, _iCountZ - 1);
     }
 
-    private int FlattenIndex(int _iX, int _iY, int _iZ)
+    public static int FlattenIndex(int _iX, int _iY, int _iZ, int _iCountX, int _iCountY)
     {
-        return (_iZ * m_iCountY + _iY) * m_iCountX + _iX;
+        return (_iZ * _iCountY + _iY) * _iCountX + _iX;
+    }
+
+    // --- 내부 ---
+
+    // 프레임 스크래치 버퍼라 이전 내용을 보존할 필요가 없다(매 프레임 통째로 덮어씀) -
+    // 모자라면 Dispose 후 더블링 크기로 새로 잡는다(복사 불필요)
+    private void EnsureItemCapacity(int _iCount)
+    {
+        if (m_arrCellItems.IsCreated && m_arrCellItems.Length >= _iCount)
+            return;
+
+        int iNewCapacity = m_arrCellItems.IsCreated ? m_arrCellItems.Length : MIN_ITEM_CAPACITY;
+        while (iNewCapacity < _iCount)
+            iNewCapacity <<= 1;
+
+        if (m_arrCellItems.IsCreated)
+            m_arrCellItems.Dispose();
+        if (m_arrScratchCellIndexPerItem.IsCreated)
+            m_arrScratchCellIndexPerItem.Dispose();
+
+        m_arrCellItems = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
+        m_arrScratchCellIndexPerItem = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
+    }
+
+    private void DisposeCellArrays()
+    {
+        if (m_arrCellStart.IsCreated)
+            m_arrCellStart.Dispose();
+        if (m_arrCellCount.IsCreated)
+            m_arrCellCount.Dispose();
+        if (m_arrScratchCursor.IsCreated)
+            m_arrScratchCursor.Dispose();
     }
 }

@@ -15,9 +15,8 @@
 
 ---
 
-## Model-View-System (MVS) 패턴 — DI 없이
+## Model-View-System (MVS) 패턴
 
-기능은 3계층으로 나누되, 계층 간 연결은 DI 컨테이너 없이 직접 참조로 합니다:
 
 ```
 Model  — 순수 C# 클래스. 상태 + 데이터만 포함. Unity API 없음, MonoBehaviour 없음.

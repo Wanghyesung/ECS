@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 # ============================================================================
 # toast-alert.sh — STOP HOOK (standard profile)
-# Shows a Windows balloon/toast notification for ~5 seconds when Claude
-# finishes responding, so the user notices without needing the window
-# forced to the foreground (e.g. while alt-tabbed into Unity).
+# Forces the terminal window running this Claude Code session to the
+# foreground when Claude finishes responding, so the user notices even
+# while alt-tabbed into Unity (replaces the old passive balloon toast).
 #
-# Windows-only (System.Windows.Forms.NotifyIcon, built into .NET — no
-# external module required). The PowerShell process is launched detached
-# so this hook returns immediately; the balloon lingers on its own.
+# Windows-only (user32.dll SetForegroundWindow via P/Invoke, built into
+# .NET — no external module required). Walks up the process ancestry from
+# this script's own PID to find the nearest ancestor with a real window
+# (the terminal hosting the session — Windows Terminal, cmd, VS Code, ...),
+# so it focuses the exact window this session is running in, not just any
+# Claude Code window. The PowerShell process is launched detached so this
+# hook returns immediately.
 # ============================================================================
 # Trigger: Stop
 # Exit: 0 always (best-effort — never blocks the session)
@@ -29,24 +33,49 @@ else
     exit 0
 fi
 
-TITLE="Claude Code"
-MESSAGE="응답이 완료됐습니다"
-
 nohup "$PS_BIN" -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command '
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class FocusWin32 {
+    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr hWnd);
+    [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+}
+"@
 
-$notify = New-Object System.Windows.Forms.NotifyIcon
-$notify.Icon = [System.Drawing.SystemIcons]::Information
-$notify.Visible = $true
-$notify.BalloonTipTitle = "'"${TITLE}"'"
-$notify.BalloonTipText = "'"${MESSAGE}"'"
-$notify.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::Info
-$notify.ShowBalloonTip(5000)
+function Get-ParentProcessId($procId) {
+    try {
+        (Get-CimInstance Win32_Process -Filter "ProcessId=$procId" -ErrorAction Stop).ParentProcessId
+    } catch { $null }
+}
 
-Start-Sleep -Seconds 5
-$notify.Visible = $false
-$notify.Dispose()
+$targetHwnd = [IntPtr]::Zero
+$currentId = $PID
+for ($i = 0; $i -lt 20; $i++) {
+    $parentId = Get-ParentProcessId $currentId
+    if (-not $parentId) { break }
+    try {
+        $proc = Get-Process -Id $parentId -ErrorAction Stop
+        if ($proc.MainWindowHandle -ne [IntPtr]::Zero) {
+            $targetHwnd = $proc.MainWindowHandle
+            break
+        }
+    } catch {}
+    $currentId = $parentId
+}
+
+if ($targetHwnd -ne [IntPtr]::Zero) {
+    # Tap Alt to reset Windows foreground-lock so SetForegroundWindow is honored
+    [FocusWin32]::keybd_event(0x12, 0, 0, [UIntPtr]::Zero)
+    [FocusWin32]::keybd_event(0x12, 0, 2, [UIntPtr]::Zero)
+
+    if ([FocusWin32]::IsIconic($targetHwnd)) {
+        [FocusWin32]::ShowWindow($targetHwnd, 9) # SW_RESTORE
+    }
+    [FocusWin32]::SetForegroundWindow($targetHwnd) | Out-Null
+}
 ' > /dev/null 2>&1 < /dev/null &
 disown
 

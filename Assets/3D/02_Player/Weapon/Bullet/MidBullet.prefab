@@ -48,6 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
   m_refHitEffectObj: {fileID: 2573818985882799060, guid: 4c68c24dc1ecdc94baea408c38aed288, type: 3}
   m_arrArriveActions: []
   m_arrHitActions: []
@@ -63,6 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
   m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &3613304018432001097
@@ -97,9 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_fRadius: 0.57
   m_vOffset: {x: 0, y: 0, z: 0}
-  m_bShowDebugGizmo: 1
+  m_bShowDebugGizmo: 0
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
-  Type: -1
 --- !u!1 &2032281024586094169
 GameObject:
   m_ObjectHideFlags: 0
