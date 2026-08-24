@@ -8,11 +8,12 @@ using UnityEngine;
        메시 sharedMesh.bounds는 여러 변형이 하나의 메시 에셋에 뭉쳐있거나 임포트 시점
        바운드가 부정확한 경우가 있어 신뢰할 수 없었음(기즈모로 실제 눈으로 확인됨).
 
-       계약: 위치/회전은 매 프레임 갱신된다(RefreshCenter, CircleCollider와 동일
+       계약: 위치/회전은 매 프레임 갱신된다(ColliderManager의 RefreshCenterJob이
+       TransformAccessArray로 병렬 갱신 후 ApplyAxis로 되돌려 씀, CircleCollider와 동일
        패턴) - Box 콜라이더가 정적이라고 가정하지 않는다(BoxColliderGrid도 이동을
        전제로 설계됨). 다만 half-extent/BoundingRadius(스케일 기반)는 Start()에서
        한 번만 계산하고 이후 갱신하지 않는다 - 런타임에 스케일이 바뀌는 Box가
-       필요해지면 이 계산도 RefreshCenter로 옮겨야 함(현재 범위 밖).
+       필요해지면 이 계산도 매 프레임 경로로 옮겨야 함(현재 범위 밖).
  *///////////////////////////////////////////
 
 public class ObbCollider : BaseCollider
@@ -27,8 +28,8 @@ public class ObbCollider : BaseCollider
     [SerializeField] private bool m_bShowDebugGizmo = false;
     [SerializeField] private Color m_tGizmoColor = Color.cyan;
 
-    // m_vAxisX/Y/Z는 RefreshCenter()에서 매 프레임 갱신됨. m_vHalfExtent는 스케일 기반이라
-    // Start()에서 한 번만 계산(런타임 스케일 변경 미지원, 클래스 주석 참고)
+    // m_vAxisX/Y/Z는 ApplyAxis()로 매 프레임 갱신됨(ColliderManager.RefreshCenterJob 결과).
+    // m_vHalfExtent는 스케일 기반이라 Start()에서 한 번만 계산(런타임 스케일 변경 미지원, 클래스 주석 참고)
     private Vector3 m_vAxisX;
     private Vector3 m_vAxisY;
     private Vector3 m_vAxisZ;
@@ -41,6 +42,7 @@ public class ObbCollider : BaseCollider
     // (base가 get-only virtual이라 override에서 set accessor를 새로 추가할 수 없음)
     private float m_fBoundingRadius;
     public override float BoundingRadius => m_fBoundingRadius;
+    public override Vector3 Offset => m_vOffset;
 
     public Vector3 AxisX => m_vAxisX;
     public Vector3 AxisY => m_vAxisY;
@@ -69,14 +71,23 @@ public class ObbCollider : BaseCollider
         RefreshCenter();
     }
 
-    // 위치/축을 매 프레임 실제로 갱신한다(CircleCollider.RefreshCenter와 동일 패턴) -
-    // Box 콜라이더가 정적이라고 가정하지 않으므로 이동/회전이 즉시 반영돼야 함
+    // 위치/축을 실제로 갱신한다(CircleCollider.RefreshCenter와 동일 패턴) - Start()에서
+    // 초기값을 잡을 때 한 번만 쓰이고, 매 프레임 갱신은 ColliderManager의 RefreshCenterJob이
+    // 대신 담당한다(§ApplyAxis 참고)
     public override void RefreshCenter()
     {
         CachedCenter = transform.position + transform.rotation * m_vOffset;
         m_vAxisX = transform.right;
         m_vAxisY = transform.up;
         m_vAxisZ = transform.forward;
+    }
+
+    // ColliderManager.PreLoadCenter()가 RefreshCenterJob 결과를 되돌려 쓸 때만 호출
+    public void ApplyAxis(Vector3 _vAxisX, Vector3 _vAxisY, Vector3 _vAxisZ)
+    {
+        m_vAxisX = _vAxisX;
+        m_vAxisY = _vAxisY;
+        m_vAxisZ = _vAxisZ;
     }
 
     private void OnDrawGizmos()

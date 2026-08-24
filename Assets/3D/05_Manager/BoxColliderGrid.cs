@@ -56,7 +56,7 @@ public sealed class BoxColliderGrid
     private int m_iCountY = 1;
     private int m_iCountZ = 1;
     private int m_iTotalCell;
-    private int m_iItemCount;
+    private int m_iColliderCount;
     private bool m_bBuilt;
 
     public bool IsBuilt => m_bBuilt;
@@ -68,7 +68,7 @@ public sealed class BoxColliderGrid
     public int CountX => m_iCountX;
     public int CountY => m_iCountY;
     public int CountZ => m_iCountZ;
-    public int ItemCount => m_iItemCount;
+    public int ItemCount => m_iColliderCount;
 
     public NativeArray<int> CellStart => m_arrCellStart;
     public NativeArray<int> CellCount => m_arrCellCount;
@@ -82,6 +82,7 @@ public sealed class BoxColliderGrid
         if (_listOwnerCollider == null || _listOwnerCollider.Count == 0)
             return;
 
+        //가장 큰 바운더리 값을 가진 Collider를 기준으로 셀 나누기
         Vector3 vMin = _listOwnerCollider[0].CachedCenter;
         Vector3 vMax = vMin;
         float fMaxRadius = 0f;
@@ -119,7 +120,7 @@ public sealed class BoxColliderGrid
         // 넘기면 안전 시스템이 예외를 던짐) 최소 용량으로 미리 잡아둔다
         ResizeColliderCapacity(MIN_ITEM_CAPACITY);
 
-        m_iItemCount = 0;
+        m_iColliderCount = 0;
         m_bBuilt = true;
     }
 
@@ -136,7 +137,7 @@ public sealed class BoxColliderGrid
         for (int i = 0; i < m_iTotalCell; ++i)
             m_arrCellCount[i] = 0;
 
-        m_iItemCount = 0;
+        m_iColliderCount = 0;
     }
 
     // _iIdx는 호출부(ColliderManager)가 Box SoA에 쓰는 것과 동일한 인덱스여야 한다
@@ -154,8 +155,8 @@ public sealed class BoxColliderGrid
         m_arrCellCount[iCell] = m_arrCellCount[iCell] + 1;
 
         // 호출부는 0부터 순서대로 넘기지만, 순서가 어긋나도 EndRebuild가 전 구간을 훑도록 상한을 잡는다
-        if (_iIdx + 1 > m_iItemCount)
-            m_iItemCount = _iIdx + 1;
+        if (_iIdx + 1 > m_iColliderCount)
+            m_iColliderCount = _iIdx + 1;
     }
 
     // 프리픽스 합으로 셀별 시작 위치를 잡고, 아이템을 자기 셀 구간으로 흩뿌린다
@@ -167,17 +168,17 @@ public sealed class BoxColliderGrid
         int iRunning = 0;
         for (int i = 0; i < m_iTotalCell; ++i)
         {
-            m_arrCellStart[i] = iRunning; //[1, 4, 3, 0, 2];
-            m_arrScratchCursor[i] = iRunning;
-            iRunning += m_arrCellCount[i]; //[0,2,3]
+            m_arrCellStart[i] = iRunning;   //해당 셀에 존재하는 콜라이더 수 (오프셋)
+            m_arrScratchCursor[i] = iRunning;//작업용 커서 - 시작 위치로 초기화
+            iRunning += m_arrCellCount[i]; // 다음 셀의 콜라이더 시작 위치
         }
 
-        for (int i = 0; i < m_iItemCount; ++i)
+        for (int i = 0; i < m_iColliderCount; ++i)
         {
-            int iCell = m_arrScratchCellIndexPerItem[i];//ColliderID에 해당하는 셀 가져오기
-            int iSlot = m_arrScratchCursor[iCell];//Offset값 가져오기
+            int iCell = m_arrScratchCellIndexPerItem[i]; //ColliderID에 맞는 Cell위치
+            int iSlot = m_arrScratchCursor[iCell];       //셀의 위치의 작업 시작 위치
             m_arrCellCollider[iSlot] = i;
-            m_arrScratchCursor[iCell] = iSlot + 1;
+            m_arrScratchCursor[iCell] = iSlot + 1;       //셀의 다음 작업 시작 위치
         }
     }
 
@@ -191,7 +192,7 @@ public sealed class BoxColliderGrid
             m_arrScratchCellIndexPerItem.Dispose();
 
         m_bBuilt = false;
-        m_iItemCount = 0;
+        m_iColliderCount = 0;
     }
 
     // --- 좌표 계산(메인스레드 재구성과 Job이 반드시 같은 함수를 쓰도록 public static) ---

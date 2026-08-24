@@ -27,6 +27,7 @@ public class CircleCollider : BaseCollider
 
     public float Radius => m_fRadius;
     public override float BoundingRadius => m_fRadius;
+    public override Vector3 Offset => m_vOffset;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
     public Vector3 Center => transform.position + transform.rotation * m_vOffset;
@@ -38,8 +39,10 @@ public class CircleCollider : BaseCollider
     }
 
     // Center는 쿼터니언 곱셈이 들어있어 쌍마다 반복 조회하면 낭비가 크다(총알 하나가 몬스터
-    // 수만큼, 몬스터 하나가 총알 수만큼 매번 다시 계산됨). ColliderManager가 판정 루프 돌기
-    // 전에 활성 콜라이더마다 딱 한 번씩 RefreshCenter를 불러 캐시해두고, CheckPair는 이 값만 읽음
+    // 수만큼, 몬스터 하나가 총알 수만큼 매번 다시 계산됨) - 그래서 CachedCenter로 캐싱해두고
+    // 판정은 그 값만 읽는다. 매 프레임 갱신은 더 이상 이 메서드가 아니라 ColliderManager의
+    // RefreshCenterJob(TransformAccessArray 병렬 처리) + ApplyCachedCenter가 담당한다.
+    // 이 메서드 자체는 씬 없이 EditMode 테스트에서 동기적으로 값을 채울 때 등에 여전히 유효
     public override void RefreshCenter()
     {
         CachedCenter = transform.position + transform.rotation * m_vOffset;

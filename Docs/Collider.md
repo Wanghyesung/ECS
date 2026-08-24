@@ -292,10 +292,83 @@ Claude는 `BulletMoveManager`/`MissileMoveManager`/`GuidedMoveManager`가 이미
 | Owner/Query 통합 직후 (Update/LateUpdate 분리 전) | `LateUpdate() 11.23ms` (PreLoadCenter 3.29 + GridBuild 2.72 + GridJobComplete 2.54 + GridJobDrain 2.37) |
 | Update/LateUpdate 분리 후 | `LateUpdate() 1.92ms`, `Update() 4.96ms`(PreLoadCenter 3.12 + GridBuild 1.71) |
 
-**아직 확인/착수되지 않은 것**:
+**이 시점엔 확인/착수되지 않았던 것(→ 13번에서 실제로 착수됨)**:
 - `PreLoadCenter`를 `TransformAccessArray` + Job으로 전환하는 작업(11번 참고, 다음 세션 과제)
 - Bullet처럼 그리드에서 절대 조회되지 않는(항상 Query만 하는) 콜라이더를 애초에 `AddCollider`
   대상에서 제외해 `EndRebuild`의 스캐터 비용을 줄이는 방향 — 9번 논의 중 후보로만 언급됐고
-  구현 여부는 결정되지 않음
+  구현 여부는 결정되지 않음(여전히 미착수)
 - Unity MCP 연결 없이 진행된 세션이라 컴파일/EditMode 테스트/PlayMode 검증을 Claude가 직접
-  수행하지 못했음 — 전부 사용자가 에디터에서 확인
+  수행하지 못했음 — 전부 사용자가 에디터에서 확인(이 제약은 세션 끝까지 유지됨)
+
+## 13. PreLoadCenter를 TransformAccessArray+Job으로 전환 (실제 착수)
+
+11번에서 보류했던 작업을 사용자가 같은 날 다시 요청했다: "Center 캐싱하는 거 적용해달라고
+Job을 활용해서" — 그리고 구체적으로 "콜라이더 등록/해제할 때(Activate/UnActivate)
+TransformAccessArray에도 같이 등록해두고, PreLoadCenter를 Job이 병렬로 transform.position
+(Box는 축까지) 읽어서 NativeArray에 담는 방식"으로 바꿔달라고 명시했다 — Claude가 11번에서
+제안했던 방향 그대로.
+
+Claude가 구현 전 조사하려던 것: Bullet/Missile/Guided처럼 "풀에 영구 등록 + 활성 플래그
+토글"이 안전한지(Transform이 실제로 Destroy될 수 있는 Obstacle/Monster/Player까지 다루므로,
+영구 등록 방식이면 파괴된 Transform을 참조하는 사고가 날 수 있다는 우려) 확인하려고 Explore
+서브에이전트를 띄우려 했으나, **사용자가 서브에이전트 사용 자체를 반려**하고 "Activate/
+UnActivate에 맞춰 등록/해제하라"는 원래 지시를 그대로 따르라고 확인해줬다. 이 지시가 이미
+Claude의 우려(영구 등록의 위험성)를 구조적으로 해결하는 방식이었음 - Activate에서 등록,
+DeleteCollider(파괴 직전 호출)에서 스왑백 해제.
+
+**구현**: `ColliderManager.Activate`/`DeleteCollider`가 `TransformAccessArray`에도 스왑백으로
+등록/해제(ID→슬롯 역방향 매핑도 기존 레이어 리스트 스왑백과 동일 패턴으로 유지). `PreLoadCenter`는
+`RefreshCenterJob`(`IJobParallelForTransform`, Burst)을 Schedule+Complete한 뒤, 슬롯별 결과를
+`BaseCollider.ApplyCachedCenter`/`ObbCollider.ApplyAxis`(신규 public 메서드)로 되돌려 써서
+`RaycastMask`/`FindAllInRadius`/`Aim` 등 외부 코드가 여전히 `CachedCenter`를 동기 프로퍼티로
+읽을 수 있게 유지했다. Static 콜라이더는 위치가 안 바뀌므로 애초에 등록하지 않는다(기존 동작
+그대로 보존).
+
+Claude가 남긴 미확인 위험 하나: `BulletMoveManager`(order 500)의 이동 Job은 Update에서
+Schedule, 자기 LateUpdate에서만 Complete하는데, `ColliderManager`(order 1000)의 새 Job은
+그보다 늦은 Update() 안에서 동기적으로 Schedule+Complete된다 - 이때 Bullet 이동 Job이 아직
+안 끝난 채로 같은 Transform을 서로 다른 `TransformAccessArray`가 동시에 건드리게 될 수 있다.
+Unity가 이걸 자동으로 안전하게 처리해줄지 Claude는 에디터가 없어 확인 못 했고, 사용자에게
+Play 모드에서 `InvalidOperationException`(job safety 에러) 여부를 직접 확인해달라고
+요청했다 - 이 세션 종료 시점까지 그 확인 결과는 별도로 보고되지 않음(다음 세션 확인 필요).
+
+## 14. 코드 분리 — 이동 추적과 충돌 판정
+
+사용자가 "코드 좀 나눌래? 이동이랑 충돌이랑"이라고 요청, 이어서 "불필요한 변수 있는지 체크하고
+주석도 중요하다고 생각하는 부분 남기고 버려줘, 함수 쪽에서도 중요하다고 생각하면 간단한 설명도
+넣어줘"라고 정리 범위를 구체화했다.
+
+Claude는 `ColliderManager`에서 TransformAccessArray 관련 필드/메서드/Job 전부를 새 파일
+`ColliderCenterRefresher.cs`(순수 C# 클래스, `BoxColliderGrid`와 동일하게 `ColliderManager`가
+소유)로 옮겼다 — Register/Unregister/ScheduleAndComplete/Apply 네 개의 public 메서드로 캡슐화.
+`ColliderManager`는 `Activate`/`DeleteCollider`/`PreLoadCenter`에서 이 메서드들을 호출하는
+몇 줄만 남았다. 같이 진행한 정리:
+- 클래스 헤더 주석을 세션 내내 누적된 반복/역사적 설명을 걷어내고 지금 유효한 WHY만 남겨
+  50줄 → 19줄로 압축
+- `BuildGrid`의 뭉뚱그려진 한글 콩글리시 주석("박스 형태, 플레이어 기준 컬링할지, 프로드
+  페이즈(원충돌)")을 실제 동작을 설명하는 문장으로 교체
+- 불필요한 변수는 발견되지 않음 - 옮긴 필드들은 새 파일로 그대로 이동했을 뿐 중복이 없었고,
+  나머지는 grep으로 전부 실사용 확인
+
+## 15. 성능 결과 재측정 (TransformAccessArray 적용 후)
+
+| 마커 | 이전(12번, Job 도입 전) | 이후(실측) |
+|---|---|---|
+| `ColliderManager.Update()` 총합 | 4.96ms | **2.68ms** |
+| `PreLoadCenter` | 3.12ms | 약 0.8ms대로 감소 (스크린샷 일부 가려짐, 정확한 값은 재확인 필요) |
+| `ColliderManager.LateUpdate()` 총합 | 1.92ms | **1.40ms** |
+| `GridJobComplete`(`JobHandle.Complete`) | - | 1.12ms |
+
+`PreLoadCenter`가 병목에서 빠지면서 `Update()` 총합이 4.96ms → 2.68ms로, `LateUpdate()`도
+1.92ms → 1.40ms로 같이 줄었다(같은 프레임 안에서 Update 쪽 작업이 짧아지면 그만큼 Job이
+겹쳐 돌 시간도 늘어나는 효과로 추정 - 정확한 인과관계는 미확인).
+
+**여전히 남은 것**:
+- 13번에서 남긴 `TransformAccessArray` 동시 접근 안전성 확인(Play 모드에서 job safety
+  예외 여부)
+- `GridJobComplete`(1.12ms)가 여전히 `LateUpdate()`의 대부분을 차지 - 다음으로 줄일 수
+  있는 지점은 9번에서 이미 다룬 "Update에서 미리 Schedule" 전략이 실제로 얼마나 겹쳐
+  도는지를 프로파일러 타임라인(워커 스레드 구간)으로 직접 확인하는 것, 또는 12번 목록에
+  남아있는 "Bullet을 그리드 멤버십에서 제외" 방향
+- Unity MCP 연결 없이 진행된 세션이라 이번에도 컴파일/EditMode 테스트/PlayMode 검증은
+  전부 사용자가 직접 확인
