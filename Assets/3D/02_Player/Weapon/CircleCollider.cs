@@ -26,6 +26,7 @@ public class CircleCollider : BaseCollider
     [SerializeField] private Color m_tGizmoColor = Color.green;
 
     public float Radius => m_fRadius;
+    public override float BoundingRadius => m_fRadius;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)
     public Vector3 Center => transform.position + transform.rotation * m_vOffset;

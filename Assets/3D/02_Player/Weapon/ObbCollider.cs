@@ -36,8 +36,11 @@ public class ObbCollider : BaseCollider
 
     // half-extent 대각선 길이 - 이 반지름의 구보다 멀리 있으면 박스와 절대 안 겹친다는
     // 보수적 상한. Start()에서 한 번만 계산해서, 원-박스 판정마다 비싼 OBB 수학(내적 3회
-    // + 클램프)을 돌리기 전에 값싼 구-구 선판정으로 명백히 먼 쌍을 미리 걸러내는 용도
-    public float BoundingRadius { get; private set; }
+    // + 클램프)을 돌리기 전에 값싼 구-구 선판정으로 명백히 먼 쌍을 미리 걸러내는 용도.
+    // BaseCollider.BoundingRadius를 override하므로 private set 대신 백킹 필드로 둠
+    // (base가 get-only virtual이라 override에서 set accessor를 새로 추가할 수 없음)
+    private float m_fBoundingRadius;
+    public override float BoundingRadius => m_fBoundingRadius;
 
     public Vector3 AxisX => m_vAxisX;
     public Vector3 AxisY => m_vAxisY;
@@ -60,7 +63,7 @@ public class ObbCollider : BaseCollider
             m_vBaseHalfExtent.x * Mathf.Abs(vLossyScale.x),
             m_vBaseHalfExtent.y * Mathf.Abs(vLossyScale.y),
             m_vBaseHalfExtent.z * Mathf.Abs(vLossyScale.z));
-        BoundingRadius = m_vHalfExtent.magnitude;
+        m_fBoundingRadius = m_vHalfExtent.magnitude;
 
         // 중심/축 초기값은 RefreshCenter와 동일 계산이라 중복 없이 그대로 재사용
         RefreshCenter();

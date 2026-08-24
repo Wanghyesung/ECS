@@ -39,6 +39,11 @@ public abstract class BaseCollider : MonoBehaviour
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
 
     public bool StaticObject { get; protected set; }
+
+    // 도형 무관 공통 반지름 상한 - 그리드 셀 크기 산정과 구-구 선판정(broad bound check)에
+    // 쓰인다. Circle은 자기 Radius, Box는 half-extent 대각선 길이(Start에서 한 번만 계산)
+    public virtual float BoundingRadius => 0f;
+
     protected virtual void Awake()
     {
         ID = NEXT_ID++;

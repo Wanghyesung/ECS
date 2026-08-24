@@ -171,3 +171,131 @@ Claude는 정적 전제를 없애기 위해 그리드를 매 프레임 통째로
 - MCP 연결 이후로는 Claude가 코드 작성 후 항상 컴파일·테스트·짧은 Play 모드 검증까지 직접
   수행했다 — 그 이전 구간은 정적 리뷰로만 검증했다는 한계를 스스로 밝히고, 사용자에게 라이브
   재검증을 권장했다.
+
+---
+
+# 두 번째 세션(2026-08-24) — Circle-Circle 통합 브로드페이즈
+
+- 관련 시스템: `ColliderManager`, `BoxColliderGrid`, `BaseCollider`, `CircleCollider`, `ObbCollider`
+- 이번 세션엔 Unity MCP 연결이 없어서 전부 정적 리뷰 + 코드 근거 확인으로만 진행했고, 컴파일/
+  EditMode 테스트/PlayMode 실행/프로파일러 재측정은 매 단계 사용자가 직접 Unity 에디터에서
+  수행하고 그 결과(스크린샷)를 다시 붙여넣는 방식으로 검증했다.
+
+## 7. 시작 문제
+
+프로파일러 실측(총알 3500 / 장애물 140 / 몬스터 20)에서 `ColliderManager.LateUpdate() = 8.82ms`,
+그중 `CheckCrossLayer = 4.03ms`가 Circle-Circle 쌍(주로 Monster×PlayerAttack 70,000쌍)을 여전히
+브루트포스로 처리하는 데서 나왔다. 1차 세션에서 만든 `BoxColliderGrid` + Burst Job은 Box(Obstacle)
+쪽에만 적용돼 있었다.
+
+## 8. 설계 논의 타임라인
+
+### 8-1. 1차 설계(Claude) — 레이어별 그리드 소유권(Owner/Query 비대칭)
+
+기존 Box 전용 그리드+Job 구조를 일반화: 레이어 쌍마다 "누가 그리드를 소유(Owner)하는가"를
+결정하는 규칙(Box가 있으면 Box가 무조건 Owner, 둘 다 Circle이면 그 프레임 개체 수가 적은
+쪽이 Owner)을 추가하고, Owner SoA/Query(Other) SoA를 분리해 `CollectLayerWork`가 레이어 쌍을
+분류, `GridOverlapJob`이 Circle-Circle/Circle-Box를 함께 처리하도록 구현까지 완료했다. 이
+과정에서 사용자가 제안한 "Update에서 미리 채우면 되지 않냐"는 대안은 코드 근거(Bullet/Missile/
+GuidedMoveManager가 Update에서 이동 Job을 Schedule만 하고 실제 위치 쓰기는 자기 LateUpdate의
+Complete에서 한다는 사실)로 반박하고, LateUpdate 유지로 정리했다 — 이 사실 확인이 이후
+세션에서도 계속 근거로 쓰인다.
+
+**사용자 반려**: 구현 결과를 보고 "통합된 느낌이 없다 - 불필요한 로직/데이터가 많다"고 재검토를
+요청했다. 구체적으로 `CollectLayerWork`의 소유권 판단, `ScheduleGridJob`의 자기레이어 중복
+가드(`GuardSelfLayerDuplicate`, 지금 매트릭스에선 절대 발동 안 함), `CheckSameLayer`/
+`CheckCrossLayer`/`RunPendingLayerWork`로 이어지는 별도 브루트포스 폴백 경로를 짚었다. 원칙으로
+"절차적으로는 콜라이더의 크기·위치·타입만 있으면 되고, 나머지(브로드페이즈 후보 탐색 + 레이어
+매트릭스 필터 + 도형별 판정)는 Job의 `Execute(int index)` 안에서 분기 처리로 끝나야 한다"를
+제시했다.
+
+### 8-2. 2차 설계(Claude) — 단일 SoA + 단일 그리드 + 단일 Job
+
+Owner/Query 구분을 완전히 없애고, 활성 콜라이더 전부(레이어/도형 무관)를 하나의 SoA와 하나의
+`BoxColliderGrid`에 담는 구조로 재설계했다. 그리드에 들어간 콜라이더 자신이 곧 조회 주체가
+되고(자기 배열 안에서 이웃 27칸을 찾아 `j > i`면 검사), `GridOverlapJob.Execute`가 레이어
+매트릭스 체크(`IsLayerCollider`의 `NativeArray<int>` raw-parameter 버전 신설)와 도형 조합
+분기(Circle-Circle/Circle-Box/Box-Circle/Box-Box)까지 전부 처리하도록 만들었다. 재설계안은
+Before/After 파이프라인 다이어그램으로 시각화해 제시했고, 그리드를 하나로 합칠지 도형/밀도별로
+나눌지도 다시 물어봐서 **단일 그리드**로 확정했다(셀 크기는 그리드 내 최대 `BoundingRadius`로
+정해지는데, 이 프로젝트에서는 Obstacle이 이미 그 최댓값을 차지하므로 합쳐도 셀 크기 자체는
+안 바뀐다는 게 확인 근거).
+
+이 설계로 삭제된 것: `IsGridOwnerLayerA`, `CollectLayerWork`, `CheckSameLayer`, `CheckCrossLayer`,
+`RunPendingLayerWork`, `m_listPendingLayerPair`, `m_arrGridOtherLayer`, `GuardSelfLayerDuplicate`,
+그리고 브루트포스 경로로만 호출되던 `IsOverlapping`/`IsCircleBoxOverlapPair`/
+`IsBoxCircleOverlapPair`/`IsBoxBoxOverlap`(전부 도달 불가능해진 죽은 코드라 함께 제거).
+유지된 것: `BaseCollider.BoundingRadius`(1차 세션에서 이미 가상 프로퍼티로 승격해둔 것),
+`IsCircleCircleOverlap`/`IsCircleBoxOverlap`(raw-parameter, Job이 그대로 호출), `BoxColliderGrid`의
+CSR 구조 자체(로직 변경 없음, 이름만 "Box 전용"에서 "그리드 소유 콜라이더 전체"로 주석 갱신).
+
+## 9. 스케줄 재구조화 — Update에서 Schedule, LateUpdate에서 Complete
+
+통합 직후 실측한 프로파일러에서 `LateUpdate() = 11.23ms`(PreLoadCenter 3.29 + GridBuild 2.72 +
+GridJobComplete 2.54 + GridJobDrain 2.37)를 확인. 사용자가 "병렬로 처리해도 뭘 하고 돌아오는게
+아니라 실행하고 기다리는 거여서 그런가보다"라고 원인을 짚었다 — Schedule 직후 바로 Complete를
+부르니 워커 스레드가 도는 동안 메인스레드가 할 일이 없어 순수 대기가 된다는 것.
+
+사용자 제안: 오브젝트가 다 움직이는 이상 이번 프레임 안에서 충돌을 처리하면 콜라이더 콜백
+안의 상태 전환 로직(예: 피격 시 방어 상태로 전환)이 순서에 따라 판정에 영향을 줄 수 있으니,
+애초에 판정을 다음 프레임으로 미루자 - Update에서 Job을 미리 Schedule하고 LateUpdate에서
+받는 구조로 바꾸자는 것. Claude는 Bullet/Missile/GuidedMoveManager와 완전히 같은 패턴(Update=
+Schedule, LateUpdate=Complete)임을 확인하고 그대로 적용: `PreLoadCenter`/`BuildGrid`/
+`ScheduleGridJob`을 `Update()`로, `CompleteAndDrainGridJob`만 `LateUpdate()`에 남겼다. 이 시점의
+캐시된 위치는 "저번 프레임 LateUpdate가 끝난 시점의 스냅샷"이라 판정이 의도적으로 한 프레임
+늦어지지만, 대신 Job이 이번 프레임 나머지 Update + LateUpdate 전체 구간 동안 겹쳐 돌 수 있게 됐고,
+한 프레임의 모든 Enter/Stay/Exit이 동일한 스냅샷 기준으로 계산되어 콜백 순서 의존성도 없어졌다.
+`[DefaultExecutionOrder(1000)]`는 그대로 유지했는데, 이제는 "최신 위치를 읽기 위해서"가 아니라
+"LateUpdate가 이 프레임에서 가장 늦게 돌수록 Job이 겹쳐 도는 시간이 길어지기 때문"으로 근거가
+바뀌었다.
+
+**결과(실측)**: `LateUpdate() 11.23ms` → `1.92ms`로 감소, 대신 `Update() 4.96ms`(PreLoadCenter
+3.12 + GridBuild 1.71)로 비용이 옮겨감 — 총량은 줄고, Complete 대기(순수 블로킹)가 실제 겹치는
+작업으로 바뀐 것이 핵심.
+
+## 10. Gather 단계의 불필요한 O(N) 복사 제거
+
+사용자가 `BuildGrid`의 첫 단계(`m_listAllActive.Clear()` 후 32개 레이어를 순회하며 콜라이더
+3000~4000개를 전부 리스트에 다시 담는 코드)를 보고 "매번 다 다시 넣을 필요가 있냐"고 지적했다.
+Claude가 확인한 결과: `m_arrCollider[layer]`는 이미 Activate/DeleteCollider로 "활성 콜라이더만"
+유지되는 배열이고, `List<T>.Count`는 O(1)이라 전체 개수는 32개 레이어를 순회하는 것만으로
+구해진다 — 개별 콜라이더를 복사할 필요가 없었다. `m_listAllActive`는 `BoxColliderGrid.Build()`가
+필요로 하는 `List<BaseCollider>`를 만들기 위해 그리드가 아직 한 번도 안 지어졌을 때(생애주기 중
+최대 한 번)만 채우는 일회성 스크래치로 용도를 좁히고, 매 프레임 도는 SoA/그리드 채우기 루프는
+32개 레이어 리스트를 직접 순회하도록 고쳤다.
+
+이어서 사용자가 "그냥 처음부터 그리드를 가장 큰 얘 기준으로 바꾸자"고 제안했는데, 확인해보니
+이미 `m_grid.IsBuilt` 가드로 `Build()`(그리드 경계/셀 크기 계산)는 콜라이더가 처음 활성화되는
+프레임에 딱 한 번만 실행되고 있었다 — 사용자가 걱정한 지점이 이미 해결돼 있었던 것으로 확인,
+추가 작업 없이 오해만 정리했다. 매 프레임 도는 건 `Build()`가 아니라 셀 *멤버십* 재계산
+(`BeginRebuild`→`AddCollider`×N→`EndRebuild`)이고, 이건 콜라이더가 실제로 움직이는 이상
+피할 수 없는 비용이라고 설명했다.
+
+## 11. 다음 병목 — PreLoadCenter (미착수, 다음 세션 과제로 이월)
+
+10번 최적화 이후 재측정에서 `Update() 4.96ms` 중 `PreLoadCenter`가 3.12ms로 새 병목으로
+확인됐다. 원인: `RefreshCenter()`가 활성 콜라이더(~3660개)마다 `transform.position`/
+`transform.rotation`을 읽는데, Unity의 `Transform` 프로퍼티 접근은 매번 관리형↔네이티브 경계를
+넘는 호출이라 단가가 붙고, 이게 메인스레드 순차 가상 호출로 3660번 반복되는 구조.
+
+Claude는 `BulletMoveManager`/`MissileMoveManager`/`GuidedMoveManager`가 이미 쓰고 있는
+`TransformAccessArray` + Burst Job 패턴을 `PreLoadCenter`에도 그대로 적용하자고 제안(콜라이더
+등록/해제 시 `TransformAccessArray`에도 같이 등록, Job이 병렬로 위치/축을 읽어 `NativeArray`에
+담는 구조)했으나, **사용자가 이번 세션에서는 보류**하고 대신 이 문서 기록과 커밋 메시지 정리를
+요청했다. `TransformAccessArray` 전환은 다음 세션 후속 과제로 남는다.
+
+## 12. 성능 결과 요약 (이번 세션, 실측 기반)
+
+| 단계 | LateUpdate/Update 비용 |
+|---|---|
+| 시작 (1차 세션 종료 시점, Box만 그리드) | `LateUpdate() 8.82ms` (`CheckCrossLayer` 4.03ms 포함) |
+| Owner/Query 통합 직후 (Update/LateUpdate 분리 전) | `LateUpdate() 11.23ms` (PreLoadCenter 3.29 + GridBuild 2.72 + GridJobComplete 2.54 + GridJobDrain 2.37) |
+| Update/LateUpdate 분리 후 | `LateUpdate() 1.92ms`, `Update() 4.96ms`(PreLoadCenter 3.12 + GridBuild 1.71) |
+
+**아직 확인/착수되지 않은 것**:
+- `PreLoadCenter`를 `TransformAccessArray` + Job으로 전환하는 작업(11번 참고, 다음 세션 과제)
+- Bullet처럼 그리드에서 절대 조회되지 않는(항상 Query만 하는) 콜라이더를 애초에 `AddCollider`
+  대상에서 제외해 `EndRebuild`의 스캐터 비용을 줄이는 방향 — 9번 논의 중 후보로만 언급됐고
+  구현 여부는 결정되지 않음
+- Unity MCP 연결 없이 진행된 세션이라 컴파일/EditMode 테스트/PlayMode 검증을 Claude가 직접
+  수행하지 못했음 — 전부 사용자가 에디터에서 확인
