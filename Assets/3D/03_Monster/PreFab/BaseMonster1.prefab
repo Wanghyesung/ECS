@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -31.477684, y: 12.7, z: 33.3}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7961622341496619772}
@@ -100,6 +100,7 @@ MonoBehaviour:
     CurrentCharge: {fileID: 0}
     StrafeDir: {x: 0, y: 0, z: 0}
     StrafeTimer: 0
+    WaitTimer: 0
   m_refBT: {fileID: 8659477376450560499}
   m_listSpawn:
   - Weapon: {fileID: 6226643238595174702}
