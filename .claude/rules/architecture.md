@@ -15,7 +15,7 @@
 
 ---
 
-## Model-View-System (MVS) 패턴
+## Model-View-System (MVP) 패턴
 
 
 ```

@@ -3,7 +3,7 @@ set -euo pipefail
 
 # =============================================================================
 # validate-architecture.sh
-# Checks Model-View-System (MVS) architecture compliance via grep-based
+# Checks Model-View-System (MVP) architecture compliance via grep-based
 # static analysis. Detects violations of dependency direction, forbidden
 # patterns (singletons, coroutines), and injection misuse.
 #
@@ -27,7 +27,7 @@ fi
 # ---------------------------------------------------------------------------
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<EOF
-${BOLD}validate-architecture.sh${RESET} - MVS architecture compliance checker.
+${BOLD}validate-architecture.sh${RESET} - MVP architecture compliance checker.
 
 ${BOLD}Usage:${RESET}
   .claude/scripts/validate-architecture.sh [OPTIONS]
@@ -247,7 +247,7 @@ if [[ $TOTAL -eq 0 ]]; then
 else
     echo "${BOLD}Architecture check: ${RED}$ERRORS error(s)${RESET}, ${YELLOW}$WARNINGS warning(s)${RESET}"
     if [[ $ERRORS -gt 0 ]]; then
-        echo "Errors indicate MVS pattern violations that should be fixed."
+        echo "Errors indicate MVP pattern violations that should be fixed."
     fi
     echo ""
     echo "Suppress false positives by adding ${CYAN}// architecture:ignore${RESET} to the line."

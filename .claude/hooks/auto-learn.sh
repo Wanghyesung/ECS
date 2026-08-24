@@ -90,7 +90,7 @@ jq -nc \
     --arg branch "$(git branch --show-current 2>/dev/null || echo 'unknown')" \
     --arg category "$CATEGORY" \
     --argjson edit_count "$EDIT_COUNT" \
-    --argjson mvs "{\"models\": $MODEL_COUNT, \"views\": $VIEW_COUNT, \"systems\": $SYSTEM_COUNT}" \
+    --argjson mvp "{\"models\": $MODEL_COUNT, \"views\": $VIEW_COUNT, \"systems\": $SYSTEM_COUNT}" \
     --argjson test_count "$TEST_COUNT" \
     --argjson editor_count "$EDITOR_COUNT" \
     --argjson shader_count "$SHADER_COUNT_VAL" \
@@ -103,7 +103,7 @@ jq -nc \
         branch: $branch,
         category: $category,
         files_edited: $edit_count,
-        mvs_breakdown: $mvs,
+        mvp_breakdown: $mvp,
         tests_written: $test_count,
         editor_scripts: $editor_count,
         shaders: $shader_count,

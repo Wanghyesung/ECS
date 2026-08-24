@@ -57,7 +57,7 @@ Unity 특화 원자적 학습 내용을 관리합니다: **$ARGUMENTS**
 본능을 필터링하여 나열합니다. 라이브러리가 커질 때 유용합니다:
 
 ```bash
-/unity-instincts list --domain mvs
+/unity-instincts list --domain mvp
 /unity-instincts list --min-confidence 0.7
 ```
 

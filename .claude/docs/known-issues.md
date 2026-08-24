@@ -2,6 +2,16 @@
 
 > Claude Code가 세션 중 발견했지만 아직 고치지 않은 문제를 기록하는 곳. 새 항목은 위에 추가하고, 고치면 해당 항목에 `[해결됨]`을 표시하고 커밋/PR을 남긴 뒤 지우지 말고 남겨둘 것 (재발 방지 기록).
 
+## `DungeonManager`가 보스 없는(마지막이 아닌) 스테이지에서 다음 스테이지로 영원히 못 넘어갈 수 있음 (2026-08-24, 기획서 통합 작업 중 코드 대조하다 발견)
+
+**근본 원인:** `DungeonManager.cs:37`의 클래스 주석은 "보스는 마지막 스테이지에서만 등장 — 그 전 스테이지들은 몬스터를 다 처치하면 보스 없이 바로 다음 스테이지로 넘어간다"고 명시하지만, 실제 `MonsterDead()`(`DungeonManager.cs:75`) 로직은 이 분기를 구현하지 않는다. 일반 몬스터가 다 죽으면(`m_iRemainMonsterCount <= 0 && m_refSpawner.RemainObject <= 0`) 스테이지 인덱스와 무관하게 항상 `SpawnBoss()`(`DungeonManager.cs:91`)를 호출해 `m_bBossSpawned = true`로 세팅하고, 다음 스테이지로의 전환(`StartStage(m_iCurrentStageIdx + 1)`)은 오직 "보스가 죽었을 때"(`m_bBossSpawned == true`인 상태에서 또 `MonsterDead` 콜백이 들어올 때)에만 일어난다. `SpawnBoss()`는 해당 `SOStage.BossPrefab`을 그대로 `ObjectSpawner.AddSpawnObject`에 넘기는데, `ObjectSpawner.SpawnObject()`(`ObjectSpawner.cs:80-87`)는 `ObjectPool.m_Instance.GetObject(null)`이 `null`을 반환하면 그냥 `return`하고 끝나 — 즉 `BossPrefab`이 비어 있는(문서 주석대로 "보스 없는 일반 스테이지"로 설계된) `SOStage`에서는 실제 `Monster` 오브젝트가 하나도 스폰되지 않는다.
+
+**실제 영향:** `BossPrefab`을 비워둔 중간 스테이지에 도달하면 `m_bBossSpawned`는 `true`인데 죽어서 `Monster.OnMonsterDied`를 발생시킬 몬스터가 아예 존재하지 않으므로, 다음 스테이지로의 전환 콜백이 영원히 오지 않는다 — 플레이어가 몬스터를 전부 잡아도 던전 진행이 그 스테이지에서 멈춘다(소프트락). 지금까지 `SOStage` 에셋마다 전부 `BossPrefab`을 채워놨다면 우연히 드러나지 않았을 뿐, 문서 주석이 말하는 "보스 없는 일반 스테이지" 구성을 실제로 만드는 순간 재현된다.
+
+**아직 고치지 않은 이유:** 이번 세션은 로그라이트 슈팅 기획서를 기존 구현과 대조해 정리하는 작업이었고, 발견한 시점에 던전 진행 로직 자체를 수정하는 것은 별도 확인(의도가 정말 "마지막 스테이지만 보스"인지, 아니면 주석이 오래된 것이고 지금처럼 "매 스테이지 보스"가 맞는 설계인지) 없이 임의로 바꾸기엔 범위 밖.
+
+**제안하는 해결책:** 의도가 주석대로("마지막 스테이지만 보스")라면 `MonsterDead()`에 `if (m_iCurrentStageIdx가 마지막 인덱스가 아니면) { StartStage(m_iCurrentStageIdx + 1); return; }` 분기를 `SpawnBoss()` 호출 앞에 추가. 의도가 "매 스테이지 보스"로 바뀐 것이라면 클래스 주석을 갱신하고, 모든 `SOStage` 에셋에 `BossPrefab`이 반드시 채워지도록 인스펙터에 `[Header]`/검증 로직(예: `OnValidate`에서 null 체크 경고)을 추가.
+
 ## 여러 매니저 싱글톤이 `DontDestroyOnLoad only works for root GameObjects` 에러를 매 Play 진입마다 던짐 (2026-08-19, 운석 Box-Circle 충돌 판정 작업 중 Play Mode 검증하다 발견)
 
 **근본 원인:** `BattleManager.cs:40`, `InputManager.cs:46`, `ObjectPool.cs:58`, `CameraManager.cs:29`, `FeatureManager.cs:43`, `ContainerManager.cs:20` — 이 6개 싱글톤 매니저가 전부 `Awake()`에서 `DontDestroyOnLoad(gameObject)`(또는 `this`)를 호출하는데, `DontDestroyOnLoad`는 루트(부모 없는) GameObject에만 적용 가능하다는 Unity 제약이 있다. 이 매니저들의 GameObject가 BattleScene 안에서 어떤 부모(오브젝트 구조 정리용 컨테이너 등) 아래 자식으로 배치돼 있어서 매번 이 에러가 난다.

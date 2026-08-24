@@ -38,7 +38,7 @@
 - `UniTask.Linq` (Assets/Plugins/UniTask/Runtime/Linq/UniTask.Linq.asmdef)
 - `UniTask` — 의존성: com.unity.modules.assetbundle, com.unity.modules.physics, com.unity.modules.physics2d, com.unity.modules.particlesystem, com.unity.ugui, com.unity.modules.unitywebrequest (Assets/Plugins/UniTask/Runtime/UniTask.asmdef)
 
-게임 시스템 아키텍처(Behavior Tree, ScriptableObject Action, Blackboard, Object Pool, Event System 등)와 코드 레이어링(MVS) 규칙은 `.claude/rules/architecture.md` 참고.
+게임 시스템 아키텍처(Behavior Tree, ScriptableObject Action, Blackboard, Object Pool, Event System 등)와 코드 레이어링(MVP) 규칙은 `.claude/rules/architecture.md` 참고.
 
 ---
 

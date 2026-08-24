@@ -9,7 +9,7 @@
 #   Stage 3 (ALLOW): Second attempt on same file proceeds (presumes the agent
 #                    read the deny message and gathered facts).
 #
-# Also enforces Read-before-Edit and the MVS counterpart heuristic.
+# Also enforces Read-before-Edit and the MVP counterpart heuristic.
 # ============================================================================
 # Trigger: PreToolUse on Edit|Write|MultiEdit
 # Exit:    2 = block, 0 = allow
@@ -77,9 +77,9 @@ if ! grep -qxF "$FILE_PATH" "$FACTS_PASSED_FILE" 2>/dev/null; then
         # Classify file to tailor the fact demand
         ROLE=""
         case "$BASENAME" in
-            *View)   ROLE="View (MVS)" ;;
-            *System) ROLE="System (MVS)" ;;
-            *Model)  ROLE="Model (MVS)" ;;
+            *View)   ROLE="View (MVP)" ;;
+            *System) ROLE="System (MVP)" ;;
+            *Model)  ROLE="Model (MVP)" ;;
             *Config|*Definition|*Data) ROLE="ScriptableObject" ;;
             *Controller|*Manager|*Handler) ROLE="Behaviour" ;;
         esac
@@ -124,7 +124,7 @@ if ! grep -qxF "$FILE_PATH" "$FACTS_PASSED_FILE" 2>/dev/null; then
     fi
 fi
 
-# --- Guard 3: MVS counterpart heuristic (advisory, does not block) ---
+# --- Guard 3: MVP counterpart heuristic (advisory, does not block) ---
 check_counterpart() {
     local suffix="$1"
     local role="$2"
