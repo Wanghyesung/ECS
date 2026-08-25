@@ -17,10 +17,28 @@ public static class PlayerPreLoadData
             m_listPendingStat.Add(_listValue[i]);
     }
 
+    // 로비 스탯 강화창처럼 한 번에 한 스탯만 추가할 때, 배열로 감싸지 않고 바로 쓰기 위한 편의 메서드
+    public static void AddStat(eStatType _eType, float _fValue)
+    {
+        m_listPendingStat.Add(new tStatValue { Type = _eType, Value = _fValue });
+    }
+
     public static void ApplyTo(Player _refPlayer)
     {
         for (int i = 0; i < m_listPendingStat.Count; ++i)
             ApplyStat(_refPlayer, m_listPendingStat[i]);
+    }
+
+    // 로비 스탯창처럼 Player가 존재하지 않는 상태에서 누적된 장비 보너스 합계만 조회할 때 사용
+    public static float GetPendingTotal(eStatType _eType)
+    {
+        float fTotal = 0f;
+        for (int i = 0; i < m_listPendingStat.Count; ++i)
+        {
+            if (m_listPendingStat[i].Type == _eType)
+                fTotal += m_listPendingStat[i].Value;
+        }
+        return fTotal;
     }
 
     private static void ApplyStat(Player _refPlayer, tStatValue _tModifier)

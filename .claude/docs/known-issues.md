@@ -2,6 +2,16 @@
 
 > Claude Code가 세션 중 발견했지만 아직 고치지 않은 문제를 기록하는 곳. 새 항목은 위에 추가하고, 고치면 해당 항목에 `[해결됨]`을 표시하고 커밋/PR을 남긴 뒤 지우지 말고 남겨둘 것 (재발 방지 기록).
 
+## `Player.UpAttackRatio()`/`DownAttackRatio()`가 비율 계산에 `MaxHP`를 곱하는 복붙 버그 (2026-08-25, 로비 스탯창 작업 중 `AddMaxHP` 클램프 버그를 조사하다 발견)
+
+**근본 원인:** [Player.cs:418-424](Assets/3D/02_Player/Player.cs:418) `UpAttackRatio(float _fRatio)`가 `m_SOObjectInfo.MaxAtack` 대신 `m_SOObjectInfo.MaxHP`를 곱해서 증가량을 계산한다. `DownAttackRatio()`도 동일. HP 관련 코드를 복사해서 Attack용으로 고치다가 곱하는 필드만 안 바꾼 것으로 보임.
+
+**실제 영향:** 비율 기반 공격력 강화/약화 효과(예: `FeatureSO.Apply()`가 호출하는 공격력 % 증가 피처)가 `MaxAtack`(1000) 대신 `MaxHP`(10) 기준으로 계산돼, 의도한 것보다 훨씬 작은 값이 적용됨. 현재 `UpAttackRatio`/`DownAttackRatio`를 실제로 호출하는 곳이 있는지는 이번 세션에서 확인하지 않음 — 호출부가 있다면 공격력 강화 피처가 사실상 거의 효과가 없는 것으로 체감될 수 있음.
+
+**아직 고치지 않은 이유:** 이번 세션 작업 범위(로비 스탯창 + HP 클램프 버그)와 무관 — 사용자가 승인한 수정 범위 밖이라 별도 확인 없이 손대지 않음.
+
+**제안하는 해결책:** `UpAttackRatio`/`DownAttackRatio`에서 곱하는 대상을 `m_SOObjectInfo.MaxAtack`으로 수정. 실제 호출부가 있는지 먼저 확인(`grep -r "UpAttackRatio\|DownAttackRatio"`) 후 회귀 여부 체크 권장.
+
 ## 여러 매니저 싱글톤이 `DontDestroyOnLoad only works for root GameObjects` 에러를 매 Play 진입마다 던짐 (2026-08-19, 운석 Box-Circle 충돌 판정 작업 중 Play Mode 검증하다 발견)
 
 **근본 원인:** `BattleManager.cs:40`, `InputManager.cs:46`, `ObjectPool.cs:58`, `CameraManager.cs:29`, `FeatureManager.cs:43`, `ContainerManager.cs:20` — 이 6개 싱글톤 매니저가 전부 `Awake()`에서 `DontDestroyOnLoad(gameObject)`(또는 `this`)를 호출하는데, `DontDestroyOnLoad`는 루트(부모 없는) GameObject에만 적용 가능하다는 Unity 제약이 있다. 이 매니저들의 GameObject가 BattleScene 안에서 어떤 부모(오브젝트 구조 정리용 컨테이너 등) 아래 자식으로 배치돼 있어서 매번 이 에러가 난다.

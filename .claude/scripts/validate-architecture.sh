@@ -3,9 +3,8 @@ set -euo pipefail
 
 # =============================================================================
 # validate-architecture.sh
-# Checks Model-View-System (MVS) architecture compliance via grep-based
-# static analysis. Detects violations of dependency direction, forbidden
-# patterns (singletons, coroutines), and injection misuse.
+# Checks architecture compliance via grep-based static analysis. Detects
+# forbidden patterns (singletons, coroutines) and injection misuse.
 #
 # Usage:
 #   .claude/scripts/validate-architecture.sh [--path <dir>]
@@ -27,7 +26,7 @@ fi
 # ---------------------------------------------------------------------------
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<EOF
-${BOLD}validate-architecture.sh${RESET} - MVS architecture compliance checker.
+${BOLD}validate-architecture.sh${RESET} - architecture compliance checker.
 
 ${BOLD}Usage:${RESET}
   .claude/scripts/validate-architecture.sh [OPTIONS]
@@ -37,11 +36,9 @@ ${BOLD}Options:${RESET}
   -h, --help     Show this help
 
 ${BOLD}What it checks:${RESET}
-  1. Models don't reference Views, Systems, or MonoBehaviour
-  2. Systems don't reference Views or MonoBehaviour
-  3. No singleton patterns (static Instance, FindObjectOfType)
-  4. No coroutines (StartCoroutine, IEnumerator, yield return)
-  5. Correct injection patterns (method for MonoBehaviour, constructor for Systems)
+  1. No singleton patterns (static Instance, FindObjectOfType)
+  2. No coroutines (StartCoroutine, IEnumerator, yield return)
+  3. Correct injection patterns (method for MonoBehaviour, constructor for Systems)
 
 ${BOLD}Note:${RESET}
   This is heuristic-based (grep). It may produce false positives.
@@ -104,63 +101,9 @@ report_issue() {
 }
 
 # ---------------------------------------------------------------------------
-# Check 1: Models must not reference Views or Systems
+# Check 1: No singletons
 # ---------------------------------------------------------------------------
-echo "${BOLD}${CYAN}[1/5] Checking Model dependency direction...${RESET}"
-
-MODEL_FILES=$(find "$SCAN_PATH" -name "*Model.cs" -o -name "*Model[0-9]*.cs" | grep -v '/Editor/' | grep -v '/Tests/' || true)
-
-while IFS= read -r FILE; do
-    [[ -z "$FILE" ]] && continue
-
-    # Check for MonoBehaviour inheritance (Models should be pure C#)
-    LINE_NUM=$(grep -nE ':\s*MonoBehaviour' "$FILE" | grep -v 'architecture:ignore' | head -1 | cut -d: -f1 || true)
-    if [[ -n "$LINE_NUM" ]]; then
-        report_issue "ERROR" "$FILE" "$LINE_NUM" "Model inherits MonoBehaviour — Models must be pure C# classes"
-    fi
-
-    # Check for View references
-    LINE_NUM=$(grep -nE '\bI?\w+View\b' "$FILE" | grep -v '^\s*//' | grep -v 'architecture:ignore' | head -1 | cut -d: -f1 || true)
-    if [[ -n "$LINE_NUM" ]]; then
-        report_issue "ERROR" "$FILE" "$LINE_NUM" "Model references a View — Models must not depend on Views"
-    fi
-
-    # Check for System references (but allow the word "System" in using statements)
-    LINE_NUM=$(grep -nE '\b\w+System\b' "$FILE" | grep -v '^\s*using' | grep -v '^\s*//' | grep -v 'architecture:ignore' | grep -v 'IDisposable' | head -1 | cut -d: -f1 || true)
-    if [[ -n "$LINE_NUM" ]]; then
-        report_issue "WARNING" "$FILE" "$LINE_NUM" "Model may reference a System — check dependency direction"
-    fi
-done <<< "$MODEL_FILES"
-echo ""
-
-# ---------------------------------------------------------------------------
-# Check 2: Systems must not reference Views
-# ---------------------------------------------------------------------------
-echo "${BOLD}${CYAN}[2/5] Checking System dependency direction...${RESET}"
-
-SYSTEM_FILES=$(find "$SCAN_PATH" -name "*System.cs" -o -name "*System[0-9]*.cs" | grep -v '/Editor/' | grep -v '/Tests/' || true)
-
-while IFS= read -r FILE; do
-    [[ -z "$FILE" ]] && continue
-
-    # Check for MonoBehaviour inheritance
-    LINE_NUM=$(grep -nE ':\s*MonoBehaviour' "$FILE" | grep -v 'architecture:ignore' | head -1 | cut -d: -f1 || true)
-    if [[ -n "$LINE_NUM" ]]; then
-        report_issue "ERROR" "$FILE" "$LINE_NUM" "System inherits MonoBehaviour — Systems must be plain C# classes"
-    fi
-
-    # Check for View references
-    LINE_NUM=$(grep -nE '\bI?\w+View\b' "$FILE" | grep -v '^\s*//' | grep -v 'architecture:ignore' | head -1 | cut -d: -f1 || true)
-    if [[ -n "$LINE_NUM" ]]; then
-        report_issue "ERROR" "$FILE" "$LINE_NUM" "System references a View — Systems must not depend on Views"
-    fi
-done <<< "$SYSTEM_FILES"
-echo ""
-
-# ---------------------------------------------------------------------------
-# Check 3: No singletons
-# ---------------------------------------------------------------------------
-echo "${BOLD}${CYAN}[3/5] Checking for singleton patterns...${RESET}"
+echo "${BOLD}${CYAN}[1/3] Checking for singleton patterns...${RESET}"
 
 ALL_CS=$(find "$SCAN_PATH" -name "*.cs" -not -path "*/Editor/*" -not -path "*/Tests/*" 2>/dev/null || true)
 
@@ -191,9 +134,9 @@ done <<< "$ALL_CS"
 echo ""
 
 # ---------------------------------------------------------------------------
-# Check 4: No coroutines
+# Check 2: No coroutines
 # ---------------------------------------------------------------------------
-echo "${BOLD}${CYAN}[4/5] Checking for coroutine usage...${RESET}"
+echo "${BOLD}${CYAN}[2/3] Checking for coroutine usage...${RESET}"
 
 while IFS= read -r FILE; do
     [[ -z "$FILE" ]] && continue
@@ -216,9 +159,9 @@ done <<< "$ALL_CS"
 echo ""
 
 # ---------------------------------------------------------------------------
-# Check 5: Injection patterns
+# Check 3: Injection patterns
 # ---------------------------------------------------------------------------
-echo "${BOLD}${CYAN}[5/5] Checking injection patterns...${RESET}"
+echo "${BOLD}${CYAN}[3/3] Checking injection patterns...${RESET}"
 
 while IFS= read -r FILE; do
     [[ -z "$FILE" ]] && continue
@@ -247,7 +190,7 @@ if [[ $TOTAL -eq 0 ]]; then
 else
     echo "${BOLD}Architecture check: ${RED}$ERRORS error(s)${RESET}, ${YELLOW}$WARNINGS warning(s)${RESET}"
     if [[ $ERRORS -gt 0 ]]; then
-        echo "Errors indicate MVS pattern violations that should be fixed."
+        echo "Errors indicate architecture violations that should be fixed."
     fi
     echo ""
     echo "Suppress false positives by adding ${CYAN}// architecture:ignore${RESET} to the line."

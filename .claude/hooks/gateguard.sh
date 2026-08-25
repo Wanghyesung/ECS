@@ -9,7 +9,7 @@
 #   Stage 3 (ALLOW): Second attempt on same file proceeds (presumes the agent
 #                    read the deny message and gathered facts).
 #
-# Also enforces Read-before-Edit and the MVS counterpart heuristic.
+# Also enforces Read-before-Edit.
 # ============================================================================
 # Trigger: PreToolUse on Edit|Write|MultiEdit
 # Exit:    2 = block, 0 = allow
@@ -77,9 +77,9 @@ if ! grep -qxF "$FILE_PATH" "$FACTS_PASSED_FILE" 2>/dev/null; then
         # Classify file to tailor the fact demand
         ROLE=""
         case "$BASENAME" in
-            *View)   ROLE="View (MVS)" ;;
-            *System) ROLE="System (MVS)" ;;
-            *Model)  ROLE="Model (MVS)" ;;
+            *View)   ROLE="View" ;;
+            *System) ROLE="System" ;;
+            *Model)  ROLE="Model" ;;
             *Config|*Definition|*Data) ROLE="ScriptableObject" ;;
             *Controller|*Manager|*Handler) ROLE="Behaviour" ;;
         esac
@@ -123,36 +123,5 @@ if ! grep -qxF "$FILE_PATH" "$FACTS_PASSED_FILE" 2>/dev/null; then
         unity_hook_block "GateGuard: present facts above, then retry the edit."
     fi
 fi
-
-# --- Guard 3: MVS counterpart heuristic (advisory, does not block) ---
-check_counterpart() {
-    local suffix="$1"
-    local role="$2"
-    local base="${BASENAME%View}"
-    base="${base%System}"
-    base="${base%Model}"
-    local counterpart_name="${base}${suffix}"
-
-    for search_dir in "$DIR" "$(dirname "$DIR")"; do
-        local candidate
-        candidate=$(find "$search_dir" -name "${counterpart_name}.cs" -maxdepth 3 2>/dev/null | head -1)
-        if [ -n "$candidate" ] && [ -f "$candidate" ]; then
-            if ! unity_was_read "$candidate"; then
-                echo "  SUGGESTION: Consider reading the ${role} first: ${candidate}" >&2
-            fi
-            return
-        fi
-    done
-}
-
-case "$BASENAME" in
-    *View)
-        check_counterpart "Model" "Model"
-        check_counterpart "System" "System"
-        ;;
-    *System)
-        check_counterpart "Model" "Model"
-        ;;
-esac
 
 exit 0

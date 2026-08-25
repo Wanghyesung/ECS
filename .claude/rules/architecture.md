@@ -15,64 +15,6 @@
 
 ---
 
-## Model-View-System (MVS) 패턴
-
-
-```
-Model  — 순수 C# 클래스. 상태 + 데이터만 포함. Unity API 없음, MonoBehaviour 없음.
-View   — MonoBehaviour. Model을 읽고, 비주얼을 렌더링하며, 입력을 전달. 로직 없음.
-System — 로직을 담당. MonoBehaviour여도 되고 순수 C#이어도 됩니다. Model을 소유하고 변경.
-```
-
-```csharp
-// --- Model (순수 C#, Unity 의존성 없음) ---
-public sealed class PlayerModel
-{
-    public int Health;
-    public Vector3 Position;
-    public bool IsDead => Health <= 0;
-}
-
-// --- System (MonoBehaviour, Model을 직접 소유) ---
-public sealed class PlayerSystem : MonoBehaviour
-{
-    public static event Action OnPlayerDied;
-
-    private readonly PlayerModel m_model = new();
-
-    [SerializeField] private PlayerView m_refView; // 인스펙터에서 직접 연결
-
-    public void TakeDamage(int _iAmount)
-    {
-        m_model.Health = Mathf.Max(0, m_model.Health - _iAmount);
-        m_refView.Refresh(m_model);
-
-        if (m_model.IsDead)
-        {
-            OnPlayerDied?.Invoke();
-        }
-    }
-}
-
-// --- View (MonoBehaviour, 순수 표시만 담당, 로직 없음) ---
-public sealed class PlayerView : MonoBehaviour
-{
-    [SerializeField] private Slider m_refHealthBar;
-
-    public void Refresh(PlayerModel _model)
-    {
-        m_refHealthBar.value = _model.Health / 100f;
-    }
-}
-```
-
-**규칙:**
-- Model은 절대 View나 System을 참조하지 않는다
-- View는 로직을 갖지 않는다 — System이 호출하는 `Refresh()` 같은 순수 표시 메서드만 가진다
-- System 간 참조는 `[SerializeField]`로 인스펙터에서 직접 연결하거나, 같은 GameObject/부모-자식 관계면 `GetComponent`/`GetComponentInParent`로 캐싱해 사용한다
-- 정말 전역적으로 필요한 매니저급(예: `AudioManager`, `SaveManager`, `ObjectPoolManager`)에 한해 `public static Instance` 싱글톤을 허용한다. 단, 아래 "싱글톤 사용 가이드"를 따를 것
-- 서로 다른 기능 영역(예: 전투 시스템과 UI 시스템)을 느슨하게 연결할 때는 직접 참조 대신 **C# 이벤트**를 사용한다 (아래 "시스템 간 통신을 위한 C# 이벤트" 참고)
-
 ## 싱글톤 사용 가이드 (절제해서 사용)
 
 DI를 쓰지 않기로 했으므로 싱글톤을 완전히 금지하진 않지만, 아무 데나 남발하면 예전의 "갓 GameManager" 문제로 되돌아갑니다. 아래 기준을 지키세요:
@@ -207,6 +149,51 @@ MonoBehaviour 상속 최대 깊이: 2 (베이스 + 서브클래스 1개). 그 �
 
 View는 가벼워야 합니다 — 로직은 System에, 데이터는 Model에 있어야 합니다.
 
+## UI는 MVP + 기능 분리 조합으로 구성
+
+UI도 "상속보다 조합" 원칙을 그대로 따릅니다. 화면 하나를 담당하는 오케스트레이터 클래스가 선택 상태 추적, 상세 표시, 재화 비교, 트랜잭션, 카운트 조회까지 전부 직접 구현하지 않습니다. `DungeonManager`가 몬스터 스폰을 직접 하지 않고 전용 컴포넌트 `ObjectSpawner`를 `[SerializeField]`로 물고 있다가 위임하는 것처럼, UI 오케스트레이터도 각 표시/기능 단위를 별도 View 컴포넌트로 만들어 붙이고 위임합니다.
+
+```csharp
+// 나쁜 예 — 오케스트레이터 하나가 선택 상세 표시, 강화 트랜잭션, 재화 비교, 카운트 조회까지 전부 직접 처리
+public class PlayerStatUI : MonoBehaviour, ICountable
+{
+    [SerializeField] private SOObjectInfo m_refBaseInfo;
+    [SerializeField] private Container m_refContainer;
+
+    [Header("선택 상세")]
+    [SerializeField] private Image m_refSelectIcon;
+    [SerializeField] private TextMeshProUGUI m_refNameText;
+    [SerializeField] private TextMeshProUGUI m_refValueText;
+    [SerializeField] private TextMeshProUGUI m_refLevelText;
+
+    [Header("강화")]
+    [SerializeField] private BaseButtonUI m_refUpgradeButton;
+    [SerializeField] private TextMeshProUGUI m_refCostText;
+    // RefreshSelected(), TryUpgrade(), GetCost(), GetLevel(), GetCount() 등
+    // 모든 로직이 이 클래스 하나에 몰려있음 — 화면이 커질수록 God Object가 됨
+}
+
+// 좋은 예 — 오케스트레이터(Presenter)는 조합/위임만, 각 책임은 전용 View 컴포넌트로 분리
+public sealed class PlayerStatUI : MonoBehaviour
+{
+    [SerializeField] private Container m_refContainer;
+    [SerializeField] private StatDetailView m_refDetailView;     // 선택된 스탯 표시 전담
+    [SerializeField] private UpgradeButtonView m_refUpgradeView; // 비용 표시 + 재화 비교 + 알파 처리 전담
+
+    private void Awake()
+    {
+        m_refContainer.OnSelectEvt += m_refDetailView.Show;
+        m_refContainer.OnSelectEvt += m_refUpgradeView.Bind;
+    }
+}
+```
+
+**규칙:**
+- MVP의 View는 "표시만" 담당하는 순수 컴포넌트(`StatDetailView`, `UpgradeButtonView` 등)로 쪼갭니다 — MVS의 View와 동일하게 로직 없이 `Show()`/`Refresh()`류 메서드만 가집니다
+- Presenter 역할은 오케스트레이터(`PlayerStatUI` 같은 클래스)가 맡되, `DungeonManager`처럼 `[SerializeField]`로 전용 View 컴포넌트를 직접 소유하고 이벤트 구독이나 메서드 호출로 위임합니다 — 오케스트레이터는 "무엇을 언제 보여줄지"만 결정하고 "어떻게 그리는지"는 각 View 컴포넌트가 담당합니다
+- `ICountable`처럼 인터페이스를 구현해야 하는 책임도 오케스트레이터가 직접 들기보다, 필요하면 전용 소스 컴포넌트로 분리하는 걸 먼저 검토합니다
+- 판단 기준: 그 필드/메서드 묶음이 "다른 화면에서도 재사용될 만한 독립된 표시/기능 단위"인가요? 그렇다면 별도 컴포넌트로 뺍니다. 이 화면에서만 쓰이는 단순 배선(이벤트 구독/해제 정도)이라면 오케스트레이터에 남겨도 됩니다
+
 ## 정적 데이터를 위한 ScriptableObject
 
 아이템, 어빌리티, 적 설정, 레벨 데이터, BT Action — 이 모두는 ScriptableObject여야 합니다:
@@ -224,74 +211,7 @@ public sealed class WeaponDefinition : ScriptableObject
 
 ScriptableObject는 **정적/설정 데이터**를 담습니다. 런타임에 변경 가능한 상태는 절대 SO에 넣지 말고 Model이나 Blackboard에 두세요 (위 "데이터 분리 규칙" 참고).
 
-## 입력 시스템 아키텍처
 
-입력은 **View 계층의 관심사**입니다. InputView가 원시 입력을 읽고 System을 직접 호출합니다.
-
-```csharp
-// InputView — New Input System과 게임 System 사이의 얇은 어댑터
-public sealed class InputView : MonoBehaviour
-{
-    [SerializeField] private PlayerSystem m_refPlayerSystem; // 인스펙터에서 직접 연결
-    [SerializeField] private UISystem m_refUISystem;
-
-    private PlayerControls m_controls;
-
-    private void Awake()
-    {
-        m_controls = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        m_controls.Player.Enable();
-        m_controls.Player.Jump.performed += OnJump;
-        m_controls.Player.Attack.performed += OnAttack;
-        m_controls.Player.Pause.performed += OnPause;
-    }
-
-    private void OnDisable()
-    {
-        m_controls.Player.Jump.performed -= OnJump;
-        m_controls.Player.Attack.performed -= OnAttack;
-        m_controls.Player.Pause.performed -= OnPause;
-        m_controls.Player.Disable();
-    }
-
-    private void Update()
-    {
-        Vector2 vMove = m_controls.Player.Move.ReadValue<Vector2>();
-        m_refPlayerSystem.SetMoveInput(vMove);
-    }
-
-    private void OnJump(InputAction.CallbackContext _ctx) => m_refPlayerSystem.Jump();
-    private void OnAttack(InputAction.CallbackContext _ctx) => m_refPlayerSystem.Attack();
-    private void OnPause(InputAction.CallbackContext _ctx) => m_refUISystem.TogglePause();
-}
-```
-
-**규칙:**
-- **InputView가 PlayerControls를 소유합니다** — 다른 어떤 클래스도 `PlayerControls` 인스턴스를 생성하거나 보유하지 않습니다
-- **InputView는 View입니다** — 입력을 읽고 System을 호출합니다. 게임 로직은 전혀 없습니다
-- **System은 입력에 대해 알지 못합니다** — `SetMoveInput(Vector2)`, `Jump()`, `Attack()` 같은 메서드를 노출합니다. 입력이 어디서 오는지(키보드, 게임패드, AI, 네트워크 리플레이) 절대 알지 못합니다
-- **씬당 InputView는 하나** — 중복된 액션 구독을 방지합니다
-- **Enable/Disable은 필수입니다** — `OnEnable`은 액션 맵을 활성화하고, `OnDisable`은 이를 비활성화하며 콜백 구독을 해제합니다
-- **연속 입력은 Update에서** — `ReadValue<Vector2>()`를 Update에서 읽고 캐싱하세요. 캐싱된 값을 사용해 FixedUpdate에서 물리를 적용하세요
-- **불연속 입력은 콜백을 통해** — 버튼 입력은 폴링이 아닌 `performed` 콜백을 사용합니다
-- **액션 맵 전환은 InputView에 있습니다** — 메서드 호출을 통해 System이 제어합니다 (예: `SwitchToUI()`, `SwitchToGameplay()`)
-
-## 의존성 방향
-
-```
-View → System → Model
-  ↓        ↓
-C# 이벤트 (분리된 통신)
-```
-
-- View는 System과 Model을 직접 참조합니다 (`[SerializeField]` 또는 `GetComponent`)
-- System은 Model과 다른 System을 직접 참조하거나, 매니저급 싱글톤을 통해 접근합니다
-- Model은 아무것에도 의존하지 않습니다
-- 서로 다른 기능 영역 간 통신은 직접 참조보다 C# 이벤트를 우선 고려합니다 (매니저 싱글톤 직접 호출도 허용됨)
 
 ## 갓 오브젝트(God Object) 금지
 

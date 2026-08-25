@@ -131,7 +131,6 @@ public class ColliderManager : MonoBehaviour
         DontDestroyOnLoad(this);
 
         // ScheduleFrame()을 이 프레임 최대한 일찍 호출해줄 트리거를 자동으로 붙인다 -
-        // 씬에서 수동으로 추가할 필요 없음(§ColliderManagerScheduler 참고)
         gameObject.AddComponent<ColliderManagerScheduler>();
 
         m_arrCollider = new List<BaseCollider>[LAYER_COUNT];

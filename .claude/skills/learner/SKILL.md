@@ -80,7 +80,7 @@ Each learning and session is assigned one of five categories. These categories a
 |----------|-------------|---------|
 | **bug-fix** | Debugging session that resolved a defect | Recent commits contain "fix", "bug", "patch"; session focused on single files |
 | **performance** | Optimization work | Files named with "pool", "cache", "optim"; profiler skills loaded |
-| **architecture** | Structural changes to Models, Views, or Systems | Multiple MVS files edited; assembly definition changes |
+| **architecture** | Structural changes to Models, Views, or Systems | Multiple Model/View/System files edited; assembly definition changes |
 | **workflow** | General feature development (default) | Balanced mix of file types; no dominant pattern |
 | **integration** | Third-party or cross-system work | Shader files, package manifest edits, plugin code |
 

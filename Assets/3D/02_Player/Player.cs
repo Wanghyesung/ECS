@@ -404,15 +404,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public void AddHP(long _lValue)
     {
         m_refObjectInfo.CurrentHP += _lValue;
-        if (m_refObjectInfo.CurrentHP >= m_SOObjectInfo.MaxHP)
-            m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+        if (m_refObjectInfo.CurrentHP >= m_refObjectInfo.MaxHP)
+            m_refObjectInfo.CurrentHP = m_refObjectInfo.MaxHP;
     }
 
+    // 장비 등으로 얻는 HP 증가분은 무기별 상한이 없는 BulletSpeed와 동일하게 상한 없이 누적.
+    // (SOObjectInfo.MaxHP는 시작값일 뿐 상한이 아님 - 여기서 다시 클램프하면 증가분이 항상 무효화됨)
     public void AddMaxHP(long _lValue)
     {
         m_refObjectInfo.MaxHP += _lValue;
-        if (m_refObjectInfo.MaxHP >= m_SOObjectInfo.MaxHP)
-            m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
     }
 
     public void UpAttackRatio(float _fRatio)
