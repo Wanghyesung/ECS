@@ -177,9 +177,6 @@ Claude는 정적 전제를 없애기 위해 그리드를 매 프레임 통째로
 # 두 번째 세션(2026-08-24) — Circle-Circle 통합 브로드페이즈
 
 - 관련 시스템: `ColliderManager`, `BoxColliderGrid`, `BaseCollider`, `CircleCollider`, `ObbCollider`
-- 이번 세션엔 Unity MCP 연결이 없어서 전부 정적 리뷰 + 코드 근거 확인으로만 진행했고, 컴파일/
-  EditMode 테스트/PlayMode 실행/프로파일러 재측정은 매 단계 사용자가 직접 Unity 에디터에서
-  수행하고 그 결과(스크린샷)를 다시 붙여넣는 방식으로 검증했다.
 
 ## 7. 시작 문제
 
@@ -297,8 +294,6 @@ Claude는 `BulletMoveManager`/`MissileMoveManager`/`GuidedMoveManager`가 이미
 - Bullet처럼 그리드에서 절대 조회되지 않는(항상 Query만 하는) 콜라이더를 애초에 `AddCollider`
   대상에서 제외해 `EndRebuild`의 스캐터 비용을 줄이는 방향 — 9번 논의 중 후보로만 언급됐고
   구현 여부는 결정되지 않음(여전히 미착수)
-- Unity MCP 연결 없이 진행된 세션이라 컴파일/EditMode 테스트/PlayMode 검증을 Claude가 직접
-  수행하지 못했음 — 전부 사용자가 에디터에서 확인(이 제약은 세션 끝까지 유지됨)
 
 ## 13. PreLoadCenter를 TransformAccessArray+Job으로 전환 (실제 착수)
 
@@ -328,9 +323,8 @@ Claude가 남긴 미확인 위험 하나: `BulletMoveManager`(order 500)의 이�
 Schedule, 자기 LateUpdate에서만 Complete하는데, `ColliderManager`(order 1000)의 새 Job은
 그보다 늦은 Update() 안에서 동기적으로 Schedule+Complete된다 - 이때 Bullet 이동 Job이 아직
 안 끝난 채로 같은 Transform을 서로 다른 `TransformAccessArray`가 동시에 건드리게 될 수 있다.
-Unity가 이걸 자동으로 안전하게 처리해줄지 Claude는 에디터가 없어 확인 못 했고, 사용자에게
-Play 모드에서 `InvalidOperationException`(job safety 에러) 여부를 직접 확인해달라고
-요청했다 - 이 세션 종료 시점까지 그 확인 결과는 별도로 보고되지 않음(다음 세션 확인 필요).
+Unity가 이걸 자동으로 안전하게 처리해줄지 불확실해 Play 모드에서 `InvalidOperationException`
+(job safety 에러) 여부 확인이 필요하다고 남겨뒀다(18번에서 실제로 확인됨).
 
 ## 14. 코드 분리 — 이동 추적과 충돌 판정
 
@@ -363,12 +357,83 @@ Claude는 `ColliderManager`에서 TransformAccessArray 관련 필드/메서드/J
 1.92ms → 1.40ms로 같이 줄었다(같은 프레임 안에서 Update 쪽 작업이 짧아지면 그만큼 Job이
 겹쳐 돌 시간도 늘어나는 효과로 추정 - 정확한 인과관계는 미확인).
 
-**여전히 남은 것**:
+**이 시점엔 여전히 남아있던 것(→ 18번에서 실제로 해소/착수됨)**:
 - 13번에서 남긴 `TransformAccessArray` 동시 접근 안전성 확인(Play 모드에서 job safety
   예외 여부)
 - `GridJobComplete`(1.12ms)가 여전히 `LateUpdate()`의 대부분을 차지 - 다음으로 줄일 수
   있는 지점은 9번에서 이미 다룬 "Update에서 미리 Schedule" 전략이 실제로 얼마나 겹쳐
   도는지를 프로파일러 타임라인(워커 스레드 구간)으로 직접 확인하는 것, 또는 12번 목록에
   남아있는 "Bullet을 그리드 멤버십에서 제외" 방향
-- Unity MCP 연결 없이 진행된 세션이라 이번에도 컴파일/EditMode 테스트/PlayMode 검증은
-  전부 사용자가 직접 확인
+
+## 16. 사용자 점검 — 불필요한 변수/죽은 코드 확인
+
+사용자가 "Other이나 vOrigin이나 이게 이제 필요하니? 필요없는 변수 체크해봤어?"라고 확인
+요청. Claude가 grep으로 확인한 결과: `m_listOther`(겹침 쌍 추적), `vOtherCenter`/
+`iOtherType`(Job 안 "상대방" 지역변수), `GridOrigin`/`m_vOrigin`(그리드 원점) 전부
+실사용 중인 코드로 확인됨 - 사용자가 의심한 "예전 네이밍 잔재"는 아니었다.
+
+대신 진짜 죽은 코드를 하나 찾았다: `Assets/3D/05_Manager/BurstProbeTemp.cs`. 이 세션과
+무관하게 훨씬 이전(1차 세션 이전)에 `IsCircleBoxOverlap`이 Burst에서 실제로 컴파일되는지
+확인하려고 만든 일회성 프로브 - 자기 파일 헤더에 "확인 후 삭제한다"라고 이미 적혀 있고,
+프로젝트 전체에서 호출하는 곳이 한 군데도 없는 것도 grep으로 확인했다. 그 이후 진짜
+프로덕션 Job(`GridOverlapJob`/`RefreshCenterJob`)이 여러 번 만들어지고 돌아간 걸로
+Burst 컴파일은 이미 충분히 증명됐으니 지워도 안전하다고 판단 - 다만 파일 삭제는 사용자
+결정으로 남겨두고(Claude 규칙상 파일을 직접 지우지 않음) 직접 지우지는 않았다.
+
+## 17. 주석 정리
+
+사용자가 "주석 너무 많아 좀 줄여줘 진짜 중요한거만 가져가고"라고 요청. `ColliderManager.cs`/
+`ColliderCenterRefresher.cs` 전체를 다시 훑어서, 코드가 이미 말하고 있는 걸 그대로
+반복하는 주석(예: "이번 프레임에도 맞음 -> Stay" 같은 자명한 것, 마커 설명 중복)은 지우고
+비자명한 WHY만 남겼다 - `ColliderManager` 클래스 헤더도 27줄에서 15줄 수준으로 압축.
+EditMode 테스트 15/15 통과는 그대로 유지 확인.
+
+## 18. 실행 순서 분리 — ColliderManagerScheduler
+
+15번에서 남긴 "`GridJobComplete`가 여전히 `LateUpdate()`의 대부분을 차지"에 이어, 사용자가
+"실행순서 어떻게 분리할지 계획만 먼저 잡아줘"라고 요청했다. Claude가 제시한 설계: 한
+클래스는 메서드별로 다른 `[DefaultExecutionOrder]`를 가질 수 없으므로, Schedule 쪽(삭제
+정리+PreLoadCenter+BuildGrid+ScheduleGridJob)을 새 `ColliderManagerScheduler`
+(`[DefaultExecutionOrder(-1000)]`, 이 프레임에서 가장 먼저)로 떼어내고, `ColliderManager`는
+Complete+드레인만 `LateUpdate`(`[DefaultExecutionOrder(1000)]`, 가장 늦게)에 남긴다.
+`ColliderManager.Awake()`가 자기 GameObject에 트리거를 자동으로 `AddComponent`해서 씬
+수동 작업이 필요 없게 했고, 프로젝트 전체에 -1000 근처 실행 순서를 이미 쓰는 곳이 없는지도
+구현 전에 grep으로 확인했다.
+
+사용자 승인 후 구현. Claude가 직접 확인한 것:
+- `refresh_unity` + `read_console`로 컴파일 에러 0건
+- EditMode 테스트 15/15 통과
+- Play 모드 10초+ 실행, 콘솔 에러/경고 0건 — **13번에서 남겨뒀던 `TransformAccessArray`
+  동시 접근 우려**(`ColliderCenterRefresher`의 위치 갱신 Job과 `BulletMoveManager`의 이동
+  Job이 같은 Transform을 서로 다른 `TransformAccessArray`로 동시에 건드릴 수 있다는
+  걱정)가 실제로는 문제되지 않는 것으로 확인됨(활성 `CircleCollider` 1300개 이상이
+  계속 움직이는 동안 예외 없음)
+- `manage_profiler`의 `get_counters`로 마커별 실측치를 직접 추출(스크린샷 없이 숫자로 확인)
+
+**실측 결과(실행 순서 분리 전/후)**:
+
+| 마커 | 분리 전(15번) | 분리 후(실측) |
+|---|---|---|
+| `GridJobComplete` | 1.12~2.19ms | **0.156ms** |
+| `ColliderManager.LateUpdate()` 총합 | 1.40~1.92ms | 1.08~2.13ms |
+| `ColliderManagerScheduler.Update()`(구 `ColliderManager.Update()`) | - | 2.57~3.07ms |
+
+`GridJobComplete`가 최대 14배 가까이 줄었다 - Schedule을 프레임 최대한 앞(-1000)으로
+당겨서 Job이 이번 프레임 나머지 Update 전체 + LateUpdate 전체 동안 겹쳐 돌 시간을 번 게
+실측으로 그대로 확인됐다. 다만 `GridJobDrain`이 한 샘플에서 1.97ms로 튄 것도 같이
+관찰됐다 - 겹침 이벤트가 몰린 프레임의 순간 스냅샷일 가능성이 있어 별도 확인이 필요하다.
+
+## 19. 성능 결과 요약 (세션 전체, 실측 기반)
+
+| 단계 | 비용 |
+|---|---|
+| 시작(1차 세션 종료, Box만 그리드) | `LateUpdate() 8.82ms`(`CheckCrossLayer` 4.03ms 포함) |
+| Owner/Query 통합 직후(Update/LateUpdate 분리 전) | `LateUpdate() 11.23ms` |
+| Update/LateUpdate 분리 | `LateUpdate() 1.92ms`, `Update() 4.96ms` |
+| TransformAccessArray(PreLoadCenter) 적용 | `LateUpdate() 1.40ms`, `Update() 2.68ms` |
+| 실행 순서 분리(Schedule을 -1000으로) | `LateUpdate() 1.08~2.13ms`, `GridJobComplete 0.156ms` |
+
+**여전히 남은 것**:
+- `GridJobDrain`의 변동폭(1.97ms로 튄 샘플)이 실제로 무엇 때문인지 재확인
+- Bullet처럼 그리드에서 절대 조회되지 않는 콜라이더를 그리드 멤버십에서 제외하는 방향(계속 미착수)
+- `BurstProbeTemp.cs` 삭제 여부(사용자 결정 대기, 16번 참고)

@@ -14,18 +14,21 @@ using UnityEngine;
        후보 index가 자기 이하면 스킵). GridOverlapJob.Execute 하나가 이웃 탐색 + 레이어
        매트릭스 필터 + 도형 분기(Circle-Circle/Circle-Box/Box-Box)까지 전부 처리한다.
 
-       Job Schedule은 Update(), Complete+드레인은 LateUpdate()에서 한다(Bullet/Missile/
-       Guided의 이동 Job과 같은 패턴) - Job이 이번 프레임 나머지 구간에서 겹쳐 돌아 Complete
-       대기가 줄고, 한 프레임의 모든 Enter/Stay/Exit이 동일한 위치 스냅샷(정확히 한 프레임
-       전) 기준으로 계산돼 콜백 순서에 판정이 갈리는 문제도 없다. 대가는 판정이 실제 최신
-       위치보다 한 프레임(~16ms@60fps) 늦음.
+       Job Schedule과 Complete를 서로 다른 실행 순서로 쪼갠다 - ScheduleFrame()은
+       ColliderManagerScheduler([DefaultExecutionOrder(-1000)], 이 프레임에서 가장 먼저)가
+       부르고, Complete+드레인은 이 클래스의 LateUpdate([DefaultExecutionOrder(1000)], 가장
+       나중)가 한다. 한 클래스는 메서드별로 다른 실행 순서를 못 가지므로 Schedule 쪽만 별도
+       컴포넌트로 뗀 것 - 이렇게 하면 충돌 Job이 이번 프레임 나머지 Update 전체 + LateUpdate
+       전체 동안 워커 스레드에서 겹쳐 돈다. 한 프레임의 모든 Enter/Stay/Exit이 동일한 위치
+       스냅샷(정확히 한 프레임 전) 기준으로 계산되므로 콜백 순서에 판정이 갈리는 문제도 없다.
+       대가는 판정이 실제 최신 위치보다 한 프레임(~16ms@60fps) 늦음.
 
        위치/축(transform.position/rotation) 갱신은 ColliderCenterRefresher가 전담한다 -
        "이동 추적"과 "충돌 판정"을 분리한 것.
  *///////////////////////////////////////////
 
-// LateUpdate가 이 프레임에서 가장 늦게 돌수록 Update에서 미리 Schedule한 Job이 겹쳐 도는
-// 시간이 길어진다(클래스 헤더 참고) - 그래서 기본 순서보다 뒤로 고정
+// LateUpdate가 이 프레임에서 가장 늦게 돌수록 ColliderManagerScheduler가 미리 Schedule한
+// Job이 겹쳐 도는 시간이 길어진다(클래스 헤더 참고) - 그래서 기본 순서보다 뒤로 고정
 [DefaultExecutionOrder(1000)]
 public class ColliderManager : MonoBehaviour
 {
@@ -126,6 +129,10 @@ public class ColliderManager : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(this);
+
+        // ScheduleFrame()을 이 프레임 최대한 일찍 호출해줄 트리거를 자동으로 붙인다 -
+        // 씬에서 수동으로 추가할 필요 없음(§ColliderManagerScheduler 참고)
+        gameObject.AddComponent<ColliderManagerScheduler>();
 
         m_arrCollider = new List<BaseCollider>[LAYER_COUNT];
         for (int i = 0; i < LAYER_COUNT; ++i)
@@ -267,7 +274,10 @@ public class ColliderManager : MonoBehaviour
         m_refCenterRefresher.Unregister(iID);
     }
 
-    private void Update()
+    // ColliderManagerScheduler([DefaultExecutionOrder(-1000)])가 이 프레임에서 가장 먼저
+    // 호출한다 - 충돌 Job이 이번 프레임 나머지 Update + LateUpdate 전체 동안 워커 스레드에서
+    // 겹쳐 돌 수 있도록(클래스 헤더 참고)
+    public void ScheduleFrame()
     {
         // 삭제 정리가 먼저 와야 이번 프레임 그리드/SoA에 죽은 콜라이더가 안 섞인다
         for (int i = 0; i < m_listPendingDelete.Count; ++i)
