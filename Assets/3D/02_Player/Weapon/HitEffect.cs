@@ -38,6 +38,6 @@ public class HitEffect : MonoBehaviour
     //�ݹ�
     private void OnParticleSystemStopped()
     {
-        ObjectPool.m_Instance.PushObject(gameObject);
+        ObjectPoolManager.m_Instance.PushObject(gameObject);
     }
 }

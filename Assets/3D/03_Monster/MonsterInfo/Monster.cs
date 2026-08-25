@@ -193,7 +193,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (m_refBlackBoard.ObjInfo.CurrentHP <= 0)
         {
             Dead();
-            GameObject refDeadEffect = ObjectPool.m_Instance.GetObject(m_refDeadEffect, transform.position);
+            GameObject refDeadEffect = ObjectPoolManager.m_Instance.GetObject(m_refDeadEffect, transform.position);
             refDeadEffect.GetComponent<HitEffect>()?.SetSize(m_fMonsterSize);
 
             return;
@@ -214,7 +214,7 @@ public class Monster : MonoBehaviour, IDamageable
         OnMonsterDied?.Invoke(m_SOMonsterInfo.ExpReward);
 
         if (m_refPoolObj != null)
-            ObjectPool.m_Instance.PushObject(gameObject);
+            ObjectPoolManager.m_Instance.PushObject(gameObject);
         else
             gameObject.SetActive(false);
     }

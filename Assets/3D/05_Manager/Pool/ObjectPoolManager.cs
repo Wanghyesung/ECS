@@ -7,15 +7,15 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 /*///////////////////////////////////////////
-               ObjectPool
+               ObjectPoolManager
 기능 : 오브젝트를 미리 로드해두고 필요할 때 꺼내어 쓰면 반납할 수 있게 하는 클래스
        SOSceneData -> SOPoolData 목록을 외부(SceneController)에서 받아
        Addressables 비동기 로드 + UniTask 프레임 분산으로 프리워밍한다.
  *///////////////////////////////////////////
 
-public class ObjectPool : MonoBehaviour
+public class ObjectPoolManager : MonoBehaviour
 {
-    public static ObjectPool m_Instance = null;
+    public static ObjectPoolManager m_Instance = null;
     private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new Dictionary<PoolObject, Queue<GameObject>>();
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 

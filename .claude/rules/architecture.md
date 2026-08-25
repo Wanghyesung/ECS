@@ -189,7 +189,7 @@ public sealed class PlayerStatUI : MonoBehaviour
 ```
 
 **규칙:**
-- MVP의 View는 "표시만" 담당하는 순수 컴포넌트(`StatDetailView`, `UpgradeButtonView` 등)로 쪼갭니다 — MVS의 View와 동일하게 로직 없이 `Show()`/`Refresh()`류 메서드만 가집니다
+- MVP의 View는 "표시만" 담당하는 순수 컴포넌트(`StatDetailView`, `UpgradeButtonView` 등)로 쪼갭니다 — 로직 없이 `Show()`/`Refresh()`류 메서드만 가집니다
 - Presenter 역할은 오케스트레이터(`PlayerStatUI` 같은 클래스)가 맡되, `DungeonManager`처럼 `[SerializeField]`로 전용 View 컴포넌트를 직접 소유하고 이벤트 구독이나 메서드 호출로 위임합니다 — 오케스트레이터는 "무엇을 언제 보여줄지"만 결정하고 "어떻게 그리는지"는 각 View 컴포넌트가 담당합니다
 - `ICountable`처럼 인터페이스를 구현해야 하는 책임도 오케스트레이터가 직접 들기보다, 필요하면 전용 소스 컴포넌트로 분리하는 걸 먼저 검토합니다
 - 판단 기준: 그 필드/메서드 묶음이 "다른 화면에서도 재사용될 만한 독립된 표시/기능 단위"인가요? 그렇다면 별도 컴포넌트로 뺍니다. 이 화면에서만 쓰이는 단순 배선(이벤트 구독/해제 정도)이라면 오케스트레이터에 남겨도 됩니다
@@ -210,6 +210,80 @@ public sealed class WeaponDefinition : ScriptableObject
 ```
 
 ScriptableObject는 **정적/설정 데이터**를 담습니다. 런타임에 변경 가능한 상태는 절대 SO에 넣지 말고 Model이나 Blackboard에 두세요 (위 "데이터 분리 규칙" 참고).
+
+## 입력 시스템 아키텍처
+
+입력은 Player 하나만 보는 게 아니라 여러 System이 각자 다른 키/액션을 구독하는 **여러 시스템이 공통으로 참조하는 전역 관심사**입니다. 그래서 다른 기능 전용 System과 달리 `InputManager`는 예외적으로 싱글톤 매니저로 둡니다 (`AudioManager`/`SaveManager`와 같은 선상 — 위 "싱글톤 사용 가이드" 참고).
+
+**컨벤션:**
+- `InputManager`는 `.inputactions` 에셋(예: `Assets/3D/06_Input/PlayerAction.inputactions`)에서 정의한 액션들을 `InputActionReference` 필드로 인스펙터에서 직접 참조합니다. `PlayerControls` 같은 생성된 C# 클래스는 쓰지 않습니다 — 코드를 건드리지 않고 에디터에서 액션/바인딩을 수정할 수 있어야 하기 때문입니다.
+- `InputManager`는 **입력을 읽어서 노출하는 것까지만** 합니다. 입력에 대한 반응(이동 계산, 발사 로직 등)은 절대 `InputManager` 안에 두지 않고, 각 System(`PlayerMovement`, `WeaponSystem` 등)이 `InputManager.Instance`를 직접 참조해 값을 읽어 처리합니다 (매니저 싱글톤 직접 호출은 이 프로젝트에서 허용됨 — 위 "시스템 간 통신을 위한 C# 이벤트" 참고).
+- 연속 입력(이동 등)은 캐싱된 값을 노출하고, 불연속 입력(버튼 등)에 즉시 반응해야 하는 System은 해당 액션의 `performed` 콜백을 `OnEnable`/`OnDisable`에서 짝을 맞춰 구독/해제합니다.
+- 싱글톤이므로 위 "싱글톤 사용 가이드"의 Awake 중복 파괴 가드(`return;` 포함)를 반드시 따르세요.
+
+```csharp
+public sealed class InputManager : MonoBehaviour
+{
+    public static InputManager Instance { get; private set; }
+
+    [SerializeField] private InputActionReference m_refMoveAction;   // 인스펙터에서 .inputactions 액션을 직접 바인딩
+    [SerializeField] private InputActionReference m_refFireAction;
+
+    public Vector2 MoveDir { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return; // 필수 — 파괴 예정 인스턴스가 Instance를 덮어쓰는 것을 방지
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        m_refMoveAction.action.Enable();
+        m_refFireAction.action.Enable();
+        m_refFireAction.action.performed += OnFire;
+    }
+
+    private void OnDisable()
+    {
+        m_refFireAction.action.performed -= OnFire;
+        m_refMoveAction.action.Disable();
+        m_refFireAction.action.Disable();
+    }
+
+    private void Update()
+    {
+        MoveDir = m_refMoveAction.action.ReadValue<Vector2>();
+    }
+
+    private void OnFire(InputAction.CallbackContext _ctx)
+    {
+        // 발사 로직이 아니라, 필요하다면 이벤트/콜백으로 관심 있는 System에 전달만 함
+    }
+}
+
+// --- 소비 측: 각 System이 필요한 값만 직접 읽음 ---
+public sealed class PlayerMovement : MonoBehaviour
+{
+    private void FixedUpdate()
+    {
+        Vector2 vMoveDir = InputManager.Instance.MoveDir;
+        // 이동 로직은 여기(System)에 있음, InputManager엔 없음
+    }
+}
+```
+
+**규칙:**
+- `InputManager`는 오직 입력을 읽고 노출만 합니다 — 게임 로직은 절대 갖지 않습니다
+- 액션은 `.inputactions` 에셋 + `InputActionReference`로 에디터에서 관리하고, 생성된 C# 클래스는 쓰지 않습니다
+- 다른 System은 `InputManager.Instance`를 직접 호출해도 됩니다
+- 콜백 구독은 반드시 `OnEnable`/`OnDisable`로 짝을 맞추세요
+- 싱글톤 Awake 가드(`return;` 포함)를 빠뜨리지 마세요
 
 
 

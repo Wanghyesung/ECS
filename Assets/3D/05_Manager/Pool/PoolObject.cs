@@ -49,7 +49,7 @@ public class PoolObject : MonoBehaviour, IPoolable
         // 이 예약은 자동으로 무효화되고 새 시간으로 재예약됨. 0 이하로 세팅된 프리팹은
         // "수동으로만 반납한다"는 의도로 보고 자동 예약을 안 함
         if (m_fAliveTime > 0f)
-            ObjectPool.m_Instance.ScheduleTime(this, m_fAliveTime);
+            ObjectPoolManager.m_Instance.ScheduleTime(this, m_fAliveTime);
     }
 
     // 매 프레임 직접 카운트다운하지 않고, ObjectPool의 우선순위 큐에 "이 시각에 반납"으로
@@ -58,7 +58,7 @@ public class PoolObject : MonoBehaviour, IPoolable
     {
         m_fAliveTime = _fPushTime;
         ++Generation;
-        ObjectPool.m_Instance.ScheduleTime(this, _fPushTime);
+        ObjectPoolManager.m_Instance.ScheduleTime(this, _fPushTime);
     }
 
     public void SetOriginalPoolObj(PoolObject _refOriginObj)

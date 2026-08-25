@@ -59,7 +59,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
 
         if (m_refHitEffectObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
+            GameObject refHitEffect = ObjectPoolManager.m_Instance.GetObject(m_refHitEffectObj);
             if (refHitEffect != null)
                 refHitEffect.transform.position = transform.position;
         }

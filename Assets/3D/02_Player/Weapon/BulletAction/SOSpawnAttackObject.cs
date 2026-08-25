@@ -28,7 +28,7 @@ public class SOSpawnAttackObject : SOBulletAction
             return;
 
         PoolObject refPrefabPoolObj = m_refAttackObjectPrefab.GetComponent<PoolObject>();
-        GameObject refObj = ObjectPool.m_Instance.GetObject(refPrefabPoolObj);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(refPrefabPoolObj);
         if (refObj == null)
             return;
 

@@ -112,8 +112,8 @@ public class InputManager : MonoBehaviour
             {
                 if (vDelta.sqrMagnitude > 0f)
                 {
-                    m_tInputInfo.Delta = Vector2.zero; // Ƣ�� ù ���� ������ 0 ó��
-                    m_isDeltaInitialized = true;        // ���� �����Ӻ��ʹ� ���� �۵�
+                    m_tInputInfo.Delta = Vector2.zero; 
+                    m_isDeltaInitialized = true;       
                     continue;
                 }
             }

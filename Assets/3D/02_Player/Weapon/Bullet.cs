@@ -173,13 +173,13 @@ public class Bullet : MonoBehaviour, IAttackObject
 
         if (m_refHitEffectObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
+            GameObject refHitEffect = ObjectPoolManager.m_Instance.GetObject(m_refHitEffectObj);
             if (refHitEffect != null)
                 refHitEffect.transform.position = transform.position;
         }
 
         if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
-            ObjectPool.m_Instance.PushObject(gameObject);
+            ObjectPoolManager.m_Instance.PushObject(gameObject);
 
     }
 
@@ -206,7 +206,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     // Weapon뿐 아니라 BulletAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
     public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        GameObject refObj = ObjectPool.m_Instance.GetObject(_refPrefab);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(_refPrefab);
         if (refObj == null)
             return null;
 

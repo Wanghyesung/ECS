@@ -79,7 +79,7 @@ public class ObjectSpawner : MonoBehaviour
 
     private void SpawnObject(PoolObject _refSpawnObject, Vector3 _vPosition)
     {
-        GameObject refGameObject = ObjectPool.m_Instance.GetObject(_refSpawnObject);
+        GameObject refGameObject = ObjectPoolManager.m_Instance.GetObject(_refSpawnObject);
         if (refGameObject == null)
             return;
 

@@ -77,7 +77,7 @@ public class GameSceneManager : MonoBehaviour
         m_tSceneHandle = Addressables.LoadSceneAsync(_refSceneData.SceneAddress, LoadSceneMode.Single);
         await m_tSceneHandle.ToUniTask(refSceneProgress, cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        await ObjectPool.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy(), refPoolProgress);
+        await ObjectPoolManager.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy(), refPoolProgress);
 
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.gameObject.SetActive(false);

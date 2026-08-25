@@ -15,7 +15,7 @@ public class SOSpawnExplosionAction : SOBulletAction
         if (m_refExplodeObj == null)
             return;
 
-        GameObject refExObject = ObjectPool.m_Instance.GetObject(m_refExplodeObj);
+        GameObject refExObject = ObjectPoolManager.m_Instance.GetObject(m_refExplodeObj);
         if (refExObject == null)
             return;
 

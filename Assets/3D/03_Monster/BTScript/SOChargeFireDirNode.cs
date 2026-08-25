@@ -27,7 +27,7 @@ public class SOChargeFireDirNode : SONode
             return eNodeState.Failure;
 
         Weapon refAttackWeapon = refSpawnInfo.Weapon;
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
+        int iPoolCount = ObjectPoolManager.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
         int iTotalCount = refSpawnInfo.SpawnCount;
 
         if (iPoolCount < iTotalCount)

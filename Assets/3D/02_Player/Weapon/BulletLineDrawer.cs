@@ -9,7 +9,7 @@ using UnityEngine;
 [System.Serializable]
 public sealed class BulletLineDrawer
 {
-    [SerializeField] private PoolObject m_refBulletLinePoolObj; // BulletLine 프리팹의 PoolObject (ObjectPool 키)
+    [SerializeField] private PoolObject m_refBulletLinePoolObj; // BulletLine 프리팹의 PoolObject (ObjectPoolManager 키)
     [SerializeField] private MeshFilter m_refVisualMeshFilter; // 이 볼렛의 실제 비주얼 메시 (BulletLine에 두께로 그대로 넘겨줌)
 
     private PoolObject m_refActiveLinePoolObj; // 현재 떠 있는 라인 인스턴스 (조기 종료 대상)
@@ -21,7 +21,7 @@ public sealed class BulletLineDrawer
         if (m_refBulletLinePoolObj == null || m_refVisualMeshFilter == null)
             return;
 
-        GameObject refLineObj = ObjectPool.m_Instance.GetObject(m_refBulletLinePoolObj);
+        GameObject refLineObj = ObjectPoolManager.m_Instance.GetObject(m_refBulletLinePoolObj);
         if (refLineObj == null)
             return;
 

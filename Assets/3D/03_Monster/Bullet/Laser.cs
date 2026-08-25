@@ -59,7 +59,7 @@ public class Laser : MonoBehaviour, IAttackObject
 
         if (m_refHitEffectPoolObj != null)
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectPoolObj);
+            GameObject refHitEffect = ObjectPoolManager.m_Instance.GetObject(m_refHitEffectPoolObj);
             if (refHitEffect == null)
                 return;
 
