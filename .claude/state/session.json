@@ -1,17 +1,20 @@
 {
   "schema_version": 1,
-  "branch": "devel/Loby",
+  "branch": "devel/Particle",
   "workflow_phase": "",
-  "modified_files": [],
-  "recent_commits": [
-    "38d1baa [Refactor] ObjectPool을 ObjectPoolManager로 개편",
-    "f301586 [Add] 로비 플레이어 능력치 강화 UI 추가, HP 증가 클램프 버그 수정",
-    "284bec5 [Refactor] ColliderManager Job Schedule을 별도 실행 순서로 분리,"
+  "modified_files": [
+    "C:\\Users\\왕혜성\\Documents\\GitHub\\ECS\\Assets\\3D\\05_Manager\\Pool\\ObjectPool.cs",
+    "C:\\Users\\왕혜성\\Documents\\GitHub\\ECS\\Assets\\3D\\05_Manager\\Pool\\SOPoolData.cs"
   ],
-  "session_duration": "2451m 43s",
+  "recent_commits": [
+    "e960e14 [Fix] 파티클 CPU 성능 개선 - DeadEffect/LargeHitEffect/BossMissileEx/MissileShotParticle Collision·Trail 모듈 비활성화",
+    "31e2a0a [Refactor]맵 축소 및 재배치, 파티클 성능 개선, 몬스터 크기 조정",
+    "4fcbb13 [Refactor] ColliderManager PreLoadCenter를 TransformAccessArray+Job으로 전환, 이동 추적 로직을 ColliderCenterRefresher로 분리"
+  ],
+  "session_duration": "3736m 18s",
   "tool_calls": 0,
-  "warnings_count": 0,
-  "saved_at": "2026-08-27T00:57:38Z",
+  "warnings_count": 3,
+  "saved_at": "2026-08-27T01:22:41Z",
   "plan": {},
   "verification": {},
   "agent_context": {}
