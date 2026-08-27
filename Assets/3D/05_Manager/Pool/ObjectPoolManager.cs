@@ -13,21 +13,18 @@ using UnityEngine.ResourceManagement.AsyncOperations;
        Addressables 비동기 로드 + UniTask 프레임 분산으로 프리워밍한다.
  *///////////////////////////////////////////
 
-public class ObjectPool : MonoBehaviour
+public class ObjectPoolManager : MonoBehaviour
 {
-    public static ObjectPool m_Instance = null;
+    public static ObjectPoolManager m_Instance = null;
     // 재사용 대기열은 Stack(LIFO) - 방금 반납된 것부터 다시 꺼내 쓴다
     private Dictionary<PoolObject, Stack<GameObject>> m_hashPool = new Dictionary<PoolObject, Stack<GameObject>>();
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
     // 동시 활성 개수 상한이 걸린 PoolObject만 등록됨(SOPoolData.ActiveCap > 0). 없으면 상한 없음(기존 동작과 동일)
     private Dictionary<PoolObject, int> m_hashActiveCap = new Dictionary<PoolObject, int>();
-    // 상한이 걸린 타입만 활성 인스턴스를 Pop 순서(FIFO)대로 추적 - 상한 초과 시 맨 앞(가장 오래된 것)부터 강제 반납.
-    // LinkedList를 쓰는 이유: 활성 인스턴스는 상한 초과(맨 앞 강제 반납)뿐 아니라 자연 만료(ObjectPool.
-    // UpdateExpireQueue)나 게임 로직의 수동 PushObject 호출로도 "중간에서" 빠질 수 있다. Queue/Stack은
-    // 양 끝에서만 넣고 뺄 수 있어 중간 항목을 즉시 못 지우므로(지연 정리 방식이면 드물게 상한을 찍는
-    // 타입은 낡은 항목이 계속 쌓여 무한정 커질 위험이 있음), Remove(value)로 어느 위치든 즉시 O(n)
-    // 탐색 + O(1) unlink가 가능한 LinkedList를 써서 활성 목록이 항상 실제 상태와 정확히 일치하게 한다
+
+    // LinkedList를 쓰는 이유: 활성 인스턴스는 상한 초과(맨 앞 강제 반납)뿐 아니라 자연 만료나
+    // 게임 로직의 수동 PushObject 호출로도 "중간에서" 빠질 수 있다.
     private Dictionary<PoolObject, LinkedList<GameObject>> m_hashActiveList = new Dictionary<PoolObject, LinkedList<GameObject>>();
 
     // PoolObject별 알아서 매 프레임 카운트다운하는 대신, "이 시각에 반납"만 예약해두고

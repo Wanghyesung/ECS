@@ -19,3 +19,4 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   PreLoad: 100
   Max: 100
+  ActiveCap: 25

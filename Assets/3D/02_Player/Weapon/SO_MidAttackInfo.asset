@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
-  m_Name: SO_MidAttackInfo 1
+  m_Name: SO_MidAttackInfo
   m_EditorClassIdentifier: 
   Description: 
   WeaponType: 1

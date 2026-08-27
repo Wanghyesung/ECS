@@ -151,8 +151,8 @@ public sealed class BoxColliderGrid
 
         int iCell = FlattenIndex(iX, iY, iZ, m_iCountX, m_iCountY);
 
-        m_arrScratchCellIndexPerItem[_iIdx] = iCell;
-        m_arrCellCount[iCell] = m_arrCellCount[iCell] + 1;
+        m_arrScratchCellIndexPerItem[_iIdx] = iCell; //내 콜라이더가 어느 셀에 있는지
+        m_arrCellCount[iCell] += 1; //해당 셀에 속한 콜라이더 수
 
         // 호출부는 0부터 순서대로 넘기지만, 순서가 어긋나도 EndRebuild가 전 구간을 훑도록 상한을 잡는다
         if (_iIdx + 1 > m_iColliderCount)

@@ -41,6 +41,7 @@ public class BulletMoveManager : MonoBehaviour
     private bool m_bDisposed = false;
 
     private int COUNt = 0;
+    private int Max = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -79,6 +80,7 @@ public class BulletMoveManager : MonoBehaviour
         ++COUNt;
         m_listSpeed[_iIndex] = _fSpeed;
         m_listActive[_iIndex] = true;
+        
     }
 
     // Bullet.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른 오브젝트의
@@ -89,6 +91,12 @@ public class BulletMoveManager : MonoBehaviour
             return;
 
         --COUNt;
+        //if(Max < COUNt)
+        //{
+        //    Debug.Log(COUNt);
+        //    Max = COUNt;
+        //}    
+        
         m_listActive[_iIndex] = false;
     }
 
