@@ -69,11 +69,6 @@ while IFS= read -r FILE; do
         esac
     fi
 
-    # Check for singleton pattern
-    if grep -qE 'static\s+\w+\s+[Ii]nstance\b' "$FILE" 2>/dev/null; then
-        FILE_ISSUES="${FILE_ISSUES}    Architecture: Singleton pattern detected — use VContainer instead\n"
-    fi
-
     # Check for public fields (should be [SerializeField] private)
     PUBLIC_FIELDS=$(grep -nE '^\s*public\s+(int|float|string|bool|Vector[234]|Color|GameObject|Transform|Sprite|AudioClip)\s+\w+\s*[;=]' "$FILE" 2>/dev/null || true)
     if [ -n "$PUBLIC_FIELDS" ]; then

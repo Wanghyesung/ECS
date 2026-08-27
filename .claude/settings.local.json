@@ -20,7 +20,8 @@
       "mcp__UnityMCP__unity_docs",
       "Bash(git checkout *)",
       "mcp__UnityMCP__refresh_unity",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(grep -i \"mcp\" -n \"/c/Users/왕혜성/.claude.json\" 2>&1 | head -30)"
     ]
   }
 }
