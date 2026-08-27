@@ -61,6 +61,32 @@ public class Bullet : MonoBehaviour, IAttackObject
     // (풀 생애주기 중 Awake에서 딱 한 번만 배정). 하위 클래스도 DeactivateMoveJob 등에서 써야 해서 protected
     protected int m_iMoveManagerIndex = -1;
 
+    // 히트 이펙트(ParticleSystem) 동시 재생 상한 - 교전이 몰리면 한 프레임에 수십 건씩 명중이
+    // 겹칠 수 있는데, 명중마다 무조건 이펙트를 재생하면 동시에 살아있는 ParticleSystem
+    // 컴포넌트 수가 급증해 ParticleSystem.Update 비용이 튄다(프로파일러로 확인됨). 총알 종류와
+    // 무관하게 전역으로 공유해야 의미가 있어서 모든 Bullet 인스턴스가 공유하는 static으로 둔다
+    private const int MAX_HIT_EFFECT_PER_FRAME = 8;
+    private static int s_iHitEffectCountThisFrame = 0;
+    private static int s_iHitEffectFrame = -1;
+
+    // 이번 프레임에 히트 이펙트를 재생해도 되는지 예약 - 프레임이 바뀌면 카운터를 리셋하고,
+    // 한도 내면 자리를 예약(true)한다. Update 콜백 없이 호출 시점에 Time.frameCount로만
+    // 판단하므로 별도 초기화/해제 로직이 필요 없다
+    private static bool TryReserveHitEffectSlot()
+    {
+        if (Time.frameCount != s_iHitEffectFrame)
+        {
+            s_iHitEffectFrame = Time.frameCount;
+            s_iHitEffectCountThisFrame = 0;
+        }
+
+        if (s_iHitEffectCountThisFrame >= MAX_HIT_EFFECT_PER_FRAME)
+            return false;
+
+        ++s_iHitEffectCountThisFrame;
+        return true;
+    }
+
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
@@ -171,7 +197,7 @@ public class Bullet : MonoBehaviour, IAttackObject
             RunHitActions();
         }
 
-        if (m_refHitEffectObj != null)
+        if (m_refHitEffectObj != null && TryReserveHitEffectSlot())
         {
             GameObject refHitEffect = ObjectPoolManager.m_Instance.GetObject(m_refHitEffectObj);
             if (refHitEffect != null)

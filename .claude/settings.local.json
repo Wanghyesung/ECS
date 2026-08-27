@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 6 -o /dev/null -w \"HTTP:%{http_code}\\\\n\" http://localhost:8080/mcp)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(curl -s -m 15 -D /tmp/hdr.txt -X POST http://localhost:8080/mcp -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"cc\",\"version\":\"1.0\"}}}')",
+      "Bash(chmod +x mcp.sh)",
+      "Bash(./mcp.sh \"resources/read\" '{\"uri\":\"mcpforunity://editor/state\"}')",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(json.dumps\\(d,indent=1\\)[:3000]\\)\")",
+      "Bash(./mcp.sh \"tools/list\" '{}')",
+      "Bash(python -c ' *)",
+      "Bash(./mcp.sh \"tools/call\" '{\"name\":\"manage_scene\",\"arguments\":{\"action\":\"get_active\"}}')",
+      "Bash(python -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(d['result']['content'][0]['text'][:1500]\\)\")",
+      "mcp__UnityMCP__manage_prefabs",
+      "mcp__UnityMCP__find_gameobjects",
+      "mcp__UnityMCP__manage_components",
+      "mcp__UnityMCP__read_console",
+      "mcp__UnityMCP__manage_material",
+      "mcp__UnityMCP__execute_code",
+      "mcp__UnityMCP__unity_docs",
+      "Bash(git checkout *)",
+      "mcp__UnityMCP__refresh_unity",
+      "Bash(git add *)"
+    ]
+  }
+}

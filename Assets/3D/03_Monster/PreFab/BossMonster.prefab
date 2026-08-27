@@ -40658,7 +40658,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 23.5, y: 68.9, z: 163.2}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 329178456683991530}
@@ -40732,6 +40732,7 @@ MonoBehaviour:
     CurrentCharge: {fileID: 0}
     StrafeDir: {x: 0, y: 0, z: 0}
     StrafeTimer: 0
+    WaitTimer: 0
   m_refBT: {fileID: 3167987171606123751}
   m_listSpawn:
   - Weapon: {fileID: 5837634303713512790}
@@ -40782,6 +40783,7 @@ MonoBehaviour:
     ChargeParticle: {fileID: 80856866130549807}
     SpawnParticleTransform: {fileID: 1318631998204793562}
     SpawnWaitTime: 0
+  m_refDeadEffect: {fileID: 0}
 --- !u!114 &3167987171606123751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40835,6 +40837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
   m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &2432941410462199483

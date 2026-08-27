@@ -4919,6 +4919,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &8232150807328687796
 MonoBehaviour:
@@ -4933,6 +4935,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refParticle: {fileID: 0}
+  m_fReferenceSize: 10
+  m_fMinSizeRatio: 0.5
+  m_fMaxSizeRatio: 3
 --- !u!136 &8772381844910706138
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -8636,7 +8641,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     type: 1
     collisionMode: 0
@@ -19651,7 +19656,7 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_EnableGPUInstancing: 0
+  m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
   m_FreeformStretching: 0
