@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "branch": "devel/Loby",
+  "workflow_phase": "",
+  "modified_files": [],
+  "recent_commits": [
+    "38d1baa [Refactor] ObjectPool을 ObjectPoolManager로 개편",
+    "f301586 [Add] 로비 플레이어 능력치 강화 UI 추가, HP 증가 클램프 버그 수정",
+    "284bec5 [Refactor] ColliderManager Job Schedule을 별도 실행 순서로 분리,"
+  ],
+  "session_duration": "2451m 43s",
+  "tool_calls": 0,
+  "warnings_count": 0,
+  "saved_at": "2026-08-27T00:57:38Z",
+  "plan": {},
+  "verification": {},
+  "agent_context": {}
+}
