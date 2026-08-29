@@ -13,7 +13,8 @@ args: feature_description
 
 - 기본값: `unity-coder` 에이전트 사용(opus — 완전한 아키텍처적 추론)
 - `$ARGUMENTS`에 `--quick`이 포함된 경우: `unity-coder-lite` 에이전트 사용(sonnet — 단순 추가 작업을 위한 더 빠른 처리)
-- 에이전트에 전달하기 전에 인자에서 `--quick` 플래그를 제거합니다.
+- `$ARGUMENTS`에 `--no-test`가 포함된 경우: 4단계(통합 테스트 생성)를 건너뜁니다.
+- 에이전트에 전달하기 전에 인자에서 `--quick`, `--no-test` 플래그를 제거합니다.
 
 ## 1단계: 계획
 
@@ -54,7 +55,27 @@ args: feature_description
 4. 필요한 수동 단계가 있으면 언급합니다(예: 인스펙터에서 참조 할당).
 5. 더 좋은 기능이 있는지 확인합니다.
 
-## 4단계: 자동 검증(선택 사항)
+## 4단계: 통합 테스트 생성
+
+(`--no-test`가 지정된 경우 이 단계를 건너뜁니다.)
+
+1. **필요성 판단** — 이번 기능이 씬 내 여러 스크립트/오브젝트/물리/애니메이션의 상호작용을 포함하는지 확인합니다(예: 클릭 입력 → 배치 시스템 → UI 팝업 연동). 순수 로직/데이터 변경뿐이라면 이 단계를 생략하고 그 이유를 사용자에게 알립니다 — EditMode 테스트로 충분한 경우와 명확히 구분합니다.
+
+2. **`unity-test-runner` 에이전트를 호출**해 다음을 계획으로 제시합니다:
+   - 기능명(`<FeatureName>`, PascalCase) — 테스트 씬/스크립트/클래스 이름의 기준이 됩니다.
+   - 테스트 씬 경로: `Assets/Tests/PlayMode/Scenes/<FeatureName>/<FeatureName>_IntegrationTest.unity`
+   - 씬에 배치할 GameObject/컴포넌트/프리팹, 필요한 부트스트랩 매니저(예: `InputManager`, `ObjectPoolManager`)
+   - 테스트 스크립트 경로: `Assets/Tests/PlayMode/<FeatureName>IntegrationTests.cs`
+   - 검증할 어서션 목록(콘솔 에러 없음이 기본, 기능별 상태 검증 추가)
+
+3. **사용자 확인 후 진행**:
+   - UnityMCP 도구(`manage_scene`/`manage_gameobject`/`manage_components`/`manage_prefabs`, `batch_execute`로 묶어서)로 테스트 씬을 구성합니다 — `.claude/hooks/block-scene-edit.sh`가 `.unity` 파일 직접 편집을 막으므로 반드시 MCP를 사용해야 합니다.
+   - `[UnityTest]` 통합 테스트 스크립트를 작성합니다(에이전트 정의의 "씬 기반 통합 테스트" 템플릿 참고). 클래스 전체를 `#if UNITY_INCLUDE_TESTS`로 감쌉니다 — 이 프로젝트는 asmdef 없이 암시적 Assembly-CSharp에 게임 코드가 컴파일되므로, 테스트 asmdef를 새로 만들지 않고 이 전처리기로 플레이어 빌드에서 제외합니다.
+   - `run_tests`로 실행하고 `read_console`로 결과를 확인합니다.
+
+4. 생성된 씬/테스트 스크립트 경로와 통과 여부를 요약합니다.
+
+## 5단계: 자동 검증(선택 사항)
 
 구현 후, 검증-수정 루프를 위해 `unity-verifier` 에이전트 실행을 제안합니다:
 - 직렬화 안전성, 성능, Unity 관련 함정에 대해 변경된 모든 파일을 검토합니다.

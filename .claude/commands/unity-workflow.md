@@ -11,6 +11,8 @@ args: feature_description
 
 이 커맨드는 4단계 파이프라인을 실행합니다: **명확화(Clarify) → 계획(Plan) → 실행(Execute) → 검증(Verify)**. 각 단계는 다음 단계로 넘어가기 전에 명시적인 사용자 확인이 필요합니다.
 
+**플래그**: `$ARGUMENTS`에 `--no-critic`이 포함되면 2b단계(크리틱 리뷰)를 건너뜁니다. `--no-test`가 포함되면 3단계의 통합 테스트 생성 단계를 건너뜁니다. 에이전트에 전달하기 전에 두 플래그 모두 인자에서 제거합니다.
+
 ## 1단계: 명확화
 
 완전한 요구사항 그림을 그리기 위해 사용자를 인터뷰합니다. 다음을 질문합니다:
@@ -68,8 +70,9 @@ args: feature_description
 1. **계획에 따라 적절한 에이전트로 라우팅**합니다
 2. **`.claude/rules/`의 모든 규칙을 따르며 C# 코드를 작성**합니다
 3. 필요하면 MCP를 통해 **씬 요소를 설정**합니다(속도를 위해 `batch_execute` 사용)
-4. 각 주요 단계 이후 컴파일 오류를 확인하기 위해 `read_console`을 통해 **콘솔을 확인**합니다
-5. 오류가 발견되면 진행하기 전에 수정합니다
+4. **통합 테스트 생성**(기본 동작, `--no-test` 지정 시 건너뜀) — 기능이 씬 내 여러 오브젝트/스크립트/물리/애니메이션 상호작용을 포함하면, `/unity-feature` 4단계와 동일한 절차를 수행합니다: `unity-test-runner`가 기능명·테스트 씬 경로(`Assets/Tests/PlayMode/Scenes/<FeatureName>/`)·어서션 계획을 제시 → 사용자 확인 → MCP로 테스트 씬 구성 → `#if UNITY_INCLUDE_TESTS`로 감싼 `[UnityTest]` 스크립트 작성. 순수 로직/데이터 변경뿐이면 생략하고 이유를 알립니다.
+5. 각 주요 단계 이후 컴파일 오류를 확인하기 위해 `read_console`을 통해 **콘솔을 확인**합니다
+6. 오류가 발견되면 진행하기 전에 수정합니다
 
 자연스러운 이정표에서 진행 상황을 보고합니다(예: "스크립트 작성 완료, 이제 씬 설정 중...").
 
@@ -80,7 +83,7 @@ args: feature_description
 1. unity-reviewer 체크리스트에 따라 변경된 모든 파일을 **리뷰**합니다
 2. 자동으로 안전하게 수정할 수 있는 문제를 **자동 수정**합니다
 3. 수정이 적용된 경우 **재검증**합니다(최대 3회 반복)
-4. 가능하면 MCP를 통해 **테스트를 실행**합니다
+4. 가능하면 MCP를 통해 **테스트를 실행**합니다 — 3단계에서 생성된 통합 테스트가 있다면 재생성하지 않고 디스크에 있는 그대로 `run_tests`로 함께 실행합니다
 
 ### Deslop 패스(불필요한 코드 정리)
 
@@ -118,6 +121,7 @@ Deslop 규칙:
 
 ### Test results
 - [compilation status, test pass/fail counts]
+- 통합 테스트: [씬/스크립트 경로] (Pass/Fail, 생성하지 않았다면 사유)
 
 ### Manual steps needed
 - [any inspector assignments, scene references, etc.]
