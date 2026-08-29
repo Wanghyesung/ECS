@@ -40638,7 +40638,6 @@ GameObject:
   - component: {fileID: 6685922635759219881}
   - component: {fileID: 4324890989181530095}
   - component: {fileID: 3167987171606123751}
-  - component: {fileID: 7607403709495519335}
   - component: {fileID: 3982470965335869779}
   - component: {fileID: 2432941410462199483}
   m_Layer: 8
@@ -40783,7 +40782,7 @@ MonoBehaviour:
     ChargeParticle: {fileID: 80856866130549807}
     SpawnParticleTransform: {fileID: 1318631998204793562}
     SpawnWaitTime: 0
-  m_refDeadEffect: {fileID: 0}
+  m_refDeadEffect: {fileID: 4305478783281764729, guid: 76ea03231ba9f6344b051549bc0dba86, type: 3}
 --- !u!114 &3167987171606123751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40798,33 +40797,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refRootNode: {fileID: 11400000, guid: ddef41eddcad7ea43abea72b304f42e6, type: 2}
   m_refOwner: {fileID: 4324890989181530095}
---- !u!54 &7607403709495519335
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6812492139672946058}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &3982470965335869779
 MonoBehaviour:
   m_ObjectHideFlags: 0

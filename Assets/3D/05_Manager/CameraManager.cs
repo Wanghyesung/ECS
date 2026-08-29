@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
+using static Unity.Collections.AllocatorManager;
 
 public class CameraManager : MonoBehaviour
 {
@@ -20,12 +21,10 @@ public class CameraManager : MonoBehaviour
     private Color m_tBloodColor = Color.white;
 
     private Vector3 m_vShakeOffset = Vector3.zero;
-    private CancellationTokenSource m_refCTS;
     private bool m_bLock = false;
 
     private void Awake()
     {
-        m_refCTS = new CancellationTokenSource();
         if (m_Instance != null)
         {
             Destroy(gameObject);
@@ -42,8 +41,6 @@ public class CameraManager : MonoBehaviour
     }
     private void OnDestroy()
     {
-        m_refCTS.Cancel();
-        m_refCTS.Dispose();
     }
 
     private void LateUpdate()
@@ -60,7 +57,7 @@ public class CameraManager : MonoBehaviour
     //진폭, 흔들리는 속도
     public void StartShakeCamera(float _fMagnitude, float _fDuration = 0.2f)
     {
-        ShakeRoutine(m_refCTS.Token, _fMagnitude, _fDuration).Forget();
+        ShakeRoutine(this.GetCancellationTokenOnDestroy(), _fMagnitude, _fDuration).Forget();
     }
 
     private async UniTaskVoid ShakeRoutine(CancellationToken _tToken ,float _fMagnitude, float _fDuration)
@@ -87,33 +84,33 @@ public class CameraManager : MonoBehaviour
     }
 
     //지정된 위치로 자연스럽게 이동, 이동이 끝난 후 다시 플레이어 시점으로 이동
-    public async UniTask MoveToPoint(Vector3 _vPosition, float _fMoveTime, float _fWaitTime = 0.0f)
+    public async UniTask MoveToPoint(CancellationToken _tToken, Vector3 _vPosition, Quaternion _qLookRot, float _fMoveTime = 0.0f, float _fWaitTime = 0.0f)
     {
-        Transform camTransform = transform;
-
-        // 타깃 위치를 바라보는 회전값 계산
-        Quaternion targetRot = Quaternion.LookRotation(_vPosition - camTransform.position);
+        m_bLock = true;
+        Transform refCamTransform = m_refMainCamera.transform;
 
         var refSource = new UniTaskCompletionSource();
-
-        // CancellationToken 등록: 취소 요청 시 UniTaskCompletionSource도 함께 취소 처리
-        using (m_refCTS.Token.Register(() => refSource.TrySetCanceled(m_refCTS.Token)))
+        using (_tToken.Register(() => refSource.TrySetCanceled(_tToken)))
         {
             Sequence refSeq = DOTween.Sequence();
-            refSeq.Append(camTransform.DOMove(_vPosition, _fMoveTime).SetEase(Ease.OutQuad));
-            refSeq.Join(camTransform.DORotateQuaternion(targetRot, _fMoveTime).SetEase(Ease.OutQuad));
+            refSeq.Append(refCamTransform.DOMove(_vPosition, _fMoveTime).SetEase(Ease.OutQuad));
+            refSeq.Join(refCamTransform.DORotateQuaternion(_qLookRot, _fMoveTime).SetEase(Ease.OutQuad));
+            refSeq.SetUpdate(true);
 
-            // 정상 완료 시
-            refSeq.OnComplete(() => refSource.TrySetResult());
+            refSeq.OnComplete(() =>
+            {
+                refSource.TrySetResult();
+            });
 
-            // 중간에 킬(Kill)되거나 파괴될 때도 무한 대기에 빠지지 않도록 처리
-            refSeq.OnKill(() => refSource.TrySetCanceled());
-
+            refSeq.OnKill(() =>
+            {
+                refSource.TrySetCanceled();
+            });
             await refSource.Task;
         }
 
         if (_fWaitTime > 0.0f)
-            await UniTask.Delay((int)(_fWaitTime * 1000), cancellationToken: m_refCTS.Token);
+            await UniTask.Delay((int)(_fWaitTime * 1000), ignoreTimeScale: true, cancellationToken: _tToken);
 
         Time.timeScale = 1.0f;
         m_bLock = false;

@@ -22,4 +22,5 @@ public class SOStage : ScriptableObject
     [Header("Boss")]
     public PoolObject BossPrefab;
     public Vector3 BossSpawnPosition;
+    public float BossShowDistance;
 }

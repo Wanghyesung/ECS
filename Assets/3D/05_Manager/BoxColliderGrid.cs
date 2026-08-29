@@ -44,7 +44,7 @@ public sealed class BoxColliderGrid
     private NativeArray<int> m_arrCellCount;
 
     // 셀 순으로 정렬된 아이템(= Box SoA dense 인덱스) 목록
-    private NativeArray<int> m_arrCellCollider;
+    private NativeArray<int> m_arrCellItems;
 
     // 재구성용 스크래치 - 아이템별 소속 셀 인덱스 / 셀별 다음 삽입 위치 커서
     private NativeArray<int> m_arrScratchCellIndexPerItem;
@@ -72,7 +72,7 @@ public sealed class BoxColliderGrid
 
     public NativeArray<int> CellStart => m_arrCellStart;
     public NativeArray<int> CellCount => m_arrCellCount;
-    public NativeArray<int> CellItems => m_arrCellCollider;
+    public NativeArray<int> CellItems => m_arrCellItems;
 
     // 이 그리드를 소유한 레이어(콜라이더 목록)의 실제 분포로 그리드 범위를 딱 한 번 정한다("정적 분할").
     // 셀 크기는 그 시점 최대 BoundingRadius*2 - 이웃 1겹 검사만으로 놓치지 않기 위한 하한
@@ -177,7 +177,7 @@ public sealed class BoxColliderGrid
         {
             int iCell = m_arrScratchCellIndexPerItem[i]; //ColliderID에 맞는 Cell위치
             int iSlot = m_arrScratchCursor[iCell];       //셀의 위치의 작업 시작 위치
-            m_arrCellCollider[iSlot] = i;
+            m_arrCellItems[iSlot] = i;
             m_arrScratchCursor[iCell] = iSlot + 1;       //셀의 다음 작업 시작 위치
         }
     }
@@ -186,8 +186,8 @@ public sealed class BoxColliderGrid
     {
         DisposeCellArrays();
 
-        if (m_arrCellCollider.IsCreated)
-            m_arrCellCollider.Dispose();
+        if (m_arrCellItems.IsCreated)
+            m_arrCellItems.Dispose();
         if (m_arrScratchCellIndexPerItem.IsCreated)
             m_arrScratchCellIndexPerItem.Dispose();
 
@@ -220,19 +220,19 @@ public sealed class BoxColliderGrid
     // 모자라면 Dispose 후 더블링 크기로 새로 잡는다(복사 불필요)
     private void ResizeColliderCapacity(int _iCount)
     {
-        if (m_arrCellCollider.IsCreated && m_arrCellCollider.Length >= _iCount)
+        if (m_arrCellItems.IsCreated && m_arrCellItems.Length >= _iCount)
             return;
 
-        int iNewCapacity = m_arrCellCollider.IsCreated ? m_arrCellCollider.Length : MIN_ITEM_CAPACITY;
+        int iNewCapacity = m_arrCellItems.IsCreated ? m_arrCellItems.Length : MIN_ITEM_CAPACITY;
         while (iNewCapacity < _iCount)
             iNewCapacity <<= 1;
 
-        if (m_arrCellCollider.IsCreated)
-            m_arrCellCollider.Dispose();
+        if (m_arrCellItems.IsCreated)
+            m_arrCellItems.Dispose();
         if (m_arrScratchCellIndexPerItem.IsCreated)
             m_arrScratchCellIndexPerItem.Dispose();
 
-        m_arrCellCollider = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
+        m_arrCellItems = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
         m_arrScratchCellIndexPerItem = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
     }
 

@@ -54,7 +54,7 @@ public class ColliderManager : MonoBehaviour
     private List<BaseCollider> m_listPendingDelete;
 
     // ID -> 레이어 리스트에서 몇 번째 자리인지 (스왑백 O(1) 제거용)
-    private List<int> m_listIndexInLayerList;
+    private List<int> m_listIDToLayerCount;
     // ID -> BaseCollider 본체. Job 결과(ID 쌍)를 객체로 되돌릴 때 사용
     private List<BaseCollider> m_listColliderByID;
     // ID -> 지금 겹쳐있다고 기록된 상대 ID들. Exit 조회 스킵/DeleteCollider 정리에 사용
@@ -128,7 +128,6 @@ public class ColliderManager : MonoBehaviour
         }
 
         m_Instance = this;
-        DontDestroyOnLoad(this);
 
         // ScheduleFrame()을 이 프레임 최대한 일찍 호출해줄 트리거를 자동으로 붙인다 -
         gameObject.AddComponent<ColliderManagerScheduler>();
@@ -142,7 +141,7 @@ public class ColliderManager : MonoBehaviour
         m_refCenterRefresher = new ColliderCenterRefresher(INITIAL_CAPACITY);
 
         m_listPendingDelete = new List<BaseCollider>();
-        m_listIndexInLayerList = new List<int>();
+        m_listIDToLayerCount = new List<int>();
         m_listColliderByID = new List<BaseCollider>();
         m_listOther = new List<HashSet<int>>();
 
@@ -196,9 +195,9 @@ public class ColliderManager : MonoBehaviour
 
     private void ResizeCapacity(int _iID)
     {
-        while (m_listIndexInLayerList.Count <= _iID)
+        while (m_listIDToLayerCount.Count <= _iID)
         {
-            m_listIndexInLayerList.Add(-1);
+            m_listIDToLayerCount.Add(-1);
             m_listColliderByID.Add(null);
             m_listOther.Add(new HashSet<int>());
         }
@@ -222,11 +221,11 @@ public class ColliderManager : MonoBehaviour
         // 비어 있으면 Job 결과를 객체로 되돌릴 때 그 쌍이 통째로 무시된다
         m_listColliderByID[_refCollider.ID] = _refCollider;
 
-        if (m_listIndexInLayerList[_refCollider.ID] >= 0)
+        if (m_listIDToLayerCount[_refCollider.ID] >= 0)
             return;
 
         List<BaseCollider> listLayer = m_arrCollider[_refCollider.Layer];
-        m_listIndexInLayerList[_refCollider.ID] = listLayer.Count;
+        m_listIDToLayerCount[_refCollider.ID] = listLayer.Count;
         listLayer.Add(_refCollider);
 
         m_refCenterRefresher.Register(_refCollider);
@@ -241,7 +240,7 @@ public class ColliderManager : MonoBehaviour
     private void DeleteCollider(BaseCollider _refCollider)
     {
         int iID = _refCollider.ID;
-        int iMyIndex = m_listIndexInLayerList[iID];
+        int iMyIndex = m_listIDToLayerCount[iID];
         if (iMyIndex < 0)
             return; // 이미 처리됨 (중복 예약 가드)
 
@@ -266,8 +265,8 @@ public class ColliderManager : MonoBehaviour
         BaseCollider refMoved = listLayer[iLastIndex];
         listLayer[iMyIndex] = refMoved;
         listLayer.RemoveAt(iLastIndex);
-        m_listIndexInLayerList[refMoved.ID] = iMyIndex;
-        m_listIndexInLayerList[iID] = -1;
+        m_listIDToLayerCount[refMoved.ID] = iMyIndex;
+        m_listIDToLayerCount[iID] = -1;
 
         // 파괴 전에 반드시 빼야 다음 프레임 위치 갱신 Job이 죽은 Transform을 참조하지 않는다
         m_refCenterRefresher.Unregister(iID);
@@ -351,6 +350,7 @@ public class ColliderManager : MonoBehaviour
 
         using (s_tMarkerGridBuild.Auto())
         {
+            //이전 프레임의 데이터는 지우고 새로 시작
             m_grid.BeginRebuild(iTotalActive);
 
             bool bCullByRange = m_refPlayer != null;

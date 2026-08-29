@@ -38,4 +38,5 @@ MonoBehaviour:
     MonsterPrefab: {fileID: 5599183521212392682, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
     vPosition: {x: 66.69, y: 130.9, z: 1020.1}
   BossPrefab: {fileID: 3982470965335869779, guid: b8f872a168a6a0b43b83ebad4d281c0d, type: 3}
-  BossSpawnPosition: {x: 23.5, y: 68.9, z: 163.2}
+  BossSpawnPosition: {x: -122.8, y: 83.3, z: 857.1}
+  BossShowDistance: 150

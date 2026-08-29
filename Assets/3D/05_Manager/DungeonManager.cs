@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -75,11 +76,10 @@ public class DungeonManager : MonoBehaviour
 
     private void MonsterDead(int _iExpReward)
     {
-
         if (m_bBossSpawned == true)
         {
             // 보스는 마지막 스테이지에서만 등장하므로, 보스가 죽었다는 건 곧 던전 클리어
-            StartStage(m_iCurrentStageIdx + 1);
+            ClearStage().Forget();
             return;
         }
 
@@ -97,7 +97,21 @@ public class DungeonManager : MonoBehaviour
         SOStage refStage = m_listStage[m_iCurrentStageIdx];
         m_refSpawner.AddSpawnObject(0.0f, refStage.BossPrefab, refStage.BossSpawnPosition);
 
-        CameraManager.m_Instance.MoveToPoint(refStage.BossSpawnPosition, 1.0f, 1.0f).Forget();
+        Vector3 vBossForward = refStage.BossPrefab != null ? refStage.BossPrefab.transform.forward : Vector3.forward;
+        Vector3 vCamTargetPos = refStage.BossSpawnPosition + (vBossForward.normalized * refStage.BossShowDistance);
+        Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
+
+        CameraManager.m_Instance.MoveToPoint(
+            this.GetCancellationTokenOnDestroy(),vCamTargetPos,qCamTargetRot,3.0f,2.0f).Forget();
+
+
         Time.timeScale = 0.0f;
+    }
+
+
+    private async UniTaskVoid ClearStage()
+    {
+        await UniTask.WaitForSeconds(5000); 
+        GameSceneManager.m_Instance.LoadFirstScene();
     }
 }
