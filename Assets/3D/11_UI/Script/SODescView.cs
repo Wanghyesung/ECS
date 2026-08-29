@@ -10,7 +10,11 @@ public class SODescView : MonoBehaviour
     private void OnEnable()
     {
         if (m_refContainer != null)
+        {
+            m_refContainer.Init();
             m_refContainer.OnSelectEvt += OnSelect;
+        }
+
     }
 
     private void OnDisable()

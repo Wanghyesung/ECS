@@ -23,12 +23,13 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
 
     private SOStatUpgradeData m_refSelectData;
 
-    private void Awake()
+ 
+    private void Start()
     {
-        
-
+        m_refContainer.Init();
         m_refContainer.OnSelectEvt += SelectStat;
         m_refUpgradeView.OnClickEvt += TryUpgrade;
+
     }
 
     private void OnDestroy()

@@ -31,7 +31,7 @@ public class JokerCardManager : MonoBehaviour
 
     [SerializeField] private Container m_refPickContainer;   //내가 고른 기능
     [SerializeField] private Container m_refSelectContainer; //내가 선택할 수 있는 기능
-    [SerializeField] private Container m_refFeatContainer; //내가 가지고 있는 기능
+    [SerializeField] private Container m_refFeatContainer;   //내가 가지고 있는 기능
 
     private void Awake()
     {
@@ -46,6 +46,10 @@ public class JokerCardManager : MonoBehaviour
 
     private void Start()
     {
+        m_refPickContainer.Init();
+        m_refSelectContainer.Init();
+        m_refFeatContainer.Init();
+
         //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
         m_refSelectContainer.OnSelectEvt += AddData;
 

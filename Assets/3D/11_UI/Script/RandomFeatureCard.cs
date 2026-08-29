@@ -1,4 +1,5 @@
 // RandomFeatureCard.cs
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using Unity.VisualScripting.FullSerializer;

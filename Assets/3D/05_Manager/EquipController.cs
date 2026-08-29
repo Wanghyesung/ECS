@@ -39,6 +39,8 @@ public class EquipController : MonoBehaviour
 
     private void Start()
     {
+        m_refInventoryContainer.Init();
+
         m_refInventoryContainer.OnSelectSlotView += PickInventorySlot;
         m_refPlusButton.OnClickEvt += PushInterface;
         m_refEquipInterface.OnAddData += PushAndApply;

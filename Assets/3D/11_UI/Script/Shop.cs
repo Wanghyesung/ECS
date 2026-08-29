@@ -13,6 +13,9 @@ public class Shop : MonoBehaviour
     private SOData m_refSelectData;
     private void OnEnable()
     {
+        m_refShopContainer.Init();
+        m_refInventoryContainer.Init();
+
         m_refShopContainer.OnSelectEvt += ShowItem;
         m_refBuyButton.OnClickEvt += BuyItem;
     }

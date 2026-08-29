@@ -58,6 +58,11 @@
             "type": "command",
             "command": ".claude/hooks/guard-tdd-red.sh",
             "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/guard-known-issues-edit.sh",
+            "timeout": 3000
           }
         ]
       },

@@ -13,6 +13,7 @@ using UnityEngine;
  *///////////////////////////////////////////
 public class ObjectSpawner : MonoBehaviour
 {
+    [SerializeField] private PoolObject m_refSpawnEffect;
     private PriorityQueue<tSpawnData> m_PQObject;
 
     public int RemainObject => m_PQObject.Count;
@@ -45,6 +46,7 @@ public class ObjectSpawner : MonoBehaviour
     private void Start()
     {
         //이 비동기 작업의 결과를 안 기다리고 그냥 던진다
+        //풀에 재등록
         UpdateSpawnObject(this.GetCancellationTokenOnDestroy()).Forget();
     }
     
@@ -68,6 +70,7 @@ public class ObjectSpawner : MonoBehaviour
 
             m_PQObject.Dequeue();
             SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition);
+            ObjectPoolManager.m_Instance.GetObject(m_refSpawnEffect, tSpawn.vPosition);
        }
     }
 

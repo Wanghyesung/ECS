@@ -131,7 +131,7 @@ public class Container : BaseButtonUI , ISelectDataable
     protected void Awake()
     {
         m_vViewOriginPos = m_refContentView.anchoredPosition;
-
+        
         //Build();
     }
 

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7815957592480908238}
   - component: {fileID: 5982013232056484471}
   - component: {fileID: 8659477376450560499}
-  - component: {fileID: 5343842837644146064}
   - component: {fileID: 2966755597795771774}
   - component: {fileID: 2426752405583497770}
   m_Layer: 8
@@ -20,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7815957592480908238
 Transform:
   m_ObjectHideFlags: 0
@@ -130,33 +129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refRootNode: {fileID: 11400000, guid: bfd9aac6f707b464987730cb679378fb, type: 2}
   m_refOwner: {fileID: 0}
---- !u!54 &5343842837644146064
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1057032643028932093}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &2966755597795771774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fRadius: 8.7
+  m_fRadius: 13.89
   m_vOffset: {x: 0, y: 0, z: 0}
   m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}

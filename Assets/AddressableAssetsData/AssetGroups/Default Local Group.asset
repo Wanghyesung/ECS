@@ -52,6 +52,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3265988d16fe0c14c85e96dce7c67a9a
+    m_Address: Assets/3D/03_Monster/PreFab/SpawnEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3dd784d78402a024baa4b1327d9a92e6
     m_Address: BattleScene
     m_ReadOnly: 0
