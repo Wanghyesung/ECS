@@ -38,7 +38,7 @@ Each instinct:
   "trigger": "before editing *View.cs",
   "action": "expect quality-gate warnings; read Model first; avoid Update-loop allocations",
   "confidence": 0.7,
-  "domain": "mvs",
+  "domain": "mvp",
   "scope": "project",
   "project_id": "a1b2c3d4e5f6",
   "evidence_count": 9,
