@@ -598,6 +598,60 @@ public class ColliderManager : MonoBehaviour
         return refClosest != null;
     }
 
+    // Physics.RaycastNonAlloc 대체용(PhysX 없음). Circle 전용, 관통 판정용(Laser가 매 프레임
+    // 호출할 수 있어 무할당이 중요 - Sort()의 람다 클로저 할당을 피하려고 삽입 정렬 사용).
+    // _fBeamRadius: 레이 자체의 두께(0이면 순수 선) - 대상 판정 반경에 더해서 검사.
+    // 결과는 t(원점에서의 투영 거리) 오름차순으로 채워짐 - 호출부가 관통 순서대로 순회 가능
+    public void RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, float _fBeamRadius, LayerMask _tMask, List<CircleCollider> _listResult)
+    {
+        _listResult.Clear();
+        _vDir.Normalize();
+
+        for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+        {
+            if ((_tMask.value & (1 << iLayer)) == 0)
+                continue;
+
+            List<BaseCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+            {
+                if (!(listLayer[i] is CircleCollider refCollider))
+                    continue;
+
+                Vector3 vToCenter = refCollider.CachedCenter - _vOrigin;
+                float fT = Mathf.Clamp(Vector3.Dot(vToCenter, _vDir), 0f, _fMaxLength);
+                Vector3 vClosePoint = _vOrigin + _vDir * fT;
+                float fDistSq = (vClosePoint - refCollider.CachedCenter).sqrMagnitude;
+
+                float fHitRadius = refCollider.Radius + _fBeamRadius;
+                if (fDistSq > fHitRadius * fHitRadius)
+                    continue;
+
+                InsertSortedByDistance(_listResult, refCollider, _vOrigin, _vDir);
+            }
+        }
+    }
+
+    // _listResult를 t(원점 기준 투영 거리) 오름차순으로 유지하며 삽입 - 관통 대상 수 규모(수십 개
+    // 이하)에서는 List.Sort의 델리게이트 클로저 할당보다 이 편이 매 프레임 호출에 더 안전함
+    private static void InsertSortedByDistance(List<CircleCollider> _listResult, CircleCollider _refNew, Vector3 _vOrigin, Vector3 _vDir)
+    {
+        float fNewT = Vector3.Dot(_refNew.CachedCenter - _vOrigin, _vDir);
+
+        int iInsertIndex = _listResult.Count;
+        for (int i = 0; i < _listResult.Count; ++i)
+        {
+            float fT = Vector3.Dot(_listResult[i].CachedCenter - _vOrigin, _vDir);
+            if (fNewT < fT)
+            {
+                iInsertIndex = i;
+                break;
+            }
+        }
+
+        _listResult.Insert(iInsertIndex, _refNew);
+    }
+
     // Physics.OverlapSphereNonAlloc 대체용(PhysX 없음). Circle 전용, 무할당
     public void FindAllInRadius(Vector3 _vPos, float _fRadius, LayerMask _tMask, List<CircleCollider> _listResult)
     {
