@@ -84,7 +84,13 @@ public class JokerCardManager : MonoBehaviour
         //내 조커 레벨에 맞게 나오는 티어 가중치 변경
         m_SOJokerCard.UpdateTierWeight(m_arrTierMultiplierBuffer, m_iLevel);
 
-        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel), m_arrTierMultiplierBuffer);
+        //이전 회차(미확정) 후보가 남아있으면 새 후보와 섞여 누적 표시되므로, 채우기 전에 비우고 이번 회차 후보 수로 리셋
+        //(Resize는 이전 카운트와 같으면 아무 동작도 하지 않아 남은 데이터를 지우지 못하므로 ClearData를 먼저 호출)
+        int iCandidateCount = m_SOJokerCard.GetCandidateCount(m_iLevel);
+        m_refSelectContainer.ClearData();
+        m_refSelectContainer.Resize(iCandidateCount, eDataType.Features);
+
+        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(iCandidateCount, m_arrTierMultiplierBuffer);
         for (int i = 0; i < m_listPendingFeature.Count; ++i)
             m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
 

@@ -27,13 +27,13 @@ public class TestSceneLoader : MonoBehaviour
             return;
         }
 
-        if (ObjectPool.m_Instance == null)
+        if (ObjectPoolManager.m_Instance == null)
         {
             GameObject refPoolObj = new GameObject("ObjectPool");
-            refPoolObj.AddComponent<ObjectPool>();
+            refPoolObj.AddComponent<ObjectPoolManager>();
         }
-
-        await ObjectPool.m_Instance.LoadPoolAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
+        
+        await ObjectPoolManager.m_Instance.LoadPoolAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
         Debug.Log("TestSceneLoader: 풀 로딩 완료 (" + m_refSceneData.PoolDataList.Count + "개)");
     }
 }
