@@ -27,6 +27,8 @@ public class SOAttackInfo : ScriptableObject
     public int HitCount = 1;
     public float HitStep = 1.0f;
 
+    [Header("Telegraph")]
+    public float TelegraphDuration = 0f; // 0이면 예고선 없이 즉시 판정 시작 (기존 동작과 동일)
 
     [Header("Knockback / Stun")]
     public float KnockbackForce = 3f;
@@ -59,6 +61,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.Damage = Damage;
         refAttackInfo.MaxHitCount = HitCount;
         refAttackInfo.HitStep = HitStep;
+        refAttackInfo.LineDuration = TelegraphDuration;
 
         refAttackInfo.AliveTime = AliveTime;
         refAttackInfo.CoolDown = Cooldown;
@@ -100,6 +103,9 @@ public class AttackInfo
     [Header("Hit Count")]
     public int MaxHitCount;
     public float HitStep;
+
+    [Header("Line Laser")]
+    public float LineDuration;
 
     [Header("Homing")]
     public float RotationSpeed = 90f;
