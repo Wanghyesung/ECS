@@ -17,6 +17,16 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 638cc06f32670094a85ec8b27617c532
   m_SerializeEntries:
+  - m_GUID: 0245416082fbe5a48adc9d4d4aaad7a6
+    m_Address: BaseMonster7
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 044f850e66c2dcc45b1b99dcb173275e
+    m_Address: Assets/3D/03_Monster/PreFab/BaseMonster.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 06babf01eeaad3c4ba3750b558b4e6fe
     m_Address: Assets/02_Player/Weapon/Bullet/PlayerTemplateBullet.prefab
     m_ReadOnly: 0
@@ -32,8 +42,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24c7afd3ae91e444bbfe50beb1f61d69
+    m_Address: BaseMonster9
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2cb73af5be8850e448becd5f0ba9d2cf
     m_Address: Assets/02_Player/Weapon/Bullet/BaseHitEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3265988d16fe0c14c85e96dce7c67a9a
+    m_Address: Assets/3D/03_Monster/PreFab/SpawnEffect.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3dd784d78402a024baa4b1327d9a92e6
+    m_Address: BattleScene
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -57,8 +82,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5cf024aecd8fefb42b347a26fa6f4050
+    m_Address: BaseMonster6
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 622510a8d2da7904ca5457b2527e9727
     m_Address: Assets/03_Monster/Bullet/MonBaseBullet_R.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7553ddeb59b4e2d44a9b1ab15f3ecc66
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/PlayerTemplateBullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76ea03231ba9f6344b051549bc0dba86
+    m_Address: Assets/3D/03_Monster/PreFab/DeadEffect.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -77,8 +117,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 856992d54d1661845b10889ae226add7
+    m_Address: BaseMonster4
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8985c4508a8b1874fa35079e577db52a
     m_Address: Assets/03_Monster/Bullet/GBossBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 90274cb3ce25f474dad79a238b36a554
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/PlayerMisssileBullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 952ddf33030d7c7469a6ed635ad6b14f
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/MidBullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aa741fe769d7f34bb6e657317ffcf59
+    m_Address: BaseMonster3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -89,6 +149,21 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
     m_Address: Assets/00_Scene/MainScene/MainScene.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a286044b5613ec840848db79bde41968
+    m_Address: BaseMonster10
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6964cfd9bdc53a458ace01cd91ca452
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/Missiles.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a94fb51f8b0e3a646b6e860bafc4e7f4
+    m_Address: Assets/02_Player/Weapon/Bullet/PlayerBeam.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -104,11 +179,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b24e55e95e59f4a48ad2cf093ce1ddb0
     m_Address: Assets/03_Monster/PreFab/BaseMonster1.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b644cdf74c787cb44980d4383b4eb91a
-    m_Address: Assets/03_Monster/PreFab/BaseMonster0.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -132,6 +202,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c314e25bfd892f54facbc97ff904059f
+    m_Address: BaseMonster5
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c586e1597572db646b8ef69cc674e822
     m_Address: Assets/03_Monster/Bullet/BossMissileEx.prefab
     m_ReadOnly: 0
@@ -139,6 +214,26 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c6253eb7b1cae344486502fef54dfd2d
     m_Address: Assets/03_Monster/Bullet/LightBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7c5d7fd0a8dfcc40ad1df54b49f015c
+    m_Address: BaseMonster8
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd73770bc75a1eb4ca62b973bbcd9361
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/JobBaseBullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6d526a2e5bdaab4186d376b22214728
+    m_Address: Assets/3D/03_Monster/Bullet/BulletLine.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e013cca83fe30934abd52c1a28cf5d55
+    m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/MiniBullet.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

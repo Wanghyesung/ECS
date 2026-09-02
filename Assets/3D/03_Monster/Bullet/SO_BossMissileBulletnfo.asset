@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_BossMissileBulletnfo
+  m_EditorClassIdentifier: 
+  Description: "\uD50C\uB808\uC774\uC5B4\uB97C \uCD94\uACA9\uD558\uC5EC \uACF5\uACA9"
+  WeaponType: 3
+  PoolPrefab: {fileID: 4057737550011718064, guid: 075dd0547910f32478ae75a927b887e8, type: 3}
+  Damage: 2
+  AttackPower: 1
+  Cooldown: 1
+  Speed: 70
+  SpeedOffset: 15
+  AliveTime: 7
+  HitCount: 1
+  HitStep: 1
+  KnockbackForce: 0
+  KnockbackDuration: 0
+  StunDuration: 0
+  BaseRotationSpeed: 100
+  MaxRotationSpeed: 720
+  RotationAccelRate: 10
+  ProximityRadius: 1.5
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  HitSound: {fileID: 0}

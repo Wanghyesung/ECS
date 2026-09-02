@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1953259897 &8574412962073106934
+TerrainLayer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TL_Canyon_DrySoil
+  m_DiffuseTexture: {fileID: 2800000, guid: 426c097b4e3e03e4e851d53568c0aa13, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: ad45819b71429e446bf09e35d4f97274, type: 3}
+  m_MaskMapTexture: {fileID: 2800000, guid: 5d279c5259726e94ca688f49f7f6ec94, type: 3}
+  m_TileSize: {x: 15, y: 15}
+  m_TileOffset: {x: 0, y: 0}
+  m_Specular: {r: 0, g: 0, b: 0, a: 0}
+  m_Metallic: 0
+  m_Smoothness: 0.15
+  m_NormalScale: 2
+  m_DiffuseRemapMin: {x: 0.13, y: 0.15, z: 0.13, w: 0}
+  m_DiffuseRemapMax: {x: 0.52, y: 0.58, z: 0.5, w: 1}
+  m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
+  m_MaskMapRemapMax: {x: 1, y: 1, z: 0.8, w: 1}

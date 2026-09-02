@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_BaseMonBulletInfo2
+  m_EditorClassIdentifier: 
+  Description: 
+  WeaponType: 1
+  PoolPrefab: {fileID: 3199988943176517146, guid: 622510a8d2da7904ca5457b2527e9727, type: 3}
+  Damage: 3
+  AttackPower: 10
+  Cooldown: 1.5
+  Speed: 40
+  SpeedOffset: 4
+  AliveTime: 4
+  HitCount: 1
+  HitStep: 1
+  KnockbackForce: 0
+  KnockbackDuration: 0
+  StunDuration: 0
+  BaseRotationSpeed: 0
+  MaxRotationSpeed: 0
+  RotationAccelRate: 0
+  ProximityRadius: 1.5
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  HitSound: {fileID: 0}

@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ac3d78272a1b74fbdbc742fd18ec39, type: 3}
+  m_Name: SO_MainStage1
+  m_EditorClassIdentifier: 
+  ListSpawnEntry:
+  - fSpawnTime: 2
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 856992d54d1661845b10889ae226add7, type: 3}
+    vPosition: {x: 22.7, y: 177.8, z: 768.1}
+  - fSpawnTime: 2
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 856992d54d1661845b10889ae226add7, type: 3}
+    vPosition: {x: -38.09, y: 114, z: 854.2}
+  - fSpawnTime: 10
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 9aa741fe769d7f34bb6e657317ffcf59, type: 3}
+    vPosition: {x: 1, y: 124.8, z: 979.1}
+  - fSpawnTime: 10
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 856992d54d1661845b10889ae226add7, type: 3}
+    vPosition: {x: 89.3, y: 139.7, z: 820.3}
+  - fSpawnTime: 10
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 9aa741fe769d7f34bb6e657317ffcf59, type: 3}
+    vPosition: {x: 68.69, y: 0, z: 990.3}
+  - fSpawnTime: 18
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 9aa741fe769d7f34bb6e657317ffcf59, type: 3}
+    vPosition: {x: 53.5, y: 32.77, z: 828.6}
+  - fSpawnTime: 18
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 856992d54d1661845b10889ae226add7, type: 3}
+    vPosition: {x: 33.6, y: 95.4, z: 989.6}
+  - fSpawnTime: 18
+    MonsterPrefab: {fileID: 5599183521212392682, guid: 9aa741fe769d7f34bb6e657317ffcf59, type: 3}
+    vPosition: {x: 64.69, y: 132.9, z: 1022.1}
+  BossPrefab: {fileID: 3982470965335869779, guid: b8f872a168a6a0b43b83ebad4d281c0d, type: 3}
+  BossSpawnPosition: {x: -122.8, y: 83.3, z: 857.1}
+  BossShowDistance: 150

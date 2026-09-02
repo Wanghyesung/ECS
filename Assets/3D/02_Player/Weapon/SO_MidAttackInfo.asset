@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_MidAttackInfo
+  m_EditorClassIdentifier: 
+  Description: 
+  WeaponType: 1
+  PoolPrefab: {fileID: 6256924035152576670, guid: fba1f25a91a4948488941097bed386f8, type: 3}
+  Damage: 2
+  AttackPower: 5
+  Cooldown: 0.02
+  Speed: 180
+  SpeedOffset: 40
+  AliveTime: 2
+  HitCount: 1
+  HitStep: 1
+  KnockbackForce: 0
+  KnockbackDuration: 0
+  StunDuration: 0
+  BaseRotationSpeed: 0
+  MaxRotationSpeed: 0
+  RotationAccelRate: 0
+  ProximityRadius: 0
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  HitSound: {fileID: 0}
