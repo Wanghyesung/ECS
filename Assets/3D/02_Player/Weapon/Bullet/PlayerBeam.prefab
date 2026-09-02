@@ -91,11 +91,11 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.4
+  m_Time: 0.1
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 3
+    widthMultiplier: 2
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -176,4 +176,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refHitEffectPoolObj: {fileID: 5689829389758115044}
   m_fRange: 500
-  m_fRadius: 3
+  m_fRadius: 1
+  m_fTrailFadeTime: 0.08

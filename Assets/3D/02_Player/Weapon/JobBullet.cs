@@ -14,7 +14,7 @@ public class JobBullet : Bullet
     protected override void Awake()
     {
         base.Awake();
-        m_iJobIndex = BulletMoveManager.m_Instance.RegisterPermanent(this);
+        m_iJobIndex = BulletMoveManager.m_Instance.RegisterPermanent(transform);
     }
 
     public override void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)

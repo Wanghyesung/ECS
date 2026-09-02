@@ -111,7 +111,7 @@ public class DungeonManager : MonoBehaviour
 
     private async UniTaskVoid ClearStage()
     {
-        await UniTask.WaitForSeconds(5000); 
+        await UniTask.WaitForSeconds(5); 
         GameSceneManager.m_Instance.LoadFirstScene();
     }
 }

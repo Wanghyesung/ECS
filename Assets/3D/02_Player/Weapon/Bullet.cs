@@ -102,7 +102,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     // (MissileMoveManager/GuidedMoveManager)에 등록하도록 오버라이드함
     protected virtual int RegisterMoveJob()
     {
-        return BulletMoveManager.m_Instance.RegisterPermanent(this);
+        return BulletMoveManager.m_Instance.RegisterPermanent(transform);
     }
 
     // 발사 시점(SetAttack)에 이동 Job을 활성화. Missiles/GuidedBullet은 타겟 등 추가 정보를

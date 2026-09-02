@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
   m_Name: SO_PlayerLaserInfo
   m_EditorClassIdentifier: 
-  Description: "\uD50C\uB808\uC774\uC5B4\uC758 \uBC29\uD5A5\uC5D0 \uB530\uB77C \uC6C0\uC9C1\uC774\uB294
-    \uB808\uC774\uC800"
+  Description: "\uB77C\uC778\uC744 \uADF8\uB824 \uD574\uB2F9 \uB77C\uC778 \uC548\uC5D0
+    \uB4E4\uC5B4\uC624\uB294 \uBAAC\uC2A4\uD130\uB97C \uACF5\uACA9"
   WeaponType: 5
-  PoolPrefab: {fileID: 5689829389758115044, guid: 9d40498ade154254dbce1b2d4272b8ef, type: 3}
+  PoolPrefab: {fileID: 5689829389758115044, guid: a94fb51f8b0e3a646b6e860bafc4e7f4, type: 3}
   Damage: 5
   AttackPower: 5
   Cooldown: 5
@@ -24,6 +24,7 @@ MonoBehaviour:
   AliveTime: 5
   HitCount: 100
   HitStep: 0.2
+  TelegraphDuration: 2
   KnockbackForce: 3
   KnockbackDuration: 1
   StunDuration: 0
