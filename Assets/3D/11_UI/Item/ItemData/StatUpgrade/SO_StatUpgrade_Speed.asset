@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_StatUpgrade_Speed
   m_EditorClassIdentifier: 
   m_strDescription: Increases movement speed.
-  m_sprIcon: {fileID: 21300012, guid: 0a4492c745f5fbeb287f453559fc9fb5, type: 3}
+  m_sprIcon: {fileID: 21300000, guid: 2b11d5136cd7812499bf9f5589219de8, type: 3}
   m_strDisplayName: SPEED
   m_tAddValue:
     Type: 3
