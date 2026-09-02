@@ -70,7 +70,8 @@ public class DungeonManager : MonoBehaviour
         for (int i = 0; i < refStage.ListSpawnEntry.Count; ++i)
         {
             var tEntry = refStage.ListSpawnEntry[i];
-            m_refSpawner.AddSpawnObject(tEntry.fSpawnTime, tEntry.MonsterPrefab, tEntry.vPosition);
+            PoolObject refMonsterPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(tEntry.MonsterPrefab);
+            m_refSpawner.AddSpawnObject(tEntry.fSpawnTime, refMonsterPoolObj, tEntry.vPosition);
         }
     }
 
@@ -95,9 +96,10 @@ public class DungeonManager : MonoBehaviour
         m_bBossSpawned = true;
 
         SOStage refStage = m_listStage[m_iCurrentStageIdx];
-        m_refSpawner.AddSpawnObject(0.0f, refStage.BossPrefab, refStage.BossSpawnPosition);
+        PoolObject refBossPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(refStage.BossPrefab);
+        m_refSpawner.AddSpawnObject(0.0f, refBossPoolObj, refStage.BossSpawnPosition);
 
-        Vector3 vBossForward = refStage.BossPrefab != null ? refStage.BossPrefab.transform.forward : Vector3.forward;
+        Vector3 vBossForward = refBossPoolObj != null ? refBossPoolObj.transform.forward : Vector3.forward;
         Vector3 vCamTargetPos = refStage.BossSpawnPosition + (vBossForward.normalized * refStage.BossShowDistance);
         Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
 

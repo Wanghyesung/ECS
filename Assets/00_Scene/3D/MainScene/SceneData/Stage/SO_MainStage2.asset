@@ -14,29 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ListSpawnEntry:
   - fSpawnTime: 2
-    MonsterPrefab: {fileID: 5599183521212392682, guid: 5cf024aecd8fefb42b347a26fa6f4050, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 878af2915d7844247bd5e140c9a36e6b, type: 2}
     vPosition: {x: 16.7, y: 178.8, z: 772.1}
   - fSpawnTime: 2
-    MonsterPrefab: {fileID: 5599183521212392682, guid: 5cf024aecd8fefb42b347a26fa6f4050, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 878af2915d7844247bd5e140c9a36e6b, type: 2}
     vPosition: {x: -34.09, y: 112, z: 848.2}
   - fSpawnTime: 10
-    MonsterPrefab: {fileID: 5599183521212392682, guid: c314e25bfd892f54facbc97ff904059f, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 41864832001459a4c80286ed95050987, type: 2}
     vPosition: {x: -1, y: 127.8, z: 978.1}
   - fSpawnTime: 10
-    MonsterPrefab: {fileID: 5599183521212392682, guid: 5cf024aecd8fefb42b347a26fa6f4050, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 878af2915d7844247bd5e140c9a36e6b, type: 2}
     vPosition: {x: 95.3, y: 135.7, z: 823.3}
   - fSpawnTime: 10
-    MonsterPrefab: {fileID: 5599183521212392682, guid: c314e25bfd892f54facbc97ff904059f, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 41864832001459a4c80286ed95050987, type: 2}
     vPosition: {x: 64.69, y: 1, z: 986.3}
   - fSpawnTime: 18
-    MonsterPrefab: {fileID: 5599183521212392682, guid: c314e25bfd892f54facbc97ff904059f, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 41864832001459a4c80286ed95050987, type: 2}
     vPosition: {x: 55.5, y: 30.77, z: 833.6}
   - fSpawnTime: 18
-    MonsterPrefab: {fileID: 5599183521212392682, guid: 5cf024aecd8fefb42b347a26fa6f4050, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 878af2915d7844247bd5e140c9a36e6b, type: 2}
     vPosition: {x: 27.6, y: 98.4, z: 986.6}
   - fSpawnTime: 18
-    MonsterPrefab: {fileID: 5599183521212392682, guid: c314e25bfd892f54facbc97ff904059f, type: 3}
+    MonsterPrefab: {fileID: 11400000, guid: 41864832001459a4c80286ed95050987, type: 2}
     vPosition: {x: 68.69, y: 129.9, z: 1021.1}
-  BossPrefab: {fileID: 3982470965335869779, guid: b8f872a168a6a0b43b83ebad4d281c0d, type: 3}
+  BossPrefab: {fileID: 11400000, guid: 37cd5468d564b844a8ccf64d32b9df29, type: 2}
   BossSpawnPosition: {x: -122.8, y: 83.3, z: 857.1}
   BossShowDistance: 150

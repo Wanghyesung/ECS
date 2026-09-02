@@ -13,14 +13,14 @@ public class SOStage : ScriptableObject
     public struct tSpawnData
     {
         public float fSpawnTime; //스테이지 시작 후 몇 초 뒤에 스폰할지
-        public PoolObject MonsterPrefab;
+        public SOPoolData MonsterPrefab;
         public Vector3 vPosition;
     }
 
     public List<tSpawnData> ListSpawnEntry = new List<tSpawnData>();
 
     [Header("Boss")]
-    public PoolObject BossPrefab;
+    public SOPoolData BossPrefab;
     public Vector3 BossSpawnPosition;
     public float BossShowDistance;
 }

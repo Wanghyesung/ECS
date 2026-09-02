@@ -20,6 +20,11 @@ public class ObjectPoolManager : MonoBehaviour
     private Dictionary<PoolObject, Stack<GameObject>> m_hashPool = new Dictionary<PoolObject, Stack<GameObject>>();
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
+    // SOPoolData -> 그 데이터로 Addressables 로드해 등록한 PoolObject 키. 직접 참조(SOStage.MonsterPrefab 등)로
+    // 같은 프리팹을 또 들고 있으면 빌드에서는 별개의 인스턴스가 되어 m_hashPool 조회가 항상 실패하므로,
+    // 풀을 요청하는 쪽은 전부 이 SOPoolData를 거쳐서 실제 등록된 키를 얻어야 한다.
+    private Dictionary<SOPoolData, PoolObject> m_hashPoolDataKey = new Dictionary<SOPoolData, PoolObject>();
+
     // 동시 활성 개수 상한이 걸린 PoolObject만 등록됨(SOPoolData.ActiveCap > 0). 없으면 상한 없음(기존 동작과 동일)
     private Dictionary<PoolObject, int> m_hashActiveCap = new Dictionary<PoolObject, int>();
 
@@ -150,6 +155,7 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
         m_hashHandle[refPrefabPoolObj] = tHandle;
+        m_hashPoolDataKey[_refData] = refPrefabPoolObj;
 
         Stack<GameObject> stackGameObject = new Stack<GameObject>();
         m_hashPool[refPrefabPoolObj] = stackGameObject;
@@ -202,6 +208,17 @@ public class ObjectPoolManager : MonoBehaviour
 
         m_hashActiveCap.Clear();
         m_hashActiveList.Clear();
+        m_hashPoolDataKey.Clear();
+    }
+
+    // SOStage 등, 프리팹을 직접 참조로 들고 있지 않고 SOPoolData로 요청하는 호출부용.
+    public PoolObject GetPoolPrefab(SOPoolData _refPoolData)
+    {
+        if (_refPoolData == null)
+            return null;
+
+        m_hashPoolDataKey.TryGetValue(_refPoolData, out var refPoolObj);
+        return refPoolObj;
     }
 
     public GameObject GetObject(PoolObject _refPrefabPoolObj)

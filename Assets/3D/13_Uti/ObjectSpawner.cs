@@ -22,7 +22,7 @@ public class ObjectSpawner : MonoBehaviour
         public float fSpawnTime;
         public PoolObject refSpawnObject;
         public Vector3 vPosition;
-        
+
         public tSpawnData(float _fTime, PoolObject _refSpawnObj, Vector3 _vPosition)
         {
             fSpawnTime = _fTime;

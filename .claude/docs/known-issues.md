@@ -2,6 +2,16 @@
 
 > Claude Code가 세션 중 발견했지만 아직 고치지 않은 문제를 기록하는 곳. 새 항목은 위에 추가하고, 문제가 해결되면 /PR을 남긴 뒤 지울지 허락을 받을 것.
 
+## DontDestroyOnLoad가 5개 매니저에서 조용히 실패함 — "DonDestoryObjects" 자식이라 루트가 아님 (2026-09-02)
+
+**증상:** 빌드 로그(`Player.log`)에 씬 전환마다 `DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.` 경고가 `BattleManager`(BattleManager.cs:42), `InputManager`(InputManager.cs:46), `ObjectPoolManager`(ObjectPoolManager.cs:66), `CameraManager`(CameraManager.cs:35), `FeatureManager`(FeatureManager.cs:43) 5개에서 반복해서 찍힘. `EquipController`(EquipController.cs:37)도 UI 버튼 클릭 경로에서 한 번 더 같은 경고를 냄.
+
+**근본 원인:** TestScene.unity/MainScene.unity 모두 `DonDestoryObjects`라는 부모 GameObject 하나 밑에 PoolManager/InputManager/CameraManager/FeatManager/BattleManager 등 9개 매니저가 자식으로 매달려 있음. 그런데 각 매니저는 자기 `Awake()`에서 `DontDestroyOnLoad(gameObject)`를 **자기 자신**한테 호출함 — `DontDestroyOnLoad`는 씬 루트 오브젝트에만 동작하므로, 자식인 이 매니저들에게는 조용히 무시됨.
+
+**영향:** Single 모드 씬 전환마다(`GameSceneManager.LoadSceneAsync`가 `Addressables.LoadSceneAsync(..., LoadSceneMode.Single)` 사용) 이 매니저들이 실제로는 파괴되고, 새 씬의 새 인스턴스가 다시 `m_Instance`를 잡는 식으로 "우연히" 굴러가고 있음. 지금 당장 크래시는 안 나지만, 씬 전환마다 불필요한 파괴/재생성 비용이 들고, 나중에 어딘가 이 인스턴스를 캐싱해두는 코드가 생기면 그 즉시 끊어진 참조 버그로 터질 잠재적 위험이 있음.
+
+**제안하는 수정:** `DonDestoryObjects` 부모 오브젝트 자체를 루트로 두고 그 부모 하나에만 `DontDestroyOnLoad`를 걸거나(자식들은 자동으로 같이 유지됨), 각 매니저의 `Awake()`에서 자기 자신이 아니라 `transform.root.gameObject`에 `DontDestroyOnLoad`를 호출하도록 수정. 아직 코드는 수정하지 않음 — 사용자 확인 후 적용 예정.
+
 ## 조커카드 성공 시 후보 카드가 설계값(3개)보다 많이 보임 (2026-09-02)
 
 **증상:** 조커카드 도박 성공 시 `SOJokerCard`의 `m_refPickCount` 곡선상 1레벨은 "3개 중 1개 선택"이어야 하는데, 실제로는 6개(혹은 그 이상)의 후보 슬롯이 보임.

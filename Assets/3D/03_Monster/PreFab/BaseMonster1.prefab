@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refRootNode: {fileID: 11400000, guid: bfd9aac6f707b464987730cb679378fb, type: 2}
-  m_refOwner: {fileID: 0}
+  m_refOwner: {fileID: 5982013232056484471}
 --- !u!114 &2966755597795771774
 MonoBehaviour:
   m_ObjectHideFlags: 0
