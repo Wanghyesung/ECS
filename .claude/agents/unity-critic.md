@@ -50,7 +50,8 @@ Your default posture is skeptical. Assume every plan has at least one hidden pro
 - **GC in hot paths** — Will Update/FixedUpdate allocate? String operations, LINQ, `new List<>`, lambda captures, boxing?
 - **Unbounded growth** — Does a collection grow without bounds? Is there a cleanup mechanism?
 - **Physics queries at scale** — `OverlapSphere` with 500 colliders in range? What's the expected cost?
-- **Event spam** — Can a MessagePipe message fire 60 times per second? Should it be throttled or batched?
+- **Event spam** — Can a C# event (event Action<T> — this project does not use MessagePipe) fire 60 times per second? Should it be throttled or batched?
+- **Reinventing existing logic** — Does the plan add new fields/logic for something an existing field combination already does? (e.g. a global hit counter that already gates penetration count) Check the actual codebase before assuming a gap exists — don't trust the plan's own framing.
 - **Coroutine/UniTask leaks** — Are fire-and-forget tasks properly cancelled on destroy?
 
 ### 5. Simplification Opportunities

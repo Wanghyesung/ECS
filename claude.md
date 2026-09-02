@@ -11,6 +11,7 @@
 | **Unity 버전** | 2022.3.62f2 |
 | **렌더 파이프라인** | URP |
 | **감지된 패키지** | Addressables, AI Navigation, Cinemachine, Recorder, 2D Sprite, Visual Scripting, Input System, TextMeshPro |
+| **비동기/반응형/트윈** | UniTask(`Assets/Plugins/UniTask`, 코루틴 전면 대체 — 필수), DOTween(`Assets/Plugins/Demigiant/DOTween`), UniRx(프로젝트 표준 Reactive Extensions로 채택 — 아직 코드베이스에 통합되지 않았으므로 사용 전 패키지 존재 여부부터 확인) |
 
 **게임 기획:** 3D 슈팅 · 로그라이트. 자세한 내용(컨셉, 게임 루프, 조커 카드 시스템 등)은 `.claude/docs/game-design.md` 참고.
 
@@ -23,6 +24,9 @@
 - 새로운 기능을 추가하거나 수정할 때, 그렇게 설계한 이유를 명확히 설명할 것.
 - 성능 저하(매 프레임 Alloc 발생 등)를 유발하는 구현은 지양하고 대안을 제시할 것.
 - 콘솔/로그에서 오류를 발견하면 "오류가 있다"고만 보고하지 말 것. 반드시 (1) 왜 그 오류가 발생하는지 근본 원인을 코드/씬 구조까지 추적해서 분석하고, (2) 무엇이 실제 문제인지 구체적으로 짚고, (3) 어떻게 고쳐야 하는지 해결 방법까지 제시할 것. 진단만 하고 아직 고치지 않은 문제는 아래 "커스텀 노트"에 기록해 둘 것.
+- 슬래시 커맨드 없이 채팅으로 바로 기능을 요청받아도, 코드를 쓰기 전에 ① 비슷한 기존 코드 검색 결과 ② Update/FixedUpdate 등 핫 루프 성능 영향 ③ SO/이벤트로 확장 가능한 지점, 이 세 가지를 한 줄씩 요약해서 먼저 보여줄 것.
+- 씬(.unity)의 실제 GameObject 인스턴스는 프리팹 에셋과 구성이 다를 수 있습니다. 컴포넌트 존재 여부를 프리팹만 보고 판단하지 말고, 필요하면 MCP로 실제 씬 인스턴스를 확인할 것.
+- 기능 계획을 제시할 때는 관련된 기존 필드/메서드/최적화를 구체적으로 인용할 것(예: "Laser.cs의 HitStep/MaxHitCount 필드가 이미 이 역할을 한다") — 사용자가 계획만 보고도 실제 코드를 확인했는지 검증할 수 있어야 합니다.
 
 ---
 
@@ -62,6 +66,7 @@ _EditorBuildSettings에서 씬을 찾을 수 없습니다._
 - 컴포넌트 참조는 `Awake()`/`Start()`에서 캐싱하고, 핫 루프에서는 절대 `GetComponent`를 호출하지 마세요.
 - 컴파일 속도를 빠르게 유지하기 위해 어셈블리 정의를 사용하세요.
 - 모든 직렬화된 에셋은 Unity YAML(Force Text) 직렬화를 사용해야 합니다.
+- 기능 설계 시 시스템 흐름은 Mermaid 다이어그램으로 제시하세요 — 문법 가이드와 규칙은 `.claude/rules/architecture.md`의 "Mermaid 다이어그램 작성 규칙" 참고.
 
 ---
 
@@ -74,6 +79,7 @@ _EditorBuildSettings에서 씬을 찾을 수 없습니다._
 - `dotween` — `UniTask.DOTween` asmdef로 확인됨(com.demigiant.dotween 의존)
 - `input-system` — Input System 패키지 감지됨(New Input System 필수 컨벤션, `.claude/rules/unity-specifics.md` 참고)
 - `object-pooling` — 이 프로젝트 전용 풀링 구조. 자주 생성/삭제되는 Bullet/FX/Enemy에 필수 적용(`.claude/rules/architecture.md` 참고)
+- `unirx` — 프로젝트 표준 반응형(Reactive) 라이브러리로 채택됨. 아직 코드베이스에 통합된 파일이 없으므로, 사용 전 패키지/DLL 존재 여부를 먼저 확인할 것
 
 ---
 

@@ -80,3 +80,4 @@ crashlytics-build.properties
 .claude/state/*.jsonl
 .claude/state/*.txt
 .claude/state/*.md
+.claude/state/session-start-time

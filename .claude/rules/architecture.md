@@ -2,6 +2,17 @@
 
 > ⚠️ **프로젝트 결정 사항:** 이 프로젝트는 **VContainer(DI)를 사용하지 않습니다.** 의존성은 직접 참조(SerializeField, GetComponent) 또는 절제된 싱글톤으로 연결합니다. 시스템 간 느슨한 통신(이벤트)에는 **C# 이벤트(`event Action<T>`)**를 표준으로 사용합니다 — 별도 메시징 라이브러리는 쓰지 않습니다.
 
+## Mermaid 다이어그램 작성 규칙
+
+기능 설계 시 시스템 간 흐름/상태를 보여줄 때는 텍스트 트리 대신 **Mermaid**를 사용합니다. 다이어그램을 그리기 전에 문법 참고용으로 먼저 읽으세요:
+
+- https://royzero.tistory.com/entry/markdown-mermaid-guide — flowchart/sequence/gantt/ER/class 다이어그램 문법 정리. **상태 다이어그램(state diagram) 문법은 다루지 않으므로**, 상태 다이어그램이 필요하면 `stateDiagram-v2` 문법을 사용하고 https://mermaid.live 에서 미리 검증할 것.
+
+**규칙:**
+- 기능 계획을 사용자에게 제시하기 전에, 상태/흐름을 Mermaid로 먼저 그려서 승인을 받습니다(`/unity-feature`, `/unity-workflow`, `/unity-interview` 공통 — 각 커맨드 파일 참고).
+- 시스템 간 상태 전이가 있는 기능은 `stateDiagram-v2`, 단순 데이터 흐름은 `flowchart`, 시간 순서가 중요한 상호작용(요청→응답)은 `sequenceDiagram`으로 표현합니다.
+- 렌더링 가능한 곳(Claude Artifact 등)에서는 실제로 렌더해서 보여주고, 아니면 마크다운 \`\`\`mermaid 코드블록으로 제시합니다.
+
 ## 프로젝트 전용: 게임 시스템 아키텍처 (필수)
 
 > 아래는 이 프로젝트의 실제 게임플레이 시스템(몬스터 AI, 스킬, 이펙트) 설계 규칙입니다.

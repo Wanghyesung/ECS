@@ -58,11 +58,11 @@ args: topic
 2. 각 시스템에 대해 다음을 명확히 합니다:
    - **데이터 흐름 방향** — 새 기능이 읽는가, 쓰는가, 둘 다인가?
    - **소유권** — Model을 누가 소유하는가? 어떤 System이 이를 변경하는가?
-   - **메시지 의존성** — 어떤 MessagePipe 메시지를 발행/구독하는가?
+   - **이벤트 의존성** — 어떤 C# 이벤트(`event Action<T>`)를 발행/구독하는가? (이 프로젝트는 MessagePipe를 쓰지 않습니다)
 3. **새로운 의존성 식별** — 필요한 새 패키지, 서비스, 에셋이 있는가?
 4. **어셈블리 배치** — 새 코드는 어떤 어셈블리 정의에 위치해야 하는가?
 
-시스템 간 데이터 흐름을 보여주는 (텍스트 기반) 통합 다이어그램을 제시합니다.
+시스템 간 데이터 흐름을 보여주는 **Mermaid** 다이어그램(`stateDiagram-v2` 또는 `flowchart`)을 제시하고 사용자 승인을 받습니다 — 문법은 `.claude/rules/architecture.md`의 "Mermaid 다이어그램 작성 규칙" 참고.
 
 ## 5단계: 인수 조건 (Acceptance Criteria)
 
@@ -109,9 +109,9 @@ args: topic
 | [edge case] | [what should happen] |
 
 ### Integration Points
-| System | Direction | Messages |
+| System | Direction | Events |
 |--------|-----------|----------|
-| [system] | read/write/both | [MessagePipe messages] |
+| [system] | read/write/both | [C# events (event Action<T>)] |
 
 ### Assembly Placement
 - New scripts go in: `[assembly name]`

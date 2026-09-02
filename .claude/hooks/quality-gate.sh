@@ -95,8 +95,14 @@ fi
 
 # --- Check for SendMessage/BroadcastMessage ---
 if echo "$CONTENT" | grep -qE '(SendMessage|BroadcastMessage)\s*\('; then
-    WARNINGS="${WARNINGS}  - SendMessage/BroadcastMessage uses reflection. Use direct references or MessagePipe.\n"
+    WARNINGS="${WARNINGS}  - SendMessage/BroadcastMessage uses reflection. Use direct references or a C# event (event Action<T> — this project does not use MessagePipe).\n"
     unity_track_warning "quality-gate" "SendMessage/BroadcastMessage reflection call"
+fi
+
+# --- Check for renderer.material access (clones the material instance, breaks batching) ---
+if echo "$CONTENT" | grep -qE '\.material\s*[.=]' && ! echo "$CONTENT" | grep -qE '\.sharedMaterial'; then
+    WARNINGS="${WARNINGS}  - .material clones the material instance and breaks SRP/dynamic batching (performance.md). Use .sharedMaterial for read-only access or MaterialPropertyBlock for per-instance changes.\n"
+    unity_track_warning "quality-gate" ".material access clones material instance"
 fi
 
 if [ -n "$WARNINGS" ]; then
