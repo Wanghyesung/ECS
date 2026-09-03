@@ -8,7 +8,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SpawnExplosionAction", menuName = "Game/Weapon/BulletAction/SpawnExplosion")]
 public class SOSpawnExplosionAction : SOBulletAction
 {
-    [SerializeField] private PoolObject m_refExplodeObj;
+    [SerializeField] private SOPoolData m_refExplodeObj;
 
     public override void Execute(IAttackObject _refOwner)
     {

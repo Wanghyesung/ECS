@@ -13,17 +13,17 @@ using UnityEngine;
  *///////////////////////////////////////////
 public class ObjectSpawner : MonoBehaviour
 {
-    [SerializeField] private PoolObject m_refSpawnEffect;
+    [SerializeField] private SOPoolData m_refSpawnEffect;
     private PriorityQueue<tSpawnData> m_PQObject;
 
     public int RemainObject => m_PQObject.Count;
     private struct tSpawnData
     {
         public float fSpawnTime;
-        public PoolObject refSpawnObject;
+        public SOPoolData refSpawnObject;
         public Vector3 vPosition;
 
-        public tSpawnData(float _fTime, PoolObject _refSpawnObj, Vector3 _vPosition)
+        public tSpawnData(float _fTime, SOPoolData _refSpawnObj, Vector3 _vPosition)
         {
             fSpawnTime = _fTime;
             refSpawnObject = _refSpawnObj;
@@ -74,13 +74,13 @@ public class ObjectSpawner : MonoBehaviour
        }
     }
 
-    public void AddSpawnObject(float _fNextSpawnTime, PoolObject _refPoolData, Vector3 _vPosition = default)//default를 쓰면 컴파일 타임 상수로
+    public void AddSpawnObject(float _fNextSpawnTime, SOPoolData _refPoolData, Vector3 _vPosition = default)//default를 쓰면 컴파일 타임 상수로
     {
         tSpawnData tData = new tSpawnData(Time.time + _fNextSpawnTime, _refPoolData, _vPosition);
         m_PQObject.Enqueue(tData);
     }
 
-    private void SpawnObject(PoolObject _refSpawnObject, Vector3 _vPosition)
+    private void SpawnObject(SOPoolData _refSpawnObject, Vector3 _vPosition)
     {
         GameObject refGameObject = ObjectPoolManager.m_Instance.GetObject(_refSpawnObject);
         if (refGameObject == null)

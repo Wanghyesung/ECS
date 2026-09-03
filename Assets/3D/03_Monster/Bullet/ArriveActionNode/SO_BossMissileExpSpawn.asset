@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac5fc8fc4b6ea2045b216be444880199, type: 3}
   m_Name: SO_BossMissileExpSpawn
   m_EditorClassIdentifier: 
-  m_refExplodeObj: {fileID: 1627351260098366072, guid: c586e1597572db646b8ef69cc674e822, type: 3}
+  m_refExplodeObj: {fileID: 11400000, guid: d01e4efd815b975409646dc074ea8b4c, type: 2}

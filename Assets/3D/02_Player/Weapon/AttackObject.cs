@@ -12,7 +12,7 @@ using UnityEngine;
 
 public class AttackObject : MonoBehaviour, IAttackObject
 {
-    [SerializeField] private PoolObject m_refHitEffectObj;
+    [SerializeField] private SOPoolData m_refHitEffectObj;
 
     // 프리팹 고유 동작. 인스펙터에서 조합, 런타임에 안 건드림 (Bullet과 동일한 관례)
     [SerializeField] private SOBulletAction[] m_arrHitActions;

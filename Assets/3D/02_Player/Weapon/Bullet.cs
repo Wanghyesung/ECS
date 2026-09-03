@@ -46,7 +46,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     [FormerlySerializedAs("m_refLineInfo")]
     [SerializeField] protected BulletLineDrawer m_refLineDrawer; // 볼렛 예고선 담당 (일반 클래스라 인스펙터에 필드가 그대로 펼쳐짐)
 
-    [SerializeField] private PoolObject m_refHitEffectObj;
+    [SerializeField] private SOPoolData m_refHitEffectObj;
     // 프리팹 고유 동작. 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행. 인스펙터에서 조합, 런타임에 안 건드림
     [SerializeField] private SOBulletAction[] m_arrArriveActions;
     // 프리팹 고유 동작. 실제로 대상에 데미지를 입힌 순간(=명중)에만 실행. 인스펙터에서 조합, 런타임에 안 건드림
@@ -230,9 +230,9 @@ public class Bullet : MonoBehaviour, IAttackObject
 
 
     // Weapon뿐 아니라 BulletAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
-    public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    public static GameObject SpawnAttackObject(SOPoolData _refPoolData, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(_refPrefab);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(_refPoolData);
         if (refObj == null)
             return null;
 

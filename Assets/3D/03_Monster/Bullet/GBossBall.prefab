@@ -14531,7 +14531,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refHitEffectObj: {fileID: 3623894875479776649, guid: 40dca072bee801d4d940e8853c62686d, type: 3}
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
+  m_refHitEffectObj: {fileID: 11400000, guid: 4bf7d1a29d568984db50aa87366afa62, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []
 --- !u!114 &856771050238163266

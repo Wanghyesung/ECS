@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &519387454061883579
 MonoBehaviour:
@@ -79,7 +80,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1622375ff1c0b394d9e7ef43163a895d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
+  m_refHitEffectObj: {fileID: 11400000, guid: 217c51b087a3c6046b71fda2d675ce4c, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []
 --- !u!114 &7003832020078264265
@@ -95,9 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_fRadius: 0.9
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 256
   m_vOffset: {x: 0, y: 0, z: 1.14}
   m_bShowDebugGizmo: 0
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}

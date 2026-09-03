@@ -9,7 +9,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SpawnAttackObject", menuName = "Game/Weapon/BulletAction/SpawnAttackObject")]
 public class SOSpawnAttackObject : SOBulletAction
 {
-    [SerializeField] private AttackObject m_refAttackObjectPrefab;
+    [SerializeField] private SOPoolData m_refAttackObjectPoolData;
 
     // 총알이 도착할 때마다 매번 터지면 과해서, 이 확률을 통과했을 때만 스폰
     [Range(0f, 1f)]
@@ -21,14 +21,13 @@ public class SOSpawnAttackObject : SOBulletAction
 
     public override void Execute(IAttackObject _refOwner)
     {
-        if (m_refAttackObjectPrefab == null)
+        if (m_refAttackObjectPoolData == null)
             return;
 
         if (Random.value > m_fTriggerChance)
             return;
 
-        PoolObject refPrefabPoolObj = m_refAttackObjectPrefab.GetComponent<PoolObject>();
-        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(refPrefabPoolObj);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_refAttackObjectPoolData);
         if (refObj == null)
             return;
 

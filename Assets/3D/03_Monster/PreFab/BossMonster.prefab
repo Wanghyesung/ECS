@@ -40782,7 +40782,7 @@ MonoBehaviour:
     ChargeParticle: {fileID: 80856866130549807}
     SpawnParticleTransform: {fileID: 1318631998204793562}
     SpawnWaitTime: 0
-  m_refDeadEffect: {fileID: 4305478783281764729, guid: 76ea03231ba9f6344b051549bc0dba86, type: 3}
+  m_refDeadEffect: {fileID: 11400000, guid: d6c50c7fa9fb2644fb245df5f93564d0, type: 2}
 --- !u!114 &3167987171606123751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40809,7 +40809,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refOriginalPoolObj: {fileID: 0}
   m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &2432941410462199483

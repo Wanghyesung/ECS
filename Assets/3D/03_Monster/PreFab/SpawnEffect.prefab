@@ -14391,7 +14391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refOriginalPoolObj: {fileID: 0}
   m_iPushCount: 0
   m_fAliveTime: 1
 --- !u!1 &5305930992364488588

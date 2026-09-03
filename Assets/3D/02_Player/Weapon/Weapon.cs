@@ -40,7 +40,7 @@ public class Weapon : MonoBehaviour
     private eWeaponType m_eWeapoonType = eWeaponType.None;
     public eWeaponType WeaponType => m_eWeapoonType;
 
-    public PoolObject FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
+    public SOPoolData FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;

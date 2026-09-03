@@ -4872,10 +4872,11 @@ MonoBehaviour:
     Damage: 0
     AttackPower: 0
     AliveTime: 0
-    AttackSpeed: 0
     CoolDown: 0
+    Speed: 0
     MaxHitCount: 0
     HitStep: 0
+    LineDuration: 0
     RotationSpeed: 90
     MaxRotationSpeed: 180
     RotateSpeedRate: 0
@@ -4885,7 +4886,12 @@ MonoBehaviour:
     HitLayers:
       serializedVersion: 2
       m_Bits: 4294967295
-  m_refHitEffectPoolObj: {fileID: 168278082946115843, guid: 157efbaebdde977479dace3bb1ca0fa7, type: 3}
+  m_refHitEffectPoolObj: {fileID: 11400000, guid: 7d50739123346e741b2e24a9b63cb6f9, type: 2}
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
+  m_fRange: 20
+  m_fLaserRadius: 0.5
 --- !u!65 &3208323484300018747
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4919,6 +4925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &544171510723349261
 MonoBehaviour:

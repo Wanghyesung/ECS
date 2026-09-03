@@ -17,20 +17,22 @@ public class ObjectPoolManager : MonoBehaviour
 {
     public static ObjectPoolManager m_Instance = null;
     // 재사용 대기열은 Stack(LIFO) - 방금 반납된 것부터 다시 꺼내 쓴다
-    private Dictionary<PoolObject, Stack<GameObject>> m_hashPool = new Dictionary<PoolObject, Stack<GameObject>>();
-    private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
+    // 모든 풀 딕셔너리의 키는 SOPoolData 에셋이다. 프리팹의 PoolObject 컴포넌트를 키로 쓰면
+    // 같은 프리팹이라도 Addressables로 로드된 인스턴스와 직접 참조로 물고 있는 인스턴스가
+    // 빌드에서 서로 다른 오브젝트가 되어 조회가 조용히 실패한다(에디터에서는 우연히 일치해서 안 드러남).
+    private Dictionary<SOPoolData, Stack<GameObject>> m_hashPool = new Dictionary<SOPoolData, Stack<GameObject>>();
+    private Dictionary<SOPoolData, AsyncOperationHandle> m_hashHandle = new Dictionary<SOPoolData, AsyncOperationHandle>();
 
-    // SOPoolData -> 그 데이터로 Addressables 로드해 등록한 PoolObject 키. 직접 참조(SOStage.MonsterPrefab 등)로
-    // 같은 프리팹을 또 들고 있으면 빌드에서는 별개의 인스턴스가 되어 m_hashPool 조회가 항상 실패하므로,
-    // 풀을 요청하는 쪽은 전부 이 SOPoolData를 거쳐서 실제 등록된 키를 얻어야 한다.
-    private Dictionary<SOPoolData, PoolObject> m_hashPoolDataKey = new Dictionary<SOPoolData, PoolObject>();
+    // 로드된 원본 프리팹의 PoolObject. 스폰이 아니라 프리팹 자체의 정보(예: 보스 등장 연출용 forward)가
+    // 필요한 곳에서만 GetPoolPrefab으로 꺼내 쓴다.
+    private Dictionary<SOPoolData, PoolObject> m_hashPrefabObj = new Dictionary<SOPoolData, PoolObject>();
 
-    // 동시 활성 개수 상한이 걸린 PoolObject만 등록됨(SOPoolData.ActiveCap > 0). 없으면 상한 없음(기존 동작과 동일)
-    private Dictionary<PoolObject, int> m_hashActiveCap = new Dictionary<PoolObject, int>();
+    // 동시 활성 개수 상한이 걸린 풀만 등록됨(SOPoolData.ActiveCap > 0). 없으면 상한 없음(기존 동작과 동일)
+    private Dictionary<SOPoolData, int> m_hashActiveCap = new Dictionary<SOPoolData, int>();
 
     // LinkedList를 쓰는 이유: 활성 인스턴스는 상한 초과(맨 앞 강제 반납)뿐 아니라 자연 만료나
     // 게임 로직의 수동 PushObject 호출로도 "중간에서" 빠질 수 있다.
-    private Dictionary<PoolObject, LinkedList<GameObject>> m_hashActiveList = new Dictionary<PoolObject, LinkedList<GameObject>>();
+    private Dictionary<SOPoolData, LinkedList<GameObject>> m_hashActiveList = new Dictionary<SOPoolData, LinkedList<GameObject>>();
 
     // PoolObject별 알아서 매 프레임 카운트다운하는 대신, "이 시각에 반납"만 예약해두고
     // 이 매니저가 큐 맨 앞(가장 이른 만료 시각)만 확인하는 방식 (ObjectSpawner와 동일한 패턴)
@@ -154,16 +156,16 @@ public class ObjectPoolManager : MonoBehaviour
             return;
         }
 
-        m_hashHandle[refPrefabPoolObj] = tHandle;
-        m_hashPoolDataKey[_refData] = refPrefabPoolObj;
+        m_hashHandle[_refData] = tHandle;
+        m_hashPrefabObj[_refData] = refPrefabPoolObj;
 
         Stack<GameObject> stackGameObject = new Stack<GameObject>();
-        m_hashPool[refPrefabPoolObj] = stackGameObject;
+        m_hashPool[_refData] = stackGameObject;
 
         if (_refData.ActiveCap > 0)
         {
-            m_hashActiveCap[refPrefabPoolObj] = _refData.ActiveCap;
-            m_hashActiveList[refPrefabPoolObj] = new LinkedList<GameObject>();
+            m_hashActiveCap[_refData] = _refData.ActiveCap;
+            m_hashActiveList[_refData] = new LinkedList<GameObject>();
         }
 
         var tOpInstantiate = UnityEngine.Object.InstantiateAsync(refPrefab, _refData.PreLoad);
@@ -180,7 +182,7 @@ public class ObjectPoolManager : MonoBehaviour
         for (int i = 0; i < arrInstance.Length; ++i)
         {
             PoolObject refInstancePoolObj = arrInstance[i].GetComponent<PoolObject>();
-            refInstancePoolObj.SetOriginalPoolObj(refPrefabPoolObj);
+            refInstancePoolObj.SetPoolKey(_refData);
             PushObject(arrInstance[i]);
         }
 
@@ -208,30 +210,30 @@ public class ObjectPoolManager : MonoBehaviour
 
         m_hashActiveCap.Clear();
         m_hashActiveList.Clear();
-        m_hashPoolDataKey.Clear();
+        m_hashPrefabObj.Clear();
     }
 
-    // SOStage 등, 프리팹을 직접 참조로 들고 있지 않고 SOPoolData로 요청하는 호출부용.
+    // 스폰이 아니라 원본 프리팹 자체의 정보가 필요한 곳(예: 보스 등장 카메라 연출)에서만 사용.
     public PoolObject GetPoolPrefab(SOPoolData _refPoolData)
     {
         if (_refPoolData == null)
             return null;
 
-        m_hashPoolDataKey.TryGetValue(_refPoolData, out var refPoolObj);
+        m_hashPrefabObj.TryGetValue(_refPoolData, out var refPoolObj);
         return refPoolObj;
     }
 
-    public GameObject GetObject(PoolObject _refPrefabPoolObj)
+    public GameObject GetObject(SOPoolData _refPoolData)
     {
-        if (_refPrefabPoolObj == null)
+        if (_refPoolData == null)
             return null;
 
-        if (m_hashPool.TryGetValue(_refPrefabPoolObj, out var stackValue) == false)
+        if (m_hashPool.TryGetValue(_refPoolData, out var stackValue) == false)
             return null;
 
         // 동시 개수 상한 - 여유가 없으면 가장 오래된 활성 인스턴스를 강제로 반납해 자리를 만든다
-        m_hashActiveList.TryGetValue(_refPrefabPoolObj, out var listActive);
-        if (listActive != null && listActive.Count >= m_hashActiveCap[_refPrefabPoolObj])
+        m_hashActiveList.TryGetValue(_refPoolData, out var listActive);
+        if (listActive != null && listActive.Count >= m_hashActiveCap[_refPoolData])
             PushObject(listActive.First.Value);
 
         if (stackValue.Count == 0)
@@ -254,9 +256,9 @@ public class ObjectPoolManager : MonoBehaviour
         return refObject;
     }
 
-    public GameObject GetObject(PoolObject _refPrefabPoolObj, Vector3 _vSpawnPos)
+    public GameObject GetObject(SOPoolData _refPoolData, Vector3 _vSpawnPos)
     {
-        GameObject refObj = GetObject(_refPrefabPoolObj);
+        GameObject refObj = GetObject(_refPoolData);
         if (refObj == null)
             return null;
 
@@ -288,9 +290,12 @@ public class ObjectPoolManager : MonoBehaviour
             listActive.Remove(_refGameObj);
     }
 
-    public int GetObjectCount(PoolObject _refPrefabPoolObj)
+    public int GetObjectCount(SOPoolData _refPoolData)
     {
-        if (m_hashPool.TryGetValue(_refPrefabPoolObj, out var stackValue) == false)
+        if (_refPoolData == null)
+            return -1;
+
+        if (m_hashPool.TryGetValue(_refPoolData, out var stackValue) == false)
             return -1;
 
         return stackValue.Count;

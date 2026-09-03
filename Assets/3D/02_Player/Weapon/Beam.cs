@@ -16,7 +16,7 @@ using UnityEngine;
 [RequireComponent(typeof(PoolObject), typeof(TrailRenderer))]
 public sealed class Beam : MonoBehaviour, IAttackObject
 {
-    [SerializeField] private PoolObject m_refHitEffectPoolObj;
+    [SerializeField] private SOPoolData m_refHitEffectPoolObj;
     [SerializeField] private float m_fRange = 30f;
     [SerializeField] private float m_fRadius = 0.5f;   // 판정 두께(레이 자체 반경)
     [SerializeField] private float m_fTrailFadeTime = 0.15f;   // 도착 후 꼬리가 사라지는 데 걸리는 시간 - AliveTime(풀 반납 시점)과 분리

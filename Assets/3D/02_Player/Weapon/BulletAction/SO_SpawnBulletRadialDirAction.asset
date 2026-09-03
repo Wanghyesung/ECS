@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e90b5f4cf90f5ad4e9617b5cd16f869b, type: 3}
   m_Name: SO_SpawnBulletRadialDirAction
   m_EditorClassIdentifier: 
-  m_refSpawnBulletPrefab: {fileID: 6809344323104675476, guid: bec734996cf01b34684603496a4b2b40, type: 3}
+  m_refSpawnBulletPrefab: {fileID: 11400000, guid: 22c04f67e37f7ec4c9a124ef94df5611, type: 2}
   m_iSpawnCount: 8
   m_fSpeed: 200

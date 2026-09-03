@@ -4,10 +4,10 @@ using UnityEngine.Events;
 
 public interface IPoolable
 {
-    public PoolObject PoolKey { get; }
+    public SOPoolData PoolKey { get; }
     public int PushCount { get; }
 
-    public void SetOriginalPoolObj(PoolObject _refOriginObj);
+    public void SetPoolKey(SOPoolData _refPoolData);
     public void Push();
     public void Pop();
 }
@@ -15,11 +15,15 @@ public interface IPoolable
 
 public class PoolObject : MonoBehaviour, IPoolable
 {
-    [SerializeField] private PoolObject m_refOriginalPoolObj;
+    // 이 인스턴스가 어느 풀에서 나왔는지(= ObjectPoolManager의 딕셔너리 키).
+    // 프리팹의 PoolObject 컴포넌트를 키로 쓰면, 같은 프리팹이라도 Addressables로 로드된 것과
+    // 직접 참조로 들고 있는 것이 빌드에서 서로 다른 인스턴스가 되어 조회가 실패한다.
+    // SOPoolData 에셋은 Addressables를 거치지 않는 단일 참조라 그런 불일치가 생기지 않음.
+    private SOPoolData m_refPoolData;
 
     [SerializeField] private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
-    public PoolObject PoolKey { get { return m_refOriginalPoolObj; } }
+    public SOPoolData PoolKey { get { return m_refPoolData; } }
 
     public event Action OnPush;
     public event Action OnPop;
@@ -61,8 +65,8 @@ public class PoolObject : MonoBehaviour, IPoolable
         ObjectPoolManager.m_Instance.ScheduleTime(this, _fPushTime);
     }
 
-    public void SetOriginalPoolObj(PoolObject _refOriginObj)
+    public void SetPoolKey(SOPoolData _refPoolData)
     {
-        m_refOriginalPoolObj = _refOriginObj;
+        m_refPoolData = _refPoolData;
     }
 }

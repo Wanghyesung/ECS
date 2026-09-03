@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: "\uC784\uC2DC \uCD1D\uC54C\n"
   WeaponType: 1
-  PoolPrefab: {fileID: 2094707447846978870, guid: 7553ddeb59b4e2d44a9b1ab15f3ecc66, type: 3}
+  PoolPrefab: {fileID: 11400000, guid: 1bfba8fb23143ca489691be76be2dc76, type: 2}
   Damage: 10
   AttackPower: 5
   Cooldown: 0.02
@@ -23,6 +23,7 @@ MonoBehaviour:
   AliveTime: 2
   HitCount: 1
   HitStep: 1
+  TelegraphDuration: 0
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0

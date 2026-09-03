@@ -75,7 +75,7 @@ public class Monster : MonoBehaviour, IDamageable
     private PoolObject m_refPoolObj;
 
     //몬스터가 죽을 때 생성되는 연출
-    [SerializeField] private PoolObject m_refDeadEffect;
+    [SerializeField] private SOPoolData m_refDeadEffect;
 
     // DeadEffect 크기 비례용 - 모듈형 파츠(Wing/MainBody 등) 전체 Renderer를 합산한 바운드 크기.
     private float m_fMonsterSize = 0f;
