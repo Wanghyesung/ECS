@@ -2498,7 +2498,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 3
   m_fSpreadAngle: 1
 --- !u!1 &170092592
 GameObject:
@@ -3080,7 +3080,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &183589707
 Transform:
   m_ObjectHideFlags: 0
@@ -4296,6 +4296,67 @@ MonoBehaviour:
   m_vOffset: {x: 0, y: 0, z: 0}
   m_bShowDebugGizmo: 0
   m_tGizmoColor: {r: 0, g: 1, b: 1, a: 1}
+--- !u!1001 &247747883
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1307193634272024218, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_Name
+      value: BaseMonster
+      objectReference: {fileID: 0}
+    - target: {fileID: 1307193634272024218, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 74.22664
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.000015258789
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1017.6433
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6341410077433471822, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 044f850e66c2dcc45b1b99dcb173275e, type: 3}
 --- !u!1 &249133495
 GameObject:
   m_ObjectHideFlags: 0
@@ -5332,7 +5393,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 60
+  m_iBulletCount: 40
   m_fSpreadAngle: 10
 --- !u!1 &289476289
 GameObject:
@@ -8093,7 +8154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &452813303
 Transform:
   m_ObjectHideFlags: 0
@@ -12619,7 +12680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &715872779
 Transform:
   m_ObjectHideFlags: 0
@@ -16953,7 +17014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &937248286
 Transform:
   m_ObjectHideFlags: 0
@@ -21752,7 +21813,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1143103863
 Transform:
   m_ObjectHideFlags: 0
@@ -29614,7 +29675,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 3
   m_fSpreadAngle: 1
 --- !u!1 &1473747279
 GameObject:
@@ -37480,7 +37541,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1908555143
 Transform:
   m_ObjectHideFlags: 0
@@ -42009,7 +42070,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &2762921764945023572
 GameObject:
   m_ObjectHideFlags: 0
@@ -42949,3 +43010,4 @@ SceneRoots:
   - {fileID: 1413829887}
   - {fileID: 9143634211818082765}
   - {fileID: 617853831}
+  - {fileID: 247747883}

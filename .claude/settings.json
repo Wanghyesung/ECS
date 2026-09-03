@@ -76,6 +76,11 @@
           },
           {
             "type": "command",
+            "command": ".claude/hooks/block-git-commit.sh",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
             "command": ".claude/hooks/bash-gate.sh",
             "timeout": 3000
           }

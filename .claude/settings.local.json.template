@@ -12,6 +12,7 @@
     "// DISABLE_HOOK_BLOCK_META_EDIT": "Set to 1 to disable this specific hook",
     "// DISABLE_HOOK_GUARD_EDITOR_RUNTIME": "Set to 1 to disable this specific hook",
     "// DISABLE_HOOK_BLOCK_PROJECTSETTINGS": "Set to 1 to disable this specific hook",
+    "// DISABLE_HOOK_BLOCK_GIT_COMMIT": "Set to 1 to let Claude run git commit again — only the user should set this",
 
     "// --- Notification system ---": "---",
     "// UNITY_NOTIFY_ENABLED": "Set to 1 to enable notifications",

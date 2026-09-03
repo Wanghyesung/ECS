@@ -28,6 +28,8 @@ public class SOChargeFireNode : SONode
         if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
 
+        refCurCharge.StopCharge();
+
         for (int i = 0; i < iSpawnCount; ++i)
             refSpawnInfo.Weapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr);
 

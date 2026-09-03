@@ -9,7 +9,7 @@ using static UnityEngine.ParticleSystem;
 
 /*///////////////////////////////////////////
                Charge
-±â´É : ¸ó½ºÅÍ°¡ °ø°Ý ¿ÀºêÁ§Æ®¸¦ ¼ÒÈ¯ÇÏ±â ±îÁö ¿¬ÃâÀ» ´ã´ç (ÆÄÆ¼Å¬ ½Ã°£..)
+ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (ï¿½ï¿½Æ¼Å¬ ï¿½Ã°ï¿½..)
  *///////////////////////////////////////////
 
 public class Charge : MonoBehaviour
@@ -24,7 +24,7 @@ public class Charge : MonoBehaviour
 
     private bool m_bCompleted = false;
 
-    //Â÷Áö°¡ ³¡¤¤³ª¸é ¼ÒÈ¯ÇÒ ¿ÀºêÁ§Æ®¸¦ ÁöÁ¤ÇØÁÖ±â À§ÇØ¼­
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½
     private SpawnInfo m_refSpawnInfo = null;
     private void Awake()
     {
@@ -51,6 +51,15 @@ public class Charge : MonoBehaviour
         //mainModule.startLifetime = new ParticleSystem.MinMaxCurve(_fDuration);
 
         m_refParticleSystem.Play();
+    }
+
+    public void StopCharge()
+    {
+        if (m_refParticleSystem == null)
+            return;
+
+        m_refParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        m_bCompleted = true;
     }
 
     public void Update()
