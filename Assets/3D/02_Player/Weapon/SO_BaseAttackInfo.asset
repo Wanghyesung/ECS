@@ -15,12 +15,12 @@ MonoBehaviour:
   Description: "\uD50C\uB808\uC774\uC5B4 \uAE30\uBCF8 \uACF5\uACA9"
   WeaponType: 1
   PoolPrefab: {fileID: 6662476535643214403, guid: b21daf096e7d71c41a0dbf0c7b6bea88, type: 3}
-  Damage: 10
+  Damage: 1
   AttackPower: 5
-  Cooldown: 0.02
+  Cooldown: 0.01
   Speed: 240
   SpeedOffset: 60
-  AliveTime: 2
+  AliveTime: 1
   HitCount: 1
   HitStep: 1
   KnockbackForce: 0

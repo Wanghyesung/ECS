@@ -198,9 +198,8 @@ public sealed class BoxColliderGrid
     // --- 좌표 계산(메인스레드 재구성과 Job이 반드시 같은 함수를 쓰도록 public static) ---
 
     // 그리드 범위 밖 위치는 가장 가까운 가장자리 셀로 클램프한다
-    public static void ComputeCellCoord(
-        Vector3 _vWorldPos, Vector3 _vOrigin, float _fCellSize,
-        int _iCountX, int _iCountY, int _iCountZ,
+    public static void ComputeCellCoord(Vector3 _vWorldPos, Vector3 _vOrigin, 
+        float _fCellSize, int _iCountX, int _iCountY, int _iCountZ,
         out int _iX, out int _iY, out int _iZ)
     {
         Vector3 vLocal = _vWorldPos - _vOrigin;

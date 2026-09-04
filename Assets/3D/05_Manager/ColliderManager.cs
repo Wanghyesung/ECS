@@ -8,23 +8,6 @@ using UnityEngine;
 /*///////////////////////////////////////////
               ColliderManager
 목적 : BaseCollider(Circle/Obb)들을 PhysX 없이 자체적으로 충돌 판정한다.
-
-       레이어 무관 활성 콜라이더 전부를 SoA 하나 + BoxColliderGrid 하나에 담는다 - 그리드
-       소유/조회 구분 없이, 그리드에 들어간 콜라이더 자신이 곧 조회 주체다(이웃 27칸 탐색,
-       후보 index가 자기 이하면 스킵). GridOverlapJob.Execute 하나가 이웃 탐색 + 레이어
-       매트릭스 필터 + 도형 분기(Circle-Circle/Circle-Box/Box-Box)까지 전부 처리한다.
-
-       Job Schedule과 Complete를 서로 다른 실행 순서로 쪼갠다 - ScheduleFrame()은
-       ColliderManagerScheduler([DefaultExecutionOrder(-1000)], 이 프레임에서 가장 먼저)가
-       부르고, Complete+드레인은 이 클래스의 LateUpdate([DefaultExecutionOrder(1000)], 가장
-       나중)가 한다. 한 클래스는 메서드별로 다른 실행 순서를 못 가지므로 Schedule 쪽만 별도
-       컴포넌트로 뗀 것 - 이렇게 하면 충돌 Job이 이번 프레임 나머지 Update 전체 + LateUpdate
-       전체 동안 워커 스레드에서 겹쳐 돈다. 한 프레임의 모든 Enter/Stay/Exit이 동일한 위치
-       스냅샷(정확히 한 프레임 전) 기준으로 계산되므로 콜백 순서에 판정이 갈리는 문제도 없다.
-       대가는 판정이 실제 최신 위치보다 한 프레임(~16ms@60fps) 늦음.
-
-       위치/축(transform.position/rotation) 갱신은 ColliderCenterRefresher가 전담한다 -
-       "이동 추적"과 "충돌 판정"을 분리한 것.
  *///////////////////////////////////////////
 
 // LateUpdate가 이 프레임에서 가장 늦게 돌수록 ColliderManagerScheduler가 미리 Schedule한
@@ -76,6 +59,9 @@ public class ColliderManager : MonoBehaviour
 
     // 활성 콜라이더 전부가 들어가는 단일 공간 그리드
     private BoxColliderGrid m_grid;
+
+    // 디버그 시각화 전용(GridGizmoDrawer) - 판정 로직에는 관여하지 않는 읽기 전용 접근
+    public BoxColliderGrid Grid => m_grid;
 
     // m_grid.Build()용 일회성 스크래치(그리드가 아직 안 지어졌을 때만 채움) - SoA/그리드
     // 자체는 m_arrCollider[layer]를 매 프레임 직접 순회해서 채운다(BuildGrid 참고)
@@ -335,6 +321,7 @@ public class ColliderManager : MonoBehaviour
             if (iTotalActive == 0)
                 return;
 
+            //현재 씬에 콜라이더 크기 만큼 리스트를 늘린다
             ResizeSoaCapacity(iTotalActive);
 
             if (m_grid.IsBuilt == false)
@@ -343,6 +330,7 @@ public class ColliderManager : MonoBehaviour
                 for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
                     m_listActiveCollider.AddRange(m_arrCollider[iLayer]);
 
+                //현재 활성화 된 콜라이더를 기반으로 그리드의 크기와 셀 수를 계산하고 CSR 셀 구조를 만든다
                 m_grid.Build(m_listActiveCollider);
             }
         }
@@ -354,6 +342,7 @@ public class ColliderManager : MonoBehaviour
         {
             m_grid.BeginRebuild(iTotalActive);
 
+            //플레이어와의 거리를 기준으로 컬링
             bool bCullByRange = m_refPlayer != null;
             Vector3 vPlayerPos = bCullByRange ? m_refPlayer.position : Vector3.zero;
             float fMaxRangeSq = m_fMaxBulletRange * m_fMaxBulletRange;
@@ -372,6 +361,7 @@ public class ColliderManager : MonoBehaviour
                     if (bIsBox && bCullByRange && (vCenter - vPlayerPos).sqrMagnitude > fMaxRangeSq)
                         continue;
 
+                    //콜라이더의 ID, 타입, 레이어, 중심점, 바운딩 반지름, Box라면 축과 half-extent를 SoA에 채운다
                     m_arrCenter[iIdx] = vCenter;
                     m_arrBoundingRadius[iIdx] = refCollider.BoundingRadius;
                     m_arrColliderId[iIdx] = refCollider.ID;
@@ -388,11 +378,13 @@ public class ColliderManager : MonoBehaviour
                         m_arrHalfExtent[iIdx] = refBox.HalfExtent;
                     }
 
+                    //그리드에 콜라이더의 정보를 전달
                     m_grid.AddCollider(iIdx, vCenter);
                     ++iIdx;
                 }
             }
 
+            //CSR 셀 정렬
             m_grid.EndRebuild();
             m_iCount = iIdx;
         }
@@ -409,6 +401,7 @@ public class ColliderManager : MonoBehaviour
                 return;
             }
 
+            //수집한 정보를 바탕으로 Job을 스케줄한다. Job은 겹침 여부를 판단한 결과를 NativeQueue에 담는다
             GridOverlapJob tJob = new GridOverlapJob
             {
                 CellStart = m_grid.CellStart,
@@ -457,7 +450,7 @@ public class ColliderManager : MonoBehaviour
         }
         m_bScheduled = false;
 
-        using (s_tMarkerGridDrain.Auto())
+        using (s_tMarkerGridDrain.Auto()) //프로파일링 마커 삽입
         {
             while (m_queResult.TryDequeue(out tPairResult tResult))
             {

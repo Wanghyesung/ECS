@@ -36,6 +36,9 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
 
     public static LegacyBruteForceColliderManagerFinal Instance { get; private set; }
 
+    // 디버그 시각화 전용(LegacyGridGizmoDrawer) - 판정 로직에는 관여하지 않는 읽기 전용 접근
+    public LegacyColliderGridFinal Grid => m_grid;
+
     private readonly LayerMask[] m_arrLayerCollisionMatrix = new LayerMask[LAYER_COUNT];
     private NativeArray<int> m_arrLayerMatrixNative;
 
@@ -54,6 +57,12 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
     private List<int> m_listRefreshColliderIdBySlot;
     private List<int> m_listRefreshSlotByColliderId; // ColliderID -> 슬롯(-1이면 미등록)
     private NativeArray<Vector3> m_arrRefreshedCenter;
+    // Circle 슬롯에서는 안 쓰고 버려지지만, 프로덕션 RefreshCenterJob과 동일하게 매 슬롯마다
+    // 축까지 계산해서 실측 비용을 왜곡하지 않는다("Circle/Box 가리지 않고 매번 계산해도
+    // 싸다"는 원본 설계 그대로 - ColliderCenterRefresher.cs 주석 참고)
+    private NativeArray<Vector3> m_arrRefreshedAxisX;
+    private NativeArray<Vector3> m_arrRefreshedAxisY;
+    private NativeArray<Vector3> m_arrRefreshedAxisZ;
 
     // ---- 그리드/판정용 SoA ----
     private NativeArray<Vector3> m_arrCenter;
@@ -138,6 +147,9 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
         if (m_transformAccessArray.isCreated)
             m_transformAccessArray.Dispose();
         DisposeIfCreated(m_arrRefreshedCenter);
+        DisposeIfCreated(m_arrRefreshedAxisX);
+        DisposeIfCreated(m_arrRefreshedAxisY);
+        DisposeIfCreated(m_arrRefreshedAxisZ);
 
         DisposeIfCreated(m_arrCenter);
         DisposeIfCreated(m_arrAxisX);
@@ -321,7 +333,13 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
 
             EnsureRefreshCapacity(iLength);
 
-            RefreshCenterJob tJob = new RefreshCenterJob { OutCenter = m_arrRefreshedCenter };
+            RefreshCenterJob tJob = new RefreshCenterJob
+            {
+                OutCenter = m_arrRefreshedCenter,
+                OutAxisX = m_arrRefreshedAxisX,
+                OutAxisY = m_arrRefreshedAxisY,
+                OutAxisZ = m_arrRefreshedAxisZ,
+            };
             JobHandle tHandle = tJob.Schedule(m_transformAccessArray);
             tHandle.Complete();
 
@@ -334,56 +352,75 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
         }
     }
 
+    // 프로덕션 ColliderManager.BuildGrid()와 동일 구조로 정정 - m_listAllActive
+    // "전체 긁어모으기"는 그리드가 아직 안 지어졌을 때(생애주기 중 최초 1회)만 하고,
+    // 매 프레임 SoA/그리드 채우기는 m_arrCollider[layer]를 직접 순회한다(Docs/Collider.md
+    // §10: "이미 활성 콜라이더만 유지되는 배열이라 매번 다시 담을 필요가 없었다").
+    // 예전엔(챕터 3, GridTestScene2) 이 O(N) 복사가 매 프레임 남아있었는데, 그건 44b4646
+    // 시점엔 역사적으로 맞지만 "이게 곧 지금 BattleScene"이라 주장하는 챕터 4엔 있으면
+    // 안 되는 낭비라 여기서 없앤다
     private void BuildGrid()
     {
+        int iTotalActive;
+
         using (s_tMarkerBuildGrid.Auto())
         {
-            m_listAllActive.Clear();
+            iTotalActive = 0;
+            for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+                iTotalActive += m_arrCollider[iLayer].Count;
+
+            m_iCount = 0;
+            if (iTotalActive == 0)
+                return;
+
+            EnsureCapacity(iTotalActive);
+
+            if (m_grid.IsBuilt == false)
+            {
+                m_listAllActive.Clear();
+                for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+                    m_listAllActive.AddRange(m_arrCollider[iLayer]);
+
+                m_grid.Build(m_listAllActive);
+            }
+
+            if (m_grid.IsBuilt == false)
+                return;
+
+            m_grid.BeginRebuild(iTotalActive);
+
+            int iIdx = 0;
             for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
             {
                 List<LegacyBruteForceColliderFinal> listLayer = m_arrCollider[iLayer];
                 for (int i = 0; i < listLayer.Count; ++i)
-                    m_listAllActive.Add(listLayer[i]);
-            }
-
-            m_iCount = 0;
-            if (m_listAllActive.Count == 0)
-                return;
-
-            if (m_grid.IsBuilt == false)
-                m_grid.Build(m_listAllActive);
-            if (m_grid.IsBuilt == false)
-                return;
-
-            EnsureCapacity(m_listAllActive.Count);
-            m_grid.BeginRebuild(m_listAllActive.Count);
-
-            for (int i = 0; i < m_listAllActive.Count; ++i)
-            {
-                LegacyBruteForceColliderFinal refCollider = m_listAllActive[i];
-                Vector3 vCenter = refCollider.CachedCenter;
-
-                m_arrCenter[i] = vCenter;
-                m_arrBoundingRadius[i] = refCollider.BoundingRadius;
-                m_arrColliderId[i] = refCollider.ID;
-                m_arrColliderType[i] = (int)refCollider.Shape;
-                m_arrLayerOf[i] = refCollider.Layer;
-                m_arrHasPair[i] = m_listOther[refCollider.ID].Count > 0;
-
-                if (refCollider.Shape == eLegacyColliderShapeFinal.Box)
                 {
-                    LegacyBruteForceBoxColliderFinal refBox = (LegacyBruteForceBoxColliderFinal)refCollider;
-                    m_arrAxisX[i] = refBox.AxisX;
-                    m_arrAxisY[i] = refBox.AxisY;
-                    m_arrAxisZ[i] = refBox.AxisZ;
-                    m_arrHalfExtent[i] = refBox.HalfExtent;
-                }
+                    LegacyBruteForceColliderFinal refCollider = listLayer[i];
+                    Vector3 vCenter = refCollider.CachedCenter;
 
-                m_grid.AddItem(i, vCenter);
+                    m_arrCenter[iIdx] = vCenter;
+                    m_arrBoundingRadius[iIdx] = refCollider.BoundingRadius;
+                    m_arrColliderId[iIdx] = refCollider.ID;
+                    m_arrColliderType[iIdx] = (int)refCollider.Shape;
+                    m_arrLayerOf[iIdx] = refCollider.Layer;
+                    m_arrHasPair[iIdx] = m_listOther[refCollider.ID].Count > 0;
+
+                    if (refCollider.Shape == eLegacyColliderShapeFinal.Box)
+                    {
+                        LegacyBruteForceBoxColliderFinal refBox = (LegacyBruteForceBoxColliderFinal)refCollider;
+                        m_arrAxisX[iIdx] = refBox.AxisX;
+                        m_arrAxisY[iIdx] = refBox.AxisY;
+                        m_arrAxisZ[iIdx] = refBox.AxisZ;
+                        m_arrHalfExtent[iIdx] = refBox.HalfExtent;
+                    }
+
+                    m_grid.AddItem(iIdx, vCenter);
+                    ++iIdx;
+                }
             }
 
             m_grid.EndRebuild();
-            m_iCount = m_listAllActive.Count;
+            m_iCount = iIdx;
         }
     }
 
@@ -508,7 +545,13 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
             iNewCapacity <<= 1;
 
         DisposeIfCreated(m_arrRefreshedCenter);
+        DisposeIfCreated(m_arrRefreshedAxisX);
+        DisposeIfCreated(m_arrRefreshedAxisY);
+        DisposeIfCreated(m_arrRefreshedAxisZ);
         m_arrRefreshedCenter = new NativeArray<Vector3>(iNewCapacity, Allocator.Persistent);
+        m_arrRefreshedAxisX = new NativeArray<Vector3>(iNewCapacity, Allocator.Persistent);
+        m_arrRefreshedAxisY = new NativeArray<Vector3>(iNewCapacity, Allocator.Persistent);
+        m_arrRefreshedAxisZ = new NativeArray<Vector3>(iNewCapacity, Allocator.Persistent);
     }
 
     private void EnsureCapacity(int _iCount)
@@ -586,10 +629,18 @@ public sealed class LegacyBruteForceColliderManagerFinal : MonoBehaviour
     private struct RefreshCenterJob : IJobParallelForTransform
     {
         public NativeArray<Vector3> OutCenter;
+        public NativeArray<Vector3> OutAxisX;
+        public NativeArray<Vector3> OutAxisY;
+        public NativeArray<Vector3> OutAxisZ;
 
         public void Execute(int index, TransformAccess transform)
         {
+            Quaternion tRotation = transform.rotation;
+
             OutCenter[index] = transform.position;
+            OutAxisX[index] = tRotation * Vector3.right;
+            OutAxisY[index] = tRotation * Vector3.up;
+            OutAxisZ[index] = tRotation * Vector3.forward;
         }
     }
 
