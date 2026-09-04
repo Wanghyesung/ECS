@@ -5,21 +5,25 @@ using UnityEngine;
           LegacyBenchmarkSpawner
 목적 : 커밋 fdf901d 시점의 실제 Bullet.cs 이동/충돌 메커니즘(Rigidbody(kinematic)
        + FixedUpdate MovePosition + TriggerEnterObject)을 그대로 쓰는 PhysX 벤치마크.
-       장애물(BoxCollider, 정적) 100개 + 탄(LegacyPhysXBullet) 풀 1000개를 만들고
-       LegacyBulletFireController가 꾸준히 순환 발사한다.
+       장애물(BoxCollider, 정적) + 몬스터(SphereCollider, 정적) + 탄(LegacyPhysXBullet)
+       풀을 만들고 LegacyBulletFireController가 꾸준히 순환 발사한다.
 
        ColliderManager/CircleCollider/ObbCollider(자체 시스템) 쪽은 이번 벤치마크에서
-       아예 안 씀 - PhysX 실측만 순수하게 본다.
+       아예 안 씀 - PhysX 실측만 순수하게 본다. m_iMonsterCount 기본값은 0 - 기존
+       ColliderBenchmarkDemo.unity(장애물/탄만 씀)에 영향을 주지 않기 위함이고,
+       몬스터가 필요한 씬(PXTestScene 등)에서만 인스펙터로 켠다.
  *///////////////////////////////////////////
 public class LegacyBenchmarkSpawner : MonoBehaviour
 {
     [Header("개수/배치")]
     [SerializeField] private int m_iBulletTargetActive = 1000;
     [SerializeField] private int m_iObstacleCount = 100;
+    [SerializeField] private int m_iMonsterCount = 0;
     [SerializeField] private float m_fBoundsRadius = 100f;
     [SerializeField] private float m_fBulletSpeed = 5f;
     [SerializeField] private float m_fBulletRadius = 0.3f;
     [SerializeField] private float m_fBulletLifetime = 3f;
+    [SerializeField] private float m_fMonsterRadius = 1.5f;
     [SerializeField] private Vector2 m_vObstacleHalfExtentRange = new Vector2(1f, 3f);
     [SerializeField] private int m_iRandomSeed = 12345;
 
@@ -51,13 +55,22 @@ public class LegacyBenchmarkSpawner : MonoBehaviour
         // PlayerAttack끼리는 검사 안 하므로 조건을 맞춤)
         int obstacleLayer = LayerMask.NameToLayer("PhysXBenchmark");
         int bulletLayer = LayerMask.NameToLayer("PhysXBulletDemo");
+        int monsterLayer = LayerMask.NameToLayer("PhysXMonsterDemo");
         Physics.IgnoreLayerCollision(bulletLayer, obstacleLayer, false);
         Physics.IgnoreLayerCollision(bulletLayer, bulletLayer, true);
         Physics.IgnoreLayerCollision(obstacleLayer, obstacleLayer, true);
         LayerMask hitMask = 1 << obstacleLayer;
+        if (m_iMonsterCount > 0 && monsterLayer >= 0)
+        {
+            Physics.IgnoreLayerCollision(bulletLayer, monsterLayer, false);
+            Physics.IgnoreLayerCollision(monsterLayer, monsterLayer, true);
+            Physics.IgnoreLayerCollision(monsterLayer, obstacleLayer, true);
+            hitMask |= 1 << monsterLayer;
+        }
 
         System.Random rnd = new System.Random(m_iRandomSeed);
         Color tColor = new Color(1f, 0.6f, 0.15f);
+        Color tMonsterColor = new Color(1f, 0.25f, 0.2f);
 
         Transform obstacleRoot = new GameObject("Obstacles").transform;
         obstacleRoot.SetParent(m_refRoot, false);
@@ -76,6 +89,26 @@ public class LegacyBenchmarkSpawner : MonoBehaviour
             go.layer = obstacleLayer;
             SetColor(go, tColor);
             // CreatePrimitive가 붙여준 BoxCollider를 그대로 사용(원본 Bullet 프리팹도 BoxCollider)
+        }
+
+        if (m_iMonsterCount > 0 && monsterLayer >= 0)
+        {
+            Transform monsterRoot = new GameObject("Monsters").transform;
+            monsterRoot.SetParent(m_refRoot, false);
+            for (int i = 0; i < m_iMonsterCount; ++i)
+            {
+                Vector3 vPos = RandomPointInSphere(rnd, m_fBoundsRadius);
+
+                GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                go.name = "Monster_" + i;
+                go.transform.SetParent(monsterRoot, false);
+                go.transform.position = vPos;
+                go.transform.localScale = Vector3.one * (m_fMonsterRadius * 2f);
+                go.layer = monsterLayer;
+                SetColor(go, tMonsterColor);
+                // CreatePrimitive가 붙여준 SphereCollider를 그대로 사용 - Rigidbody는 필요 없음
+                // (트리거 쌍 중 총알 쪽이 이미 kinematic Rigidbody를 갖고 있어서 그걸로 충분함)
+            }
         }
 
         Transform bulletRoot = new GameObject("Bullets").transform;
@@ -158,9 +191,9 @@ public class LegacyBenchmarkSpawner : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Box(new Rect(10, 10, 320, 60), "");
-        GUI.Label(new Rect(20, 15, 300, 20), "Legacy PhysX (Rigidbody+TriggerEnterObject)");
-        GUI.Label(new Rect(20, 35, 300, 20), "탄 목표 " + m_iBulletTargetActive + " x 장애물 " + m_iObstacleCount
-            + "  Enter=" + LegacyPhysXBullet.s_iEnterCount);
+        GUI.Box(new Rect(10, 10, 340, 60), "");
+        GUI.Label(new Rect(20, 15, 320, 20), "Legacy PhysX (Rigidbody+TriggerEnterObject)");
+        GUI.Label(new Rect(20, 35, 320, 20), "탄 목표 " + m_iBulletTargetActive + " x 장애물 " + m_iObstacleCount
+            + " x 몬스터 " + m_iMonsterCount + "  Enter=" + LegacyPhysXBullet.s_iEnterCount);
     }
 }
