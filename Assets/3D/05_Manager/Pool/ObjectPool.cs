@@ -20,6 +20,7 @@ public class ObjectPool : MonoBehaviour
     private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new Dictionary<PoolObject, AsyncOperationHandle>();
 
     // PoolObject별 알아서 매 프레임 카운트다운하는 대신, "이 시각에 반납"만 예약해두고
+
     // 이 매니저가 큐 맨 앞(가장 이른 만료 시각)만 확인하는 방식 (ObjectSpawner와 동일한 패턴)
     private PriorityQueue<tTimeData> m_PQTimer;
 

@@ -104,6 +104,7 @@ public class BulletMoveManager : MonoBehaviour
         if (m_listSpeed.Length == 0)
             return;
 
+        //발사체 정보를 모아둔 배열을 등록
         var job = new MoveJob
         {
             ArrSpeed = m_listSpeed.AsArray(),
@@ -115,13 +116,12 @@ public class BulletMoveManager : MonoBehaviour
         m_bScheduled = true;
     }
 
-    // Job이 TransformAccessArray로 Transform에 직접 썼으므로 Complete만 하면 끝
     private void LateUpdate()
     {
         if (!m_bScheduled)
             return;
 
-        m_tHandle.Complete();
+        m_tHandle.Complete(); //완료될 때까지 대기
         m_bScheduled = false;
     }
 
@@ -141,6 +141,7 @@ public class BulletMoveManager : MonoBehaviour
     }
 
     // NativeArray/TransformAccess만 참조하는 순수 struct - class/List 등 관리 객체는 여기 들어올 수 없음
+
     [BurstCompile]
     private struct MoveJob : IJobParallelForTransform
     {
