@@ -2988,7 +2988,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 8
   m_fSpreadAngle: 1
 --- !u!1 &167007977
 GameObject:
@@ -5853,8 +5853,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 60
-  m_fSpreadAngle: 10
+  m_iBulletCount: 80
+  m_fSpreadAngle: 30
 --- !u!1 &280709684
 GameObject:
   m_ObjectHideFlags: 0
@@ -17405,7 +17405,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 8
   m_fSpreadAngle: 1
 --- !u!1 &891060296
 GameObject:
@@ -26986,7 +26986,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 8
   m_fSpreadAngle: 1
 --- !u!1 &1334385013
 GameObject:
@@ -30120,7 +30120,7 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
+  m_iBulletCount: 8
   m_fSpreadAngle: 1
 --- !u!1 &1473747279
 GameObject:
