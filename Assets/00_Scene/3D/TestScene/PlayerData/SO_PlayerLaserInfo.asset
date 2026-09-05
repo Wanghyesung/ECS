@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_PlayerLaserInfo
+  m_EditorClassIdentifier: 
+  Description: "\uD50C\uB808\uC774\uC5B4\uC758 \uBC29\uD5A5\uC5D0 \uB530\uB77C \uC6C0\uC9C1\uC774\uB294
+    \uB808\uC774\uC800"
+  WeaponType: 5
+  PoolPrefab: {fileID: 11400000, guid: d9a6061968dffa74bb8b2f9e398cbbf0, type: 2}
+  Damage: 5
+  AttackPower: 5
+  Cooldown: 5
+  Speed: 0
+  SpeedOffset: 0
+  AliveTime: 5
+  HitCount: 100
+  HitStep: 0.2
+  TelegraphDuration: 0
+  KnockbackForce: 3
+  KnockbackDuration: 1
+  StunDuration: 0
+  BaseRotationSpeed: 0
+  MaxRotationSpeed: 0
+  RotationAccelRate: 0
+  ProximityRadius: 0
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  HitSound: {fileID: 0}

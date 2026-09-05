@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac9acc8c22500884e83c87952a21110f, type: 3}
+  m_Name: SOMon6Info
+  m_EditorClassIdentifier: 
+  ObjectName: StarSparrow6
+  Description: "\uC77C\uBC18 \uBAAC\uC2A4\uD130 - StarSparrow6 (Tier 4)"
+  MaxHP: 2450
+  MaxSpeed: 5.6
+  MaxAtack: 1800
+  MaxDefense: 180
+  ExpReward: 150

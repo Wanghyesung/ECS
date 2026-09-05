@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: corpsres_common.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: corpsres_common.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 95d3277690954784b965dba219a86672
+  m_SerializeEntries:
+  - m_GUID: 9d798f4bb587cb24f988c6bbc9443094
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/flare00_00.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c72958289b270a14d8f2f7d9b01973c9, type: 2}
+    - {fileID: 11400000, guid: 420853a492007d545b4b2ce739aec34f, type: 2}

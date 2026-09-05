@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_GBossBallInfo
+  m_EditorClassIdentifier: 
+  Description: "\uBAAC\uC2A4\uD130\uB97C \uC911\uC2EC\uC73C\uB85C \uC0AC\uBC29\uC73C\uB85C
+    \uACF5\uACA9"
+  WeaponType: 1
+  PoolPrefab: {fileID: 11400000, guid: 663d75e75af73ec458e96a35acd8407d, type: 2}
+  Damage: 10
+  AttackPower: 0
+  Cooldown: 10
+  Speed: 20
+  SpeedOffset: 8
+  AliveTime: 10
+  HitCount: 1
+  HitStep: 1
+  TelegraphDuration: 0
+  KnockbackForce: 3
+  KnockbackDuration: 0.2
+  StunDuration: 0
+  BaseRotationSpeed: 0
+  MaxRotationSpeed: 180
+  RotationAccelRate: 0
+  ProximityRadius: 1.5
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  HitSound: {fileID: 0}

@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_mesh.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_mesh.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f095dfbe561cb9d47976de7d756124c5
+  m_SerializeEntries:
+  - m_GUID: 387b87ec5eae02e4487a48ea128eb6b4
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Mesh/sphere_18pl.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b71949285a121b4ab617405048774d0
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Slash01/Mesh/SlashCylinder004.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ba1313827745717449ba745c097f3a43
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Mesh/Eric_PlaneDownCenter.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb733d774c1bc724ebaf1713af974919
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_EnergyShield/Mesh/Eric_HalfSphere001_H.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1d7f97475c6314408022bef586f5de7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Mesh/cylinder_alpha0.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e490d030bc830e047988acfdc31cfc24
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Mesh/Eric_20001_Culinder01.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edd77ad1f456fb4459490e6c3c7819b9
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Mesh/PlaneUpCenter2.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1aba032c3257374c8f0779216de9c31
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Mesh/Eric_Fireplane2.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f368d09723994e74f9257f1c3ac9cd2c
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Mesh/Eric_HalfSphere001.FBX
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: a64973243cf1a10438e5d636ce07e63f, type: 2}
+    - {fileID: 11400000, guid: f2a569c435bdd65419abd1c9efd2a0a0, type: 2}

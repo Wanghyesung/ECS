@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_particle.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_particle.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 90456d97e76df4c498a30d6bbdd81766
+  m_SerializeEntries:
+  - m_GUID: 7bacfbfd1ac39404db6b19780d42dda1
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_HolyWings/Textures/tf-62.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 835aab56838460d4180eb7bc9a9b3f0e
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/dot_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99f4a5d96ec04cd40b7012a1faef1012
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/suipianlizi_00000.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ce03b743a3521240b11e5d6dcb96312
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/dust_03.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a099c522f01d2114aa3475657dbc1d80
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/particle_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 246b5bbd210f674499ac711439feee4b, type: 2}
+    - {fileID: 11400000, guid: e3156bcae76bf904fadf24a37e77bba8, type: 2}

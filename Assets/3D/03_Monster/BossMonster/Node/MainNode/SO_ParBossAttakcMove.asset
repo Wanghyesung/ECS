@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a1a948a33c65446b0791ab943b21fe, type: 3}
+  m_Name: SO_ParBossAttakcMove
+  m_EditorClassIdentifier: 
+  listNode:
+  - {fileID: 11400000, guid: 5b693beefcdee2e44ab32900b6a9a5ec, type: 2}
+  - {fileID: 11400000, guid: 6df7105900bd46d4aa9492995d7261aa, type: 2}

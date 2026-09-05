@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_PlayerBeamInfo
+  m_EditorClassIdentifier: 
+  Description: "\uC2DC\uC791, \uB05D\uC810 \uC0AC\uC774\uB97C \uAD00\uD1B5\uD558\uB294
+    \uC21C\uAC04 \uBC1C\uC0AC \uBE54"
+  WeaponType: 5
+  PoolPrefab: {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  Damage: 8
+  AttackPower: 5
+  Cooldown: 0.2
+  Speed: 1000
+  SpeedOffset: 0
+  AliveTime: 0.4
+  HitCount: 5
+  HitStep: 0
+  TelegraphDuration: 0
+  KnockbackForce: 3
+  KnockbackDuration: 0.2
+  StunDuration: 0
+  BaseRotationSpeed: 90
+  MaxRotationSpeed: 180
+  RotationAccelRate: 0
+  ProximityRadius: 1.5
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  HitSound: {fileID: 0}

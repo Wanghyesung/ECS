@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_line.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_line.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2df3a70dc95f9df428133cec66a57e08
+  m_SerializeEntries:
+  - m_GUID: 32de392d1da283b4784ed12867d20786
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/piaodaiAlpha_00003_W.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b396dbdc930d4049be9f915dced00a2
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/line_lightning01_puple.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 776a57311c77b0c439ac400795a24a27
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_DarkShock/Textures/lg
+      _08.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a8aa19a999e5d742885ea3ec01022f4
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/la_00_26k.tga
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4a404c5126761d44b95d25c52dfdc32
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Starfall/Textures/12589_2.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0002300bcaf18c4ea9326da4f0c83e7
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/FireLine_01.tga
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ad3f9afaebca942409ad8891af65b30e, type: 2}
+    - {fileID: 11400000, guid: fdd8e41d3d2145346b64142e8d1c119e, type: 2}

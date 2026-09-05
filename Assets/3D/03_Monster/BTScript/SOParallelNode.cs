@@ -1,0 +1,32 @@
+using UnityEngine;
+
+/*///////////////////////////////////////////
+              SOParallelNode
+
+기능 : 모든 자식 노드를 매 프레임 실행.
+       한 자식이 Failure여도 나머지를 계속 실행.
+    
+       BT 최상단에 두고 [패시브 효과 처리 노드, 기존 행동 트리 루트] 순서로 구성.
+ *///////////////////////////////////////////
+
+[CreateAssetMenu(fileName = "SO_ParallelNode", menuName = "Game/Monster/ParallelNode")]
+public class SOParallelNode : SOListNode
+{
+    public override eNodeState Execute(BlackBoard _refBB)
+    {
+        bool bAnyRunning = false;
+        bool bAnyFailure = false;
+        for (int i = 0; i < listNode.Count; i++)
+        {
+            eNodeState state = listNode[i].Execute(_refBB);
+            if (state == eNodeState.Running)
+                bAnyRunning = true;
+            else if(state == eNodeState.Failure)
+                bAnyFailure = true;
+        }
+        if (bAnyFailure == true)
+            return eNodeState.Failure;
+
+        return bAnyRunning ? eNodeState.Running : eNodeState.Success;
+    }
+}

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_light_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_light_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f151b87b452e9fd49bd7f45bf5e84537
+  m_SerializeEntries:
+  - m_GUID: 05bd7783ec783c14eaa94b8986e8c08d
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/lightning02_01_blue.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18eb45db99be29441b8847f613a0d2eb
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/Electro03.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3516b7e102825ae47a2486237ba30d09
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/FineLightning_03.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e305a7aa4d39cf4aa4cc05cd606e671
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/materials/lightning02_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fd5ed76f3a2b5a44b80507ef637e92b
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/lightning_blue.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c046c05993f2c564284b0742afd55f78
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Lightningball/Textures/Materials/Electric_Splat_Hit_02.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 92c74b906297de747912cd5bd63b18d3, type: 2}
+    - {fileID: 11400000, guid: f8e2867a40e818743bdf465689410f1a, type: 2}

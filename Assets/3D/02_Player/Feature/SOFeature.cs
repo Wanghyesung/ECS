@@ -1,0 +1,80 @@
+using System;
+using UnityEngine;
+
+[Serializable]
+public enum eFeatureID
+{
+    None,
+    AttackSpeedUp,
+    HitCreateBulletRadius,
+    SpawnExObject,
+    PenetrationBullet,
+    MissileUP,
+    ShotGunUp,
+    BulletUP,
+    BulletMissileUP,
+    UpAttack,
+    UpHP,
+    UpSpeed,
+    UpDefense,
+    UpBulletSpeed,
+    UPDrone,
+    End,
+
+    //AttackUp,
+    
+}
+
+[Serializable]
+public enum eAcquireType
+{
+    Repeatable,
+    OneTime,
+}
+
+[Serializable]
+public enum eFeatureTier
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+    End,
+}
+
+/*///////////////////////////////////////////
+                FeatureSO
+기능 : 레벨업 등 특정 상황에 랜덤으로 제시되는 강화/기능의 정적 데이터 + 적용 로직을 담는 베이스 SO
+      런타임 획득 상태(레벨, 획득 여부)는 SO가 아닌 FeatureManager가 보유한다 (SO 데이터 오염 방지)
+ *///////////////////////////////////////////
+
+public abstract class SOFeature : SOData
+{
+    public override eDataType DataType { get => eDataType.Features; }
+
+    [SerializeField] private eFeatureID m_eID = eFeatureID.None;
+
+    public override int SubDataType => -1; //아직 미 개발
+
+    public eFeatureID ID => m_eID;
+
+    [SerializeField] private eAcquireType m_eAcquireType = eAcquireType.Repeatable;
+    public eAcquireType AcquireType => m_eAcquireType;
+
+    [Tooltip("후보 추첨 시 가중치. 전부 1이면 균등 랜덤")]
+    [SerializeField] private int m_iWeight = 1;
+    public int Weight => m_iWeight;
+
+    [SerializeField] private eFeatureTier m_eTier = eFeatureTier.Common;
+    public eFeatureTier Tier => m_eTier;
+
+    [Tooltip("이 기능의 최대 레벨. 0이면 제한 없음")]
+    [SerializeField] private int m_iMaxLevel = 0;
+    public int MaxLevel => m_iMaxLevel;
+
+    // _iNewLevel : 이 기능을 선택한 시점의 누적 획득 횟수 (FeatureManager가 갱신 후 전달)
+    public abstract void Apply(Player _refPlayer, int _iNewLevel); 
+    public abstract void Cancel(Player _refPlayer, int _iNewLevel); 
+
+}

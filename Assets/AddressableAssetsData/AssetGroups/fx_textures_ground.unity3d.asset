@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_ground.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_ground.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 370f40819f477344b91e5233028ff6d4
+  m_SerializeEntries:
+  - m_GUID: 457b9ceb7f1a16b49a6791da0b2856e4
+    m_Address: "Assets/08_Effect/GameVFX Collection(URP)/FX_Dissolution\uFF06Explosion/Textures/stone02.png"
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79f635bbab7e83847928045650ae3013
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/firerock.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fb318ce58a94a74c9e8e11731d08299
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Groundexplosion/Textures/decal_fire.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0bb57b242089b6439ccfb44aebe4a63
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Thunder/Textures/decal_fire3.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 535d3ae7cfafc6b4ea27fde4e8fb7d9d, type: 2}
+    - {fileID: 11400000, guid: 0a39ed70016017144885bcbb7d5a0509, type: 2}

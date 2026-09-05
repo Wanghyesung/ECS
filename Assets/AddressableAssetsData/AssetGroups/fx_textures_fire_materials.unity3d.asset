@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fx_textures_fire_materials.unity3d
+  m_EditorClassIdentifier: 
+  m_GroupName: fx_textures_fire_materials.unity3d
+  m_Data:
+    m_SerializedData: []
+  m_GUID: e3dee7c10593f52478caf4c622d1ecb3
+  m_SerializeEntries:
+  - m_GUID: bac63d726da40ae4c9cd1c6550fca3c4
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Fireball/Textures/Materials/fire_particles_sheet.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdfe835ba6884a24e8c47b7c8b0b7a55
+    m_Address: Assets/08_Effect/GameVFX Collection(URP)/FX_Dragonfire/Textures/Materials/Fire_real_red.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ba2f0742bb0a986468d63cc9e748326d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d88778429ee741a45ab0856efea37bbd, type: 2}
+    - {fileID: 11400000, guid: 66965e9f7b6334040b7a4aa2e1179a14, type: 2}

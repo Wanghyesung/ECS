@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d020ac56b7a0b69429b15bf5bc54e016, type: 3}
+  m_Name: SO_MissileAttackInfo
+  m_EditorClassIdentifier: 
+  Description: "\uD50C\uB808\uC774\uC5B4 \uBBF8\uC0AC\uC77C"
+  WeaponType: 4
+  PoolPrefab: {fileID: 11400000, guid: 5522f88365af0c64282e4bff7f6bf866, type: 2}
+  Damage: 20
+  AttackPower: 10
+  Cooldown: 1
+  Speed: 100
+  SpeedOffset: 20
+  AliveTime: 5
+  HitCount: 1
+  HitStep: 1
+  TelegraphDuration: 0
+  KnockbackForce: 0
+  KnockbackDuration: 0
+  StunDuration: 0
+  BaseRotationSpeed: 120
+  MaxRotationSpeed: 720
+  RotationAccelRate: 40
+  ProximityRadius: 1.5
+  CriticalChance: 0
+  HitLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  HitSound: {fileID: 0}
