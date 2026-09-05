@@ -34,3 +34,36 @@ m_refPickContainer.Resize(iPickCount, eDataType.Features); // <- Pick 컨테이�
 
 **제안하는 수정:** `ApplySuccess()`에서 `m_refPickContainer.Resize(...)`와 대칭으로, 후보를 채우기 전에 `m_refSelectContainer.Resize(m_SOJokerCard.GetCandidateCount(m_iLevel), eDataType.Features)`(또는 최소한 `ClearData()`)를 먼저 호출해서 컨테이너를 매 회차 후보 수에 맞게 리셋해야 함. 아직 코드는 수정하지 않음 — 사용자 확인 후 적용 예정.
 
+
+## 빌드에서만 풀 오브젝트가 안 나옴 (몬스터 공격/히트 이펙트/BulletLine 등) (2026-09-05)
+
+**증상:** 에디터 플레이에서는 풀에서 오브젝트가 정상적으로 나오는데, 빌드에서는 몬스터 스폰만 되고 몬스터 공격/파괴 임팩트/BulletLine/스폰 이펙트 등이 나오지 않음.
+
+**근본 원인 1 — Addressables 에셋 중복으로 인한 SOPoolData 인스턴스 불일치 (주범):**
+`ObjectPoolManager`의 모든 딕셔너리는 `SOPoolData` **에셋 참조(reference equality)** 를 키로 쓴다(`m_hashPool` 등). 그런데 이 프로젝트는 참조 경로가 두 갈래로 갈라져 있다.
+
+- 플레이어 빌드 데이터 쪽: `LobyScene`(EditorBuildSettings의 유일한 씬) → `GameSceneManager.m_listSceneData` → `SO_BattleSceneData.PoolDataList` → SOPoolData / `DungeonManager` → `SO_MainStage0~4` → SOPoolData
+- Addressables 번들 쪽: `BattleScene`(Addressable) + 몬스터/총알 프리팹(Addressable) → `Weapon.m_SOAttackInfo.PoolPrefab`, `Bullet.m_refHitEffectObj`, `Monster.m_refDeadEffect`, BT/BulletAction SO의 SOPoolData
+
+SOPoolData 에셋들은 Addressable로 등록되어 있지 않은 **암시적 의존성**이라, 빌드 시 (a) LobyScene 의존성으로 플레이어 데이터에 한 벌, (b) Addressables 번들에 또 한 벌 — 총 2벌이 직렬화된다. 런타임에는 서로 다른 ScriptableObject 인스턴스가 되므로, 풀은 (a) 사본으로 등록되고 조회는 (b) 사본으로 들어와 `TryGetValue`가 조용히 실패한다. 에디터 플레이는 Play Mode Script가 `Use Asset Database (fastest)`라 에셋이 딱 한 벌뿐이라 항상 성공한다 — 그래서 에디터에서만 잘 된다.
+
+이 구조가 증상과 정확히 일치한다: 몬스터 스폰은 Loby 쪽(`DungeonManager`/`ObjectSpawner` → SOStage)이라 키가 맞아서 성공하고, 씬/프리팹(번들) 안에서 호출되는 나머지는 전부 실패한다. 앞선 커밋 `a535ee5`(SOStage가 SOPoolData 경유)가 몬스터 스폰만 고쳤던 것도 같은 이유다.
+
+**근본 원인 2 — `SO_BattleSceneData.PoolDataList` 항목 누락:**
+빌드가 실제로 로드하는 씬 데이터는 `SO_BattleSceneData`(LobyScene의 `GameSceneManager.m_listSceneData`에 이것 하나만 등록됨) 인데, `SO_MainSceneData`에는 있는 `SO_BulletLine Data.asset` 과 `SO_SpawnData.asset` 이 목록에서 빠져 있다. 즉 이 두 풀은 애초에 생성조차 되지 않아 `GetObject`가 무조건 null을 돌려준다. (`SO_MainSceneData`는 `SO_BeamData`가 두 번 중복 등록되어 있기도 함)
+
+**근본 원인 3 — BulletLine 풀 데이터 미할당:**
+`m_refLineDrawer.m_refBulletLinePoolObj`가 총알 프리팹 19개 전부 `{fileID: 0}`(미할당)이다(`Assets/3D/02_Player/Weapon/Bullet/*.prefab`, `Assets/3D/03_Monster/Bullet/*.prefab`). `BulletLineDrawer.SetLine()`이 초입에서 return하므로 예고선은 어떤 경로로도 안 나온다. 디스크 상태 기준이므로 에디터에서 저장 안 된 변경이 있는지 확인 필요.
+
+**부가 요인 — 실패가 조용함:** `ObjectPoolManager.GetObject()`는 키가 등록 안 됐을 때/스택이 비었을 때 로그 없이 `null`을 반환하고, 호출부(`BulletLineDrawer`, `Bullet`, `Laser` 등)도 null이면 그냥 return한다. 그래서 빌드에서 아무 에러 없이 "그냥 안 나오는" 상태가 된다.
+
+**제안하는 수정:**
+1. (권장) 풀 키를 참조가 아니라 **값(문자열 ID)** 으로 바꾼다 — `Dictionary<string, ...>`에 `SOPoolData.PrefabRef.AssetGUID`를 키로 사용. 사본이 몇 벌 생기든 같은 키로 수렴하므로 중복 문제에 근본적으로 면역이 된다.
+2. 또는 중복 자체를 없앤다 — `SOSceneData`/`SOStage`/`SOPoolData`를 Addressable로 등록하고 `GameSceneManager`/`DungeonManager`가 직접 참조 대신 주소로 로드하게 바꾼다. (LobyScene을 Build Settings에서 빼고 부트스트랩 씬만 남기는 방식도 동일 효과)
+3. `SO_BattleSceneData.PoolDataList`에 `SO_BulletLine Data`, `SO_SpawnData` 추가 + `SO_MainSceneData`의 `SO_BeamData` 중복 제거.
+4. 총알 프리팹들의 `m_refBulletLinePoolObj` / `m_refVisualMeshFilter` 할당.
+5. `GetObject`가 키 미등록일 때 `[Conditional("UNITY_EDITOR")]` 경고를 찍도록 보강(다음에 같은 문제를 즉시 발견하기 위해).
+
+**검증 방법:** Addressables Groups 창 → Play Mode Script를 `Use Existing Build (Packed)`로 바꾸고 LobyScene에서 플레이하면 에디터에서 빌드와 동일한 증상이 재현된다. Tools → Analyze → `Check Duplicate Bundle Dependencies`로 중복 목록도 확인 가능.
+
+아직 코드/에셋은 수정하지 않음 — 사용자 확인 후 적용 예정.

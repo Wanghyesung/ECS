@@ -5393,8 +5393,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 40
-  m_fSpreadAngle: 10
+  m_iBulletCount: 100
+  m_fSpreadAngle: 80
 --- !u!1 &289476289
 GameObject:
   m_ObjectHideFlags: 0
