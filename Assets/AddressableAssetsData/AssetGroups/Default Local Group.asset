@@ -232,6 +232,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc4472fb561877843a6bb02378499b5b
+    m_Address: Assets/00_Scene/3D/MainScene/SceneData/MainScene_PoolData/SO_SpawnData.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e013cca83fe30934abd52c1a28cf5d55
     m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/MiniBullet.prefab
     m_ReadOnly: 0

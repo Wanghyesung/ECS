@@ -194,7 +194,14 @@ public class Monster : MonoBehaviour, IDamageable
         {
             Dead();
             GameObject refDeadEffect = ObjectPoolManager.m_Instance.GetObject(m_refDeadEffect, transform.position);
-            refDeadEffect.GetComponent<HitEffect>()?.SetSize(m_fMonsterSize);
+            // 동시 사망이 몰리면 DeadEffect 풀이 비어 GetObject가 null을 반환한다(SO_MonsterDeadEffect PreLoad=20).
+            // 연출이 빠지더라도 사망 처리 자체는 끝나야 하므로 널이면 조용히 건너뛴다
+            if (refDeadEffect != null)
+            {
+                HitEffect refHitEffect = refDeadEffect.GetComponent<HitEffect>();
+                if (refHitEffect != null)
+                    refHitEffect.SetSize(m_fMonsterSize);
+            }
 
             return;
         }
