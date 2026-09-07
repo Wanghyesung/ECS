@@ -4,7 +4,9 @@ Unity(URP)로 제작 중인 **3D 슈팅 게임**입니다.
 레벨업 3택 위에 등급형 조커 카드 도박이라는 하이 리스크 성장 계층을 더해, "한 번 더 걸어볼까 여기서 멈출까"를 매 레벨업마다 반복시키는 것이 이 게임의 정체성입니다.
 
 > 데모 영상: https://1drv.ms/v/c/d9470e8558d46727/IQDRxPH4D6wsSbxzpUsYRbMAAa-4UNTq2dzK-Ku9exJmX_k?e=UdO4O4
-![플레이 사신](Docs/Screenshots/boss.png)
+
+| 플레이 사진 |
+(Docs/Screenshots/boss.png)
 
 ## 게임 소개
 
