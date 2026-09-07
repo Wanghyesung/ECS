@@ -62,8 +62,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refLineDrawer:
-    m_refBulletLinePoolObj: {fileID: 0}
-    m_refVisualMeshFilter: {fileID: 0}
+    m_refBulletLinePoolObj: {fileID: 11400000, guid: 8ba86a45a74aa9348b6d91ffe4f4fc9c, type: 2}
+    m_refVisualMeshFilter: {fileID: 197989894670402458}
   m_refHitEffectObj: {fileID: 11400000, guid: 217c51b087a3c6046b71fda2d675ce4c, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []

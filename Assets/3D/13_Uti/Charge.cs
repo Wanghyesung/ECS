@@ -9,7 +9,7 @@ using static UnityEngine.ParticleSystem;
 
 /*///////////////////////////////////////////
                Charge
-��� : ���Ͱ� ���� ������Ʈ�� ��ȯ�ϱ� ���� ������ ��� (��ƼŬ �ð�..)
+목적 : 일정 시간동안 차지 파티클 실행, 쿨타임 대기
  *///////////////////////////////////////////
 
 public class Charge : MonoBehaviour
@@ -24,7 +24,6 @@ public class Charge : MonoBehaviour
 
     private bool m_bCompleted = false;
 
-    //������ �������� ��ȯ�� ������Ʈ�� �������ֱ� ���ؼ�
     private SpawnInfo m_refSpawnInfo = null;
     private void Awake()
     {

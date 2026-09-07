@@ -40,19 +40,5 @@ public sealed class BulletLine : MonoBehaviour
         transform.localScale = new Vector3(vSourceWorldScale.x, _fDistance * 0.5f, vSourceWorldScale.z);
     }
 
-    [ContextMenu("테스트 라인 생성")]
-    private void TestBuildLine()
-    {
-        if (m_refMeshFilter == null)
-            m_refMeshFilter = GetComponent<MeshFilter>();
-
-        if (m_refTestSource == null)
-        {
-            Debug.Log("BulletLine 테스트 : m_refTestSource(소스 MeshFilter)를 먼저 지정하세요");
-            return;
-        }
-
-        SetLine(transform.position, m_vTestDirection, m_fTestDistance, m_refTestSource);
-    }
 
 }

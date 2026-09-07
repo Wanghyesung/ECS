@@ -35,7 +35,6 @@ public class HitEffect : MonoBehaviour
         transform.localScale = m_vBaseScale * fRatio;
     }
 
-    //�ݹ�
     private void OnParticleSystemStopped()
     {
         ObjectPoolManager.m_Instance.PushObject(gameObject);
