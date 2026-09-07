@@ -5,8 +5,9 @@ Unity(URP)로 제작 중인 **3D 슈팅 게임**입니다.
 
 > 데모 영상: https://1drv.ms/v/c/d9470e8558d46727/IQDRxPH4D6wsSbxzpUsYRbMAAa-4UNTq2dzK-Ku9exJmX_k?e=UdO4O4
 
-| 플레이 사진 |
-(Docs/Screenshots/boss.png)
+## 플레이 사진
+![플레이 사진](Docs/Screenshots/boss.png)
+
 
 ## 게임 소개
 
