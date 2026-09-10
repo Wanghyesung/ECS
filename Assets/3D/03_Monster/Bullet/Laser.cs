@@ -25,6 +25,10 @@ public class Laser : MonoBehaviour, IAttackObject
     [SerializeField] private float m_fRange = 20f;
     [SerializeField] private float m_fLaserRadius = 0.5f;        // 판정 두께(레이 자체 반경)
 
+    [Header("Debug")]
+    [SerializeField] private bool m_bShowDebugGizmo = false;
+    [SerializeField] private Color m_tGizmoColor = Color.red;
+
     protected tShotInfo m_tShotInfo;
     protected PoolObject m_refPoolObj;
 
@@ -156,5 +160,26 @@ public class Laser : MonoBehaviour, IAttackObject
 
         for (int i = 0; i < m_listWeaponHitActions.Count; ++i)
             m_listWeaponHitActions[i]?.Execute(this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (m_bShowDebugGizmo == false)
+            return;
+
+        Gizmos.color = m_tGizmoColor;
+        Vector3 vStart = transform.position;
+        Vector3 vEnd = vStart + transform.forward * m_fRange;
+
+        // DoHitCheck의 RaycastMask 판정 범위(원점~vEnd, 반경 m_fLaserRadius)와 동일한 값을 그려서 비교 가능하게 함
+        Gizmos.DrawWireSphere(vStart, m_fLaserRadius);
+        Gizmos.DrawWireSphere(vEnd, m_fLaserRadius);
+
+        Vector3 vRight = transform.right * m_fLaserRadius;
+        Vector3 vUp = transform.up * m_fLaserRadius;
+        Gizmos.DrawLine(vStart + vRight, vEnd + vRight);
+        Gizmos.DrawLine(vStart - vRight, vEnd - vRight);
+        Gizmos.DrawLine(vStart + vUp, vEnd + vUp);
+        Gizmos.DrawLine(vStart - vUp, vEnd - vUp);
     }
 }

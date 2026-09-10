@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 using static Weapon;
 
@@ -14,7 +15,10 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Stats")]
     public eWeaponType WeaponType;
-    public SOPoolData PoolPrefab;
+    // PoolPrefab -> SOData 리네임. 이 어트리뷰트가 없으면 Unity가 기존 직렬화 데이터를
+    // 새 필드에 매핑하지 못해 모든 SOAttackInfo 에셋의 참조가 조용히 null이 된다. 절대 제거하지 말 것
+    [FormerlySerializedAs("PoolPrefab")]
+    public SOPoolData SOData;
 
     public int Damage = 10;
     public int AttackPower = 0;

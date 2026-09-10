@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: 
   WeaponType: 1
-  PoolPrefab: {fileID: 11400000, guid: 8f37d356db8897a42bfcb33fbcb6ccd5, type: 2}
+  SOData: {fileID: 11400000, guid: 8f37d356db8897a42bfcb33fbcb6ccd5, type: 2}
   Damage: 3
   AttackPower: 10
   Cooldown: 1.5
-  Speed: 40
+  Speed: 100
   SpeedOffset: 4
   AliveTime: 4
   HitCount: 1

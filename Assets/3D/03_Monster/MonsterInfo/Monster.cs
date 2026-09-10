@@ -96,7 +96,6 @@ public class Monster : MonoBehaviour, IDamageable
         m_refPoolObj = GetComponent<PoolObject>();
 
         m_refBlackBoard.Owner = this;
-
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
 
@@ -121,6 +120,8 @@ public class Monster : MonoBehaviour, IDamageable
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
         m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
+
+        m_refBlackBoard.TargetTr = Player.CurrentPlayer.transform;
         
 
         if (m_refPoolObj != null)

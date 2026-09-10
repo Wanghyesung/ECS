@@ -25241,7 +25241,7 @@ Transform:
   m_GameObject: {fileID: 4504684637523439608}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000021855694, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 12.6, z: 108.3}
+  m_LocalPosition: {x: 0, y: 12.559998, z: 114.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40729,6 +40729,7 @@ MonoBehaviour:
       SpawnParticleTransform: {fileID: 6685922635759219881}
       SpawnWaitTime: 3
     CurrentCharge: {fileID: 0}
+    AimTimer: 0
     StrafeDir: {x: 0, y: 0, z: 0}
     StrafeTimer: 0
     WaitTimer: 0
@@ -40736,7 +40737,7 @@ MonoBehaviour:
   m_listSpawn:
   - Weapon: {fileID: 5837634303713512790}
     SpawnFowardOffset: 70
-    SpawnCount: 50
+    SpawnCount: 150
     ChargeParticle: {fileID: 8201528194064153218}
     SpawnParticleTransform: {fileID: 6685922635759219881}
     SpawnWaitTime: 3
@@ -40823,8 +40824,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6273322204b0814b915fba294440e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fRadius: 32.5
-  m_vOffset: {x: 0, y: 0, z: 0}
+  m_fRadius: 50
+  m_vOffset: {x: 0, y: 0, z: 29.83}
   m_bShowDebugGizmo: 1
   m_tGizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6867361734819938341

@@ -40,7 +40,7 @@ public class Weapon : MonoBehaviour
     private eWeaponType m_eWeapoonType = eWeaponType.None;
     public eWeaponType WeaponType => m_eWeapoonType;
 
-    public SOPoolData FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
+    public SOPoolData FireBulletPrefab => m_SOAttackInfo.SOData;
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
@@ -102,7 +102,7 @@ public class Weapon : MonoBehaviour
             ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
         qRot = ApplyInaccuracy(qRot);
 
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
+        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
             return;
 
@@ -139,7 +139,7 @@ public class Weapon : MonoBehaviour
             tShotInfo refPelletShotInfo = _refShotInfo;
             refPelletShotInfo.Speed = RollSpeed();
 
-            GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
+            GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
             if (refObj == null)
                 continue;
 
@@ -160,7 +160,7 @@ public class Weapon : MonoBehaviour
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.Speed = RollSpeed();
 
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
+        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
             return;
 
