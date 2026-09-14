@@ -1,195 +1,101 @@
 # 아키텍처 규칙
 
-> ⚠️ **프로젝트 결정 사항:** 이 프로젝트는 **VContainer(DI)를 사용하지 않습니다.** 의존성은 직접 참조(SerializeField, GetComponent) 또는 절제된 싱글톤으로 연결합니다. 시스템 간 느슨한 통신(이벤트)에는 **C# 이벤트(`event Action<T>`)**를 표준으로 사용합니다 — 별도 메시징 라이브러리는 쓰지 않습니다.
+> ⚠️ **프로젝트 결정 사항**
+> - **VContainer(DI) 사용 안 함.** 의존성은 `[SerializeField]` 직접 참조 또는 절제된 싱글톤.
+> - 시스템 간 1회성 알림은 **C# 이벤트(`event Action<T>`)**. 별도 메시징 라이브러리 없음.
+> - 연속적으로 변하는 값의 Model→View 바인딩은 **R3**(`ReactiveProperty<T>`) — [[r3]] 스킬 참고. UniRx 아님.
+> - 비동기는 **UniTask** 전용. 코루틴 금지.
+> - 입력은 **New Input System + 생성 C# 클래스**를 `InputManager` 싱글톤이 소유 (아래 참고).
 
 ## Mermaid 다이어그램 작성 규칙
 
-기능 설계 시 시스템 간 흐름/상태를 보여줄 때는 텍스트 트리 대신 **Mermaid**를 사용합니다. 다이어그램을 그리기 전에 문법 참고용으로 먼저 읽으세요:
+기능 설계 시 흐름/상태는 텍스트 트리 대신 **Mermaid**로. 상태 전이 → `stateDiagram-v2`, 데이터 흐름 → `flowchart`, 요청↔응답 순서 → `sequenceDiagram`. 문법 참고: https://royzero.tistory.com/entry/markdown-mermaid-guide (상태 다이어그램은 없으니 https://mermaid.live 에서 검증). 계획을 제시하기 전에 다이어그램으로 먼저 승인을 받는다.
 
-- https://royzero.tistory.com/entry/markdown-mermaid-guide — flowchart/sequence/gantt/ER/class 다이어그램 문법 정리. **상태 다이어그램(state diagram) 문법은 다루지 않으므로**, 상태 다이어그램이 필요하면 `stateDiagram-v2` 문법을 사용하고 https://mermaid.live 에서 미리 검증할 것.
+## 게임 시스템 아키텍처 (필수)
 
-**규칙:**
-- 기능 계획을 사용자에게 제시하기 전에, 상태/흐름을 Mermaid로 먼저 그려서 승인을 받습니다(`/unity-feature`, `/unity-workflow`, `/unity-interview` 공통 — 각 커맨드 파일 참고).
-- 시스템 간 상태 전이가 있는 기능은 `stateDiagram-v2`, 단순 데이터 흐름은 `flowchart`, 시간 순서가 중요한 상호작용(요청→응답)은 `sequenceDiagram`으로 표현합니다.
-- 렌더링 가능한 곳(Claude Artifact 등)에서는 실제로 렌더해서 보여주고, 아니면 마크다운 \`\`\`mermaid 코드블록으로 제시합니다.
+- **몬스터 Behavior Tree:** Sequence / Selector / Action 노드.
+- **SO 기반 Action:** 각 Action 로직은 ScriptableObject — 인스펙터에서 할당/교체.
+- **Blackboard:** 몬스터 상태·타겟·동적 변수 공유용. `[Serializable]` 클래스로 `Monster`/`BehaviorTree`가 필드로 소유, BT 노드의 `Execute(BlackBoard _refBB)`로 전달. 파일은 `BlackBoard.cs`로 분리.
+- **데이터 분리 (최우선):** SO는 '데이터와 에디터 세팅'만. 런타임 인스턴스별 상태는 **반드시 Blackboard나 런타임 노드 인스턴스**에. 예외: BT 진입 시 `Instantiate`로 몬스터별 클론되는 Composite 노드(Sequence/Select)는 클론 인스턴스에 한해 인덱스/타이머를 들고 있어도 됨. 클론되지 않는 leaf Action은 절대 상태를 갖지 말 것.
+- **Object Pool:** Bullet/FX/Enemy 필수 — [[object-pooling]] (`SOPoolData` + `PoolObject` + `ObjectPoolManager`).
+- **Event System:** 점수/피격/게임오버/레벨업 UI/조커 카드 UI 등 UI↔시스템 느슨한 결합은 `event Action<T>`. 인스펙터 바인딩이 필요한 UI 클릭은 `UnityEvent` 허용.
 
-## 프로젝트 전용: 게임 시스템 아키텍처 (필수)
+## 싱글톤 (절제)
 
-> 아래는 이 프로젝트의 실제 게임플레이 시스템(몬스터 AI, 스킬, 이펙트) 설계 규칙입니다.
-
-- **몬스터 Behavior Tree (BT):** Sequence, Selector, Action 노드로 구성된 트리 구조.
-- **ScriptableObject(SO) 기반 Action:** 각 Action 로직은 SO로 작성되어 에디터에서 인스펙터로 할당 및 교체가 가능해야 함.
-- **Blackboard System:** 몬스터 간의 상태, 타겟 정보, 동적 변수(int, float, bool 등)를 공유하고 전달하기 위한 Blackboard 필수 사용. `[Serializable]` 클래스로 작성해 몬스터(`Monster`/`BehaviorTree`)가 필드로 소유하고, BT 노드의 `Execute(BlackBoard _refBB)`에 참조로 전달한다. 별도 `MonoBehaviour` 컴포넌트일 필요는 없지만, "파일당 타입 하나" 규칙에 맞춰 `BlackBoard.cs`처럼 독립된 파일로 분리할 것을 권장.
-- **데이터 분리 규칙 (중요):** SO는 '데이터와 에디터 세팅'만 가져야 하며, 런타임에 인스턴스별로 동적으로 변하는 상태값은 반드시 Blackboard나 런타임 노드 인스턴스에 저장할 것 — **SO 데이터 오염을 방지하기 위한 최우선 규칙**. 단, Composite 노드(Sequence/Select 등)처럼 BT 진입 시 `Instantiate`로 몬스터별로 클론되는 SO는 클론된 인스턴스에 한해 인덱스/타이머 같은 진행 상태를 직접 들고 있어도 된다 — 원본 에셋이 아니라 런타임 클론이기 때문. 클론되지 않는 leaf Action 노드는 절대 상태를 갖지 말 것(여러 몬스터가 같은 원본 SO 에셋을 공유하므로 즉시 오염됨).
-- **Object Pool:** 자주 생성/삭제되는 미사일(Bullet), 이펙트(FX), 에너미(Enemy)에 필수 적용. (조커 카드/랜덤 스킬 시스템 특성상 발사체·이펙트 생성량이 많을 것으로 예상되므로 특히 중요 — 기획 배경은 `.claude/docs/game-design.md` 참고)
-- **Event System:** 점수 갱신, 플레이어 피격, 게임 오버, 레벨업 UI, 조커 카드 UI 등 UI와 시스템 간 느슨한 결합(Observer 패턴)은 아래 **C# 이벤트(`event Action<T>`)**로 통일해서 구현할 것. 인스펙터에서 직접 바인딩해야 하는 UI 클릭 등은 `UnityEvent`를 써도 됨.
-
----
-
-## 싱글톤 사용 가이드 (절제해서 사용)
-
-DI를 쓰지 않기로 했으므로 싱글톤을 완전히 금지하진 않지만, 아무 데나 남발하면 예전의 "갓 GameManager" 문제로 되돌아갑니다. 아래 기준을 지키세요:
-
-- **허용:** 씬 전체에 정말 하나만 존재해야 하고, 여러 시스템이 공통으로 참조하는 매니저급 클래스 (`AudioManager`, `SaveManager`, `ObjectPoolManager` 등)
-- **금지:** `PlayerSystem`, `ScoreSystem`처럼 특정 기능 하나를 담당하는 클래스를 습관적으로 싱글톤화하는 것. 이런 건 씬 안에서 `[SerializeField]` 직접 참조로 연결하세요
-- **금지:** 여러 시스템을 한데 묶어서 다 갖고 있는 `GameManager`/`GameContext` 같은 "만능 매니저" — 아래 "갓 오브젝트 금지" 참고
-- `public static T Instance { get; private set; }` 형태의 프로퍼티를 사용하세요. `public static T m_Instance;`처럼 raw public 필드로 노출하지 마세요 — 외부에서 실수로 재할당할 수 있어 캡슐화 규칙(`csharp-unity.md`)에 위배됩니다.
-- 싱글톤 클래스는 `Awake()`에서 중복 인스턴스를 파괴하는 표준 가드를 반드시 넣을 것 — **`return;`을 빠뜨리지 마세요.** `Destroy()`는 그 프레임 끝까지 실행이 지연되므로, `return`이 없으면 파괴 예정인 인스턴스가 그대로 `Instance`를 덮어써버립니다:
+- **허용:** 씬에 하나만 있어야 하고 여러 시스템이 공통 참조하는 매니저급 — `InputManager`, `ObjectPoolManager`, `AudioManager`, `CameraManager` 등
+- **금지:** `PlayerSystem`/`ScoreSystem`처럼 기능 하나짜리 클래스의 습관적 싱글톤화 (→ `[SerializeField]` 직접 참조), 모든 걸 다 가진 `GameManager`(→ 갓 오브젝트 금지)
+- `public static T Instance { get; private set; }` 프로퍼티. `public static T m_Instance;` raw 필드 금지 (외부 재할당 가능)
+- Awake 가드에서 **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `Instance`를 덮어쓴다:
 
 ```csharp
-public sealed class AudioManager : MonoBehaviour
-{
-    public static AudioManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return; // 필수 — 없으면 아래 두 줄이 파괴 예정 인스턴스에서도 실행된다
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-}
-```
-
-```csharp
-// 실수 예시 — 이렇게 쓰면 안 됩니다
 private void Awake()
 {
-    if (Instance != null && Instance != this)
-    {
-        Destroy(this); // return 없음 + 컴포넌트만 파괴(GameObject는 그대로 남음)
-    }
-    Instance = this; // 파괴 예정 인스턴스가 Instance를 다시 덮어씀 — 그 프레임 동안 죽은 싱글톤을 참조하게 된다
-    DontDestroyOnLoad(gameObject);
+    if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+    Instance = this;
+    DontDestroyOnLoad(gameObject);   // 루트 오브젝트에서만 동작 — 자식이면 조용히 무시됨 (known-issues 참고)
 }
 ```
 
-## 시스템 간 통신을 위한 C# 이벤트
-
-프로젝트 전반의 느슨한 결합(Observer 패턴)은 `event Action` / `event Action<T>`로 구현합니다. 별도 메시징 라이브러리(MessagePipe 등)는 쓰지 않습니다 — 씬 하나에 존재하는 시스템 수가 많지 않아 DI 컨테이너 없이도 구독/해제를 직접 관리할 수 있기 때문입니다.
+## 시스템 간 통신 — C# 이벤트
 
 ```csharp
-// --- 발행 측: 정적 이벤트로 선언 (구독자가 발행자 인스턴스를 몰라도 되게) ---
 public sealed class Monster : MonoBehaviour
 {
-    public static event Action<Monster> OnMonsterDied;
-
-    private void Die()
-    {
-        OnMonsterDied?.Invoke(this);
-    }
+    public static event Action<Monster> OnMonsterDied;      // 구독자가 발행자 인스턴스를 몰라도 되게 static
+    private void Die() => OnMonsterDied?.Invoke(this);      // 기존 참조를 넘김 — 매 프레임 새 객체 만들지 말 것
 }
 
-// --- 구독 측: OnEnable에서 구독, OnDisable에서 해제 ---
 public sealed class ScoreSystem : MonoBehaviour
 {
-    private void OnEnable()
-    {
-        Monster.OnMonsterDied += OnMonsterDied;
-    }
-
-    private void OnDisable()
-    {
-        Monster.OnMonsterDied -= OnMonsterDied;
-    }
-
-    private void OnMonsterDied(Monster _refMonster)
-    {
-        AddScore(_refMonster.ScoreValue);
-    }
-
-    private void AddScore(int _iAmount) { /* ... */ }
+    private void OnEnable()  => Monster.OnMonsterDied += OnMonsterDied;
+    private void OnDisable() => Monster.OnMonsterDied -= OnMonsterDied;   // 짝 필수 — static 이벤트는 씬 전환에도 살아남음
+    private void OnMonsterDied(Monster _refMonster) { /* ... */ }
 }
 ```
 
-**규칙:**
-- 구독은 반드시 짝을 맞춰 해제하세요 (`OnEnable`에서 `+=`, `OnDisable`에서 `-=`) — 짝이 안 맞으면 파괴된 오브젝트를 향한 호출이나 메모리 누수로 이어집니다
-- 정적 이벤트는 씬 전환에도 살아남습니다 — 구독 해제를 빠뜨리면 이전 씬에서 파괴된 오브젝트가 계속 콜백을 받아 `MissingReferenceException`이 날 수 있으니 `OnDisable` 해제를 특히 꼼꼼히 챙기세요
-- 인스펙터에서 직접 바인딩해야 하는 UI 클릭/드래그 등은 `UnityEvent`를 사용해도 됩니다 (`BaseButtonUI` 등 기존 UI 코드 패턴)
-- 이벤트 인자로 매 프레임 새 객체를 만들지 마세요 — 이미 존재하는 참조(예: 죽은 `Monster` 자신)를 넘기거나 값 타입을 사용하세요
-- 매니저 싱글톤(`ObjectPool.Instance`, `DungeonManager.Instance` 등)을 직접 호출하는 것도 이 프로젝트에서는 허용됩니다 — 이벤트는 "발행자가 구독자를 몰라야 하는 경우"에 쓰고, 그럴 필요가 없으면 직접 참조가 더 단순합니다
+- 구독/해제는 `OnEnable`/`OnDisable`에서 반드시 짝을 맞춘다. 빠뜨리면 파괴된 오브젝트가 콜백을 받아 `MissingReferenceException`
+- 매니저 싱글톤 직접 호출(`ObjectPoolManager.Instance.Get(...)`)은 허용 — 이벤트는 "발행자가 구독자를 몰라야 할 때"만
 
-## 비동기를 위한 UniTask
+## 값 바인딩 — R3
 
-UniTask는 코루틴을 완전히 대체합니다. `StartCoroutine`도, `IEnumerator`도, `yield return`도 사용하지 않습니다.
+HP/점수/카드 수처럼 **계속 변하고 여러 View가 지켜보는 값**은 Model/System이 `ReactiveProperty<T>`로 소유하고 View는 `Subscribe(...).AddTo(this)`로 표시만 갱신한다. 1회성 알림까지 Observable로 바꾸지 않는다. 패턴·규칙·UniRx와의 차이는 [[r3]] 스킬.
+
+## 비동기 — UniTask
+
+`StartCoroutine`/`IEnumerator`/`yield return`/`async void` 금지.
 
 ```csharp
-public sealed class WaveSpawnerSystem : MonoBehaviour
+private readonly CancellationTokenSource m_cts = new();
+
+private async UniTaskVoid StartSpawning()               // fire-and-forget 은 UniTaskVoid, 대기 가능하면 UniTask
 {
-    private readonly CancellationTokenSource m_cts = new();
-
-    public async UniTaskVoid StartSpawning()
+    for (int i = 0; i < 10; i++)
     {
-        for (int iWaveIndex = 0; iWaveIndex < 10; iWaveIndex++)
-        {
-            await SpawnWave(iWaveIndex, m_cts.Token);
-            await UniTask.Delay(TimeSpan.FromSeconds(5), cancellationToken: m_cts.Token);
-        }
+        await SpawnWave(i, m_cts.Token);
+        await UniTask.Delay(TimeSpan.FromSeconds(5), cancellationToken: m_cts.Token);
     }
-
-    private async UniTask SpawnWave(int _iWaveIndex, CancellationToken _token)
-    {
-        int iEnemyCount = _iWaveIndex * 3;
-        for (int iEnemyIndex = 0; iEnemyIndex < iEnemyCount; iEnemyIndex++)
-        {
-            // 스폰 로직 (Object Pool에서 꺼내기)
-            await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: _token);
-        }
-    }
-
-    private void OnDestroy() => m_cts.Cancel();
 }
+
+private void OnDestroy() => m_cts.Cancel();
 ```
 
-**규칙:**
-- 항상 `CancellationToken`을 전달하세요 — 일반적으로 `this.GetCancellationTokenOnDestroy()`나 자체 `CancellationTokenSource`를 사용
-- 대기 가능한 작업에는 `UniTask`를, fire-and-forget에는 `UniTaskVoid`를 사용하세요
-- `new WaitForSeconds` 대신 `UniTask.Delay`를 사용하세요
-- 병렬 비동기 작업에는 `UniTask.WhenAll`을 사용하세요
-- 백그라운드 스레드에서 돌아올 때는 `UniTask.SwitchToMainThread()`를 사용하세요
-- `async void`는 사용하지 마세요 — 항상 `async UniTask` 또는 `async UniTaskVoid`를 사용하세요
+- 항상 `CancellationToken` 전달 (`this.GetCancellationTokenOnDestroy()` 또는 자체 CTS)
+- 병렬은 `UniTask.WhenAll`, 백그라운드에서 복귀는 `UniTask.SwitchToMainThread()`
 
-## 상속보다 조합을 우선
+## 상속보다 조합
 
-MonoBehaviour는 컴포넌트이지, 베이스 클래스가 아닙니다. 깊은 상속 트리를 만들지 마세요.
+MonoBehaviour 상속 최대 깊이 2 (베이스 + 서브클래스 1). 그 이상은 조합. View는 가볍게 — 로직은 System, 데이터는 Model.
 
-MonoBehaviour 상속 최대 깊이: 2 (베이스 + 서브클래스 1개). 그 이상이 필요하면 조합하세요.
+## UI = MVP + 기능 분리
 
-View는 가벼워야 합니다 — 로직은 System에, 데이터는 Model에 있어야 합니다.
-
-## UI는 MVP + 기능 분리 조합으로 구성
-
-UI도 "상속보다 조합" 원칙을 그대로 따릅니다. 화면 하나를 담당하는 오케스트레이터 클래스가 선택 상태 추적, 상세 표시, 재화 비교, 트랜잭션, 카운트 조회까지 전부 직접 구현하지 않습니다. `DungeonManager`가 몬스터 스폰을 직접 하지 않고 전용 컴포넌트 `ObjectSpawner`를 `[SerializeField]`로 물고 있다가 위임하는 것처럼, UI 오케스트레이터도 각 표시/기능 단위를 별도 View 컴포넌트로 만들어 붙이고 위임합니다.
+화면 오케스트레이터(Presenter, 예: `PlayerStatUI`)는 **조합/위임만** 한다. 표시 단위는 별도 View 컴포넌트(`StatDetailView`, `UpgradeButtonView`)로 쪼개 `[SerializeField]`로 소유하고 이벤트 구독/메서드 호출로 위임한다 — `DungeonManager`가 스폰을 `ObjectSpawner`에 위임하는 것과 같은 패턴.
 
 ```csharp
-// 나쁜 예 — 오케스트레이터 하나가 선택 상세 표시, 강화 트랜잭션, 재화 비교, 카운트 조회까지 전부 직접 처리
-public class PlayerStatUI : MonoBehaviour, ICountable
-{
-    [SerializeField] private SOObjectInfo m_refBaseInfo;
-    [SerializeField] private Container m_refContainer;
-
-    [Header("선택 상세")]
-    [SerializeField] private Image m_refSelectIcon;
-    [SerializeField] private TextMeshProUGUI m_refNameText;
-    [SerializeField] private TextMeshProUGUI m_refValueText;
-    [SerializeField] private TextMeshProUGUI m_refLevelText;
-
-    [Header("강화")]
-    [SerializeField] private BaseButtonUI m_refUpgradeButton;
-    [SerializeField] private TextMeshProUGUI m_refCostText;
-    // RefreshSelected(), TryUpgrade(), GetCost(), GetLevel(), GetCount() 등
-    // 모든 로직이 이 클래스 하나에 몰려있음 — 화면이 커질수록 God Object가 됨
-}
-
-// 좋은 예 — 오케스트레이터(Presenter)는 조합/위임만, 각 책임은 전용 View 컴포넌트로 분리
 public sealed class PlayerStatUI : MonoBehaviour
 {
     [SerializeField] private Container m_refContainer;
-    [SerializeField] private StatDetailView m_refDetailView;     // 선택된 스탯 표시 전담
-    [SerializeField] private UpgradeButtonView m_refUpgradeView; // 비용 표시 + 재화 비교 + 알파 처리 전담
+    [SerializeField] private StatDetailView m_refDetailView;      // 선택 스탯 표시 전담
+    [SerializeField] private UpgradeButtonView m_refUpgradeView;  // 비용/재화 비교/알파 전담
 
     private void Awake()
     {
@@ -199,127 +105,66 @@ public sealed class PlayerStatUI : MonoBehaviour
 }
 ```
 
-**규칙:**
-- MVP의 View는 "표시만" 담당하는 순수 컴포넌트(`StatDetailView`, `UpgradeButtonView` 등)로 쪼갭니다 — 로직 없이 `Show()`/`Refresh()`류 메서드만 가집니다
-- Presenter 역할은 오케스트레이터(`PlayerStatUI` 같은 클래스)가 맡되, `DungeonManager`처럼 `[SerializeField]`로 전용 View 컴포넌트를 직접 소유하고 이벤트 구독이나 메서드 호출로 위임합니다 — 오케스트레이터는 "무엇을 언제 보여줄지"만 결정하고 "어떻게 그리는지"는 각 View 컴포넌트가 담당합니다
-- `ICountable`처럼 인터페이스를 구현해야 하는 책임도 오케스트레이터가 직접 들기보다, 필요하면 전용 소스 컴포넌트로 분리하는 걸 먼저 검토합니다
-- 판단 기준: 그 필드/메서드 묶음이 "다른 화면에서도 재사용될 만한 독립된 표시/기능 단위"인가요? 그렇다면 별도 컴포넌트로 뺍니다. 이 화면에서만 쓰이는 단순 배선(이벤트 구독/해제 정도)이라면 오케스트레이터에 남겨도 됩니다
+- View는 `Show()`/`Refresh()`류만 — 로직 없음
+- 판단 기준: "다른 화면에서도 재사용될 독립 표시/기능 단위"면 컴포넌트로 분리. 이 화면 전용 배선만이면 오케스트레이터에 남겨도 됨
+- `ICountable` 같은 인터페이스 책임도 오케스트레이터가 직접 들기보다 전용 컴포넌트 분리를 먼저 검토
 
-## 정적 데이터를 위한 ScriptableObject
+## 정적 데이터 = ScriptableObject
 
-아이템, 어빌리티, 적 설정, 레벨 데이터, BT Action — 이 모두는 ScriptableObject여야 합니다:
-
-```csharp
-[CreateAssetMenu(menuName = "Game/Weapon Definition")]
-public sealed class WeaponDefinition : ScriptableObject
-{
-    [SerializeField] private string m_strDisplayName;
-    [SerializeField] private float m_fDamage;
-    [SerializeField] private float m_fFireRate;
-    [SerializeField] private GameObject m_refBulletPrefab;
-}
-```
-
-ScriptableObject는 **정적/설정 데이터**를 담습니다. 런타임에 변경 가능한 상태는 절대 SO에 넣지 말고 Model이나 Blackboard에 두세요 (위 "데이터 분리 규칙" 참고).
+아이템, 어빌리티, 적 설정, 스테이지, BT Action, 풀 데이터는 SO. **런타임에 변하는 상태는 절대 SO에 넣지 말 것** — Model/Blackboard/Manager 배열에.
 
 ## 입력 시스템 아키텍처
 
-입력은 Player 하나만 보는 게 아니라 여러 System이 각자 다른 키/액션을 구독하는 **여러 시스템이 공통으로 참조하는 전역 관심사**입니다. 그래서 다른 기능 전용 System과 달리 `InputManager`는 예외적으로 싱글톤 매니저로 둡니다 (`AudioManager`/`SaveManager`와 같은 선상 — 위 "싱글톤 사용 가이드" 참고).
+입력은 여러 System이 각자 구독하는 전역 관심사이므로 `InputManager`만 예외적으로 싱글톤.
 
-**컨벤션:**
-- `InputManager`는 `.inputactions` 에셋(예: `Assets/3D/06_Input/PlayerAction.inputactions`)에서 정의한 액션들을 `InputActionReference` 필드로 인스펙터에서 직접 참조합니다. `PlayerControls` 같은 생성된 C# 클래스는 쓰지 않습니다 — 코드를 건드리지 않고 에디터에서 액션/바인딩을 수정할 수 있어야 하기 때문입니다.
-- `InputManager`는 **입력을 읽어서 노출하는 것까지만** 합니다. 입력에 대한 반응(이동 계산, 발사 로직 등)은 절대 `InputManager` 안에 두지 않고, 각 System(`PlayerMovement`, `WeaponSystem` 등)이 `InputManager.Instance`를 직접 참조해 값을 읽어 처리합니다 (매니저 싱글톤 직접 호출은 이 프로젝트에서 허용됨 — 위 "시스템 간 통신을 위한 C# 이벤트" 참고).
-- 연속 입력(이동 등)은 캐싱된 값을 노출하고, 불연속 입력(버튼 등)에 즉시 반응해야 하는 System은 해당 액션의 `performed` 콜백을 `OnEnable`/`OnDisable`에서 짝을 맞춰 구독/해제합니다.
-- 싱글톤이므로 위 "싱글톤 사용 가이드"의 Awake 중복 파괴 가드(`return;` 포함)를 반드시 따르세요.
+- `.inputactions` 에셋(`Assets/3D/06_Input/PlayerAction.inputactions`)에서 **"Generate C# Class"를 켜서** 생성된 클래스(`PlayerAction`)를 `InputManager`가 `new` 해서 소유한다. 액션 추가 = 에셋에 추가 → 클래스 자동 재생성 → 코드 한 줄. 인스펙터 드래그 없음, 이름 변경은 컴파일 에러로 드러남. (예전 `List<InputActionReference>` 방식은 액션 하나마다 필드·인스펙터·Update 메서드가 늘어나 폐기)
+- `InputManager`는 **입력을 읽어 노출하는 것까지만**. 이동 계산·발사 로직은 각 System(`PlayerMovement`, `WeaponSystem`)이 `InputManager.Instance`를 읽어 처리
+- 연속 입력(이동)은 `Update`에서 읽어 캐싱한 값을 노출, 불연속 입력(버튼)은 `performed` 콜백 → `event Action` 또는 R3 `Subject`로 노출
+- `OnEnable`에서 `Enable()`+구독, `OnDisable`에서 해제+`Disable()` 짝 필수
 
 ```csharp
 public sealed class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
-    [SerializeField] private InputActionReference m_refMoveAction;   // 인스펙터에서 .inputactions 액션을 직접 바인딩
-    [SerializeField] private InputActionReference m_refFireAction;
-
+    private PlayerAction m_refActions;                 // 생성된 클래스
     public Vector2 MoveDir { get; private set; }
+    public event Action OnFire;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return; // 필수 — 파괴 예정 인스턴스가 Instance를 덮어쓰는 것을 방지
-        }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        m_refActions = new PlayerAction();
     }
 
     private void OnEnable()
     {
-        m_refMoveAction.action.Enable();
-        m_refFireAction.action.Enable();
-        m_refFireAction.action.performed += OnFire;
+        m_refActions.MoveAction.Enable();
+        m_refActions.MoveAction.MoveButton.performed += OnFirePerformed;
     }
 
     private void OnDisable()
     {
-        m_refFireAction.action.performed -= OnFire;
-        m_refMoveAction.action.Disable();
-        m_refFireAction.action.Disable();
+        m_refActions.MoveAction.MoveButton.performed -= OnFirePerformed;
+        m_refActions.MoveAction.Disable();
     }
 
-    private void Update()
-    {
-        MoveDir = m_refMoveAction.action.ReadValue<Vector2>();
-    }
+    private void Update() => MoveDir = m_refActions.MoveAction.Move.ReadValue<Vector2>();
 
-    private void OnFire(InputAction.CallbackContext _ctx)
-    {
-        // 발사 로직이 아니라, 필요하다면 이벤트/콜백으로 관심 있는 System에 전달만 함
-    }
-}
-
-// --- 소비 측: 각 System이 필요한 값만 직접 읽음 ---
-public sealed class PlayerMovement : MonoBehaviour
-{
-    private void FixedUpdate()
-    {
-        Vector2 vMoveDir = InputManager.Instance.MoveDir;
-        // 이동 로직은 여기(System)에 있음, InputManager엔 없음
-    }
+    private void OnFirePerformed(InputAction.CallbackContext _ctx) => OnFire?.Invoke();
 }
 ```
 
-**규칙:**
-- `InputManager`는 오직 입력을 읽고 노출만 합니다 — 게임 로직은 절대 갖지 않습니다
-- 액션은 `.inputactions` 에셋 + `InputActionReference`로 에디터에서 관리하고, 생성된 C# 클래스는 쓰지 않습니다
-- 다른 System은 `InputManager.Instance`를 직접 호출해도 됩니다
-- 콜백 구독은 반드시 `OnEnable`/`OnDisable`로 짝을 맞추세요
-- 싱글톤 Awake 가드(`return;` 포함)를 빠뜨리지 마세요
+액션 맵 전환(게임플레이 ↔ UI)은 현재 맵을 `Disable()`한 **뒤에** 다음 맵을 `Enable()`. 여러 게임플레이 맵을 동시에 켜두지 말 것.
 
+## 갓 오브젝트 금지
 
-
-## 갓 오브젝트(God Object) 금지
-
-```csharp
-// 나쁜 예
-class GameManager : MonoBehaviour
-{
-    // 점수, 목숨, 스폰, UI, 오디오, 저장, 입력, 일시정지... 모든 걸 처리함
-}
-
-// 좋은 예 — 책임별로 나뉜 별도의 System
-// PlayerSystem — 체력, 이동
-// ScoreSystem — 점수, 콤보
-// SpawnSystem — 적 웨이브
-// 각각은 자기 책임만 가지며, 씬에서 SerializeField로 필요한 것만 연결
-```
+점수·목숨·스폰·UI·오디오·저장·입력을 한 클래스가 처리하지 말 것. 책임별 System(`PlayerSystem`, `ScoreSystem`, `SpawnSystem`)으로 나누고 씬에서 `[SerializeField]`로 필요한 것만 연결.
 
 ## 씬 구성
 
-- 부트스트랩 씬(또는 첫 씬)에 매니저급 싱글톤(`AudioManager`, `SaveManager`, `ObjectPoolManager` 등)을 배치하고 `DontDestroyOnLoad`로 유지
-- 게임 씬은 그 위에서 필요한 System/View만 배치
-- 씬 로드/언로드는 UniTask를 통해 비동기로 처리합니다:
-
-```csharp
-await SceneManager.LoadSceneAsync("GameScene", LoadSceneMode.Additive).ToUniTask();
-```
+- 부트스트랩(첫) 씬에 매니저급 싱글톤 배치 + `DontDestroyOnLoad` (반드시 **루트** 오브젝트 — 자식이면 무시됨)
+- 게임 씬은 그 위에서 필요한 System/View만
+- 씬 로드는 `await SceneManager.LoadSceneAsync("GameScene", LoadSceneMode.Additive).ToUniTask();` 또는 Addressables
