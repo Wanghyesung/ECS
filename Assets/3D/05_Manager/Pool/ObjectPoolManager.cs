@@ -16,9 +16,6 @@ public class ObjectPoolManager : MonoBehaviour
     public static ObjectPoolManager m_Instance = null;
     // 재사용 대기열은 Stack(LIFO) - 방금 반납된 것부터 다시 꺼내 쓴다
     //
-    // SOPoolData 에셋 자체를 키로 쓰면 안 된다: 같은 SOPoolData라도 로드 경로가 둘이면
-    // (LobyScene -> SOSceneData 직접 참조 = 플레이어 데이터 사본 / 몬스터 프리팹 -> SOAttackInfo = 번들 사본)
-    // 서로 다른 UnityEngine.Object가 되어 참조 동등성 비교가 100% 실패한다.
 
     private Dictionary<string, Stack<GameObject>> m_hashPool = new Dictionary<string, Stack<GameObject>>();
     private Dictionary<string, AsyncOperationHandle> m_hashHandle = new Dictionary<string, AsyncOperationHandle>();

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +50,12 @@ public class FeatureManager : MonoBehaviour, ICountable
 
     private void Start()
     {
+        TestCode().Forget();
+    }
+
+    private async UniTaskVoid TestCode()
+    {
+        await UniTask.WaitForSeconds(2.0f);
         Player refTarget = Player.CurrentPlayer;
         for (int i = 0; i < m_listPreLoadFeautre.Count; ++i)
         {

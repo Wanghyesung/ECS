@@ -19,6 +19,7 @@ public enum eFeatureID
     UpDefense,
     UpBulletSpeed,
     UPDrone,
+    Nuke,
     End,
 
     //AttackUp,

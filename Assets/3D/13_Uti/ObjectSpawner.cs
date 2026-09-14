@@ -17,6 +17,9 @@ public class ObjectSpawner : MonoBehaviour
     private PriorityQueue<tSpawnData> m_PQObject;
 
     public int RemainObject => m_PQObject.Count;
+
+    // 스폰 결과를 알아야 하는 쪽(DungeonManager의 활성 몬스터 목록 등)에 통지. 스포너는 누가 듣는지 모름
+    public event System.Action<GameObject> OnSpawned;
     private struct tSpawnData
     {
         public float fSpawnTime;
@@ -87,5 +90,6 @@ public class ObjectSpawner : MonoBehaviour
             return;
 
         refGameObject.transform.position = _vPosition;
+        OnSpawned?.Invoke(refGameObject);
     }
 }
