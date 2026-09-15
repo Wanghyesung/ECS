@@ -2,9 +2,12 @@
 name: unitask
 description: "Unity를 위한 UniTask async/await — 무할당(zero-alloc) 비동기, 취소 토큰(CancellationToken), PlayerLoop 통합, 비동기 LINQ. '비동기 작업', '코루틴' 같은 단어가 언급되거나 코루틴을 UniTask로 대체해야 할 때 사용합니다."
 globs: ["**/UniTask*", "**/*Async*.cs", "**/Cysharp*"]
+docs: "https://context7.com/cysharp/unitask/llms.txt?topic={API}&tokens=3000"
 ---
 
 # UniTask — Unity를 위한 무할당 Async/Await
+
+> API 가 확실치 않으면 위 `docs` URL 의 `{API}` 를 메서드/클래스명으로 바꿔 `WebFetch` — 예: `?topic=WaitUntilValueChanged`.
 
 UniTask(Cysharp)는 Unity의 PlayerLoop와 네이티브로 통합되고, GC 할당을 발생시키지 않으며, 제대로 된 취소(cancellation)를 지원하는 async/await를 제공한다. 모든 Unity 프로젝트에서 코루틴과 `System.Threading.Tasks.Task` 대신 UniTask를 우선적으로 사용하라.
 

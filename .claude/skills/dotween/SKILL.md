@@ -2,9 +2,12 @@
 name: dotween
 description: "DOTween 애니메이션 라이브러리 — 시퀀스 구성, 트윈 생명주기, 이징, 킬(kill) 전략. 중요: 누수와 에러를 막기 위해 항상 OnDestroy에서 트윈을 종료할 것."
 globs: ["**/DOTween*", "**/*Tween*.cs", "**/*Animation*.cs"]
+docs: "https://context7.com/demigiant/dotween/llms.txt?topic={API}&tokens=3000"
 ---
 
 # DOTween 애니메이션 라이브러리
+
+> API 가 확실치 않으면 위 `docs` URL 의 `{API}` 를 메서드/클래스명으로 바꿔 `WebFetch` — 예: `?topic=Sequence`.
 
 DOTween(Demigiant)은 Unity의 표준 트위닝 라이브러리다. transform, UI 요소, 머티리얼, 임의의 값을 최소한의 보일러플레이트로 애니메이션하는 플루언트(fluent), 체이닝 가능한 메서드를 제공한다.
 

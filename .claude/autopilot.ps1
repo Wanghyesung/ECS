@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   밤새 무인 실행 드라이버. 프로젝트마다 승인된 PRD(status: approved)를 순서대로
   `claude -p "/unity-autopilot <prd>"` 로 실행한다. PRD 1개 = 프로세스 1개 = 새 컨텍스트.
@@ -43,9 +43,16 @@ $perProject = {
     $logDir = Join-Path $proj ".claude\state\autopilot\$stamp"
     New-Item -ItemType Directory -Force $logDir | Out-Null
 
-    # 1. 작업 트리 — 커밋 안 된 변경이 있으면 건드리지 않는다
-    $dirty = git status --porcelain
-    if ($dirty) { Log "SKIP: 커밋 안 된 변경이 있음. 자기 전에 커밋/스태시 해둘 것."; return ,$out }
+    # 1. 작업 트리 — 당신의 미커밋 작업이 있으면 건드리지 않는다.
+    #    .claude/ (PRD, 규칙 등 문서)는 제외한다 — 낮에 Claude 가 PRD 를 써 두는 것만으로
+    #    밤 실행이 통째로 SKIP 되면 "예약만 걸어두면 알아서" 가 성립하지 않기 때문.
+    #    보호 대상은 Assets/ProjectSettings/Packages 즉 실제 게임 작업물이다.
+    $dirty = git status --porcelain -- Assets ProjectSettings Packages
+    if ($dirty) {
+        Log "SKIP: Assets/ 에 커밋 안 된 변경이 있음. 자기 전에 커밋/스태시 해둘 것."
+        $dirty | Select-Object -First 5 | ForEach-Object { Log "    $_" }
+        return ,$out
+    }
 
     # 2. Unity MCP 살아있는지
     $settings = Get-Content (Join-Path $proj ".claude\settings.json") -Raw | ConvertFrom-Json

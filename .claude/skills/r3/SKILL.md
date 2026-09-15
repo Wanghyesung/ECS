@@ -2,9 +2,12 @@
 name: r3
 description: "R3(Cysharp) — UniRx의 후속 Reactive Extensions. Observable<T>, ReactiveProperty, AddTo 구독 관리, Unity 트리거/UI 이벤트의 Observable화. 'R3', 'Observable', 'ReactiveProperty', '반응형 스트림', 'UniRx' 언급 시 사용합니다. 이 프로젝트는 UniRx가 아니라 R3를 채택함."
 globs: ["**/*Observable*.cs", "**/*Reactive*.cs"]
+docs: "https://context7.com/cysharp/r3/llms.txt?topic={API}&tokens=3000"
 ---
 
 # R3 — Unity Reactive Extensions (프로젝트 채택)
+
+> API 가 확실치 않으면 위 `docs` URL 의 `{API}` 를 메서드/클래스명으로 바꿔 `WebFetch` — 예: `?topic=ReactiveProperty`.
 
 [Cysharp/R3](https://github.com/Cysharp/R3)는 UniRx 저자(neuecc)가 만든 후속작이다. UniRx와 **API가 다르다** — UniRx 코드/예제를 그대로 옮기지 말 것.
 
@@ -19,6 +22,20 @@ globs: ["**/*Observable*.cs", "**/*Reactive*.cs"]
 3. Package Manager → Add package from git URL
    https://github.com/Cysharp/R3.git?path=src/R3.Unity/Assets/R3.Unity   (Unity 통합)
 ```
+
+## 개념 7단계 (이 순서로 이해한다)
+
+| 단계 | 뜻 | R3 코드 |
+|---|---|---|
+| **Observable** | 값을 밀어내는 스트림. 구독 전엔 아무 일도 안 함 | `Observable<int>` — UniRx `IObservable`이 아닌 자체 추상 클래스 |
+| **Observer** | 받는 쪽. `OnNext / OnErrorResume / OnCompleted` 3개 | `Subscribe(_iHp => ...)` 람다가 Observer 하나로 포장됨 |
+| **Subscription** | Observable ↔ Observer 연결. `Subscribe()` 반환값 `IDisposable`이 손잡이 | `IDisposable d = hp.Subscribe(...)` |
+| **Operator** | 스트림을 가공해 **새 Observable**을 만드는 함수. 원본은 안 바뀜 | `.Select` `.Where` `.DistinctUntilChanged` `.ThrottleFirst` |
+| **Dispose** | 연결 끊기. 안 하면 파괴된 오브젝트가 계속 콜백 받음 | `.AddTo(this)` = OnDestroy 때 자동 Dispose |
+| **ReactiveProperty** | 현재 값을 기억하는 Observable. 구독 즉시 현재값 1회 발행 + `.Value` 대입 시 발행 | `ReactiveProperty<int>`, 외부엔 `ReadOnlyReactiveProperty<int>` |
+| **시간/이벤트 조합** | 여러 스트림·시간을 합치는 Operator군 | `CombineLatest`(둘 다 최신값) `Merge`(아무거나) `Zip`(짝 맞춤) `Timer/Interval` `Debounce`(잠잠해진 뒤) `ThrottleFirst`(첫 것 통과 후 잠금) |
+
+흐름: Observable 생성 → Operator 가공 → `Subscribe`(Observer 등록 = Subscription) → `Dispose`. ReactiveProperty 는 "Observable + 현재값"의 특수형.
 
 ## 이 프로젝트에서의 위치
 
