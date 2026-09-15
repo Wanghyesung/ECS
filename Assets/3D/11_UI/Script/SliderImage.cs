@@ -69,7 +69,7 @@ public class SliderImage : MonoBehaviour
     {
         float fElapsed = 0f;
 
-        while (fElapsed < m_fLerpDuration)
+        while (fElapsed < m_fLerpDuration )
         {
             fElapsed += Time.deltaTime;
 

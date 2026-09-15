@@ -61,7 +61,7 @@ public sealed class NukeStrike : MonoBehaviour
 
         // CardCreator.HandleCardClicked / JokerCardManager.PickData가 SelectFeature 직후 timeScale=1로
         await UniTask.Yield(_token);
-        //Time.timeScale = 0f;
+        Time.timeScale = 0f;
 
         float fFollowTime = refMissile.FallTime * m_fFollowRatio;
         await CameraManager.m_Instance.FollowTarget(_token, refMissile.transform, m_vFollowOffset, fFollowTime);

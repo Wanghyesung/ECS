@@ -37,6 +37,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10d32e4d49409e34f9e3499a191a7181
+    m_Address: NukeExplode
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 157efbaebdde977479dace3bb1ca0fa7
     m_Address: Assets/02_Player/Weapon/Bullet/RedHitEffect.prefab
     m_ReadOnly: 0

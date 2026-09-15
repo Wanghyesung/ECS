@@ -9,7 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac5fc8fc4b6ea2045b216be444880199, type: 3}
-  m_Name: SO_NukeImpactSpawn
+  m_Script: {fileID: 11500000, guid: 9742a6790236bd74bb3499c0950fb330, type: 3}
+  m_Name: SO_NukeExplode Data
   m_EditorClassIdentifier: 
-  m_refExplodeObj: {fileID: 11400000, guid: e574b933adc81ea49af4f9e6f49a45ae, type: 2}
+  PrefabRef:
+    m_AssetGUID: 10d32e4d49409e34f9e3499a191a7181
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  PreLoad: 1
+  Max: 1
+  ActiveCap: -1
