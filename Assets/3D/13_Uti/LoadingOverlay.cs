@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LoadingOverlay : MonoBehaviour
 {
     [SerializeField] private Slider m_refLoadingSlider;
-    private Coroutine m_COLoading = null;
+    private CancellationTokenSource m_ctsFill;
 
     [SerializeField] private float m_fFillSpeed = 1.0f;
     private float m_fTargetFill = 0.0f;
@@ -18,10 +20,13 @@ public class LoadingOverlay : MonoBehaviour
 
         m_fTargetFill = Mathf.Clamp01(_fValue);
 
-        // 이미 코루틴 돌고 있으면 그대로 target만 바꿔서 이어서 감
-        if (m_COLoading != null)
-            StopCoroutine(m_COLoading);
-        m_COLoading = StartCoroutine(CoSmoothFill());
+        if (m_ctsFill != null)
+        {
+            m_ctsFill.Cancel();
+            m_ctsFill.Dispose();
+        }
+        m_ctsFill = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        SmoothFillAsync(m_ctsFill.Token).Forget();
     }
 
     public void ShowLoadingImage()
@@ -35,12 +40,12 @@ public class LoadingOverlay : MonoBehaviour
         m_refLoadingSlider.value = 0.0f;
     }
 
-    private IEnumerator CoSmoothFill()
+    private async UniTaskVoid SmoothFillAsync(CancellationToken _ct)
     {
         while (true)
         {
             if (m_refLoadingSlider == null)
-                yield break;
+                return;
 
             float fCurAmount = m_refLoadingSlider.value;
 
@@ -53,9 +58,10 @@ public class LoadingOverlay : MonoBehaviour
             if (m_fTargetFill >= 0.99f)
                 break;
 
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
-        m_COLoading = null;
+        m_ctsFill.Dispose();
+        m_ctsFill = null;
     }
 }

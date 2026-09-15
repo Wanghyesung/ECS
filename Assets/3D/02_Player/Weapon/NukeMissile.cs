@@ -7,19 +7,16 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 NukeMissile
-목적 : 핵폭탄 카드의 미사일. 목표 지점 상공에서 목표 지점까지 "떨어지는 이동"만 담당하고,
+목적 : 핵폭탄 카드의 미사일. 발사 측이 잡아준 시작 위치에서 착탄점(tShotInfo.TargetPos)까지
+       직진하는 "이동"만 담당하고,
        착탄 시 무엇이 일어나는지는 ArriveActions(SOBulletAction)로 조합한다 - 전체 처치는
        SOKillAllMonstersAction, 폭발 연출은 기존 SOSpawnExplosionAction.
-       Bullet을 상속하지 않고 IAttackObject만 구현하는 이유(AttackObject와 동일 선례):
-       컷신 중 timeScale=0이라 BulletMoveManager(Time.deltaTime)로는 안 움직이고,
-       충돌 판정도 필요 없어 CircleCollider를 그리드에 넣을 이유가 없다.
  *///////////////////////////////////////////
 
 [RequireComponent(typeof(PoolObject))]
 public sealed class NukeMissile : MonoBehaviour, IAttackObject
 {
     [Header("Fall")]
-    [SerializeField] private float m_fFallHeight = 300f;
     [SerializeField] private float m_fFallTime = 2f;
 
     // 프리팹 고유 착탄 동작. 인스펙터에서 조합, 런타임에 안 건드림 (Bullet/AttackObject과 동일한 관례)
@@ -43,7 +40,7 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
         transform.DOKill();
     }
 
-    // Bullet.SpawnAttackObject가 호출. _refShotInfo.TargetPos = 착탄 지점
+    // Bullet.SpawnAttackObject가 호출. 시작 위치는 그쪽에서 이미 잡혀 있고, _refShotInfo.TargetPos = 착탄 지점
     public void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         m_refAttackInfo = _refAttackInfo;
@@ -56,8 +53,7 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
     private async UniTaskVoid FallAsync(CancellationToken _token)
     {
         Vector3 vTarget = m_tShotInfo.TargetPos;
-        transform.position = vTarget + Vector3.up * m_fFallHeight;
-        transform.rotation = Quaternion.LookRotation(Vector3.down); // 기수(+Z)를 낙하 방향으로
+        transform.rotation = Quaternion.LookRotation(vTarget - transform.position); // 기수(+Z)를 착탄점 방향으로
 
         // UNITASK_DOTWEEN_SUPPORT 미정의라 트윈을 await하지 못함 - 같은 시간만큼 unscaled Delay로 대기
         transform.DOMove(vTarget, m_fFallTime).SetEase(Ease.InQuad).SetUpdate(true);

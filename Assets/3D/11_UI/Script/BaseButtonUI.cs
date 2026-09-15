@@ -1,6 +1,5 @@
-using System;
+using R3;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -20,14 +19,22 @@ public class BaseButtonUI : MonoBehaviour,
 {
 
     //코드 바인딩용 델리게이트(원하면 사용) 
-    public event Action OnEnterEvt;
-    public event Action OnExitEvt;
-    public event Action OnDownEvt;
-    public event Action OnUpEvt;
-    public event Action OnBeginDragEvt;
-    public event Action OnDragEvt;
-    public event Action OnEndDragEvt;
-    public event Action OnClickEvt;
+    private readonly Subject<Unit> m_subjectEnter = new();
+    private readonly Subject<Unit> m_subjectExit = new();
+    private readonly Subject<Unit> m_subjectDown = new();
+    private readonly Subject<Unit> m_subjectUp = new();
+    private readonly Subject<Unit> m_subjectBeginDrag = new();
+    private readonly Subject<Unit> m_subjectDrag = new();
+    private readonly Subject<Unit> m_subjectEndDrag = new();
+    private readonly Subject<Unit> m_subjectClick = new();
+    public Observable<Unit> OnEnterEvt => m_subjectEnter;
+    public Observable<Unit> OnExitEvt => m_subjectExit;
+    public Observable<Unit> OnDownEvt => m_subjectDown;
+    public Observable<Unit> OnUpEvt => m_subjectUp;
+    public Observable<Unit> OnBeginDragEvt => m_subjectBeginDrag;
+    public Observable<Unit> OnDragEvt => m_subjectDrag;
+    public Observable<Unit> OnEndDragEvt => m_subjectEndDrag;
+    public Observable<Unit> OnClickEvt => m_subjectClick;
 
     // 인스펙터 바인딩용 
     [SerializeField] private UnityEvent OnEnterUEvt;
@@ -46,48 +53,48 @@ public class BaseButtonUI : MonoBehaviour,
     virtual public void OnPointerExit(PointerEventData e)
     {
         OnExitUEvt?.Invoke();
-        OnExitEvt?.Invoke();
+        m_subjectExit.OnNext(Unit.Default);
     }
     virtual public void OnPointerEnter(PointerEventData e)
     {
         OnEnterUEvt?.Invoke();
-        OnEnterEvt?.Invoke();
+        m_subjectEnter.OnNext(Unit.Default);
     }
     public void OnPointerUp(PointerEventData _eventData)
     {
         //if (m_pDownAudio != null)
         //    SoundManager.m_Instance.PlaySfx(m_pDownAudio, null);
         OnUpUEvt?.Invoke();
-        OnUpEvt?.Invoke();
+        m_subjectUp.OnNext(Unit.Default);
     }
 
     virtual public void OnBeginDrag(PointerEventData e)
     {
         OnBeginDragUEvt?.Invoke();
-        OnBeginDragEvt?.Invoke();
+        m_subjectBeginDrag.OnNext(Unit.Default);
     }
 
     virtual public void OnDrag(PointerEventData e)
     {
         OnDragUEvt?.Invoke();
-        OnDragEvt?.Invoke();
+        m_subjectDrag.OnNext(Unit.Default);
     }
 
     virtual public void OnEndDrag(PointerEventData e)
     {
         OnEndDragUEvt?.Invoke();
-        OnEndDragEvt?.Invoke();
+        m_subjectEndDrag.OnNext(Unit.Default);
     }
     virtual public void OnPointerClick(PointerEventData e)
     {
         OnClickUEvt?.Invoke();
-        OnClickEvt?.Invoke();
+        m_subjectClick.OnNext(Unit.Default);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         OnDownUEvt?.Invoke();
-        OnDownEvt?.Invoke();
+        m_subjectDown.OnNext(Unit.Default);
     }
 
 

@@ -1,4 +1,4 @@
-using System;
+using R3;
 
 /*///////////////////////////////////////////
                 PlayerCurrency
@@ -11,24 +11,20 @@ public static class PlayerCurrency
 {
     private const int START_AMOUNT = 5000;
 
-    private static int m_iAmount = START_AMOUNT;
-    public static int Amount => m_iAmount;
-
-    public static event Action OnAmountChanged;
+    private static readonly ReactiveProperty<int> m_rpAmount = new(START_AMOUNT);
+    public static ReadOnlyReactiveProperty<int> Amount => m_rpAmount;
 
     public static bool TrySpend(int _iCost)
     {
-        if (_iCost > m_iAmount)
+        if (_iCost > m_rpAmount.Value)
             return false;
 
-        m_iAmount -= _iCost;
-        OnAmountChanged?.Invoke();
+        m_rpAmount.Value -= _iCost;
         return true;
     }
 
     public static void Add(int _iValue)
     {
-        m_iAmount += _iValue;
-        OnAmountChanged?.Invoke();
+        m_rpAmount.Value += _iValue;
     }
 }

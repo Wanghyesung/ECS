@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -46,16 +47,17 @@ public class DungeonManager : MonoBehaviour
             m_Instance = null;
     }
 
+    private DisposableBag m_bagEvents;
+
     private void OnEnable()
     {
-        Monster.OnMonsterDied += MonsterDead;
-        m_refSpawner.OnSpawned += HandleSpawned;
+        Monster.OnMonsterDied.Subscribe(MonsterDead).AddTo(ref m_bagEvents);
+        m_refSpawner.OnSpawned.Subscribe(HandleSpawned).AddTo(ref m_bagEvents);
     }
 
     private void OnDisable()
     {
-        Monster.OnMonsterDied -= MonsterDead;
-        m_refSpawner.OnSpawned -= HandleSpawned;
+        m_bagEvents.Clear();
     }
 
     public void StartStage(int _iStageIdx)

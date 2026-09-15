@@ -22266,14 +22266,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f82595768f66bea4cb805f31d97980d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_listMoveAction:
-  - {fileID: -2274258936009778141, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listScreenAction:
-  - {fileID: -6401907108130545138, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listDeltaAction:
-  - {fileID: -4947440016848714923, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listMoveSpaceAction:
-  - {fileID: 7181921023243160326, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
 --- !u!1 &1176329428
 GameObject:
   m_ObjectHideFlags: 0
@@ -25056,7 +25048,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 0.5
   m_refImage: {fileID: 1284329280}
 --- !u!114 &1284329280
 MonoBehaviour:
@@ -27951,7 +27942,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 0.5
   m_refImage: {fileID: 1396249400}
 --- !u!114 &1396249400
 MonoBehaviour:
@@ -29165,7 +29155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b740b5be867fa304c836dee83dfab4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_vFollowOffset: {x: -50, y: 60, z: -100}
+  m_vLaunchOffset: {x: -250, y: 220, z: -250}
+  m_vFollowOffset: {x: 10, y: 30, z: -80}
   m_fFollowRatio: 0.5
   m_vOverviewOffset: {x: 0, y: 220, z: -420}
   m_fHoldAfterImpact: 3
@@ -34863,7 +34854,6 @@ MonoBehaviour:
   m_refObjectInfo:
     State: 0
     MaxHP: 0
-    CurrentHP: 0
     Speed: 0
     Attack: 0
     Defense: 0
@@ -36259,7 +36249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 1
   m_refImage: {fileID: 1840434585}
 --- !u!114 &1840434585
 MonoBehaviour:
@@ -42642,7 +42631,6 @@ MonoBehaviour:
   m_refObjectInfo:
     State: 0
     MaxHP: 0
-    CurrentHP: 0
     Speed: 0
     Attack: 0
     Defense: 0

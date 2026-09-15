@@ -1,6 +1,6 @@
 ---
 name: r3
-description: "R3(Cysharp) — UniRx의 후속 Reactive Extensions. Observable<T>, ReactiveProperty, AddTo 구독 관리, Unity 트리거/UI 이벤트의 Observable화. 'R3', 'Observable', 'ReactiveProperty', '반응형 스트림', 'UniRx' 언급 시 사용합니다. 이 프로젝트는 UniRx가 아니라 R3를 채택함."
+description: "R3(Cysharp) — UniRx의 후속 Reactive Extensions. Observable<T>, ReactiveProperty, AddTo 구독 관리, Unity 트리거/UI 이벤트의 Observable화. 'R3', 'Observable', '옵저버','ReactiveProperty', '반응형 스트림', 'UniRx' 언급 시 사용합니다. 이 프로젝트는 UniRx가 아니라 R3를 채택함."
 globs: ["**/*Observable*.cs", "**/*Reactive*.cs"]
 docs: "https://context7.com/cysharp/r3/llms.txt?topic={API}&tokens=3000"
 ---
@@ -42,12 +42,12 @@ docs: "https://context7.com/cysharp/r3/llms.txt?topic={API}&tokens=3000"
 | 용도 | 도구 |
 |---|---|
 | 대기/딜레이/비동기 흐름 | **UniTask** ([[unitask]]) — R3로 대체하지 않는다 |
-| 시스템 간 1회성 알림 (몬스터 사망, 게임오버) | **`event Action<T>`** (rules/architecture.md) — 그대로 유지 |
+| 시스템 간 1회성 알림 (몬스터 사망, 버튼 클릭, 풀 반납) | **`Subject<T>`** 소유 + `Observable<T>` 노출 (2026-09-15: `event Action` 전부 전환 완료) |
 | **Model → View 값 바인딩** (HP, 점수, 카드 수, 레벨) | **`ReactiveProperty<T>`** — View가 `Subscribe`로 표시만 갱신 |
 | 입력 스트림 가공 (디바운스/스로틀/홀드 판정) | `Observable` + `InputManager`가 노출 |
 | 여러 소스를 조합한 파생 값 | `CombineLatest`, `Select` |
 
-원칙: **값이 "계속 변하고 여럿이 지켜보는" 것만 R3**. 단순 알림까지 Observable로 바꾸지 않는다.
+원칙: **계속 변하는 값은 `ReactiveProperty`, 1회성 알림은 `Subject`**. 둘 다 R3 — C# `event` 는 새로 만들지 않는다.
 
 ## UniRx → R3 차이 (자주 틀리는 것)
 

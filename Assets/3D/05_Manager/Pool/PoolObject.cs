@@ -1,6 +1,5 @@
-using System;
+using R3;
 using UnityEngine;
-using UnityEngine.Events;
 
 public interface IPoolable
 {
@@ -25,8 +24,10 @@ public class PoolObject : MonoBehaviour, IPoolable
     public int PushCount { get { return m_iPushCount; } }
     public SOPoolData PoolKey { get { return m_refPoolData; } }
 
-    public event Action OnPush;
-    public event Action OnPop;
+    private readonly Subject<Unit> m_subjectPush = new();
+    private readonly Subject<Unit> m_subjectPop = new();
+    public Observable<Unit> OnPush => m_subjectPush;
+    public Observable<Unit> OnPop => m_subjectPop;
 
 
     [SerializeField] private float m_fAliveTime = 3.0f;
@@ -39,14 +40,14 @@ public class PoolObject : MonoBehaviour, IPoolable
     public virtual void Push()
     {
         m_iPushCount = 1;
-        OnPush?.Invoke();
+        m_subjectPush.OnNext(Unit.Default);
     }
 
     public virtual void Pop()
     {
         m_iPushCount = 0;
         ++Generation;
-        OnPop?.Invoke();
+        m_subjectPop.OnNext(Unit.Default);
 
         // SetAliveTime을 따로 안 부르는 오브젝트(예: 히트 이펙트)도 프리팹 기본 m_fAliveTime으로
         // 자동 반납되도록 일단 예약해둠. 이후 SetAliveTime이 호출되면 Generation이 다시 올라가

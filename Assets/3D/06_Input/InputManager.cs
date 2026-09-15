@@ -1,4 +1,4 @@
-using System;
+using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
                 InputManager
 기능 : PlayerAction.inputactions 에서 생성된 PlayerAction 클래스를 소유하고 입력을 노출한다.
        - 연속 입력(이동/마우스)은 매 프레임 읽어 tInputInfo 로 캐싱해서 노출
-       - 불연속 입력(버튼)은 캐싱하지 않고 눌린 순간에만 event 로 알린다
+       - 불연속 입력(버튼)은 캐싱하지 않고 눌린 순간에만 Observable 로 알린다
          (소비자가 매 프레임 폴링할 필요가 없어지고, 키가 늘어도 Update 가 무거워지지 않는다)
        입력에 대한 반응(이동 계산, 발사 등)은 각 System 이 담당하고 여기엔 두지 않는다.
  *///////////////////////////////////////////
@@ -22,9 +22,10 @@ public sealed class InputManager : MonoBehaviour
     public static InputManager m_Instance { get; private set; }
 
     // MoveButton(Space)이 눌린 순간 한 번 발행. 누르고 있어도 반복되지 않는다
-    // (반복이 필요하면 .inputactions 의 해당 액션에 Hold/Repeat 인터랙션을 추가할 것).
     // 구독은 Awake 가 아니라 Start 에서 — Awake 순서는 보장되지 않아 m_Instance 가 아직 null 일 수 있다.
-    public event Action OnMoveButtonPressed;
+
+    private readonly Subject<Unit> m_subjectMoveButton = new();
+    public Observable<Unit> OnMoveButtonPressed => m_subjectMoveButton;
 
     private PlayerAction m_refActions;
     private tInputInfo m_tInputInfo;
@@ -97,6 +98,6 @@ public sealed class InputManager : MonoBehaviour
 
     private void OnMoveButtonPerformed(InputAction.CallbackContext _tContext)
     {
-        OnMoveButtonPressed?.Invoke();
+        m_subjectMoveButton.OnNext(Unit.Default);
     }
 }

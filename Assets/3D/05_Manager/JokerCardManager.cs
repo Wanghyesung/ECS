@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using R3;
 using UnityEngine;
-using static UnityEngine.Mesh;
 
 /*///////////////////////////////////////////
                 JokerCardManager
@@ -51,15 +50,15 @@ public class JokerCardManager : MonoBehaviour
         m_refFeatContainer.Init();
 
         //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
-        m_refSelectContainer.OnSelectEvt += AddData;
+        m_refSelectContainer.OnSelectEvt.Subscribe(AddData).AddTo(this);
 
-        m_refPickContainer.OnSelectEvt += DeleteData;
+        m_refPickContainer.OnSelectEvt.Subscribe(DeleteData).AddTo(this);
 
         //Container/SlotView는 SOData 범용이라 등급을 모름 - 조커 후보 슬롯에 뜨는 등급 색상은
         //SOFeature/Tier를 이미 알고 있는 이쪽(JokerCardManager)에서 판단해서 밀어준다
-        m_refFeatContainer.OnSlotBind += ApplyTierColor;
-        m_refSelectContainer.OnSlotBind += ApplyTierColor;
-        m_refPickContainer.OnSlotBind += ApplyTierColor;
+        m_refFeatContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refSelectContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refPickContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
     }
 
 
@@ -121,8 +120,9 @@ public class JokerCardManager : MonoBehaviour
     }
 
     // 실제 SOFeature 카드가 뜬 슬롯에만 등급색을 입힌다 - 빈 슬롯 리셋은 SlotView가 자체적으로 처리
-    private void ApplyTierColor(SOData _SOData, SlotView _refSlot)
+    private void ApplyTierColor((SOData refData, SlotView refSlot) _t)
     {
+        (SOData _SOData, SlotView _refSlot) = _t;
         if (_SOData is not SOFeature refFeature)
             return;
 

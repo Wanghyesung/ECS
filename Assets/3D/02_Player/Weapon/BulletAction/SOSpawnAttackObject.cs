@@ -37,7 +37,7 @@ public class SOSpawnAttackObject : SOBulletAction
         refAttackObj.SetAttack(_refOwner.AttackInfo, new tShotInfo());
 
         //refAttackObj.SetWeaponHitActions(_refOwner.)
-        int iLevel = BattleManager.m_Instance.CurrentLevel;
+        int iLevel = BattleManager.m_Instance.Level.CurrentValue;
         refAttackObj.SetScale(m_fBaseRadius + m_fRadiusPerLevel * iLevel);
 
 //#if UNITY_EDITOR

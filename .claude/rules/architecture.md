@@ -2,11 +2,21 @@
 
 > ⚠️ **프로젝트 결정 사항**
 > - **VContainer(DI) 사용 안 함.** 의존성은 `[SerializeField]` 직접 참조 또는 절제된 싱글톤.
-> - 시스템 간 1회성 알림은 **C# 이벤트(`event Action<T>`)**. 별도 메시징 라이브러리 없음.
+> - 시스템 간 알림은 **R3** (2026-09-15 결정: 프로젝트의 `event Action` 전부 R3로 전환). 1회성 알림 = `Subject<T>` → `Observable<T>` 노출, 계속 변하는 값 = `ReactiveProperty<T>`. `UnityEvent`는 인스펙터 바인딩용으로만.
 > - 연속적으로 변하는 값의 Model→View 바인딩은 **R3**(`ReactiveProperty<T>`) — [[r3]] 스킬 참고. UniRx 아님.
 > - 비동기는 **UniTask** 전용. 코루틴 금지.
 > - 입력은 **New Input System + 생성 C# 클래스**를 `InputManager` 싱글톤이 소유 (아래 참고).
-> - **외부 라이브러리 API 확인은 Context7.** UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치 않으면 코드를 쓰기 전에 각 스킬 상단 `docs:` 링크를 `WebFetch` 로 읽는다 (`topic=<API명>` 으로 좁혀서). 추측으로 API 를 쓰지 말 것.
+> - **외부 라이브러리 API 확인은 Context7** (아래 표). 추측으로 API 를 쓰지 말 것.
+
+## 외부 라이브러리 문서 — Context7
+
+UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치 않으면 **코드를 쓰기 전에** 아래 URL 을 `WebFetch` 로 읽는다. `<API>` 에 메서드/클래스명을 넣어 필요한 부분만 가져온다 (예: `?topic=WaitUntilValueChanged`).
+
+| 라이브러리 | URL |
+|---|---|
+| UniTask | `https://context7.com/cysharp/unitask/llms.txt?topic=<API>&tokens=3000` |
+| R3 | `https://context7.com/cysharp/r3/llms.txt?topic=<API>&tokens=3000` |
+| DOTween | `https://context7.com/demigiant/dotween/llms.txt?topic=<API>&tokens=3000` |
 
 ## Mermaid 다이어그램 작성 규칙
 
@@ -19,7 +29,7 @@
 - **Blackboard:** 몬스터 상태·타겟·동적 변수 공유용. `[Serializable]` 클래스로 `Monster`/`BehaviorTree`가 필드로 소유, BT 노드의 `Execute(BlackBoard _refBB)`로 전달. 파일은 `BlackBoard.cs`로 분리.
 - **데이터 분리 (최우선):** SO는 '데이터와 에디터 세팅'만. 런타임 인스턴스별 상태는 **반드시 Blackboard나 런타임 노드 인스턴스**에. 예외: BT 진입 시 `Instantiate`로 몬스터별 클론되는 Composite 노드(Sequence/Select)는 클론 인스턴스에 한해 인덱스/타이머를 들고 있어도 됨. 클론되지 않는 leaf Action은 절대 상태를 갖지 말 것.
 - **Object Pool:** Bullet/FX/Enemy 필수 — [[object-pooling]] (`SOPoolData` + `PoolObject` + `ObjectPoolManager`).
-- **Event System:** 점수/피격/게임오버/레벨업 UI/조커 카드 UI 등 UI↔시스템 느슨한 결합은 `event Action<T>`. 인스펙터 바인딩이 필요한 UI 클릭은 `UnityEvent` 허용.
+- **Event System:** 점수/피격/게임오버/레벨업 UI/조커 카드 UI 등 UI↔시스템 느슨한 결합은 R3 `Subject<T>`/`Observable<T>`. 인스펙터 바인딩이 필요한 UI 클릭은 `UnityEvent` 허용.
 
 ## 싱글톤 (절제)
 
@@ -37,29 +47,31 @@ private void Awake()
 }
 ```
 
-## 시스템 간 통신 — C# 이벤트
+## 시스템 간 통신 — R3 Subject
 
 ```csharp
 public sealed class Monster : MonoBehaviour
 {
-    public static event Action<Monster> OnMonsterDied;      // 구독자가 발행자 인스턴스를 몰라도 되게 static
-    private void Die() => OnMonsterDied?.Invoke(this);      // 기존 참조를 넘김 — 매 프레임 새 객체 만들지 말 것
+    private static readonly Subject<int> m_subjectDied = new();    // 구독자가 발행자 인스턴스를 몰라도 되게 static
+    public static Observable<int> OnMonsterDied => m_subjectDied;  // 외부엔 Observable 로만 (OnNext 못 하게)
+    private void Die() => m_subjectDied.OnNext(m_SOInfo.ExpReward);
 }
 
-public sealed class ScoreSystem : MonoBehaviour
+public sealed class BattleManager : MonoBehaviour
 {
-    private void OnEnable()  => Monster.OnMonsterDied += OnMonsterDied;
-    private void OnDisable() => Monster.OnMonsterDied -= OnMonsterDied;   // 짝 필수 — static 이벤트는 씬 전환에도 살아남음
-    private void OnMonsterDied(Monster _refMonster) { /* ... */ }
+    private IDisposable m_disposableDied;
+    private void OnEnable()  => m_disposableDied = Monster.OnMonsterDied.Subscribe(AddExp);
+    private void OnDisable() => m_disposableDied?.Dispose();      // 짝 필수 — static Subject 는 씬 전환에도 살아남음
 }
 ```
 
-- 구독/해제는 `OnEnable`/`OnDisable`에서 반드시 짝을 맞춘다. 빠뜨리면 파괴된 오브젝트가 콜백을 받아 `MissingReferenceException`
-- 매니저 싱글톤 직접 호출(`ObjectPoolManager.m_Instance.Get(...)`)은 허용 — 이벤트는 "발행자가 구독자를 몰라야 할 때"만
+- 구독 수명은 셋 중 하나로 반드시 묶는다: 오브젝트 수명 = `.AddTo(this)` / `OnEnable`↔`OnDisable` = `IDisposable` 필드(여러 개면 `DisposableBag` + `Clear()`) / `CancellationToken` = `RegisterTo(ct)`
+- 인자 없는 알림은 `Subject<Unit>` + `OnNext(Unit.Default)`, 인자 2개 이상은 명명 튜플 `Subject<(SOData refData, SlotView refSlot)>`
+- 매니저 싱글톤 직접 호출(`ObjectPoolManager.m_Instance.Get(...)`)은 허용 — Observable 은 "발행자가 구독자를 몰라야 할 때"만
 
 ## 값 바인딩 — R3
 
-HP/점수/카드 수처럼 **계속 변하고 여러 View가 지켜보는 값**은 Model/System이 `ReactiveProperty<T>`로 소유하고 View는 `Subscribe(...).AddTo(this)`로 표시만 갱신한다. 1회성 알림까지 Observable로 바꾸지 않는다. 패턴·규칙·UniRx와의 차이는 [[r3]] 스킬.
+HP/점수/카드 수처럼 **계속 변하고 여러 View가 지켜보는 값**은 Model/System이 `ReactiveProperty<T>`로 소유하고 View는 `Subscribe(...).AddTo(this)`로 표시만 갱신한다. 1회성 알림은 위의 `Subject<T>`. 패턴·규칙·UniRx와의 차이는 [[r3]] 스킬.
 
 ## 비동기 — UniTask
 
@@ -122,11 +134,11 @@ public sealed class PlayerStatUI : MonoBehaviour
 - `InputManager`는 **입력을 읽어 노출하는 것까지만**. 이동 계산·발사 로직은 각 System(`PlayerMovement`, `WeaponSystem`)이 `InputManager.m_Instance`를 읽어 처리
 - **연속 입력 ↔ 불연속 입력을 반드시 다르게 다룬다:**
   - **연속**(이동 방향, 마우스 위치/델타) → `Update`에서 `ReadValue`로 읽어 `tInputInfo`에 캐싱, 소비자는 `InputInfo`에서 값을 읽는다. 매 프레임 값이 필요하므로 폴링이 맞다.
-  - **불연속**(버튼: 점프/롤/발사/상호작용) → **캐싱도 폴링도 하지 않는다.** `performed` 콜백을 받아 `event Action`으로 발행하고, 소비자는 구독한다.
+  - **불연속**(버튼: 점프/롤/발사/상호작용) → **캐싱도 폴링도 하지 않는다.** `performed` 콜백을 받아 `Subject<Unit>`으로 발행하고, 소비자는 `Observable<Unit>`을 구독한다.
   - 이유: 불연속 입력을 `bool`로 캐싱하면 키 하나당 `tInputInfo` 필드 + `Update` 읽기 + 소비자 폴링이 같이 늘어 **키 개수에 비례해 Update가 무거워진다**. 이벤트는 실제로 눌린 프레임에만 비용이 든다.
   - 주의: 이벤트는 **누른 순간 1회**만 온다. 누르고 있는 동안 반복이 필요하면 `.inputactions`의 해당 액션에 Hold/Repeat 인터랙션을 추가한다 — 소비자에서 폴링으로 되돌리지 말 것.
 - `InputManager` 내부: `OnEnable`에서 `Enable()` + `performed` 구독, `OnDisable`에서 해제 + `Disable()` 짝 필수
-- **소비자 쪽 구독은 `Start`에서, 해제는 `OnDestroy`에서** (`!= null` 가드 포함). `Awake`/`OnEnable`은 오브젝트 간 순서가 보장되지 않아 `InputManager.m_Instance`가 아직 null일 수 있다 — `Start`는 모든 `Awake` 이후라 안전하다. (`Player.cs`가 `BattleManager.OnExpChanged`를 구독하는 기존 패턴과 동일)
+- **소비자 쪽 구독은 `Start`에서 `.AddTo(this)`로** (해제는 파괴 시 자동). `Awake`/`OnEnable`은 오브젝트 간 순서가 보장되지 않아 `InputManager.m_Instance`가 아직 null일 수 있다 — `Start`는 모든 `Awake` 이후라 안전하다. (`Player.cs`가 `BattleManager.Exp`를 구독하는 기존 패턴과 동일)
 
 ```csharp
 public sealed class InputManager : MonoBehaviour
@@ -135,7 +147,8 @@ public sealed class InputManager : MonoBehaviour
 
     private PlayerAction m_refActions;                 // 생성된 클래스
     public Vector2 MoveDir { get; private set; }       // 연속 입력: 캐싱해서 노출
-    public event Action OnMoveButtonPressed;           // 불연속 입력: 눌린 순간에만 발행
+    private readonly Subject<Unit> m_subjectMoveButton = new();
+    public Observable<Unit> OnMoveButtonPressed => m_subjectMoveButton;   // 불연속 입력: 눌린 순간에만 발행
 
     private void Awake()
     {
@@ -165,7 +178,7 @@ public sealed class InputManager : MonoBehaviour
 
     private void Update() => MoveDir = m_refActions.MoveAction.Move.ReadValue<Vector2>();
 
-    private void OnMoveButtonPerformed(InputAction.CallbackContext _tContext) => OnMoveButtonPressed?.Invoke();
+    private void OnMoveButtonPerformed(InputAction.CallbackContext _tContext) => m_subjectMoveButton.OnNext(Unit.Default);
 }
 
 // --- 소비자: 연속값은 읽고, 버튼은 구독한다 ---
@@ -180,14 +193,8 @@ public sealed class PlayerMovement : MonoBehaviour
 
 public sealed class Player : MonoBehaviour
 {
-    // Awake/OnEnable 이 아니라 Start - m_Instance 가 준비된 것이 보장되는 시점
-    private void Start()   => InputManager.m_Instance.OnMoveButtonPressed += MoveRoll;
-
-    private void OnDestroy()
-    {
-        if (InputManager.m_Instance != null)
-            InputManager.m_Instance.OnMoveButtonPressed -= MoveRoll;
-    }
+    // Awake/OnEnable 이 아니라 Start - m_Instance 가 준비된 것이 보장되는 시점. AddTo(this) 가 OnDestroy 해제를 대신한다
+    private void Start() => InputManager.m_Instance.OnMoveButtonPressed.Subscribe(_ => MoveRoll()).AddTo(this);
 
     private void MoveRoll() { /* 눌린 프레임에만 호출된다 */ }
 }

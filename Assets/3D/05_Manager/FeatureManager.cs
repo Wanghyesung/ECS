@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -25,8 +26,10 @@ public class FeatureManager : MonoBehaviour, ICountable
     private List<SOFeature> m_listResultBuffer = new List<SOFeature>();
     private List<SOFeature> m_listApplyBuffer = new List<SOFeature>();
 
-    public event Action<SOFeature, int> OnFeatureSelect;
-    public event Action<SOFeature, int> OnFeatureDelete;
+    private readonly Subject<(SOFeature refFeature, int iLevel)> m_subjectFeatureSelect = new();
+    private readonly Subject<(SOFeature refFeature, int iLevel)> m_subjectFeatureDelete = new();
+    public Observable<(SOFeature refFeature, int iLevel)> OnFeatureSelect => m_subjectFeatureSelect;
+    public Observable<(SOFeature refFeature, int iLevel)> OnFeatureDelete => m_subjectFeatureDelete;
 
 
     [SerializeField] private List<SOFeature> m_listPreLoadFeautre; //임시로 넣은 플레이어 기능
@@ -187,7 +190,7 @@ public class FeatureManager : MonoBehaviour, ICountable
         m_arrFeatureLevel[iIndex]++;
 
         _SOFeature.Apply(_refPlayer, m_arrFeatureLevel[iIndex]);
-        OnFeatureSelect?.Invoke(_SOFeature, m_arrFeatureLevel[iIndex]);
+        m_subjectFeatureSelect.OnNext((_SOFeature, m_arrFeatureLevel[iIndex]));
 
         m_listApplyBuffer.Add(_SOFeature);
     }

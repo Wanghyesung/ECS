@@ -1,3 +1,5 @@
+using System;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -25,13 +27,15 @@ public class PoolTrailReset : MonoBehaviour
         }   
     }
 
+    private IDisposable m_disposablePush;
+
     private void OnEnable()
     {
-        m_refPoolObj.OnPush += m_refTrail.Clear;
+        m_disposablePush = m_refPoolObj.OnPush.Subscribe(_ => m_refTrail.Clear());
     }
 
     private void OnDisable()
     {
-        m_refPoolObj.OnPush -= m_refTrail.Clear;
+        m_disposablePush?.Dispose();
     }
 }

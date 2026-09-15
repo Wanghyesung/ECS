@@ -1,3 +1,4 @@
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -27,17 +28,8 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
     private void Start()
     {
         m_refContainer.Init();
-        m_refContainer.OnSelectEvt += SelectStat;
-        m_refUpgradeView.OnClickEvt += TryUpgrade;
-
-    }
-
-    private void OnDestroy()
-    {
-     
-
-        m_refContainer.OnSelectEvt -= SelectStat;
-        m_refUpgradeView.OnClickEvt -= TryUpgrade;
+        m_refContainer.OnSelectEvt.Subscribe(SelectStat).AddTo(this);
+        m_refUpgradeView.OnClickEvt.Subscribe(_ => TryUpgrade()).AddTo(this);
     }
 
     private void OnEnable()
@@ -87,7 +79,7 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
         int iCost = GetCost(m_refSelectData);
 
         m_refDetailView.Show(m_refSelectData.Icon, m_refSelectData.DisplayName, GetDisplayValue(m_refSelectData), iLevel);
-        m_refUpgradeView.Show(iCost, PlayerCurrency.Amount >= iCost);
+        m_refUpgradeView.Show(iCost, PlayerCurrency.Amount.CurrentValue >= iCost);
     }
 
     // HP는 기본값+보너스 합계로, 그 외 스탯은 진짜 기본값이 무기/이동 등에 흩어져

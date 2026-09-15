@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -33,16 +35,17 @@ public class AttackObject : MonoBehaviour, IAttackObject
         m_refCircleCollider = GetComponent<CircleCollider>();
     }
 
+    private IDisposable m_disposableHit;
+
     private void OnEnable()
     {
         if (m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter += AttackMonster;
+            m_disposableHit = m_refCircleCollider.OnHitTargetEnter.Subscribe(AttackMonster);
     }
 
     private void OnDisable()
     {
-        if (m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter -= AttackMonster;
+        m_disposableHit?.Dispose();
     }
     private void AttackMonster(BaseCollider _refOther)
     {

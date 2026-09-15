@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -119,23 +120,21 @@ public class Bullet : MonoBehaviour, IAttackObject
             BulletMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
     }
 
+    private DisposableBag m_bagEvents;
+
     protected virtual void OnEnable()
     {
         if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter += Attack;
+            m_refCircleCollider.OnHitTargetEnter.Subscribe(Attack).AddTo(ref m_bagEvents);
 
         if (m_refPoolObj != null)
-            m_refPoolObj.OnPush += RunArriveActions;
+            m_refPoolObj.OnPush.Subscribe(_ => RunArriveActions()).AddTo(ref m_bagEvents);
 
         m_tShotInfo.HitCount = 0;
     }
     protected virtual void OnDisable()
     {
-        if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter -= Attack;
-
-        if (m_refPoolObj != null)
-            m_refPoolObj.OnPush -= RunArriveActions;
+        m_bagEvents.Clear();
 
         m_refLineDrawer?.CutLine();
 

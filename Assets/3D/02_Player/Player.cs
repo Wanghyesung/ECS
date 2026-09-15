@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 using Unity.AI;
 using UnityEngine.AI;
@@ -48,7 +51,7 @@ public class ObjectInfo
     public eEntityState State;
 
     public long MaxHP;
-    public long CurrentHP;
+    public readonly ReactiveProperty<long> CurrentHP = new();
 
     public float Speed;
 
@@ -88,7 +91,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private TargetScanner m_refTargetScnner = null;
 
 
-    private Coroutine m_CoNockback = null;
+    private CancellationTokenSource m_ctsNockback;
     private Rigidbody m_refRigidbody = null;
 
     private static Player ThisPlayer = null;
@@ -107,49 +110,25 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Start()
     {
-        m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
+        m_refObjectInfo.CurrentHP.Value = m_SOObjectInfo.MaxHP;
         m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
         PlayerPreLoadData.ApplyTo(this);
 
+        m_refHPSliderImage.SetRange(m_refObjectInfo.MaxHP, m_refObjectInfo.CurrentHP.Value);
+        m_refObjectInfo.CurrentHP.Subscribe(_lHp => m_refHPSliderImage.UpdateSlider(_lHp, m_refObjectInfo.MaxHP)).AddTo(this);
+        m_refHPSliderImage.OnFillCompleted.Subscribe(_ => Dead()).AddTo(this);
 
-        m_refHPSliderImage.OnFillCompleted += Dead;
-        m_refHPSliderImage.SetRange(m_refObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
+        // EXP는 BattleManager 소유 지표 — 구독으로만 UI 갱신
+        BattleManager refBattle = BattleManager.m_Instance;
+        m_refExSliderImage.SetRange(refBattle.MaxExp, refBattle.Exp.CurrentValue);
+        refBattle.Exp.Subscribe(_iExp => m_refExSliderImage.UpdateSlider(_iExp, refBattle.MaxExp)).AddTo(this);
 
-        // EXP는 Player 소유가 아닌 BattleManager 소유 지표라 이벤트 구독으로만 UI 갱신
+        // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정
+        m_refExSliderImage.OnFillMaxReached.Subscribe(_ => refBattle.LevelUp()).AddTo(this);
 
-        BattleManager.m_Instance.OnExpChanged += HandleExpChanged;
-        m_refExSliderImage.SetRange(BattleManager.m_Instance.MaxExp, BattleManager.m_Instance.CurrentExp);
-
-        // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
-        m_refExSliderImage.OnFillMaxReached += MapExpSlider;
-
-        // 배럴롤은 Update에서 입력을 폴링하지 않고 눌린 순간에만 호출받는다
-        InputManager.m_Instance.OnMoveButtonPressed += MoveRoll;
+        InputManager.m_Instance.OnMoveButtonPressed.Subscribe(_ => MoveRoll()).AddTo(this);
 
         m_fLastRollTime = Time.time;
-
-    }
-
-    private void OnDestroy()
-    {
-        m_refHPSliderImage.OnFillCompleted -= Dead;
-        m_refExSliderImage.OnFillMaxReached -= MapExpSlider;
-
-        if (BattleManager.m_Instance != null)
-            BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
-
-        if (InputManager.m_Instance != null)
-            InputManager.m_Instance.OnMoveButtonPressed -= MoveRoll;
-    }
-
-    private void HandleExpChanged(int _iCurrentExp, int _iMaxExp)
-    {
-        m_refExSliderImage.UpdateSlider(_iCurrentExp, _iMaxExp);
-    }
-    
-    private void MapExpSlider()
-    {
-        BattleManager.m_Instance.LevelUp();
     }
 
     private void Update()
@@ -213,18 +192,26 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        if (m_CoNockback != null)
-            StopCoroutine(m_CoNockback);
+        CancelNockback();
 
         m_refObjectInfo.State = eEntityState.Hit;
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
-        m_refObjectInfo.CurrentHP -= iFinalDamage;
-        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_refObjectInfo.MaxHP);
-        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
+        m_refObjectInfo.CurrentHP.Value -= iFinalDamage;
+        m_ctsNockback = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        NockbackAsync(_refAttackInfo, _refShotInfo, m_ctsNockback.Token).Forget();
     }
 
-    private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    private void CancelNockback()
+    {
+        if (m_ctsNockback == null) 
+            return;
+        m_ctsNockback.Cancel();
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
+    }
+
+    private async UniTaskVoid NockbackAsync(AttackInfo _refAttackInfo, tShotInfo _refShotInfo, CancellationToken _ct)
     {
         Vector3 vDir = _refShotInfo.MoveDir;
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
@@ -249,10 +236,11 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
             fElapsed += Time.deltaTime;
 
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
-        m_CoNockback = null;
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
         m_refObjectInfo.State = eEntityState.Idle;
     }
 
@@ -402,9 +390,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void AddHP(long _lValue)
     {
-        m_refObjectInfo.CurrentHP += _lValue;
-        if (m_refObjectInfo.CurrentHP >= m_refObjectInfo.MaxHP)
-            m_refObjectInfo.CurrentHP = m_refObjectInfo.MaxHP;
+        m_refObjectInfo.CurrentHP.Value = System.Math.Min(m_refObjectInfo.CurrentHP.Value + _lValue, m_refObjectInfo.MaxHP);
     }
 
     // 장비 등으로 얻는 HP 증가분은 무기별 상한이 없는 BulletSpeed와 동일하게 상한 없이 누적.

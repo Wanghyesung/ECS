@@ -1,4 +1,4 @@
-using System;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -21,9 +21,12 @@ public enum eColliderShape
 
 public abstract class BaseCollider : MonoBehaviour
 {
-    public event Action<BaseCollider> OnHitTargetEnter;
-    public event Action<BaseCollider> OnHitTargetStay;
-    public event Action<BaseCollider> OnHitTargetExit;
+    private readonly Subject<BaseCollider> m_subjectEnter = new();
+    private readonly Subject<BaseCollider> m_subjectStay = new();
+    private readonly Subject<BaseCollider> m_subjectExit = new();
+    public Observable<BaseCollider> OnHitTargetEnter => m_subjectEnter;
+    public Observable<BaseCollider> OnHitTargetStay => m_subjectStay;
+    public Observable<BaseCollider> OnHitTargetExit => m_subjectExit;
 
     // 생애주기 동안 고정되는 자체 ID. ColliderManager가 쌍(pair) 키를 만들 때 이 ID를 사용
     private static int NEXT_ID = 0;
@@ -103,7 +106,7 @@ public abstract class BaseCollider : MonoBehaviour
     public void ApplyCachedCenter(Vector3 _vCenter) => CachedCenter = _vCenter;
 
     // ColliderManager가 쌍(pair) 상태를 판정한 뒤 Enter/Stay/Exit에 맞춰 호출
-    public void OnEnterCollider(BaseCollider _refOther) => OnHitTargetEnter?.Invoke(_refOther);
-    public void OnStayCollider(BaseCollider _refOther) => OnHitTargetStay?.Invoke(_refOther);
-    public void OnExitCollider(BaseCollider _refOther) => OnHitTargetExit?.Invoke(_refOther);
+    public void OnEnterCollider(BaseCollider _refOther) => m_subjectEnter.OnNext(_refOther);
+    public void OnStayCollider(BaseCollider _refOther) => m_subjectStay.OnNext(_refOther);
+    public void OnExitCollider(BaseCollider _refOther) => m_subjectExit.OnNext(_refOther);
 }

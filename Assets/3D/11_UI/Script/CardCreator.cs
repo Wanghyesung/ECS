@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using R3;
 using TMPro;
 using UnityEngine;
 
@@ -28,12 +29,11 @@ public class CardCreator : MonoBehaviour
     {
         for (int i = 0; i < m_arrCard.Length; ++i)
         {
-            RandomFeatureCard refCard = m_arrCard[i];
-            refCard.OnCardClicked += HandleCardClicked;
+            m_arrCard[i].OnCardClicked.Subscribe(HandleCardClicked).AddTo(this);
         }
 
         if (m_refJokerCard != null)
-            m_refJokerCard.OnCardClicked += HandleJokerCardClicked;
+            m_refJokerCard.OnCardClicked.Subscribe(HandleJokerCardClicked).AddTo(this);
     }
 
     private void OnEnable()

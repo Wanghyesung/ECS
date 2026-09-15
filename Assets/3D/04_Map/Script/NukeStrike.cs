@@ -6,15 +6,20 @@ using UnityEngine;
                 NukeStrike
 목적 : 핵폭탄의 착탄 지점(씬 앵커) + 카메라 컷신. BattleScene의 맵 중앙에 빈 오브젝트로 배치.
        미사일 자체는 SOAttackInfo.PoolPrefab(NukeMissile)을 Bullet.SpawnAttackObject로 꺼내 쓴다.
-       카메라: 낙하 전반은 미사일을 오프셋 위치에서 추적(CameraManager.FollowTarget)하고,
+       미사일은 착탄점 + LaunchOffset에서 출발해 착탄점을 바라보며 대각선으로 진입한다.
+       카메라: 낙하 전반은 미사일 뒤 위(로컬 오프셋)에서 추적(CameraManager.FollowTarget)하고,
        FollowRatio 지점부터는 맵 전경 지점으로 후진(MoveToPoint)해 착탄/임팩트를 넓게 보여준 뒤 복귀.
  *///////////////////////////////////////////
 
 public sealed class NukeStrike : MonoBehaviour
 {
+    [Header("Missile")]
+    [Tooltip("착탄점 기준 미사일 출발 위치. 대각선 진입 방향을 이 벡터가 결정")]
+    [SerializeField] private Vector3 m_vLaunchOffset = new Vector3(-250f, 220f, -250f);
+
     [Header("Camera - Follow")]
-    [Tooltip("미사일 기준 월드 오프셋. 낙하 전반 동안 이 위치에서 미사일을 바라봄")]
-    [SerializeField] private Vector3 m_vFollowOffset = new Vector3(20f, 30f, -90f);
+    [Tooltip("미사일 로컬 오프셋(z- = 뒤, y+ = 위). 낙하 전반 동안 이 위치에서 미사일을 바라봄")]
+    [SerializeField] private Vector3 m_vFollowOffset = new Vector3(10f, 30f, -80f);
     [Tooltip("낙하 시간 중 미사일을 따라가는 비율. 0.5 = 절반 지점부터 후진 시작")]
     [Range(0f, 1f)]
     [SerializeField] private float m_fFollowRatio = 0.5f;
@@ -49,7 +54,8 @@ public sealed class NukeStrike : MonoBehaviour
         tShot.TargetPos = vCenter;
         tShot.HitPosition = vCenter;
 
-        GameObject refObj = Bullet.SpawnAttackObject(_SOAttackInfo.PoolPrefab, vCenter, Quaternion.identity, _SOAttackInfo.MakeAttackInfo(), tShot);
+        Vector3 vLaunchPos = vCenter + m_vLaunchOffset;
+        GameObject refObj = Bullet.SpawnAttackObject(_SOAttackInfo.PoolPrefab, vLaunchPos, Quaternion.LookRotation(-m_vLaunchOffset), _SOAttackInfo.MakeAttackInfo(), tShot);
         if (refObj == null || refObj.TryGetComponent(out NukeMissile refMissile) == false)
             return;
 

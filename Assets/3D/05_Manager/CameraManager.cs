@@ -118,10 +118,11 @@ public class CameraManager : MonoBehaviour
         m_bLock = false;
     }
 
-    // 지정 시간 동안 타겟을 월드 오프셋 위치에서 바라보며 따라간다 (unscaled - 컷신 중 timeScale 0 전제).
+    // 지정 시간 동안 타겟을 타겟 로컬 오프셋(z- = 뒤, y+ = 위) 위치에서 바라보며 따라간다
+    // (unscaled - 컷신 중 timeScale 0 전제). 타겟이 어느 방향으로 날아가든 항상 "뒤 위에서" 보게 됨.
     // 끝나도 잠금은 풀지 않는다 - 이어서 MoveToPoint로 빠져나오는 연출(핵폭탄: 미사일 추적 → 맵 전경 후진)을
     // 붙이기 위함. 잠금 해제/timeScale 복귀는 MoveToPoint 쪽이 담당
-    public async UniTask FollowTarget(CancellationToken _tToken, Transform _refTarget, Vector3 _vWorldOffset, float _fDuration)
+    public async UniTask FollowTarget(CancellationToken _tToken, Transform _refTarget, Vector3 _vLocalOffset, float _fDuration)
     {
         m_bLock = true;
         Transform refCamTransform = m_refMainCamera.transform;
@@ -130,7 +131,7 @@ public class CameraManager : MonoBehaviour
         while (fElapsed < _fDuration && _refTarget != null)
         {
             Vector3 vTargetPos = _refTarget.position;
-            refCamTransform.position = vTargetPos + _vWorldOffset;
+            refCamTransform.position = vTargetPos + _refTarget.rotation * _vLocalOffset;
             refCamTransform.rotation = Quaternion.LookRotation(vTargetPos - refCamTransform.position);
 
             fElapsed += Time.unscaledDeltaTime;

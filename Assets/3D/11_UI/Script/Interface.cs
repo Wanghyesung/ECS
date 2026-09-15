@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -34,10 +35,12 @@ public class Interface : BaseButtonUI, ISelectDataable
 
     private SlotView m_refTargetSlot;
 
-    //콜백함수
-    public Action<SOData> OnAddData;
-    public Action<SOData> OnSelectEvt;
-    public Action<SlotView> OnSelectSlotView;
+    private readonly Subject<SOData> m_subjectAdd = new();
+    private readonly Subject<SOData> m_subjectSelect = new();
+    private readonly Subject<SlotView> m_subjectSelectSlot = new();
+    public Observable<SOData> OnAddData => m_subjectAdd;
+    public Observable<SOData> OnSelectEvt => m_subjectSelect;
+    public Observable<SlotView> OnSelectSlotView => m_subjectSelectSlot;
       
 
     [Header("BUILD")]
@@ -128,7 +131,7 @@ public class Interface : BaseButtonUI, ISelectDataable
                 return false; //이미 장착된 소켓 (교체는 별도 처리 필요)
 
             pSlotInfo.refSlotView.Bind(_SOData, i);
-            OnAddData?.Invoke(_SOData);
+            m_subjectAdd.OnNext(_SOData);
             return true;
         }
 
@@ -212,8 +215,8 @@ public class Interface : BaseButtonUI, ISelectDataable
         m_refTargetSlot = _pTargetSlot;
 
         //콜백함수
-        OnSelectEvt?.Invoke(_pTargetSlot.SOData);
-        OnSelectSlotView?.Invoke(_pTargetSlot);
+        m_subjectSelect.OnNext(_pTargetSlot.SOData);
+        m_subjectSelectSlot.OnNext(_pTargetSlot);
     }
 
 
