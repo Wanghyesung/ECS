@@ -123,6 +123,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
         m_refExSliderImage.OnFillMaxReached += MapExpSlider;
 
+        // 배럴롤은 Update에서 입력을 폴링하지 않고 눌린 순간에만 호출받는다
+        InputManager.m_Instance.OnMoveButtonPressed += MoveRoll;
+
         m_fLastRollTime = Time.time;
 
     }
@@ -134,6 +137,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         if (BattleManager.m_Instance != null)
             BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
+
+        if (InputManager.m_Instance != null)
+            InputManager.m_Instance.OnMoveButtonPressed -= MoveRoll;
     }
 
     private void HandleExpChanged(int _iCurrentExp, int _iMaxExp)
@@ -148,13 +154,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Update()
     {
-        tInputInfo tInfo = InputManager.m_Instance.InputInfo;
-        bool bOnSpace = tInfo.OnSpace;
-
-        if (bOnSpace == true)
-            MoveRoll();
-
-
         if (TestLock == true) return;
 
         Fire();

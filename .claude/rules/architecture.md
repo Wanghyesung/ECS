@@ -6,6 +6,7 @@
 > - 연속적으로 변하는 값의 Model→View 바인딩은 **R3**(`ReactiveProperty<T>`) — [[r3]] 스킬 참고. UniRx 아님.
 > - 비동기는 **UniTask** 전용. 코루틴 금지.
 > - 입력은 **New Input System + 생성 C# 클래스**를 `InputManager` 싱글톤이 소유 (아래 참고).
+> - **외부 라이브러리 API 확인은 Context7.** UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치 않으면 코드를 쓰기 전에 각 스킬 상단 `docs:` 링크를 `WebFetch` 로 읽는다 (`topic=<API명>` 으로 좁혀서). 추측으로 API 를 쓰지 말 것.
 
 ## Mermaid 다이어그램 작성 규칙
 
@@ -24,14 +25,14 @@
 
 - **허용:** 씬에 하나만 있어야 하고 여러 시스템이 공통 참조하는 매니저급 — `InputManager`, `ObjectPoolManager`, `AudioManager`, `CameraManager` 등
 - **금지:** `PlayerSystem`/`ScoreSystem`처럼 기능 하나짜리 클래스의 습관적 싱글톤화 (→ `[SerializeField]` 직접 참조), 모든 걸 다 가진 `GameManager`(→ 갓 오브젝트 금지)
-- `public static T Instance { get; private set; }` 프로퍼티. `public static T m_Instance;` raw 필드 금지 (외부 재할당 가능)
-- Awake 가드에서 **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `Instance`를 덮어쓴다:
+- `public static T m_Instance { get; private set; }` **프로퍼티**로 선언한다. `public static T m_Instance;` 처럼 raw 필드로 노출하지 말 것 — 외부에서 실수로 재할당할 수 있다. 이름은 프로젝트 전반(`BattleManager`, `FeatureManager`, `ObjectPoolManager` 등)과 통일해 `m_Instance` 를 쓴다
+- Awake 가드에서 **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `m_Instance`를 덮어쓴다:
 
 ```csharp
 private void Awake()
 {
-    if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-    Instance = this;
+    if (m_Instance != null && m_Instance != this) { Destroy(gameObject); return; }
+    m_Instance = this;
     DontDestroyOnLoad(gameObject);   // 루트 오브젝트에서만 동작 — 자식이면 조용히 무시됨 (known-issues 참고)
 }
 ```
@@ -54,7 +55,7 @@ public sealed class ScoreSystem : MonoBehaviour
 ```
 
 - 구독/해제는 `OnEnable`/`OnDisable`에서 반드시 짝을 맞춘다. 빠뜨리면 파괴된 오브젝트가 콜백을 받아 `MissingReferenceException`
-- 매니저 싱글톤 직접 호출(`ObjectPoolManager.Instance.Get(...)`)은 허용 — 이벤트는 "발행자가 구독자를 몰라야 할 때"만
+- 매니저 싱글톤 직접 호출(`ObjectPoolManager.m_Instance.Get(...)`)은 허용 — 이벤트는 "발행자가 구독자를 몰라야 할 때"만
 
 ## 값 바인딩 — R3
 
@@ -118,42 +119,77 @@ public sealed class PlayerStatUI : MonoBehaviour
 입력은 여러 System이 각자 구독하는 전역 관심사이므로 `InputManager`만 예외적으로 싱글톤.
 
 - `.inputactions` 에셋(`Assets/3D/06_Input/PlayerAction.inputactions`)에서 **"Generate C# Class"를 켜서** 생성된 클래스(`PlayerAction`)를 `InputManager`가 `new` 해서 소유한다. 액션 추가 = 에셋에 추가 → 클래스 자동 재생성 → 코드 한 줄. 인스펙터 드래그 없음, 이름 변경은 컴파일 에러로 드러남. (예전 `List<InputActionReference>` 방식은 액션 하나마다 필드·인스펙터·Update 메서드가 늘어나 폐기)
-- `InputManager`는 **입력을 읽어 노출하는 것까지만**. 이동 계산·발사 로직은 각 System(`PlayerMovement`, `WeaponSystem`)이 `InputManager.Instance`를 읽어 처리
-- 연속 입력(이동)은 `Update`에서 읽어 캐싱한 값을 노출, 불연속 입력(버튼)은 `performed` 콜백 → `event Action` 또는 R3 `Subject`로 노출
-- `OnEnable`에서 `Enable()`+구독, `OnDisable`에서 해제+`Disable()` 짝 필수
+- `InputManager`는 **입력을 읽어 노출하는 것까지만**. 이동 계산·발사 로직은 각 System(`PlayerMovement`, `WeaponSystem`)이 `InputManager.m_Instance`를 읽어 처리
+- **연속 입력 ↔ 불연속 입력을 반드시 다르게 다룬다:**
+  - **연속**(이동 방향, 마우스 위치/델타) → `Update`에서 `ReadValue`로 읽어 `tInputInfo`에 캐싱, 소비자는 `InputInfo`에서 값을 읽는다. 매 프레임 값이 필요하므로 폴링이 맞다.
+  - **불연속**(버튼: 점프/롤/발사/상호작용) → **캐싱도 폴링도 하지 않는다.** `performed` 콜백을 받아 `event Action`으로 발행하고, 소비자는 구독한다.
+  - 이유: 불연속 입력을 `bool`로 캐싱하면 키 하나당 `tInputInfo` 필드 + `Update` 읽기 + 소비자 폴링이 같이 늘어 **키 개수에 비례해 Update가 무거워진다**. 이벤트는 실제로 눌린 프레임에만 비용이 든다.
+  - 주의: 이벤트는 **누른 순간 1회**만 온다. 누르고 있는 동안 반복이 필요하면 `.inputactions`의 해당 액션에 Hold/Repeat 인터랙션을 추가한다 — 소비자에서 폴링으로 되돌리지 말 것.
+- `InputManager` 내부: `OnEnable`에서 `Enable()` + `performed` 구독, `OnDisable`에서 해제 + `Disable()` 짝 필수
+- **소비자 쪽 구독은 `Start`에서, 해제는 `OnDestroy`에서** (`!= null` 가드 포함). `Awake`/`OnEnable`은 오브젝트 간 순서가 보장되지 않아 `InputManager.m_Instance`가 아직 null일 수 있다 — `Start`는 모든 `Awake` 이후라 안전하다. (`Player.cs`가 `BattleManager.OnExpChanged`를 구독하는 기존 패턴과 동일)
 
 ```csharp
 public sealed class InputManager : MonoBehaviour
 {
-    public static InputManager Instance { get; private set; }
+    public static InputManager m_Instance { get; private set; }
 
     private PlayerAction m_refActions;                 // 생성된 클래스
-    public Vector2 MoveDir { get; private set; }
-    public event Action OnFire;
+    public Vector2 MoveDir { get; private set; }       // 연속 입력: 캐싱해서 노출
+    public event Action OnMoveButtonPressed;           // 불연속 입력: 눌린 순간에만 발행
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance = this;
+        if (m_Instance != null && m_Instance != this) { Destroy(gameObject); return; }
+        m_Instance = this;
         DontDestroyOnLoad(gameObject);
-        m_refActions = new PlayerAction();
     }
 
+    // 생성은 Awake 가 아니라 OnEnable 에서 한다 (둘 다 실제로 터졌던 버그):
+    // (1) Play 중 재컴파일(도메인 리로드) 시 Awake 는 재호출되지 않는데 m_refActions 는
+    //     직렬화 대상이 아니라 null 로 리셋된다 → Awake 에서만 만들면 입력이 영구히 죽는다
+    // (2) Awake 가드로 파괴 예약된 중복 인스턴스도 그 프레임 끝까지 OnEnable/Update 가 더 돈다
     private void OnEnable()
     {
+        if (m_refActions == null)
+            m_refActions = new PlayerAction();
+
         m_refActions.MoveAction.Enable();
-        m_refActions.MoveAction.MoveButton.performed += OnFirePerformed;
+        m_refActions.MoveAction.MoveButton.performed += OnMoveButtonPerformed;
     }
 
     private void OnDisable()
     {
-        m_refActions.MoveAction.MoveButton.performed -= OnFirePerformed;
+        m_refActions.MoveAction.MoveButton.performed -= OnMoveButtonPerformed;
         m_refActions.MoveAction.Disable();
     }
 
     private void Update() => MoveDir = m_refActions.MoveAction.Move.ReadValue<Vector2>();
 
-    private void OnFirePerformed(InputAction.CallbackContext _ctx) => OnFire?.Invoke();
+    private void OnMoveButtonPerformed(InputAction.CallbackContext _tContext) => OnMoveButtonPressed?.Invoke();
+}
+
+// --- 소비자: 연속값은 읽고, 버튼은 구독한다 ---
+public sealed class PlayerMovement : MonoBehaviour
+{
+    private void FixedUpdate()
+    {
+        Vector2 vMoveDir = InputManager.m_Instance.MoveDir;   // 연속 - 폴링
+        // 이동 로직은 여기(System), InputManager 엔 없음
+    }
+}
+
+public sealed class Player : MonoBehaviour
+{
+    // Awake/OnEnable 이 아니라 Start - m_Instance 가 준비된 것이 보장되는 시점
+    private void Start()   => InputManager.m_Instance.OnMoveButtonPressed += MoveRoll;
+
+    private void OnDestroy()
+    {
+        if (InputManager.m_Instance != null)
+            InputManager.m_Instance.OnMoveButtonPressed -= MoveRoll;
+    }
+
+    private void MoveRoll() { /* 눌린 프레임에만 호출된다 */ }
 }
 ```
 

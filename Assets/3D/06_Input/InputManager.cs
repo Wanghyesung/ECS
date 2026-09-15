@@ -1,42 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 /*///////////////////////////////////////////
                 InputManager
-기능 : 연결된 액션의 값을 가져와서 해당 값 셋팅
+기능 : PlayerAction.inputactions 에서 생성된 PlayerAction 클래스를 소유하고 입력을 노출한다.
+       - 연속 입력(이동/마우스)은 매 프레임 읽어 tInputInfo 로 캐싱해서 노출
+       - 불연속 입력(버튼)은 캐싱하지 않고 눌린 순간에만 event 로 알린다
+         (소비자가 매 프레임 폴링할 필요가 없어지고, 키가 늘어도 Update 가 무거워지지 않는다)
+       입력에 대한 반응(이동 계산, 발사 등)은 각 System 이 담당하고 여기엔 두지 않는다.
  *///////////////////////////////////////////
 
 public struct tInputInfo
 {
     public Vector2 MoveDir;
-    public Vector2 ScreenPos;
     public Vector2 Delta;
-
-    public bool OnSpace;
-    public bool OnLButon;
 }
 
-public class InputManager : MonoBehaviour
+public sealed class InputManager : MonoBehaviour
 {
-    private tInputInfo m_tInputInfo = new tInputInfo();
+    public static InputManager m_Instance { get; private set; }
+
+    // MoveButton(Space)이 눌린 순간 한 번 발행. 누르고 있어도 반복되지 않는다
+    // (반복이 필요하면 .inputactions 의 해당 액션에 Hold/Repeat 인터랙션을 추가할 것).
+    // 구독은 Awake 가 아니라 Start 에서 — Awake 순서는 보장되지 않아 m_Instance 가 아직 null 일 수 있다.
+    public event Action OnMoveButtonPressed;
+
+    private PlayerAction m_refActions;
+    private tInputInfo m_tInputInfo;
+
+    // 마우스 Delta 는 에디터/빌드 진입 직후 커서 워프로 큰 값이 한 번 들어온다.
+    // 첫 유효 델타 한 번을 0으로 버려서 시작하자마자 시점이 튀는 것을 막는다.
+    private bool m_bDeltaInitialized;
+
     public tInputInfo InputInfo => m_tInputInfo;
 
-    public static InputManager m_Instance = null;
-
-    [SerializeField] private List<InputActionReference> m_listMoveAction;
-    [SerializeField] private List<InputActionReference> m_listScreenAction;
-    [SerializeField] private List<InputActionReference> m_listDeltaAction;
-
-    [SerializeField] private List<InputActionReference> m_listMoveSpaceAction;
-
-    private bool m_isDeltaInitialized = false;
     private void Awake()
     {
-        if (m_Instance != null)
+        if (m_Instance != null && m_Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -44,83 +45,58 @@ public class InputManager : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        for (int i = 0; i < m_listMoveAction.Count; ++i)
-            m_listMoveAction[i].action.Enable();
-
-        for (int i = 0; i < m_listScreenAction.Count; ++i)
-            m_listScreenAction[i].action.Enable();
-
-        for (int i = 0; i < m_listDeltaAction.Count; ++i)
-            m_listDeltaAction[i].action.Enable();
-
-        for (int i = 0; i < m_listMoveSpaceAction.Count; ++i)
-            m_listMoveSpaceAction[i].action.Enable();
-
     }
 
-    private void Start()
+    // PlayerAction 생성을 Awake 가 아니라 여기서 하는 이유:
+    // (1) Play 도중 스크립트 재컴파일(도메인 리로드)이 일어나면 Awake 는 다시 호출되지 않지만
+    //     OnEnable 은 다시 호출된다. m_refActions 는 직렬화 대상이 아니라 그때 null 로 리셋되므로
+    //     Awake 에서만 만들면 리로드 후 입력이 영구히 죽는다.
+    // (2) Awake 가드에 걸려 파괴 예약된 중복 인스턴스도 그 프레임 끝까지 OnEnable/Update 가 더 돈다.
+    private void OnEnable()
     {
+        if (m_refActions == null)
+            m_refActions = new PlayerAction();
 
+        m_refActions.MoveAction.Enable();
+        m_refActions.MoveAction.MoveButton.performed += OnMoveButtonPerformed;
+    }
+
+    private void OnDisable()
+    {
+        m_refActions.MoveAction.MoveButton.performed -= OnMoveButtonPerformed;
+        m_refActions.MoveAction.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        if (m_Instance == this)
+            m_Instance = null;
+
+        if (m_refActions != null)
+        {
+            m_refActions.Dispose();
+            m_refActions = null;
+        }
     }
 
     private void Update()
     {
-        UpdateMoveValue();
+        PlayerAction.MoveActionActions tMap = m_refActions.MoveAction;
 
-        UpdateScreenMoveValue();
+        m_tInputInfo.MoveDir = tMap.Move.ReadValue<Vector2>().normalized;
 
-        UpdateDeltaValue();
-
-        UpdateSpaceValue();
-
-    }
-
-    private void UpdateMoveValue()
-    {
-        for (int i = 0; i < m_listMoveAction.Count; ++i)
+        Vector2 vDelta = tMap.Delta.ReadValue<Vector2>();
+        if (m_bDeltaInitialized == false && vDelta.sqrMagnitude > 0.0f)
         {
-            Vector2 vMoveValue = m_listMoveAction[i].action.ReadValue<Vector2>();
-            m_tInputInfo.MoveDir = vMoveValue.normalized;
+            m_bDeltaInitialized = true;
+            vDelta = Vector2.zero;
         }
+
+        m_tInputInfo.Delta = vDelta;
     }
 
-    private void UpdateSpaceValue()
+    private void OnMoveButtonPerformed(InputAction.CallbackContext _tContext)
     {
-        for (int i = 0; i < m_listMoveSpaceAction.Count; ++i)
-        {
-            m_tInputInfo.OnSpace = m_listMoveSpaceAction[i].action.IsPressed();
-        }
+        OnMoveButtonPressed?.Invoke();
     }
-
-    private void UpdateScreenMoveValue()
-    {
-        for (int i = 0; i < m_listScreenAction.Count; ++i)
-        {
-            Vector2 vScreenPos = m_listScreenAction[i].action.ReadValue<Vector2>();
-            m_tInputInfo.ScreenPos = vScreenPos;
-        }
-    }
-
-    private void UpdateDeltaValue()
-    {
-        for (int i = 0; i < m_listDeltaAction.Count; ++i)
-        {
-            Vector2 vDelta = m_listDeltaAction[i].action.ReadValue<Vector2>();
-
-            if (!m_isDeltaInitialized)
-            {
-                if (vDelta.sqrMagnitude > 0f)
-                {
-                    m_tInputInfo.Delta = Vector2.zero; 
-                    m_isDeltaInitialized = true;       
-                    continue;
-                }
-            }
-
-            m_tInputInfo.Delta = vDelta;
-        }
-    }
-
-
 }
