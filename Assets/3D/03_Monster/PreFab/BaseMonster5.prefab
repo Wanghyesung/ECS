@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SOAttackInfo: {fileID: 11400000, guid: 6fa1ec2366276ef4db9df5961a125ad9, type: 2}
+  m_SOAttackInfo: {fileID: 11400000, guid: d126747de8434f4ca64461b5eb645b85, type: 2}
   m_refFireTr: {fileID: 5305598655518449322}
   m_refEffectObject: {fileID: 922728792116202819}
   m_bLookTarget: 1
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SOAttackInfo: {fileID: 11400000, guid: 6fa1ec2366276ef4db9df5961a125ad9, type: 2}
+  m_SOAttackInfo: {fileID: 11400000, guid: d126747de8434f4ca64461b5eb645b85, type: 2}
   m_refFireTr: {fileID: 809365986849485300}
   m_refEffectObject: {fileID: 6817695150937236156}
   m_bLookTarget: 1

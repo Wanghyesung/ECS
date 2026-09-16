@@ -7,11 +7,10 @@ using UnityEngine.SceneManagement;
 
 /*///////////////////////////////////////////
                 DungeonManager
-기능 : 던전 한 판의 진행(스테이지 순서, 보스 등장, 스테이지 클리어)을 책임지는 매니저.
-       List<SOStage>를 순서대로 진행하며, 각 스테이지 시작 시 ObjectSpawner에게
-       그 스테이지의 몬스터 스폰 테이블을 예약시킨다.
-       보스는 마지막 스테이지에서만 등장 — 그 전 스테이지들은 몬스터를 다 처치하면
-       보스 없이 바로 다음 스테이지로 넘어간다.
+기능 : 던전 한 판의 진행(몬스터 스폰 예약, 보스 등장, 클리어)을 책임지는 매니저.
+       m_listStage는 '순서대로 도는 코스'가 아니라 로비(SelectStage)에서 고르는
+       난이도 목록이다 - StartStage(idx)로 그 하나만 시작하고, 잡몹을 전부 처치하면
+       그 스테이지의 보스가 등장, 보스를 잡으면 한 판이 끝나 로비로 돌아간다.
  *///////////////////////////////////////////
 public class DungeonManager : MonoBehaviour
 {
@@ -21,7 +20,16 @@ public class DungeonManager : MonoBehaviour
     [SerializeField] private List<SOStage> m_listStage = new List<SOStage>();
 
     private int m_iCurrentStageIdx = 0;
-    private int m_iRemainMonsterCount = 0;
+
+    // 예약 수가 아니라 '실제로 스폰돼서 아직 살아있는 수'. 풀이 비어 스폰이 밀리면
+    // 예약 수 기준으로는 영영 0이 안 돼서 보스가 안 나온다 - 스폰/사망 시점에만 움직인다.
+    // 아직 안 나온 예약분은 m_refSpawner.RemainObject 가 따로 세므로 둘 다 0이어야 클리어
+    private int m_iAliveMonsterCount = 0;
+
+    // 보스 등장 '요청'과 '실제 등장'을 나눠서 본다. 요청 후 카메라가 비기를 기다리는 동안에도
+    // MonsterDead 는 계속 들어올 수 있어서(핵폭탄처럼 같은 프레임에 여럿이 죽는 경우 포함),
+    // 요청 플래그가 없으면 보스가 여러 번 스폰된다
+    private bool m_bBossRequested = false;
     private bool m_bBossSpawned = false;
 
     // 스포너가 꺼낸 몬스터 목록(보스 포함). 스폰 담당인 이쪽이 들고 있어야 Monster 클래스가 자기 개체수를
@@ -73,7 +81,8 @@ public class DungeonManager : MonoBehaviour
         m_bBossSpawned = false;
 
         SOStage refStage = m_listStage[_iStageIdx];
-        m_iRemainMonsterCount = refStage.ListSpawnEntry.Count;
+        m_iAliveMonsterCount = 0;
+        m_bBossRequested = false;
 
         m_listSpawnedMonster.Clear();
         for (int i = 0; i < refStage.ListSpawnEntry.Count; ++i)
@@ -88,6 +97,9 @@ public class DungeonManager : MonoBehaviour
     {
         if (_refSpawned.TryGetComponent(out Monster refMonster) == false)
             return;
+
+        if (m_bBossSpawned == false)
+            ++m_iAliveMonsterCount;
 
         if (m_listSpawnedMonster.Contains(refMonster) == false)
             m_listSpawnedMonster.Add(refMonster);
@@ -117,14 +129,20 @@ public class DungeonManager : MonoBehaviour
     {
         if (m_bBossSpawned == true)
         {
-            // 보스는 마지막 스테이지에서만 등장하므로, 보스가 죽었다는 건 곧 던전 클리어
+            // 한 판에 보스는 하나뿐이므로, 보스가 죽었다는 건 곧 던전 클리어
             ClearStage().Forget();
             return;
         }
 
-        --m_iRemainMonsterCount;
-        if (m_iRemainMonsterCount <= 0 && m_refSpawner.RemainObject <= 0)
+        --m_iAliveMonsterCount;
+        if (m_bBossRequested == true)
+            return;
+
+        if (m_iAliveMonsterCount <= 0 && m_refSpawner.RemainObject <= 0)
+        {
+            m_bBossRequested = true;
             SpawnBossWhenCameraFree().Forget();
+        }
     }
 
     // 핵폭탄처럼 몬스터를 한 번에 전멸시키는 연출 도중이면, 그 컷신이 끝난 뒤에 보스 등장 컷신을 시작

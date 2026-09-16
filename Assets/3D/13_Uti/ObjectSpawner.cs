@@ -15,6 +15,10 @@ using UnityEngine;
 public class ObjectSpawner : MonoBehaviour
 {
     [SerializeField] private SOPoolData m_refSpawnEffect;
+
+    [Tooltip("풀이 비어 스폰에 실패했을 때 다시 시도하기까지의 간격(초)")]
+    [SerializeField] private float m_fRetryInterval = 1.0f;
+
     private PriorityQueue<tSpawnData> m_PQObject;
 
     public int RemainObject => m_PQObject.Count;
@@ -74,7 +78,17 @@ public class ObjectSpawner : MonoBehaviour
             }
 
             m_PQObject.Dequeue();
-            SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition);
+
+            // 풀이 비었으면(GetObject == null) 버리지 않고 다시 예약한다.
+            // 그냥 스킵하면 예약된 몬스터가 영영 안 나와서, 그 수만큼 처치를 기다리는
+            // DungeonManager 가 다음 단계로 못 넘어간다 (Docs/TODO.md 3번)
+            if (SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition) == false)
+            {
+                m_PQObject.Enqueue(new tSpawnData(Time.time + m_fRetryInterval, tSpawn.refSpawnObject, tSpawn.vPosition));
+                await UniTask.Yield(_tToken);
+                continue;
+            }
+
             ObjectPoolManager.m_Instance.GetObject(m_refSpawnEffect, tSpawn.vPosition);
        }
     }
@@ -85,13 +99,15 @@ public class ObjectSpawner : MonoBehaviour
         m_PQObject.Enqueue(tData);
     }
 
-    private void SpawnObject(SOPoolData _refSpawnObject, Vector3 _vPosition)
+    // 반환값 : 실제로 꺼내서 배치했는지 (false = 풀 고갈, 호출부가 재예약)
+    private bool SpawnObject(SOPoolData _refSpawnObject, Vector3 _vPosition)
     {
         GameObject refGameObject = ObjectPoolManager.m_Instance.GetObject(_refSpawnObject);
         if (refGameObject == null)
-            return;
+            return false;
 
         refGameObject.transform.position = _vPosition;
         m_subjectSpawned.OnNext(refGameObject);
+        return true;
     }
 }
