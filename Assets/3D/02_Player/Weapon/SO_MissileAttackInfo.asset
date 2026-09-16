@@ -15,10 +15,10 @@ MonoBehaviour:
   Description: "\uD50C\uB808\uC774\uC5B4 \uBBF8\uC0AC\uC77C"
   WeaponType: 4
   PoolPrefab: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
-  Damage: 20
+  Damage: 55
   AttackPower: 10
-  Cooldown: 0.8
-  Speed: 100
+  Cooldown: 1.2
+  Speed: 120
   SpeedOffset: 20
   AliveTime: 5
   HitCount: 1

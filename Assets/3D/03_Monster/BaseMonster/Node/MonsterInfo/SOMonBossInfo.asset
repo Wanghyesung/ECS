@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectName: Boss
   Description: 
-  MaxHP: 100000
+  MaxHP: 45000
   MaxSpeed: 10
   MaxAtack: 1000
   MaxDefense: 100
-  ExpReward: 100
+  ExpReward: 200

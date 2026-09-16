@@ -697,7 +697,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &30608954
 Transform:
   m_ObjectHideFlags: 0
@@ -2464,7 +2464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &161302929
 Transform:
   m_ObjectHideFlags: 0
@@ -2498,8 +2498,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 3
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 3
 --- !u!1 &170092592
 GameObject:
   m_ObjectHideFlags: 0
@@ -3620,7 +3620,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &216538520
 Transform:
   m_ObjectHideFlags: 0
@@ -5359,7 +5359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &280640786
 Transform:
   m_ObjectHideFlags: 0
@@ -5393,8 +5393,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 100
-  m_fSpreadAngle: 80
+  m_iBulletCount: 16
+  m_fSpreadAngle: 45
 --- !u!1 &289476289
 GameObject:
   m_ObjectHideFlags: 0
@@ -8188,8 +8188,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 6
 --- !u!1 &456280720
 GameObject:
   m_ObjectHideFlags: 0
@@ -12680,7 +12680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &715872779
 Transform:
   m_ObjectHideFlags: 0
@@ -12714,8 +12714,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 6
-  m_fSpreadAngle: 30
+  m_iBulletCount: 1
+  m_fSpreadAngle: 0
 --- !u!1 &719089471
 GameObject:
   m_ObjectHideFlags: 0
@@ -12732,7 +12732,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &719089472
 Transform:
   m_ObjectHideFlags: 0
@@ -14615,7 +14615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &795575402
 Transform:
   m_ObjectHideFlags: 0
@@ -16113,7 +16113,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &887771511
 Transform:
   m_ObjectHideFlags: 0
@@ -16147,8 +16147,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 4
 --- !u!1 &891060296
 GameObject:
   m_ObjectHideFlags: 0
@@ -17048,8 +17048,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 0
-  m_iBulletCount: 6
-  m_fSpreadAngle: 30
+  m_iBulletCount: 1
+  m_fSpreadAngle: 0
 --- !u!1 &943014569
 GameObject:
   m_ObjectHideFlags: 0
@@ -26320,7 +26320,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1331114200
 Transform:
   m_ObjectHideFlags: 0
@@ -26354,8 +26354,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 4
 --- !u!1 &1334385013
 GameObject:
   m_ObjectHideFlags: 0
@@ -28727,7 +28727,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1412695963
 Transform:
   m_ObjectHideFlags: 0
@@ -29680,7 +29680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1472460816
 Transform:
   m_ObjectHideFlags: 0
@@ -29714,8 +29714,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 3
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 3
 --- !u!1 &1473747279
 GameObject:
   m_ObjectHideFlags: 0
@@ -37408,6 +37408,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f2471ad24c82103428ec11cc50155e35, type: 2}
   - {fileID: 11400000, guid: 5c3a6337f392f1e4981568266f33c344, type: 2}
   - {fileID: 11400000, guid: bf03e53b30df81841b6af47039ba9e31, type: 2}
+  - {fileID: 11400000, guid: 24dc7a082f684d65b4e0a1a4aea997c8, type: 2}
   m_listPreLoadFeautre: []
 --- !u!1 &1898668830
 GameObject:
@@ -37613,8 +37614,8 @@ MonoBehaviour:
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
   m_fInaccuracyAngle: 5
-  m_iBulletCount: 6
-  m_fSpreadAngle: 1
+  m_iBulletCount: 2
+  m_fSpreadAngle: 6
 --- !u!1 &1913867945
 GameObject:
   m_ObjectHideFlags: 0
@@ -42939,7 +42940,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refTargetScanner: {fileID: 9129693645490222008}
   m_refWeapon: {fileID: 261239895}
-  m_fRotateSpeed: 10
+  m_fRotateSpeed: 180
   m_fFireAngle: 10
 --- !u!114 &9129693645490222008
 MonoBehaviour:

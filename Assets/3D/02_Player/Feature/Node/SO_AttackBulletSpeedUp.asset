@@ -21,4 +21,4 @@ MonoBehaviour:
   m_eTier: 2
   m_iMaxLevel: 5
   m_eTargetWeaponType: 1
-  m_fCooldownReduceRate: 0.04
+  m_fCooldownReduceRate: 0.06

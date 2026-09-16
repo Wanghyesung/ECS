@@ -37,6 +37,11 @@ public class Weapon : MonoBehaviour
     private float m_fBaseCooldown = 0.2f;
     private float m_fLastFireTime = -Mathf.Infinity;
 
+    // SO 원본 데미지. 공격력 스탯은 여기에 배율로 얹으므로, 누적 곱 대신 매번 base 기준으로 재계산한다
+    // (SetCooldown이 m_fBaseCooldown을 쓰는 것과 같은 이유 - Repeatable 기능 재적용 시 드리프트 방지)
+    private int m_iBaseDamage;
+    private float m_fAttackBonusRate;
+
     private eWeaponType m_eWeapoonType = eWeaponType.None;
     public eWeaponType WeaponType => m_eWeapoonType;
 
@@ -65,6 +70,7 @@ public class Weapon : MonoBehaviour
         m_refAttackInfo.Owner = gameObject.transform;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
         m_fBaseCooldown = m_refAttackInfo.CoolDown;
+        m_iBaseDamage = m_refAttackInfo.Damage;
     }
 
     private void Start()
@@ -212,11 +218,14 @@ public class Weapon : MonoBehaviour
         m_fFireTime = m_refAttackInfo.CoolDown;
     }
 
-    // Player.UpAttack()에서 레벨업 시점에 호출. m_refAttackInfo는 이 무기가 만든 모든 총알이
-    
-    public void AddAttackDamage(int _iValue)
+    // Player.AddAttack()에서 호출. m_refAttackInfo는 이 무기가 만든 모든 총알이 참조하는 인스턴스라
+    // 여기만 고치면 이미 날아가는 총알을 뺀 다음 발사분부터 전부 반영된다.
+    // 평탄 가산이 아니라 '% 증가'인 이유 : 한 번에 여러 발 나가는 무기(m_iBulletCount)에 평탄 가산을 하면
+    // 실제 증가폭이 탄 개수에 비례해 터진다 (샷건 16발 = 가산치의 16배). 배율이면 탄 개수와 무관하게 같은 비율로 오른다
+    public void AddAttackRate(float _fRate)
     {
-        m_refAttackInfo.Damage += _iValue;
+        m_fAttackBonusRate += _fRate;
+        m_refAttackInfo.Damage = Mathf.Max(1, Mathf.RoundToInt(m_iBaseDamage * (1f + (m_fAttackBonusRate * 0.01f))));
     }
 
     public void AddBulletSpeed(float _fValue)

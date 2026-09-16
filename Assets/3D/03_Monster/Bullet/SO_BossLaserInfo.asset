@@ -16,7 +16,7 @@ MonoBehaviour:
     \uC18C\uD658"
   WeaponType: 5
   PoolPrefab: {fileID: 11400000, guid: 5f01528a4b8655440934fb4da677f58f, type: 2}
-  Damage: 10
+  Damage: 55
   AttackPower: 2
   Cooldown: 5
   Speed: 0

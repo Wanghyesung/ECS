@@ -19,4 +19,4 @@ MonoBehaviour:
   m_iWeight: 1
   m_eTier: 2
   m_iMaxLevel: 5
-  m_fAttackRatio: 0.1
+  m_fAttackRatio: 0.12

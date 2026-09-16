@@ -17,6 +17,6 @@ MonoBehaviour:
   m_strDisplayName: BULLET SPEED
   m_tAddValue:
     Type: 4
-    Value: 0.8
+    Value: 5
   m_iBaseCost: 80
   m_iCostIncrement: 40

@@ -400,9 +400,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.MaxHP += _lValue;
     }
 
+    // 공격력 스탯은 무기 데미지에 얹는 '증가율(%)'이고, MaxAtack이 그 상한이다 (기준이 MaxHP였던 건 오타)
     public void UpAttackRatio(float _fRatio)
     {
-        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        float fAccValue = m_SOObjectInfo.MaxAtack * _fRatio;
         int iAccValue = (int)fAccValue;
 
         AddAttack(iAccValue);
@@ -410,7 +411,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void DownAttackRatio(float _fRatio)
     {
-        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        float fAccValue = m_SOObjectInfo.MaxAtack * _fRatio;
         int iAccValue = (int)fAccValue;
 
         AddAttack(-iAccValue);
@@ -420,20 +421,17 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         float fPrevAttack = m_refObjectInfo.Attack;
 
-        m_refObjectInfo.Attack += _iValue;
-        if (m_refObjectInfo.Attack >= m_SOObjectInfo.MaxAtack)
-            m_refObjectInfo.Attack = m_SOObjectInfo.MaxAtack;
-
-        else if (m_refObjectInfo.Attack <= 1)
-            m_refObjectInfo.Attack = 1;
+        m_refObjectInfo.Attack = Mathf.Clamp(m_refObjectInfo.Attack + _iValue, 0.0f, m_SOObjectInfo.MaxAtack);
 
         // MaxAtack 클램프로 실제 증가분이 _iValue보다 작을 수 있어 그 차이만 무기에 반영.
-        int iAppliedValue = (int)(m_refObjectInfo.Attack - fPrevAttack);
+        float fAppliedValue = m_refObjectInfo.Attack - fPrevAttack;
+        if (fAppliedValue == 0.0f)
+            return;
+
+        // 비활성(미해금) 무기까지 전부 반영한다 - 활성 무기만 갱신하면 공격력 카드를 먼저 먹고
+        // 나중에 해금한 무기가 그때까지 쌓인 보너스를 영영 못 받는다
         for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].AddAttackDamage(iAppliedValue);
-        }
+            m_listWeapon[i].AddAttackRate(fAppliedValue);
     }
 
     public void UpSpeedRatio(float _fRatio)
@@ -451,9 +449,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         float fPrevSpeed = m_refObjectInfo.Speed;
 
-        m_refObjectInfo.Speed += _fValue;
-        if (m_refObjectInfo.Speed >= m_SOObjectInfo.MaxSpeed)
-            m_refObjectInfo.Speed = m_SOObjectInfo.MaxSpeed;
+        m_refObjectInfo.Speed = Mathf.Clamp(m_refObjectInfo.Speed + _fValue, 0.0f, m_SOObjectInfo.MaxSpeed);
 
         // MaxSpeed 클램프로 실제 증가분이 _fValue보다 작을 수 있어 그 차이만 PlayerMovement에 반영.
         float fAppliedValue = m_refObjectInfo.Speed - fPrevSpeed;
@@ -474,28 +470,22 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void AddDefense(float _fValue)
     {
-        m_refObjectInfo.Defense += _fValue;
-        if (m_refObjectInfo.Defense >= m_SOObjectInfo.MaxDefense)
-            m_refObjectInfo.Defense = m_SOObjectInfo.MaxDefense;
+        // 하한 0 - 조커 실패로 방어 카드가 몰수될 때 음수가 되면 피해가 오히려 늘어난다
+        m_refObjectInfo.Defense = Mathf.Clamp(m_refObjectInfo.Defense + _fValue, 0.0f, m_SOObjectInfo.MaxDefense);
     }
 
     // FeatureSO.Apply()에서 총알 속도 강화 기능(예: SOFeatureUpBulletSpeed)이 호출.
     // 무기별 상한이 없어 Attack/Speed처럼 클램프하지 않고 그대로 누적
     public void UpBulletSpeed(float _fValue)
     {
+        // AddAttack과 같은 이유로 비활성 무기까지 반영 - 나중에 해금해도 누적분을 그대로 받는다
         for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].AddBulletSpeed(_fValue);
-        }
+            m_listWeapon[i].AddBulletSpeed(_fValue);
     }
 
     public void DownBulletSpeed(float _fValue)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].DownBulletSpeed(_fValue);
-        }
+            m_listWeapon[i].DownBulletSpeed(_fValue);
     }
 }

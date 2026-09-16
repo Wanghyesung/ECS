@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b138ac33d0d27f74b862bdd05714ec36, type: 3}
   m_Name: SO_Weapon1Data
   m_EditorClassIdentifier: 
-  m_strDescription: UP Player Attack 10
+  m_strDescription: UP Player Attack 5%
   m_sprIcon: {fileID: 21300022, guid: ba70f807250caac419b9f8e27b225ab7, type: 3}
   m_eEquipType: 0
   m_listValue:

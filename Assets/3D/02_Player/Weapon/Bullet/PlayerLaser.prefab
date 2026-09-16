@@ -4890,7 +4890,7 @@ MonoBehaviour:
   m_refLineDrawer:
     m_refBulletLinePoolObj: {fileID: 0}
     m_refVisualMeshFilter: {fileID: 0}
-  m_fRange: 20
+  m_fRange: 400
   m_fLaserRadius: 0.5
 --- !u!65 &3208323484300018747
 BoxCollider:

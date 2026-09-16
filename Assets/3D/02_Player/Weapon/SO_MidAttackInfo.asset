@@ -15,12 +15,12 @@ MonoBehaviour:
   Description: 
   WeaponType: 1
   PoolPrefab: {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
-  Damage: 2
+  Damage: 26
   AttackPower: 5
-  Cooldown: 0.02
-  Speed: 180
-  SpeedOffset: 40
-  AliveTime: 2
+  Cooldown: 0.55
+  Speed: 200
+  SpeedOffset: 20
+  AliveTime: 2.5
   HitCount: 1
   HitStep: 1
   TelegraphDuration: 0
