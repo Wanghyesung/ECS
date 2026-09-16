@@ -34,6 +34,11 @@ public class RandomFeatureCard : BaseButtonUI
         m_refSlotImage = GetComponent<Image>();
     }
 
+    private void OnEnable()
+    {
+        m_refSlotImage.color = Color.white;
+    }
+
     public void Setup(SOData _SOData)
     {
         m_SOData = _SOData;

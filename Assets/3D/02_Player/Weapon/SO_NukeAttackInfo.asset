@@ -25,7 +25,7 @@ MonoBehaviour:
   HitCount: 1
   HitStep: 1
   TelegraphDuration: 0
-  KnockbackForce: 3
+  KnockbackForce: 40
   KnockbackDuration: 0.2
   StunDuration: 0
   BaseRotationSpeed: 90

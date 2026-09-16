@@ -18,4 +18,4 @@ MonoBehaviour:
   MaxSpeed: 4.4
   MaxAtack: 1200
   MaxDefense: 120
-  ExpReward: 75
+  ExpReward: 100

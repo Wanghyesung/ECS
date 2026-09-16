@@ -8,13 +8,14 @@ using UnityEngine;
 
 public static class FeatureTierUI
 {
+    // 오비탈_기획서_v2 §05 등급표의 ● 색상 그대로 (hex → 0~1)
     private static readonly Color[] m_arrTierColor =
     {
-        Color.white,                // Common
-        new Color(0.3f, 0.9f, 0.3f), // Uncommon
-        new Color(0.3f, 0.5f, 1.0f), // Rare
-        new Color(1.0f, 0.9f, 0.2f), // Epic
-        new Color(0.95f, 0.2f, 0.2f), // Legendary
+        new Color(0.604f, 0.627f, 0.651f), // Common    #9AA0A6
+        new Color(0.239f, 0.639f, 0.365f), // Uncommon  #3DA35D
+        new Color(0.231f, 0.435f, 0.839f), // Rare      #3B6FD6
+        new Color(0.541f, 0.310f, 0.839f), // Epic      #8A4FD6
+        new Color(0.839f, 0.651f, 0.231f), // Legendary #D6A63B
     };
 
     public static Color GetColor(eFeatureTier _eTier)

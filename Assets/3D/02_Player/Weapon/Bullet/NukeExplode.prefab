@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NukeExplode
       objectReference: {fileID: 0}
+    - target: {fileID: 100012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -62,19 +66,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1049.106
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -82,7 +86,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 552.51337
       objectReference: {fileID: 0}
     - target: {fileID: 400012, guid: a905d8e5159ffeb46baa8d2a7624717f, type: 3}
       propertyPath: m_LocalRotation.w
