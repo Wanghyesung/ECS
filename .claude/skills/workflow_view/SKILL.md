@@ -1,6 +1,6 @@
 ---
 name: workflow_view
-description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들어줘'/'~생각중이야'처럼 새 기능 구현 의도를 밝히면 자동 발동. .claude/docs/prd/ 기존 문서 확인 → 부족한 요구사항 질문(deep-interview 채점 기준 재사용) → Plan Mode에서 BDD 스타일 PRD+Mermaid 다이어그램 작성/저장 → 복잡도별 에이전트 라우팅 실행(unity-workflow 재사용) → 검증까지 전체 파이프라인을 오케스트레이션."
+description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들어줘'/'~생각중이야'처럼 새 기능 구현 의도를 밝히면 자동 발동. .claude/docs/prd/ 기존 문서 확인 → 부족한 요구사항 질문(deep-interview 채점 기준 재사용) → 런타임 실행 순서(STEP)별로 실제 작성할 C# 코드와 구조 다이어그램을 Artifact로 먼저 보여주고 Plan Mode에서 BDD 스타일 PRD 저장 → 복잡도별 에이전트 라우팅 실행(unity-workflow 재사용) → 검증까지 전체 파이프라인을 오케스트레이션."
 ---
 
 # workflow_view — 대화형 기획→구현 파이프라인
@@ -31,28 +31,99 @@ description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들�
 2. Update/FixedUpdate 등 핫 루프 성능 영향
 3. SO/이벤트로 확장 가능한 지점
 
-## 2단계: Plan Mode 전환 + PRD 작성
+조사는 여기서 멈추지 않는다. 2단계의 `classDiagram` 을 실제 이름으로 그릴 수 있을 만큼
+**관련 클래스의 필드·메서드 시그니처와 서로의 참조 관계**를 확보하고, 그 과정에서 발견한
+**이 코드베이스 고유의 함정**(공유 참조, 직렬화 상수, 브로드페이즈 제약 등)을 메모해둔다 — 2단계 함정 섹션의 재료다.
 
-1. `EnterPlanMode`로 전환한다.
-2. PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801de9d7d0201e0792c7ded) 구조를 따른다: Overview(Purpose/Scope/Tech Stack) → User Flow(Entry/Core Steps/Edge Cases) → Functional Requirements(UI/Core Features/Data&Integration/NFR) → Technical Architecture(System Overview/Component Details/Algorithms/Assets) → Assumptions&Constraints → Implementation Plan(Milestones/Ownership/DoD) → Detailed Specs → Roadmap → External Resources → Changelog.
-3. **각 주요 요구사항 항목 뒤에는 반드시 Rationale(왜 이렇게 결정했는지) 한 줄을 붙인다** — 템플릿의 핵심 원칙.
-4. **Acceptance Criteria는 BDD 형식(Given-When-Then)으로 작성한다**:
-   ```
-   Given [사전 상태]
-   When [행위/트리거]
-   Then [기대 결과]
-   ```
-   이 목록은 그대로 4단계(테스트 생성)의 어서션 계획으로 재사용한다 — [unity-workflow.md](.claude/commands/unity-workflow.md) 3단계 참고.
-5. Technical Architecture 섹션은 Structurizr의 C4 계층(System Context → Container → Component → Dynamic)을 구성 기준으로만 빌려오고, 실제 렌더링은 프로젝트 표준인 **Mermaid**로 한다(외부 툴 업로드 없이 [.claude/rules/architecture.md](.claude/rules/architecture.md)의 "Mermaid 다이어그램 작성 규칙"과 일치시키기 위함):
-   - 시스템/컴포넌트 개요 → `flowchart`
-   - 상태 전이가 있는 기능 → `stateDiagram-v2`
-   - 시간 순서 상호작용(요청↔응답) → `sequenceDiagram`
-6. **완성된 PRD 전체(다이어그램 포함)를 Claude Artifact로 publish해서 실제 렌더링된 화면으로 보여준다** — 터미널 텍스트만으로 끝내지 않는다. 이게 이 스킬에서 가장 중요한 산출물이다.
-7. 사용자 승인을 받는다. 승인되면 다음을 저장한다:
-   - `.claude/docs/prd/<FeatureName>.md` — 맨 위에 YAML 프런트매터 `status: approved` + `artifact: <URL>`, 그 아래 PRD 전문(Mermaid 소스 포함)
-   - 승인 전에는 저장하지 않는다(미승인 초안이 문서로 굳는 것 방지)
-   - **이 `status` 필드가 밤 무인 실행의 큐다**: `autopilot.ps1`은 `status: approved`인 PRD만 골라 `/unity-autopilot`으로 실행하고, 끝나면 `done`/`blocked`로 바꾼다. 낮에 이 세션이 바로 구현하기로 했으면 저장 직후 `status: in-progress`로 두고 끝나면 `done`으로 바꾼다.
-8. 사용자에게 묻는다: **"지금 구현할까요, 아니면 밤 autopilot 큐에 둘까요?"** — 큐에 두면 여기서 끝난다(3~5단계 생략).
+## 2단계: 설계도(Artifact) 작성 — **실행 순서 + 진짜 코드**
+
+> 이 단계의 산출물은 "읽는 기능 명세"가 아니라 **보고 승인하는 코드**다.
+> 사용자가 승인하는 대상은 기능 설명이 아니라 **"이 순서로 이 코드를 짜겠다"** 는 합의다.
+> 기능 목록·산문·추상적 책임 설명을 나열하지 말 것.
+
+### 2-1. 구성 기준은 **런타임 실행 순서**
+
+섹션을 기능별·파일별로 나누지 않는다. **코드가 실제로 실행되는 시간 순서**로 번호를 매긴다.
+각 스텝 제목에 **언제 도는지**를 박는다:
+
+```
+STEP 1  [누르는 순간]   InputManager 가 Subject 발행
+STEP 2  [Start · 1회]   ChargeShooter 구독 + 버퍼 확보
+STEP 3  [매 프레임]     Update 누산 · 오브 스케일
+STEP 4  [떼는 순간]     배율 계산 → 발사
+STEP 5  [같은 프레임]   Weapon 이 풀에서 Pop
+STEP 6  [다음 프레임]   ColliderManager 가 반경 재조회
+STEP 7  [풀 반납 시]    원복
+STEP 8  [항상 병렬]     기존 자동사격은 계속 돈다
+```
+
+이렇게 잡으면 "어디서 시작해서 어디서 끝나는지"와 "어느 훅(Awake/Start/Update/OnDisable)에 무엇이 들어가는지"가
+동시에 드러난다. Unity 는 생명주기 순서가 곧 버그의 원인이라 이 축이 가장 정확하다.
+
+### 2-2. 각 스텝은 **실제로 작성할 코드**를 보여준다 (핵심)
+
+- **의사코드·요약 금지.** `.cs` 파일에 그대로 들어갈 코드를 쓴다 — 주석 헤더(`/*//// 목적 : ... ////*/`),
+  `m_` 필드 / `_` 매개변수 접두사, 타입 접두사(`f`/`i`/`v`/`ref`/`t`), `sealed`, 명시적 접근 제한자까지
+  [.claude/rules/csharp-unity.md](.claude/rules/csharp-unity.md) 그대로.
+- 코드 블록 위에는 **파일 경로 + `신규`/`수정` 배지**.
+- **수정**이면 끼어드는 위치를 알 수 있게 **앞뒤 기존 코드 1~2줄**을 같이 보여준다(전체 파일을 다시 쓰지 않는다).
+- 왜 그렇게 쓰는지는 **코드 주석으로** 넣는다. 코드 밖 설명 문단을 따로 만들지 않는다.
+- 한 스텝의 코드가 40줄을 넘으면 스텝을 쪼갠다.
+- 구현 단계(4단계)는 **이 코드를 옮기고 컴파일을 맞추는 일**이 된다. 그래서 여기서 대충 쓰면 안 된다 —
+  여기 적힌 코드와 실제 커밋된 코드가 다르면 그건 설계도가 틀린 것이다.
+
+### 2-3. 다이어그램은 코드의 **보조**
+
+| 종류 | 역할 | 필수 |
+|---|---|---|
+| `sequenceDiagram` | 위 STEP 번호를 그대로 단 호출 순서 | ✅ |
+| `classDiagram` | 전체 구조 한 장 — 실제 필드·메서드 시그니처와 참조 관계 | ✅ |
+| `stateDiagram-v2` | 상태가 있는 기능의 전이 | 상태 있을 때만 |
+| `flowchart` | 흐름이 여러 갈래로 갈릴 때 | 선택 |
+
+- **실제 이름만 쓴다.** 일반명사(`Manager`, `Handler`)로 얼버무리지 않는다.
+- 신규/수정/기존 구분: `flowchart` 는 `classDef new fill:#D6F3EF,stroke:#0E8F84,color:#0A3A35` 처럼
+  **fill·stroke·color 전부 명시**(라이트/다크 양쪽 가독성), `classDiagram` 은 색 대신 `<<신규>>`/`<<수정>>`/`<<기존>>` 스테레오타입.
+
+**mermaid 파싱 사고 방지 (실제로 깨졌던 것들):**
+- `classDiagram` 멤버 줄에 괄호 두 번 금지 — `-Start() 구독 AddTo(this)` ❌ → `-Start() 구독등록` ✅
+- 멤버 줄에 대괄호 금지 — `-AttackInfo[] m_arr` ❌ → `-AttackInfo m_arr_링버퍼` ✅
+- 제네릭은 `~T~` — `List~Weapon~ m_listWeapon`
+- 라벨 안 `<` `>` 는 `미만`/`초과` 로 (HTML 엔티티로 디코드되어 파서를 깬다)
+- HTML 태그는 `<br/>` 만 — `<b>` 는 글자로 찍힌다
+
+### 2-4. 함정 섹션 (필수)
+
+조사에서 발견한 **이 코드베이스라서 실제로 터질 문제** 2~3개와 각각의 대응을 넣는다.
+(공유 참조, `[SerializeField]` 상수, 브로드페이즈/그리드 제약, 풀 재사용 시 상태 잔존 등)
+기능 설명보다 이쪽이 구조 결정을 지배한다 — 함정이 없다면 조사가 부족한 것이다.
+
+### 2-5. 순서 (Plan Mode 때문에 반드시 지킬 것)
+
+1. 조사 → STEP 분해 → 각 STEP 코드 작성 → **Artifact 로 먼저 publish**.
+   ⚠️ `EnterPlanMode` **이후에는 Artifact publish 를 포함한 쓰기 도구가 전부 막힌다.** 진입 **전에** publish 할 것.
+2. 터미널에는 URL + 무엇이 들어갔는지 4~5줄만. 긴 설명을 쏟지 않는다.
+3. `EnterPlanMode` → 계획 파일에 근거(Rationale/BDD/마일스톤)를 쓰고 `ExitPlanMode` 로 승인.
+   **화면 = 실행 순서와 코드 / 계획 파일 = 근거** 로 역할을 나눈다.
+
+### 2-6. 저장용 PRD 문서 (승인 후에만)
+
+PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801de9d7d0201e0792c7ded) 구조를 따른다: Overview(Purpose/Scope/Tech Stack) → User Flow(Entry/Core Steps/Edge Cases) → Functional Requirements(UI/Core Features/Data&Integration/NFR) → Technical Architecture(**STEP별 코드 + 다이어그램 mermaid 소스 그대로**) → Assumptions&Constraints → Implementation Plan(Milestones/Ownership/DoD) → Detailed Specs → Roadmap → External Resources → Changelog.
+
+- **각 주요 요구사항 항목 뒤에는 반드시 Rationale(왜 이렇게 결정했는지) 한 줄을 붙인다.**
+- **Acceptance Criteria 는 BDD 형식(Given-When-Then)**:
+  ```
+  Given [사전 상태]
+  When [행위/트리거]
+  Then [기대 결과]
+  ```
+  이 목록은 그대로 4단계(테스트 생성)의 어서션 계획으로 재사용한다 — [unity-workflow.md](.claude/commands/unity-workflow.md) 3단계 참고.
+- Technical Architecture 구성 기준은 Structurizr 의 C4 계층(System Context → Container → Component → Dynamic)을 빌려오되, 렌더링은 프로젝트 표준인 **Mermaid** ([.claude/rules/architecture.md](.claude/rules/architecture.md) "Mermaid 다이어그램 작성 규칙").
+- 저장 위치: `.claude/docs/prd/<FeatureName>.md` — 맨 위 YAML 프런트매터 `status: approved` + `artifact: <URL>`, 그 아래 PRD 전문.
+- **승인 전에는 저장하지 않는다**(미승인 초안이 문서로 굳는 것 방지). 사용자가 "예약해줘"라고 해도 승인 절차는 건너뛰지 않는다.
+- **이 `status` 필드가 밤 무인 실행의 큐다**: `autopilot.ps1` 은 `status: approved` 인 PRD만 골라 `/unity-autopilot` 으로 실행하고, 끝나면 `done`/`blocked` 로 바꾼다. 낮에 바로 구현하면 저장 직후 `in-progress` → 끝나면 `done`.
+
+마지막으로 묻는다: **"지금 구현할까요, 아니면 밤 autopilot 큐에 둘까요?"** — 큐에 두면 여기서 끝난다(3~5단계 생략).
 
 ## 3단계: 계획 (unity-workflow 재사용)
 
@@ -77,4 +148,6 @@ description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들�
 
 - 각 단계 게이트는 사용자 확인 필수 — 절대 건너뛰지 않는다.
 - 기존 `unity-workflow`/`deep-interview`의 로직을 재사용하고 중복 구현하지 않는다. 이 스킬의 차별점은 오직: **자연어 자동 발동 + PRD/다이어그램의 문서화·재사용(0단계, 2단계 저장)**.
-- 시각 자료(Mermaid + Artifact)는 선택이 아니라 필수 산출물.
+- 설계도의 축은 **런타임 실행 순서**이고, 각 스텝의 내용은 **실제로 작성할 코드**다. 둘 중 하나라도 빠지면 미완성이다.
+- 사용자가 승인하는 것은 기능 설명이 아니라 코드다. 여기 적힌 코드와 실제 커밋이 다르면 설계도가 틀린 것이다.
+- 산문·근거는 저장용 `.md` 와 계획 파일로, 화면은 순서·코드·다이어그램으로. 터미널에 긴 설명을 쏟지 않는다.
