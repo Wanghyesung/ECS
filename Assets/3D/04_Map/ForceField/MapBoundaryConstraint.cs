@@ -10,6 +10,10 @@ public sealed class MapBoundaryConstraint : MonoBehaviour
 {
     [SerializeField] private Rigidbody m_refTargetBody;
 
+    private void Awake()
+    {
+        m_refTargetBody = Player.CurrentPlayer.Rigidbody;
+    }
     private void FixedUpdate()
     {
         if (m_refTargetBody == null) return;

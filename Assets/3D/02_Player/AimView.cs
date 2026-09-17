@@ -33,7 +33,7 @@ public class AimView : MonoBehaviour
         if (m_refAimImage == null)
             return;
 
-        m_refAimImage.color =Color.red;
+        m_refAimImage.color = Color.red;
     }
 
     private void SetUnTargetColor()

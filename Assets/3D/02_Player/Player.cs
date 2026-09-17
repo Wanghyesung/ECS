@@ -98,6 +98,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private CancellationTokenSource m_ctsNockback;
     private Rigidbody m_refRigidbody = null;
 
+    public Rigidbody Rigidbody => m_refRigidbody;
+
     private static Player ThisPlayer = null;
     public static Player CurrentPlayer {  get { return ThisPlayer; } }
 

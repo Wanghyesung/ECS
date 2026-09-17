@@ -153,6 +153,11 @@ public class ColliderManager : MonoBehaviour
 
         AllocateSoa(INITIAL_CAPACITY);
         m_queResult = new NativeQueue<tPairResult>(Allocator.Persistent);
+
+    }
+    private void Start()
+    {
+        m_refPlayer = Player.CurrentPlayer.transform;
     }
 
     // 진행 중인 Job을 먼저 끝낸 뒤 모든 NativeContainer를 해제한다(워커가 이미 Dispose된

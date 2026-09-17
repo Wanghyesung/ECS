@@ -71,8 +71,6 @@ public class Bullet : MonoBehaviour, IAttackObject
     private static int s_iHitEffectFrame = -1;
 
     // 이번 프레임에 히트 이펙트를 재생해도 되는지 예약 - 프레임이 바뀌면 카운터를 리셋하고,
-    // 한도 내면 자리를 예약(true)한다. Update 콜백 없이 호출 시점에 Time.frameCount로만
-    // 판단하므로 별도 초기화/해제 로직이 필요 없다
     private static bool TryReserveHitEffectSlot()
     {
         if (Time.frameCount != s_iHitEffectFrame)

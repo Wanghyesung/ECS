@@ -40736,7 +40736,7 @@ MonoBehaviour:
   m_listSpawn:
   - Weapon: {fileID: 5837634303713512790}
     SpawnFowardOffset: 70
-    SpawnCount: 50
+    SpawnCount: 150
     ChargeParticle: {fileID: 8201528194064153218}
     SpawnParticleTransform: {fileID: 6685922635759219881}
     SpawnWaitTime: 3

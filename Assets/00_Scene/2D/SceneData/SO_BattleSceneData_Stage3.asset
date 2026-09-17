@@ -48,4 +48,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e574b933adc81ea49af4f9e6f49a45ae, type: 2}
   - {fileID: 11400000, guid: fbacdf17b65307e41a3d663f4616aa6f, type: 2}
   - {fileID: 11400000, guid: 41864832001459a4c80286ed95050987, type: 2}
+  - {fileID: 11400000, guid: bfebb6399654c164b95a22f5713e4ab2, type: 2}
   Stage: {fileID: 11400000, guid: ba2e80f75f735404696c700deeab9fdb, type: 2}
