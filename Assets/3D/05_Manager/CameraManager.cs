@@ -14,7 +14,7 @@ public class CameraManager : MonoBehaviour
     public static CameraManager m_Instance = null;
 
     [SerializeField] private Camera m_refMainCamera;
-    [SerializeField] private Transform m_refPlayer;
+    private Transform m_refPlayer;
     [SerializeField] private Vector3 m_vOffset = new Vector3(0.0f, 5.0f, -10.0f);
 
     [SerializeField] private Image m_refBloodScreen = null;
@@ -35,6 +35,7 @@ public class CameraManager : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
+        m_refPlayer = Player.CurrentPlayer.transform;
     }
 
     private void Start()

@@ -66,11 +66,19 @@ public class Weapon : MonoBehaviour
 
     public void Init()
     {
+        // Awake(Monster/Drone) 또는 런 시작(Player.ResetRun)에서 호출. 이 무기가 쏜 총알은 전부 이 참조를 공유하므로
+        // 이미 발사한 무기에 다시 부르는 건 런 시작(풀이 씬과 함께 재생성돼 이전 총알이 없는 시점)에서만 — 런 도중 재호출 금지
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_refAttackInfo.Owner = gameObject.transform;
         m_eWeapoonType = m_SOAttackInfo.WeaponType;
         m_fBaseCooldown = m_refAttackInfo.CoolDown;
         m_iBaseDamage = m_refAttackInfo.Damage;
+
+        // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
+        m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fAttackBonusRate = 0.0f;
+        if (m_listArriveActions != null) m_listArriveActions.Clear();
+        if (m_listHitActions != null) m_listHitActions.Clear();
     }
 
     private void Start()

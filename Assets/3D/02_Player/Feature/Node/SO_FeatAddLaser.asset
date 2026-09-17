@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0326068139b236943978a7671a385511, type: 3}
   m_Name: SO_FeatAddLaser
   m_EditorClassIdentifier: 
-  m_strDescription: "\uB808\uC774\uC800 \uACC4\uC5F4 \uBB34\uC7A5 \uD574\uAE08 - 1\uB808\uBCA8 \uC9C0\uC18D \uB808\uC774\uC800, \uC774\uD6C4 \uAD00\uD1B5 \uBE54"
-  m_sprIcon: {fileID: 403850731, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_strDescription: "\uB808\uC774\uC800 \uACC4\uC5F4 \uBB34\uC7A5 \uD574\uAE08 -
+    1\uB808\uBCA8 \uC9C0\uC18D \uB808\uC774\uC800, \uC774\uD6C4 \uAD00\uD1B5 \uBE54"
+  m_sprIcon: {fileID: -90533830, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
   m_eID: 16
   m_eAcquireType: 0
   m_iWeight: 1

@@ -20,7 +20,7 @@ public class SOKillAllMonstersAction : SOBulletAction
             return;
 
         s_listBuffer.Clear();
-        DungeonManager.m_Instance.CollectAliveMonsters(s_listBuffer);
+        DungeonManager.m_Instance.GetMonsters(s_listBuffer);
 
         tShotInfo tShot = new tShotInfo();
         for (int i = 0; i < s_listBuffer.Count; ++i)

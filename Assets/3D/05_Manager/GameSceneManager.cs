@@ -82,8 +82,10 @@ public class GameSceneManager : MonoBehaviour
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.gameObject.SetActive(false);
 
-        DungeonManager.m_Instance.StartStage(SelectedStageIdx);
-        Debug.Log("로딩완료");
+        DungeonManager.m_Instance.StartStage(_refSceneData.Stage);
+
+        Player.CurrentPlayer.gameObject.SetActive(true);
+        //Debug.Log("로딩완료");
     }
 
     private void SetProgress(float _fPercent)
@@ -109,5 +111,6 @@ public class GameSceneManager : MonoBehaviour
 
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.CompletedLoading();
+        Player.CurrentPlayer.gameObject.SetActive(false);
     }
 }

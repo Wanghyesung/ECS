@@ -19612,6 +19612,7 @@ GameObject:
   - component: {fileID: 1037533274}
   - component: {fileID: 1037533273}
   - component: {fileID: 1037533272}
+  - component: {fileID: 1037533275}
   m_Layer: 5
   m_Name: DynamicCanvas
   m_TagString: Untagged
@@ -19708,6 +19709,20 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
+--- !u!114 &1037533275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037533270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac7e058a3cf86340b3c6b09aa63e6f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refHPSliderImage: {fileID: 1396249399}
+  m_refExSliderImage: {fileID: 1840434584}
 --- !u!1 &1046577049
 GameObject:
   m_ObjectHideFlags: 0
@@ -24355,7 +24370,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   m_fMaxLength: 1000
-  m_refAimImage: {fileID: 1273005940}
 --- !u!114 &1273005940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34700,7 +34714,6 @@ MonoBehaviour:
   m_listDrone:
   - {fileID: 9129693645490222007}
   m_refAnimTable: {fileID: 0}
-  m_refAim: {fileID: 0}
   m_refVisualPlayer: {fileID: 703703997}
   m_fRollTime: 2
   m_fMaxRollDuration: 0.5
@@ -34735,8 +34748,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 0}
-  m_refExSliderImage: {fileID: 0}
   m_refTargetScnner: {fileID: 4420039787527282766}
   TestLock: 0
 --- !u!1 &1764204543
@@ -37040,7 +37051,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refMainCamera: {fileID: 963194227}
-  m_refPlayer: {fileID: 3250488527711361830}
   m_vOffset: {x: 0, y: 10, z: -18}
   m_refBloodScreen: {fileID: 40183167}
 --- !u!1 &1887610822
@@ -42093,7 +42103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &2762921764552749958
 GameObject:
   m_ObjectHideFlags: 0
@@ -42477,7 +42487,6 @@ MonoBehaviour:
   m_listDrone:
   - {fileID: 9129693645490222007}
   m_refAnimTable: {fileID: 0}
-  m_refAim: {fileID: 1273005939}
   m_refVisualPlayer: {fileID: 703703997}
   m_fRollTime: 2
   m_fMaxRollDuration: 0.5
@@ -42512,8 +42521,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 1396249399}
-  m_refExSliderImage: {fileID: 1840434584}
   m_refTargetScnner: {fileID: 4420039787527282766}
   TestLock: 0
 --- !u!114 &4420039787527282766

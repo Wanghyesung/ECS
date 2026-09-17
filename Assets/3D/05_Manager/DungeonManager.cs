@@ -17,18 +17,14 @@ public class DungeonManager : MonoBehaviour
     public static DungeonManager m_Instance = null;
 
     [SerializeField] private ObjectSpawner m_refSpawner;
-    [SerializeField] private List<SOStage> m_listStage = new List<SOStage>();
+    //[SerializeField] private List<SOStage> m_listStage = new List<SOStage>();
 
-    private int m_iCurrentStageIdx = 0;
+    private SOStage m_SOTargetStage = null;
 
-    // 예약 수가 아니라 '실제로 스폰돼서 아직 살아있는 수'. 풀이 비어 스폰이 밀리면
-    // 예약 수 기준으로는 영영 0이 안 돼서 보스가 안 나온다 - 스폰/사망 시점에만 움직인다.
-    // 아직 안 나온 예약분은 m_refSpawner.RemainObject 가 따로 세므로 둘 다 0이어야 클리어
+    // 예약 수가 아니라 '실제로 스폰돼서 아직 살아있는 수
     private int m_iAliveMonsterCount = 0;
 
-    // 보스 등장 '요청'과 '실제 등장'을 나눠서 본다. 요청 후 카메라가 비기를 기다리는 동안에도
-    // MonsterDead 는 계속 들어올 수 있어서(핵폭탄처럼 같은 프레임에 여럿이 죽는 경우 포함),
-    // 요청 플래그가 없으면 보스가 여러 번 스폰된다
+    // 보스 등장 '요청'과 '실제 등장'을 나눠서 본다.
     private bool m_bBossRequested = false;
     private bool m_bBossSpawned = false;
 
@@ -61,6 +57,7 @@ public class DungeonManager : MonoBehaviour
     {
         Monster.OnMonsterDied.Subscribe(MonsterDead).AddTo(ref m_bagEvents);
         m_refSpawner.OnSpawned.Subscribe(HandleSpawned).AddTo(ref m_bagEvents);
+        Player.OnPlayerDied.Subscribe(_ => ClearStage().Forget()).AddTo(ref m_bagEvents);   // 사망도 클리어와 같은 출구(5초 → 로비)
     }
 
     private void OnDisable()
@@ -68,26 +65,27 @@ public class DungeonManager : MonoBehaviour
         m_bagEvents.Clear();
     }
 
-    public void StartStage(int _iStageIdx)
+    public void StartStage(SOStage _SOStage)
     {
-        if (_iStageIdx >= m_listStage.Count)
+        if (_SOStage == null)
         {
-            Debug.Log("던전 클리어 : DungeonManager");
+            Debug.LogError("스테이지에 맞는 데이터를 설정하세요");
             GameSceneManager.m_Instance.LoadFirstScene();
             return;
         }
 
-        m_iCurrentStageIdx = _iStageIdx;
+        m_SOTargetStage = _SOStage;
+
         m_bBossSpawned = false;
 
-        SOStage refStage = m_listStage[_iStageIdx];
         m_iAliveMonsterCount = 0;
         m_bBossRequested = false;
 
         m_listSpawnedMonster.Clear();
-        for (int i = 0; i < refStage.ListSpawnEntry.Count; ++i)
+        m_refSpawner.Clear();   // 이전 런 예약이 남아 있으면 안 됨 (스포너는 DDOL)
+        for (int i = 0; i < m_SOTargetStage.ListSpawnEntry.Count; ++i)
         {
-            var tEntry = refStage.ListSpawnEntry[i];
+            var tEntry = m_SOTargetStage.ListSpawnEntry[i];
             m_refSpawner.AddSpawnObject(tEntry.fSpawnTime, tEntry.MonsterPrefab, tEntry.vPosition);
         }
     }
@@ -105,9 +103,7 @@ public class DungeonManager : MonoBehaviour
             m_listSpawnedMonster.Add(refMonster);
     }
 
-    // 핵폭탄 등 광역 카드가 호출: 살아있는(활성) 몬스터를 _listBuffer에 스냅샷으로 담고, 죽어서 풀에 반납된
-    // 항목은 이때 목록에서 제거한다. 호출부가 TakeDamage로 죽여도 스냅샷을 순회하므로 안전
-    public void CollectAliveMonsters(List<Monster> _listBuffer)
+    public void GetMonsters(List<Monster> _listBuffer)
     {
         for (int i = m_listSpawnedMonster.Count - 1; i >= 0; --i)
         {
@@ -159,13 +155,12 @@ public class DungeonManager : MonoBehaviour
     {
         m_bBossSpawned = true;
 
-        SOStage refStage = m_listStage[m_iCurrentStageIdx];
-        m_refSpawner.AddSpawnObject(0.0f, refStage.BossPrefab, refStage.BossSpawnPosition);
+        m_refSpawner.AddSpawnObject(0.0f, m_SOTargetStage.BossPrefab, m_SOTargetStage.BossSpawnPosition);
 
         // 등장 연출 방향은 스폰된 인스턴스가 아니라 원본 프리팹의 forward를 그대로 씀
-        PoolObject refBossPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(refStage.BossPrefab);
+        PoolObject refBossPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(m_SOTargetStage.BossPrefab);
         Vector3 vBossForward = refBossPoolObj != null ? refBossPoolObj.transform.forward : Vector3.forward;
-        Vector3 vCamTargetPos = refStage.BossSpawnPosition + (vBossForward.normalized * refStage.BossShowDistance);
+        Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition + (vBossForward.normalized * m_SOTargetStage.BossShowDistance);
         Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
 
         CameraManager.m_Instance.MoveToPoint(
@@ -178,7 +173,8 @@ public class DungeonManager : MonoBehaviour
 
     private async UniTaskVoid ClearStage()
     {
-        await UniTask.WaitForSeconds(5); 
+        m_refSpawner.Clear();   // 런 종료 — 남은 예약이 씬 전환 뒤 파괴된 풀을 건드리지 않게 (검증 중 실제 발생: 스포너 루프 사망 → 다음 런 몬스터 0)
+        await UniTask.WaitForSeconds(5);
         GameSceneManager.m_Instance.LoadFirstScene();
     }
 }

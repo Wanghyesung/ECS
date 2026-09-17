@@ -48,6 +48,8 @@ public class SliderImage : MonoBehaviour
     // 외부에서 새로운 현재값을 받아 슬라이더를 업데이트하는 함수
     public void UpdateSlider(float _fNewValue, float _fMaxValue)
     {
+        if (_fMaxValue <= 0.0f) return;   // HUD가 Player.Start보다 먼저 구독하면 (0,0)이 한 번 들어온다 — NaN 방지
+
         if (m_ctsLerp != null)
         {
             m_ctsLerp.Cancel();
@@ -82,14 +84,12 @@ public class SliderImage : MonoBehaviour
             await UniTask.Yield(_ct);
         }
 
-        // 애니메이션이 실제로 Max까지 다 찬 시점에만 호출 (UpdateSlider 호출 즉시가 아님)
+        m_refImage.fillAmount = _fEndFill;
+
+        // 애니메이션이 실제로 Max까지 다 찬 시점에만 호출 (UpdateSlider 호출 즉시가 아님).
+        // 0으로 되감는 건 EXP 전용 연출이라 구독자(PlayerSlider)가 한다 — 여기서 하면 HP 만땅일 때 바가 비어 보임
         if (_fEndFill >= 1.0f)
-        {
             m_subjectFillMaxReached.OnNext(Unit.Default);
-            m_refImage.fillAmount = 0.0f;
-        }
-        else
-             m_refImage.fillAmount = _fEndFill;
 
         m_ctsLerp.Dispose();
         m_ctsLerp = null;

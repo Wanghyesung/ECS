@@ -68,9 +68,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private List<Drone> m_listDrone = null;
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
-    [SerializeField] private Aim m_refAim= null;
     [SerializeField] private VisualObject m_refVisualPlayer = null;
     private PlayerMovement m_refMovement = null;
+    private Aim m_refAim = null;
+    public Aim Aim => m_refAim;
 
     [Header("Max Roll")]
     [SerializeField] private float m_fRollTime = 2.0f;
@@ -83,10 +84,13 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
     public ObjectInfo ObjectInfo => m_refObjectInfo;
 
+    // 런 시작 시 되돌릴 기본 활성 상태 — 씬에 배치된 그대로(BaseWeapon_0/1만 켜짐)가 곧 기본 로드아웃.
+    // 별도 [SerializeField] 없이 Awake 스냅샷으로 충분 (인스펙터에 같은 정보가 두 번 생기는 걸 피함)
+    private bool[] m_arrWeaponDefaultActive;
+    private bool[] m_arrDroneDefaultActive;
+
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
-    [SerializeField] private SliderImage m_refHPSliderImage = null;
-    [SerializeField] private SliderImage m_refExSliderImage = null;
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
 
@@ -97,43 +101,88 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private static Player ThisPlayer = null;
     public static Player CurrentPlayer {  get { return ThisPlayer; } }
 
+    private static readonly Subject<Unit> m_subjectDied = new();
+    public static Observable<Unit> OnPlayerDied => m_subjectDied;   // DungeonManager가 런 종료 처리 (Monster.OnMonsterDied와 동일 구조)
+
     [SerializeField] private bool TestLock = false;
     private void Awake()
     {
+        // 로비는 LoadSceneMode.Single로 매번 다시 로드되므로 씬의 MainPlayer가 런마다 또 Awake 된다.
+        // 가드가 없으면 새 인스턴스가 CurrentPlayer를 덮어써 DDOL 원본은 죽은 채로 남고 런마다 Player가 하나씩 는다 (검증 중 실제 발생).
+        // Destroy는 프레임 끝이라 그 전에 자식 Weapon.Start가 돌면 Init 안 된 AttackInfo로 빌드에선 Application.Quit — 먼저 꺼서 막는다
+        if (ThisPlayer != null && ThisPlayer != this) { gameObject.SetActive(false); Destroy(gameObject); return; }
+
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
+        m_refAim = GetComponent<Aim>();
 
         ThisPlayer = this;
+
+        m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
         for (int i = 0; i < m_listWeapon.Count; ++i)
-            m_listWeapon[i].Init();
+            m_arrWeaponDefaultActive[i] = m_listWeapon[i].gameObject.activeSelf;
+        m_arrDroneDefaultActive = new bool[m_listDrone.Count];
+        for (int i = 0; i < m_listDrone.Count; ++i)
+            m_arrDroneDefaultActive[i] = m_listDrone[i].gameObject.activeSelf;
+
+        DontDestroyOnLoad(this);
+        gameObject.SetActive(false);
+    }
+
+    // DDOL이라 Start는 최초 1회뿐 — 런마다 GameSceneManager가 SetActive(true)를 부르므로 런 시작 = OnEnable.
+    // 카드 Cancel을 역순으로 돌리지 않고 SO 기본값에서 다시 조립한다 (AddAttack/AddSpeed는 SO Max로 클램프해서
+    // Apply(+X)→Cancel(-X)가 정확히 0으로 안 돌아옴). 로비 강화·장비만 영구 성장이라 마지막에 다시 얹는다
+    private void OnEnable()
+    {
+        if (ThisPlayer != this)   // Awake 가드로 파괴 예약된 중복 인스턴스도 이 프레임엔 OnEnable이 돈다 — 캐싱 안 된 참조로 ResetRun 하면 NRE
+            return;
+        ResetRun();
     }
 
     private void Start()
     {
-        m_refObjectInfo.CurrentHP.Value = m_SOObjectInfo.MaxHP;
-        m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
-        PlayerPreLoadData.ApplyTo(this);
-
-        m_refHPSliderImage.SetRange(m_refObjectInfo.MaxHP, m_refObjectInfo.CurrentHP.Value);
-        m_refObjectInfo.CurrentHP.Subscribe(_lHp => m_refHPSliderImage.UpdateSlider(_lHp, m_refObjectInfo.MaxHP)).AddTo(this);
-        m_refHPSliderImage.OnFillCompleted.Subscribe(_ => Dead()).AddTo(this);
-
-        // EXP는 BattleManager 소유 지표 — 구독으로만 UI 갱신
-        BattleManager refBattle = BattleManager.m_Instance;
-        m_refExSliderImage.SetRange(refBattle.MaxExp, refBattle.Exp.CurrentValue);
-        refBattle.Exp.Subscribe(_iExp => m_refExSliderImage.UpdateSlider(_iExp, refBattle.MaxExp)).AddTo(this);
-
-        // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정
-        m_refExSliderImage.OnFillMaxReached.Subscribe(_ => refBattle.LevelUp()).AddTo(this);
+        m_refObjectInfo.CurrentHP.Where(_lHp => _lHp <= 0).Subscribe(_ => Dead()).AddTo(this);   // 사망 판정은 UI가 아니라 Player 자신이
 
         InputManager.m_Instance.OnMoveButtonPressed.Subscribe(_ => MoveRoll()).AddTo(this);
 
         m_fLastRollTime = Time.time;
     }
 
+    private void ResetRun()
+    {
+        CancelNockback();
+
+        // 1) 엔티티 스탯 = SO 기본값. Attack/Defense/Speed는 직렬화 0에서 시작하는 '보너스'라 0으로
+        m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
+        m_refObjectInfo.Attack = 0.0f;
+        m_refObjectInfo.Defense = 0.0f;
+        m_refObjectInfo.Speed = 0.0f;
+        m_refObjectInfo.CurrentEffects = 0;
+        Array.Clear(m_refObjectInfo.Effects, 0, m_refObjectInfo.Effects.Length);
+        m_refMovement.ResetMoveSpeed();
+
+        // 2) 무기/드론 = 씬 배치 상태로. Weapon.Init이 AttackInfo를 SO에서 새로 만들어
+        //    카드로 올린 Damage/CoolDown/Speed/MaxHitCount와 명중·도착 액션이 같이 사라진다
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            m_listWeapon[i].Init();
+            m_listWeapon[i].gameObject.SetActive(m_arrWeaponDefaultActive[i]);
+        }
+        for (int i = 0; i < m_listDrone.Count; ++i)
+            m_listDrone[i].gameObject.SetActive(m_arrDroneDefaultActive[i]);
+
+        // 3) 영구 성장(로비 강화·장비)만 다시 얹는다 — 기본값 위에 리스트 전체를 적용하므로 런을 거듭해도 중복 누적 없음
+        PlayerPreLoadData.ApplyTo(this);
+
+        // 4) 장비 HP 보너스까지 포함해 만땅으로 시작 (기존엔 SO값으로 먼저 채워 100/120 상태로 시작했음)
+        m_refObjectInfo.State = eEntityState.Idle;
+        m_refObjectInfo.CurrentHP.Value = m_refObjectInfo.MaxHP;
+        m_refMovement.enabled = true;
+    }
+
     private void Update()
     {
-        if (TestLock == true) return;
+        if (TestLock == true || m_refObjectInfo.State == eEntityState.Dead) return;
 
         Fire();
     }
@@ -187,17 +236,26 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Dead()
     {
-        //플레이어가 죽었을 때
+        CancelNockback();
+        m_refObjectInfo.State = eEntityState.Dead;   // Update의 Fire 차단
+        m_refMovement.enabled = false;               // PlayerMovement는 상태를 안 보므로 컴포넌트째 끔 (OnEnable에서 복구)
+        m_subjectDied.OnNext(Unit.Default);
     }
 
     public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
+        if (m_refObjectInfo.State == eEntityState.Dead)   // Monster.TakeDamage와 같은 가드 — 중복 사망 방지
+            return;
+
         CancelNockback();
 
         m_refObjectInfo.State = eEntityState.Hit;
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
         m_refObjectInfo.CurrentHP.Value -= iFinalDamage;
+        if (m_refObjectInfo.State == eEntityState.Dead)   // 위 대입에서 Dead()가 동기 호출됨 — 넉백을 시작하면 끝에서 State=Idle로 되살아난다
+            return;
+
         m_ctsNockback = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
         NockbackAsync(_refAttackInfo, _refShotInfo, m_ctsNockback.Token).Forget();
     }

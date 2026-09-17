@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 m_vDelta;
 
     [SerializeField] private float m_fMoveSpeed = 5.0f;
+    private float m_fBonusMoveSpeed;   // 카드/장비 가산분. 인스펙터 값(m_fMoveSpeed)은 손대지 않아 스냅샷·Awake 순서 의존이 없다
     [SerializeField] private float m_fAngleSpeed = 12.0f;
 
     private float m_fBoostValue = 1.0f;
@@ -39,11 +40,17 @@ public class PlayerMovement : MonoBehaviour
         m_fBostDir = _fRollDir;
     }
 
-    // Player.AddSpeed()에서 레벨업 시점에 호출. m_fMoveSpeed를 한 번만 늘려주면
+    // Player.AddSpeed()에서 레벨업 시점에 호출. 보너스를 한 번만 늘려주면
     // FixedUpdate가 매 프레임 참조하는 값이라 재계산 없이 바로 반영됨
     public void AddMoveSpeed(float _fValue)
     {
-        m_fMoveSpeed += _fValue;
+        m_fBonusMoveSpeed += _fValue;
+    }
+
+    // Player.ResetRun()이 호출 — 인스펙터 기본 이속으로 복귀
+    public void ResetMoveSpeed()
+    {
+        m_fBonusMoveSpeed = 0.0f;
     }
 
     private void Awake()
@@ -66,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
         m_vRotate.y += fY;
         m_vRotate.x += fX;
 
-        m_vRotate.x = Mathf.Clamp(m_vRotate.x, -85.0f, 40.0f);
+        m_vRotate.x = Mathf.Clamp(m_vRotate.x, -85.0f, 85.0f);
 
         transform.rotation = Quaternion.Euler(m_vRotate.x, m_vRotate.y, 0.0f);
 
@@ -76,12 +83,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        float fSpeed = m_fMoveSpeed + m_fBonusMoveSpeed;
         // 부스트 종료 시(m_fBoostValue == 1.0f) 가산 속도가 정확히 0이 되도록 -1.0f를 뺀 값을 사용
         Vector3 vBoostSpeed = transform.right * m_fBostDir * (m_fBoostValue - 1.0f);
 
         Vector3 vMove = transform.forward * m_vInput.y + transform.right * m_vInput.x;
 
-        Vector3 vNewPos = m_refRigidbody.position + (vMove * m_fMoveSpeed * m_fBoostValue + vBoostSpeed * m_fMoveSpeed) * Time.fixedDeltaTime;
+        Vector3 vNewPos = m_refRigidbody.position + (vMove * fSpeed * m_fBoostValue + vBoostSpeed * fSpeed) * Time.fixedDeltaTime;
 
         m_refRigidbody.MovePosition(vNewPos);
     }

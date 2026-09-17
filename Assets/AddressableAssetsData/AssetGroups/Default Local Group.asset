@@ -262,6 +262,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f79c0fcb6c4fe7d44b5d089bb1b53aa9
+    m_Address: Assets/00_Scene/3D/MainScene/SceneData/BattleScene_2.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fba1f25a91a4948488941097bed386f8
     m_Address: Assets/02_Player/Weapon/Bullet/MidBullet.prefab
     m_ReadOnly: 0

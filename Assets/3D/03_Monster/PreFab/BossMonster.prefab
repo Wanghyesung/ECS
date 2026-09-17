@@ -40690,7 +40690,6 @@ MonoBehaviour:
     ObjInfo:
       State: 1
       MaxHP: 0
-      CurrentHP: 0
       Speed: 20
       Attack: 0
       Defense: 0
@@ -40729,6 +40728,7 @@ MonoBehaviour:
       SpawnParticleTransform: {fileID: 6685922635759219881}
       SpawnWaitTime: 3
     CurrentCharge: {fileID: 0}
+    AimTimer: 0
     StrafeDir: {x: 0, y: 0, z: 0}
     StrafeTimer: 0
     WaitTimer: 0

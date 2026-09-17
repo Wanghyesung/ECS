@@ -17,7 +17,7 @@ MonoBehaviour:
   PoolPrefab: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
   Damage: 12
   AttackPower: 5
-  Cooldown: 0.15
+  Cooldown: 0.1
   Speed: 240
   SpeedOffset: 30
   AliveTime: 2
