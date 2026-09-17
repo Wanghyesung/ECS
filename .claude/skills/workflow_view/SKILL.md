@@ -1,6 +1,6 @@
 ---
 name: workflow_view
-description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들어줘'/'~생각중이야'처럼 새 기능 구현 의도를 밝히면 자동 발동. .claude/docs/prd/ 기존 문서 확인 → 부족한 요구사항 질문(deep-interview 채점 기준 재사용) → 런타임 실행 순서(STEP)별로 실제 작성할 C# 코드와 구조 다이어그램을 Artifact로 먼저 보여주고 Plan Mode에서 BDD 스타일 PRD 저장 → 복잡도별 에이전트 라우팅 실행(unity-workflow 재사용) → 검증까지 전체 파이프라인을 오케스트레이션."
+description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들어줘'/'~생각중이야'처럼 새 기능 구현 의도를 밝히면 자동 발동. .claude/docs/prd/ 기존 문서 확인 → 부족한 요구사항 질문(deep-interview 채점 기준 재사용) → 런타임 실행 순서(STEP)별로 실제 작성할 C# 코드와 구조 다이어그램, 블록마다 다양성·재사용성·확장성 근거 3줄을 Artifact로 먼저 보여주고 Plan Mode에서 BDD 스타일 PRD 저장 → 복잡도별 에이전트 라우팅 실행(unity-workflow 재사용) → 검증까지 전체 파이프라인을 오케스트레이션."
 ---
 
 # workflow_view — 대화형 기획→구현 파이프라인
@@ -34,6 +34,7 @@ description: "채팅에서 슬래시 커맨드 없이 '~구현해줘'/'~만들�
 조사는 여기서 멈추지 않는다. 2단계의 `classDiagram` 을 실제 이름으로 그릴 수 있을 만큼
 **관련 클래스의 필드·메서드 시그니처와 서로의 참조 관계**를 확보하고, 그 과정에서 발견한
 **이 코드베이스 고유의 함정**(공유 참조, 직렬화 상수, 브로드페이즈 제약 등)을 메모해둔다 — 2단계 함정 섹션의 재료다.
+또 ①은 2-3 **재사용성**, ③은 2-3 **확장성** 근거로 그대로 인용되므로 "비슷한 코드 없음"도 결론으로 남긴다.
 
 ## 2단계: 설계도(Artifact) 작성 — **실행 순서 + 진짜 코드**
 
@@ -67,12 +68,45 @@ STEP 8  [항상 병렬]     기존 자동사격은 계속 돈다
   [.claude/rules/csharp-unity.md](.claude/rules/csharp-unity.md) 그대로.
 - 코드 블록 위에는 **파일 경로 + `신규`/`수정` 배지**.
 - **수정**이면 끼어드는 위치를 알 수 있게 **앞뒤 기존 코드 1~2줄**을 같이 보여준다(전체 파일을 다시 쓰지 않는다).
-- 왜 그렇게 쓰는지는 **코드 주석으로** 넣는다. 코드 밖 설명 문단을 따로 만들지 않는다.
+- 왜 그렇게 쓰는지는 **코드 주석으로** 넣는다. 코드 밖 설명 문단을 따로 만들지 않는다 — 예외는 2-3의 구조 근거 3줄뿐이다.
 - 한 스텝의 코드가 40줄을 넘으면 스텝을 쪼갠다.
 - 구현 단계(4단계)는 **이 코드를 옮기고 컴파일을 맞추는 일**이 된다. 그래서 여기서 대충 쓰면 안 된다 —
   여기 적힌 코드와 실제 커밋된 코드가 다르면 그건 설계도가 틀린 것이다.
 
-### 2-3. 다이어그램은 코드의 **보조**
+### 2-3. 각 코드 블록 뒤 **구조 근거 3줄** (생략 불가)
+
+STEP 코드 블록 바로 아래에 **다양성 / 재사용성 / 확장성** 세 줄을 붙인다.
+2-2의 "코드 밖 설명 문단을 따로 만들지 않는다"의 **유일한 예외** — 라인 단위의 "왜 이렇게 썼나"는 코드 주석이지만,
+이 세 줄은 **구조 선택의 근거**라 코드 주석에 들어갈 수 없다. 사용자가 승인하는 것은 코드이자 이 구조다.
+
+"깔끔하다"류 추상적 칭찬 금지. **탈락시킨 대안과 비교해 숫자로** 쓴다("수정 0줄", "에셋 1개 추가", "분기 없음").
+
+| 항목 | 써야 할 것 | 예시 |
+|---|---|---|
+| **다양성** | 이 구조로 코드 수정 없이 몇 종류의 변형이 나오는지 | "Action SO 교체만으로 돌진/원거리/자폭 3종 — `Monster.cs` 수정 0줄" |
+| **재사용성** | 이미 있는 무엇을 재사용했고, 이 코드는 다음에 누가 그대로 쓰는지 | "`ObjectPoolManager` 를 그대로 씀(신규 풀 코드 0줄). 이 `DamageDealer` 는 함정·투사체에도 붙이기만 하면 됨" |
+| **확장성** | 다음 요구가 왔을 때 무엇을 '추가'하면 되고 무엇을 '수정'하지 않아도 되는지(OCP) | "카드 등급 추가 = `SOCardData` 에셋 1개. `switch` 없음 → 기존 클래스 수정 0줄" |
+
+- **재사용성**은 1단계 조사 ①(비슷한 기존 코드), **확장성**은 1단계 조사 ③(SO/이벤트 확장 지점)의 결과를 인용한다 — 새로 지어내지 않는다.
+- 재사용할 기존 코드가 없으면 없다고 쓰고 **왜 신규인지**를 적는다(거짓 재사용 금지).
+- **세 줄이 안 써지면 설계가 틀린 것이다** — 근거를 꾸미지 말고 STEP 코드를 고치고 다시 쓴다.
+- 이 세 줄은 2-7의 저장용 PRD 와 Artifact 양쪽에 그대로 들어간다.
+
+형식:
+
+````markdown
+**STEP 3 [매 프레임]** · `Assets/3D/01_Scripts/Card/CardInventory.cs` `신규`
+
+```csharp
+// ... 실제 코드 ...
+```
+
+- **다양성**: 조커/장비/패시브 카드가 전부 `SOCardData` 라 같은 인벤토리를 그대로 쓴다 — 타입 분기 0개.
+- **재사용성**: `Player` 가 `BattleManager.Exp` 를 구독하는 기존 `ReactiveProperty` 패턴 그대로 — HUD·상점·툴팁이 `Subscribe(...).AddTo(this)` 한 줄로 붙는다.
+- **확장성**: 보유 상한은 `[SerializeField]`, 카드 추가는 SO 에셋 추가 → 둘 다 클래스 수정 0줄. 획득 알림이 필요해지면 `Subject<SOCardData>` 하나만 덧붙이면 된다.
+````
+
+### 2-4. 다이어그램은 코드의 **보조**
 
 | 종류 | 역할 | 필수 |
 |---|---|---|
@@ -92,13 +126,13 @@ STEP 8  [항상 병렬]     기존 자동사격은 계속 돈다
 - 라벨 안 `<` `>` 는 `미만`/`초과` 로 (HTML 엔티티로 디코드되어 파서를 깬다)
 - HTML 태그는 `<br/>` 만 — `<b>` 는 글자로 찍힌다
 
-### 2-4. 함정 섹션 (필수)
+### 2-5. 함정 섹션 (필수)
 
 조사에서 발견한 **이 코드베이스라서 실제로 터질 문제** 2~3개와 각각의 대응을 넣는다.
 (공유 참조, `[SerializeField]` 상수, 브로드페이즈/그리드 제약, 풀 재사용 시 상태 잔존 등)
 기능 설명보다 이쪽이 구조 결정을 지배한다 — 함정이 없다면 조사가 부족한 것이다.
 
-### 2-5. 순서 (Plan Mode 때문에 반드시 지킬 것)
+### 2-6. 순서 (Plan Mode 때문에 반드시 지킬 것)
 
 1. 조사 → STEP 분해 → 각 STEP 코드 작성 → **Artifact 로 먼저 publish**.
    ⚠️ `EnterPlanMode` **이후에는 Artifact publish 를 포함한 쓰기 도구가 전부 막힌다.** 진입 **전에** publish 할 것.
@@ -106,9 +140,9 @@ STEP 8  [항상 병렬]     기존 자동사격은 계속 돈다
 3. `EnterPlanMode` → 계획 파일에 근거(Rationale/BDD/마일스톤)를 쓰고 `ExitPlanMode` 로 승인.
    **화면 = 실행 순서와 코드 / 계획 파일 = 근거** 로 역할을 나눈다.
 
-### 2-6. 저장용 PRD 문서 (승인 후에만)
+### 2-7. 저장용 PRD 문서 (승인 후에만)
 
-PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801de9d7d0201e0792c7ded) 구조를 따른다: Overview(Purpose/Scope/Tech Stack) → User Flow(Entry/Core Steps/Edge Cases) → Functional Requirements(UI/Core Features/Data&Integration/NFR) → Technical Architecture(**STEP별 코드 + 다이어그램 mermaid 소스 그대로**) → Assumptions&Constraints → Implementation Plan(Milestones/Ownership/DoD) → Detailed Specs → Roadmap → External Resources → Changelog.
+PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801de9d7d0201e0792c7ded) 구조를 따른다: Overview(Purpose/Scope/Tech Stack) → User Flow(Entry/Core Steps/Edge Cases) → Functional Requirements(UI/Core Features/Data&Integration/NFR) → Technical Architecture(**STEP별 코드 + 근거 3줄 + 다이어그램 mermaid 소스 그대로**) → Assumptions&Constraints → Implementation Plan(Milestones/Ownership/DoD) → Detailed Specs → Roadmap → External Resources → Changelog.
 
 - **각 주요 요구사항 항목 뒤에는 반드시 Rationale(왜 이렇게 결정했는지) 한 줄을 붙인다.**
 - **Acceptance Criteria 는 BDD 형식(Given-When-Then)**:
@@ -150,4 +184,5 @@ PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801d
 - 기존 `unity-workflow`/`deep-interview`의 로직을 재사용하고 중복 구현하지 않는다. 이 스킬의 차별점은 오직: **자연어 자동 발동 + PRD/다이어그램의 문서화·재사용(0단계, 2단계 저장)**.
 - 설계도의 축은 **런타임 실행 순서**이고, 각 스텝의 내용은 **실제로 작성할 코드**다. 둘 중 하나라도 빠지면 미완성이다.
 - 사용자가 승인하는 것은 기능 설명이 아니라 코드다. 여기 적힌 코드와 실제 커밋이 다르면 설계도가 틀린 것이다.
+- 코드 블록마다 **다양성·재사용성·확장성 근거 3줄**이 붙어 있어야 한다. 빠진 블록이 하나라도 있으면 승인을 요청하지 않는다.
 - 산문·근거는 저장용 `.md` 와 계획 파일로, 화면은 순서·코드·다이어그램으로. 터미널에 긴 설명을 쏟지 않는다.
