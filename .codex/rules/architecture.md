@@ -20,7 +20,11 @@ UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치
 
 ## Mermaid 다이어그램 작성 규칙
 
-기능 설계 시 흐름/상태는 텍스트 트리 대신 **Mermaid**로. 상태 전이 → `stateDiagram-v2`, 데이터 흐름 → `flowchart`, 요청↔응답 순서 → `sequenceDiagram`. 문법 참고: https://royzero.tistory.com/entry/markdown-mermaid-guide (상태 다이어그램은 없으니 https://mermaid.live 에서 검증). 계획을 제시하기 전에 다이어그램으로 먼저 승인을 받는다.
+기능 설계는 **Mermaid `sequenceDiagram` 하나**로 실제 클래스·메서드의 실행 순서를 보여준다. 클래스·상태·흐름 다이어그램은 사용자가 별도로 요청할 때만 추가한다. 계획 승인이 필요한 작업에서는 코드와 시퀀스를 함께 제시한다.
+
+## 조건식 가독성
+
+한 `if`의 조건은 **최대 3개**다(`&&`/`||`를 합쳐 최대 2개). 자세한 기준은 [csharp-unity.md](csharp-unity.md)의 제어 흐름 규칙을 따른다. 복잡한 전제는 책임에 맞는 가드로 나누고, 개수 제한을 피하려고 긴 조건을 프로퍼티나 메서드 안으로 그대로 숨기지 않는다.
 
 ## 게임 시스템 아키텍처 (필수)
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using R3;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -97,6 +99,9 @@ public class Interface : BaseButtonUI, ISelectDataable
 
             m_listView[i].refSlotView = pSlot;
         }
+
+        List<int> Test = new List<int>();
+        IEnumerator test =  Test.GetEnumerator();
     }
 
     private void ClearData()

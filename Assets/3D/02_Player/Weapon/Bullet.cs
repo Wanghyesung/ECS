@@ -39,6 +39,9 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     protected PoolObject m_refPoolObj;
     protected CircleCollider m_refCircleCollider;
+    private Transform m_refInitialParent;
+    private Vector3 m_vInitialScale;
+    private float m_fInitialRadius;
 
     // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
@@ -91,6 +94,9 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
         m_refCircleCollider = GetComponent<CircleCollider>();
+        m_refInitialParent = transform.parent;
+        m_vInitialScale = transform.localScale;
+        m_fInitialRadius = m_refCircleCollider != null ? m_refCircleCollider.Radius : 0f;
 
         m_iMoveManagerIndex = RegisterMoveJob();
 
@@ -137,6 +143,12 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refLineDrawer?.CutLine();
 
         UnactivateMoveJob();
+
+        if (m_refInitialParent != null || transform.parent != null)
+            transform.SetParent(m_refInitialParent, false);
+        transform.localScale = m_vInitialScale;
+        if (m_refCircleCollider != null)
+            m_refCircleCollider.SetRadius(m_fInitialRadius);
     }
 
     private void RunArriveActions()

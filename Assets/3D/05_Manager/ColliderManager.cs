@@ -95,6 +95,7 @@ public class ColliderManager : MonoBehaviour
     // 안 겹친 결과를 큐에 담을지 결정하는 필터 - 기록 없으면 Exit도 없으므로 안 담아도 결과는 동일
     private NativeArray<bool> m_arrHasPair;
     private int m_iCount;
+    private float m_fMaxActiveRadius;
 
     // 레이어 매트릭스를 Burst Job이 읽을 수 있는 값 배열로 복사(Awake 시 한 번, 런타임 불변)
     private NativeArray<int> m_arrLayerMatrixValue;
@@ -288,7 +289,7 @@ public class ColliderManager : MonoBehaviour
             BaseCollider refCollider = m_listPendingDelete[i];
 
             // 예약 이후 재사용으로 다시 활성화됐으면 지우면 안 됨
-            if (refCollider.gameObject.activeInHierarchy == false)
+            if (refCollider.isActiveAndEnabled == false)
                 DeleteCollider(refCollider);
         }
 
@@ -363,6 +364,7 @@ public class ColliderManager : MonoBehaviour
             float fMaxRangeSq = m_fMaxBulletRange * m_fMaxBulletRange;
 
             int iIdx = 0;
+            m_fMaxActiveRadius = 0f;
             for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
             {
                 List<BaseCollider> listLayer = m_arrCollider[iLayer];
@@ -378,6 +380,7 @@ public class ColliderManager : MonoBehaviour
 
                     m_arrCenter[iIdx] = vCenter;
                     m_arrBoundingRadius[iIdx] = refCollider.BoundingRadius;
+                    m_fMaxActiveRadius = Mathf.Max(m_fMaxActiveRadius, m_arrBoundingRadius[iIdx]);
                     m_arrColliderId[iIdx] = refCollider.ID;
                     m_arrColliderType[iIdx] = (int)refCollider.Shape;
                     m_arrLayer[iIdx] = refCollider.Layer;
@@ -420,6 +423,7 @@ public class ColliderManager : MonoBehaviour
                 CellItems = m_grid.CellItems,
                 GridOrigin = m_grid.Origin,
                 CellSize = m_grid.CellSize,
+                MaxRadius = m_fMaxActiveRadius,
                 CountX = m_grid.CountX,
                 CountY = m_grid.CountY,
                 CountZ = m_grid.CountZ,
@@ -469,6 +473,9 @@ public class ColliderManager : MonoBehaviour
                 BaseCollider refB = GetColliderByID(tResult.IdB);
 
                 if (refA == null || refB == null)
+                    continue;
+
+                if (!refA.isActiveAndEnabled || !refB.isActiveAndEnabled)
                     continue;
 
                 if (refA.Layer < refB.Layer)
@@ -785,6 +792,7 @@ public class ColliderManager : MonoBehaviour
         public int CountX;
         public int CountY;
         public int CountZ;
+        public float MaxRadius;
 
         [ReadOnly] public NativeArray<Vector3> Center;
         [ReadOnly] public NativeArray<Vector3> AxisX;
@@ -813,12 +821,14 @@ public class ColliderManager : MonoBehaviour
             BoxColliderGrid.ComputeCellCoord(vMyCenter, GridOrigin, CellSize, CountX, CountY, CountZ,
                 out int iCX, out int iCY, out int iCZ);
 
-            int iMinX = iCX > 0 ? iCX - 1 : 0;
-            int iMaxX = iCX < CountX - 1 ? iCX + 1 : CountX - 1;
-            int iMinY = iCY > 0 ? iCY - 1 : 0;
-            int iMaxY = iCY < CountY - 1 ? iCY + 1 : CountY - 1;
-            int iMinZ = iCZ > 0 ? iCZ - 1 : 0;
-            int iMaxZ = iCZ < CountZ - 1 ? iCZ + 1 : CountZ - 1;
+            // 최초 그리드 빌드 이후 커진 반경도 놓치지 않는다. 배열 재할당은 없다.
+            int iRange = Mathf.Max(1, Mathf.CeilToInt((fMyRadius + MaxRadius) / CellSize));
+            int iMinX = Mathf.Max(0, iCX - iRange);
+            int iMaxX = Mathf.Min(CountX - 1, iCX + iRange);
+            int iMinY = Mathf.Max(0, iCY - iRange);
+            int iMaxY = Mathf.Min(CountY - 1, iCY + iRange);
+            int iMinZ = Mathf.Max(0, iCZ - iRange);
+            int iMaxZ = Mathf.Min(CountZ - 1, iCZ + iRange);
 
             for (int ix = iMinX; ix <= iMaxX; ++ix)
                 for (int iy = iMinY; iy <= iMaxY; ++iy)

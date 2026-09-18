@@ -28,8 +28,7 @@ public class CircleCollider : BaseCollider
     public float Radius => m_fRadius;
     public override float BoundingRadius => m_fRadius;
 
-    // Weapon.FireCharged()가 발사마다 차지율에 맞춰 판정 반경을 덮어씀. 풀 재사용 총알이라
-    // 되돌리는 짝 없이 항상 호출부 책임으로 매번 다시 세팅한다
+    // 발사 시 WeaponCon이 최종 반경을 적용하고 Bullet.OnDisable이 풀 반납 시 원복한다.
     public void SetRadius(float _fRadius) => m_fRadius = _fRadius;
     public override Vector3 Offset => m_vOffset;
 

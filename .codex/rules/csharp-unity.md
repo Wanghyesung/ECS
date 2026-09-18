@@ -88,6 +88,7 @@ public sealed class PlayerController : MonoBehaviour
 ## 제어 흐름
 
 - 한 줄짜리 `if`는 중괄호를 사용하지 마세요
+- 한 `if`의 조건은 최대 3개로 제한하세요. 괄호 안까지 포함해 `&&`와 `||`는 합계 최대 2개입니다(`a && b && c`까지). 조건이 많으면 사유별 조기 반환이나 실제 책임을 가진 작은 메서드로 나누세요. 같은 긴 조건을 bool 변수/프로퍼티/메서드 안으로 옮겨 제한을 우회하지 마세요. 새 코드와 이번에 수정하는 조건식에 적용하며, 관련 없는 기존 코드까지 일괄 변경하지 마세요.
 - 핫 패스(Update, FixedUpdate)에서는 `foreach`보다 `for`를 사용하세요
 - 축약된 루프 변수를 쓰세요 — `for (int i = 0; ...)`
 - 매직 스트링을 쓰지 마세요 — `nameof()`, `Animator.StringToHash()`, `Shader.PropertyToID()`를 사용하세요

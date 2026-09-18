@@ -17,7 +17,7 @@ description: "누락된 테스트를 작성하고 MCP run_tests로 실행합니�
 - MonoBehaviour 생명주기 불필요한 순수 로직 → **EditMode**
 - MonoBehaviour/물리/씬 상태 → **PlayMode**. 여러 오브젝트 상호작용이면 `Assets/Tests/PlayMode/Scenes/<Feature>/`에 MCP로 테스트 씬 구성 후 `[UnityTest]`에서 로드
 - 이름 `Method_Condition_Expected`, Arrange-Act-Assert, TearDown에서 GameObject 정리
-- PRD가 있으면 Given-When-Then을 어서션으로 그대로 옮긴다
+- PRD가 있으면 동작 체크리스트의 기대 결과를 검증한다. Given–When–Then 형식으로 다시 작성하지 않는다
 
 ## 3. 실행
 ```

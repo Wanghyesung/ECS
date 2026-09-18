@@ -36,8 +36,8 @@ description: "Unity 새 기능의 PRD·STEP별 코드 설계·승인·구현·�
 2. Update/FixedUpdate 등 핫 루프 성능 영향
 3. SO/이벤트로 확장 가능한 지점
 
-조사는 여기서 멈추지 않는다. 2단계의 `classDiagram` 을 실제 이름으로 그릴 수 있을 만큼
-**관련 클래스의 필드·메서드 시그니처와 서로의 참조 관계**를 확보하고, 그 과정에서 발견한
+조사는 여기서 멈추지 않는다. 2단계의 `sequenceDiagram`에 실제 호출 순서를 표시할 수 있을 만큼
+**관련 클래스의 필드·메서드 시그니처와 호출 관계**를 확보하고, 그 과정에서 발견한
 **이 코드베이스 고유의 함정**(공유 참조, 직렬화 상수, 브로드페이즈 제약 등)을 메모해둔다 — 2단계 함정 섹션의 재료다.
 또 ①은 2-3 **재사용성**, ③은 2-3 **확장성** 근거로 그대로 인용되므로 "비슷한 코드 없음"도 결론으로 남긴다.
 
@@ -72,6 +72,8 @@ STEP 8  [항상 병렬]     기존 자동사격은 계속 돈다
   `m_` 필드 / `_` 매개변수 접두사, 타입 접두사(`f`/`i`/`v`/`ref`/`t`), `sealed`, 명시적 접근 제한자까지
   [.codex/rules/csharp-unity.md](.codex/rules/csharp-unity.md) 그대로.
 - 코드 블록 위에는 **파일 경로 + `신규`/`수정` 배지**.
+- C#은 반드시 언어가 지정된 `csharp` 코드 펜스로 표시한다. 긴 코드를 일반 텍스트나 표 셀에 넣지 않는다. 앱에서 색상이 표시되지 않거나 사용자가 IDE 같은 색상을 요청하면, 구문 강조된 로컬 HTML 미리보기를 함께 제공한다. 채팅 글자색 자체를 강제할 수 있다고 약속하지 않는다.
+- 조건식은 [csharp-unity.md](.codex/rules/csharp-unity.md)의 최대 3개 조건 규칙을 설계 코드에도 적용한다.
 - **수정**이면 끼어드는 위치를 알 수 있게 **앞뒤 기존 코드 1~2줄**을 같이 보여준다(전체 파일을 다시 쓰지 않는다).
 - 왜 그렇게 쓰는지는 **코드 주석으로** 넣는다. 코드 밖 설명 문단을 따로 만들지 않는다 — 예외는 2-3의 구조 근거 3줄뿐이다.
 - 한 스텝의 코드가 40줄을 넘으면 스텝을 쪼갠다.
@@ -111,25 +113,11 @@ STEP 코드 블록 바로 아래에 **다양성 / 재사용성 / 확장성** 세
 - **확장성**: 보유 상한은 `[SerializeField]`, 카드 추가는 SO 에셋 추가 → 둘 다 클래스 수정 0줄. 획득 알림이 필요해지면 `Subject<SOCardData>` 하나만 덧붙이면 된다.
 ````
 
-### 2-4. 다이어그램은 코드의 **보조**
+### 2-4. 다이어그램은 시퀀스 하나
 
-| 종류 | 역할 | 필수 |
-|---|---|---|
-| `sequenceDiagram` | 위 STEP 번호를 그대로 단 호출 순서 | ✅ |
-| `classDiagram` | 전체 구조 한 장 — 실제 필드·메서드 시그니처와 참조 관계 | ✅ |
-| `stateDiagram-v2` | 상태가 있는 기능의 전이 | 상태 있을 때만 |
-| `flowchart` | 흐름이 여러 갈래로 갈릴 때 | 선택 |
-
-- **실제 이름만 쓴다.** 일반명사(`Manager`, `Handler`)로 얼버무리지 않는다.
-- 신규/수정/기존 구분: `flowchart` 는 `classDef new fill:#D6F3EF,stroke:#0E8F84,color:#0A3A35` 처럼
-  **fill·stroke·color 전부 명시**(라이트/다크 양쪽 가독성), `classDiagram` 은 색 대신 `<<신규>>`/`<<수정>>`/`<<기존>>` 스테레오타입.
-
-**mermaid 파싱 사고 방지 (실제로 깨졌던 것들):**
-- `classDiagram` 멤버 줄에 괄호 두 번 금지 — `-Start() 구독 AddTo(this)` ❌ → `-Start() 구독등록` ✅
-- 멤버 줄에 대괄호 금지 — `-AttackInfo[] m_arr` ❌ → `-AttackInfo m_arr_링버퍼` ✅
-- 제네릭은 `~T~` — `List~Weapon~ m_listWeapon`
-- 라벨 안 `<` `>` 는 `미만`/`초과` 로 (HTML 엔티티로 디코드되어 파서를 깬다)
-- HTML 태그는 `<br/>` 만 — `<b>` 는 글자로 찍힌다
+- 기본 설계에는 **`sequenceDiagram` 하나만** 넣는다. STEP 번호와 실제 클래스·메서드 이름으로 호출 순서를 보여준다.
+- 클래스·상태·흐름 다이어그램은 필수가 아니다. 사용자가 따로 요청할 때만 추가한다.
+- 라벨 안 `<` `>`는 `미만`/`초과`로 쓰고, HTML 태그는 필요한 경우 `<br/>`만 사용한다.
 
 ### 2-5. 함정 섹션 (필수)
 
@@ -149,14 +137,8 @@ STEP 코드 블록 바로 아래에 **다양성 / 재사용성 / 확장성** 세
 PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801de9d7d0201e0792c7ded) 구조를 따른다: Overview(Purpose/Scope/Tech Stack) → User Flow(Entry/Core Steps/Edge Cases) → Functional Requirements(UI/Core Features/Data&Integration/NFR) → Technical Architecture(**STEP별 코드 + 근거 3줄 + 다이어그램 mermaid 소스 그대로**) → Assumptions&Constraints → Implementation Plan(Milestones/Ownership/DoD) → Detailed Specs → Roadmap → External Resources → Changelog.
 
 - **각 주요 요구사항 항목 뒤에는 반드시 Rationale(왜 이렇게 결정했는지) 한 줄을 붙인다.**
-- **Acceptance Criteria 는 BDD 형식(Given-When-Then)**:
-  ```
-  Given [사전 상태]
-  When [행위/트리거]
-  Then [기대 결과]
-  ```
-  이 목록은 그대로 4단계(테스트 생성)의 어서션 계획으로 재사용한다 — [unity-workflow.md](.agents/skills/unity-workflow/SKILL.md) 3단계 참고.
-- Technical Architecture 구성 기준은 Structurizr 의 C4 계층(System Context → Container → Component → Dynamic)을 빌려오되, 렌더링은 프로젝트 표준인 **Mermaid** ([.codex/rules/architecture.md](.codex/rules/architecture.md) "Mermaid 다이어그램 작성 규칙").
+- 완료 조건은 **짧은 동작 체크리스트**로 쓴다. Given–When–Then/BDD 형식은 요구하지 않는다. 실제 검증할 결과만 적고 4단계 테스트의 근거로 사용한다.
+- Technical Architecture는 STEP별 코드와 시퀀스 다이어그램 하나로 구성한다. 별도 C4 계층이나 클래스·상태 다이어그램을 만들지 않는다.
 - 저장 위치: `.codex/docs/prd/<FeatureName>.md` — 맨 위 YAML 프런트매터 `status: approved` + `artifact: <설계 문서 경로>`, 그 아래 PRD 전문.
 - 승인 전에는 `status: draft`를 유지하고, 승인받은 뒤에만 `approved`로 바꾼다. 사용자가 "예약해줘"라고 해도 미승인 초안을 무인 실행 큐에 넣지 않는다.
 - **이 `status` 필드가 밤 무인 실행의 큐다**: `autopilot.ps1`은 `status: approved`인 PRD만 고른다. 별도 `$unity-autopilot` 절차는 기존 규칙을 따른다. 대화형 `workflow_view`는 승인 후 `in-progress` → 구현·검증 후 `awaiting-review` → 사용자 승인/병합 확인 후 `done`으로 진행한다.
@@ -171,7 +153,7 @@ PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801d
 
 구현 전에 [PR 리뷰 절차](references/pr-review.md) 1단계로 GitHub 로그인·base/head·기존 변경과 이번 작업 범위를 확인한다.
 
-[unity-workflow.md](.agents/skills/unity-workflow/SKILL.md) 3단계를 이 세션이 직접 수행한다. 통합 테스트는 2단계의 Given-When-Then을 어서션 계획으로 그대로 쓴다.
+[unity-workflow.md](.agents/skills/unity-workflow/SKILL.md) 3단계를 이 세션이 직접 수행한다. 통합 테스트는 2단계의 동작 체크리스트에서 필요한 항목을 검증한다. BDD 문서 형식을 먼저 작성할 필요는 없다.
 
 ## 5단계: 검증 (unity-workflow 재사용)
 
@@ -198,7 +180,7 @@ flowchart LR
 
 ## 방법론 채택 노트
 
-- **BDD(Given-When-Then)**: 채택 — 위 2/4단계에 반영.
+- **검증 문서**: 짧은 동작 체크리스트를 사용한다. BDD 형식은 요구하지 않는다.
 - **MSA**: 미채택 — 단일 Unity 실행파일이라 서비스 분리가 성립하지 않음. `.codex/rules/architecture.md`의 "갓 오브젝트 금지"(System별 책임 분리)가 이미 같은 역할을 함.
 - **OOP/FP**: 기본은 기존과 동일하게 OOP 유지(MonoBehaviour 컴포넌트 모델이 강제). 데미지 공식/커브 평가 등 순수 계산 로직에 한해 부작용 없는 함수로 작성하는 정도만 권장 — 전역 패러다임 전환 아님.
 - **Agile**: 별도 스프린트/보드 없이 이 파이프라인의 0~6단계 자체가 짧은 반복 주기(계획→구현→검증→사용자 리뷰) 역할을 함.

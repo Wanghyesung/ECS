@@ -1,9 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
+/*///////////////////////////////////////////
+                    Weapon
+목적 : 공격 데이터를 소유하고 새 탄환 또는 준비된 탄환을 같은 경로로 발사한다.
+ *///////////////////////////////////////////
 public class Weapon : MonoBehaviour
 {
     
@@ -31,6 +32,7 @@ public class Weapon : MonoBehaviour
     }
 
     [SerializeField] private Transform m_refFireTr = null;
+    public Transform FireTransform => m_refFireTr;
     [SerializeField] private ParticleSystem m_refEffectObject;
 
     private float m_fFireTime = 0.2f;
@@ -50,14 +52,11 @@ public class Weapon : MonoBehaviour
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
 
-    // true면 Player.Fire()의 자동사격 루프에서 제외되고 PlayerChargeController.FireCharged()로만
-    // 발사됨. m_listWeapon에는 그대로 있으므로 AddAttackRate/AddBulletSpeed 등 카드 강화 루프는
-    // 평소처럼 이 무기에도 적용됨
+    // 자동사격에서 제외하되 Player.m_listWeapon의 카드 강화는 그대로 받는다.
     [SerializeField] private bool m_bChargeOnly = false;
     public bool ChargeOnly => m_bChargeOnly;
 
-    // FireCharged() 호출 동안만 잠깐 세팅되는 임시값 - 평소엔 항상 1
-    private float m_fChargeSpeedMultiplier = 1.0f;
+    public void SetChargeOnly(bool _bChargeOnly) => m_bChargeOnly = _bChargeOnly;
 
     [Header("Inaccuracy")]
     [SerializeField] private float m_fInaccuracyAngle = 0f; // 조준 방향에서 좌우/상하로 흔들리는 오차 각도
@@ -117,42 +116,83 @@ public class Weapon : MonoBehaviour
         if (m_iBulletCount > 1)
         {
             FireCircularSector(_vTargetPos, refShotInfo);
-            return null;  // 다수 펠릿 - 단일 GameObject를 정할 수 없어 FireCharged 대상 밖(단발 무기 전용)
+            return null;  // 다수 펠릿은 준비 탄환 하나를 반환할 수 없어 차지샷 대상에서 제외
         }
 
-        Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
-        Quaternion qRot = (m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f)
-            ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
-        qRot = ApplyInaccuracy(qRot);
-
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
         if (refObj == null)
             return null;
 
-        ApplyActions(refObj);
-        OnBulletFired();
+        FirePrepared(refObj, refShotInfo);
         return refObj;
     }
 
-    // 차지샷 전용 진입점. Fire()의 회전/스폰/ApplyActions/쿨다운 갱신을 그대로 타고, 그 사이에만
-    // RollSpeed()가 곱할 배율을 세팅한다. Fire()는 동기 호출이라 세팅→호출→해제 사이에 다른 코드가
-    // 끼어들 수 없음(ChargeOnly 가드가 자동 Fire() 호출을 막아줘서 경합 자체가 없음)
-    public GameObject FireCharged(Vector3 _vTargetPos, Transform _refTargetTr, float _fSpeedMultiplier, float _fColliderRadius, float _fVisualScale)
+    // SetAttack을 호출하지 않고 준비 상태로 인출한다. 풀 수명·이동·판정은 발사 때 시작한다.
+    public GameObject Begin()
     {
-        m_fChargeSpeedMultiplier = _fSpeedMultiplier;
-        GameObject refObj = Fire(_vTargetPos, _refTargetTr);
-        m_fChargeSpeedMultiplier = 1.0f;
+        if (m_refAttackInfo == null || m_refFireTr == null || m_iBulletCount != 1)
+            return null;
+        if (ObjectPoolManager.m_Instance == null)
+            return null;
 
+        PoolObject refPrefab = ObjectPoolManager.m_Instance.GetPoolPrefab(FireBulletPrefab);
+        if (refPrefab == null)
+            return null;
+
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(FireBulletPrefab);
         if (refObj == null)
             return null;
 
-        refObj.transform.localScale = Vector3.one * _fVisualScale;
-
+        Bullet refBullet = refObj.GetComponent<Bullet>();
         CircleCollider refCollider = refObj.GetComponent<CircleCollider>();
-        if (refCollider != null)
-            refCollider.SetRadius(_fColliderRadius);
+        PoolObject refPoolObj = refObj.GetComponent<PoolObject>();
+        if (refBullet == null || refCollider == null || refPoolObj == null)
+        {
+            ObjectPoolManager.m_Instance.PushObject(refObj);
+            return null;
+        }
 
+        refBullet.enabled = false;
+        refCollider.enabled = false;
+        refPoolObj.SuspendLifetime();
         return refObj;
+    }
+
+    public void Fire(GameObject _refPreparedObj, Vector3 _vTargetPos,
+        Transform _refTargetTr, float _fSpeedMultiplier)
+    {
+        var tShotInfo = new tShotInfo
+        {
+            TargetPos = _vTargetPos,
+            TargetTr = _refTargetTr,
+            Speed = Mathf.Max(0.01f, RollSpeed()) * _fSpeedMultiplier
+        };
+        FirePrepared(_refPreparedObj, tShotInfo);
+    }
+
+    private void FirePrepared(GameObject _refObj, tShotInfo _tShotInfo)
+    {
+        Vector3 vLookDir = _tShotInfo.TargetPos - m_refFireTr.position;
+        Quaternion qRot = m_bLookTarget && vLookDir.sqrMagnitude > 0.0001f
+            ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
+        _refObj.transform.SetPositionAndRotation(m_refFireTr.position, ApplyInaccuracy(qRot));
+
+        Bullet refBullet = _refObj.GetComponent<Bullet>();
+        if (refBullet != null)
+            refBullet.enabled = true;
+
+        IAttackObject refAttackObj = _refObj.GetComponent<IAttackObject>();
+        if (refAttackObj == null)
+        {
+            ObjectPoolManager.m_Instance.PushObject(_refObj);
+            return;
+        }
+
+        ApplyActions(_refObj);
+        refAttackObj.SetAttack(m_refAttackInfo, _tShotInfo);
+        if (refBullet != null && _refObj.TryGetComponent(out CircleCollider refCollider))
+            refCollider.enabled = true;
+        OnBulletFired();
     }
 
     // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
@@ -215,7 +255,7 @@ public class Weapon : MonoBehaviour
 
     private float RollSpeed()
     {
-        float fSpeed = m_refAttackInfo.Speed * m_fChargeSpeedMultiplier;
+        float fSpeed = m_refAttackInfo.Speed;
         return UnityEngine.Random.Range(fSpeed - m_SOAttackInfo.SpeedOffset, fSpeed + m_SOAttackInfo.SpeedOffset);
     }
 
@@ -314,17 +354,14 @@ public class Weapon : MonoBehaviour
     // Hit은 IAttackObject 공통 계약이라 Bullet/Laser 모두 적용, Arrive는 Laser에 없는 개념이라 Bullet에만 적용
     private void ApplyActions(GameObject _refBulletObj)
     {
-        if (m_listArriveActions == null && m_listHitActions == null)
-            return;
-
         IAttackObject refAttackObj = _refBulletObj.GetComponent<IAttackObject>();
         if (refAttackObj == null)
             return;
 
-        if (m_listHitActions != null)
-            refAttackObj.SetWeaponHitActions(m_listHitActions);
+        // 같은 풀을 여러 무기가 사용하므로 액션이 없는 무기도 이전 발사분을 지운다.
+        refAttackObj.SetWeaponHitActions(m_listHitActions);
 
-        if (m_listArriveActions != null && refAttackObj is Bullet refBullet)
+        if (refAttackObj is Bullet refBullet)
             refBullet.SetWeaponArriveActions(m_listArriveActions);
     }
 }

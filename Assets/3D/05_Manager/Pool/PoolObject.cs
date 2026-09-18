@@ -57,6 +57,12 @@ public class PoolObject : MonoBehaviour, IPoolable
             ObjectPoolManager.m_Instance.ScheduleTime(this, m_fAliveTime);
     }
 
+    // 준비 중인 오브젝트는 새 만료 예약 없이 기존 예약만 무효화한다.
+    public void SuspendLifetime()
+    {
+        ++Generation;
+    }
+
     // 매 프레임 직접 카운트다운하지 않고, ObjectPool의 우선순위 큐에 "이 시각에 반납"으로
     // 예약만 해둔다. ObjectPool은 큐 맨 앞(가장 이른 만료 시각)만 매 프레임 확인함.
     public void SetAliveTime(float _fPushTime)

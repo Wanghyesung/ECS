@@ -17,7 +17,7 @@ PRD: **사용자 요청의 인자**
 
 ## 1. 요구사항 = PRD
 
-PRD의 Overview / User Flow / Functional Requirements / Technical Architecture / Acceptance Criteria(Given-When-Then)를 읽는다. `.codex/docs/game-design.md` 의 인용 섹션이 있으면 그것도 읽는다. **PRD 범위 밖의 코드는 건드리지 않는다.**
+PRD의 Overview / User Flow / Functional Requirements / Technical Architecture / 완료 조건(동작 체크리스트)을 읽는다. `.codex/docs/game-design.md` 의 인용 섹션이 있으면 그것도 읽는다. **PRD 범위 밖의 코드는 건드리지 않는다.**
 
 ## 2. 탐색 → 구현
 
@@ -34,7 +34,7 @@ PRD의 Overview / User Flow / Functional Requirements / Technical Architecture /
 
 ## 4. 테스트
 
-1. PRD의 Given-When-Then 을 테스트로 옮긴다 — 순수 로직은 `Assets/Tests/Editor/`(EditMode), 씬/물리/생명주기는 `Assets/Tests/PlayMode/`(필요 시 `Scenes/<Feature>/` 테스트 씬을 MCP로 구성). asmdef 없으면 만든다.
+1. PRD의 동작 체크리스트를 테스트로 검증한다. Given–When–Then 형식은 요구하지 않는다 — 순수 로직은 `Assets/Tests/Editor/`(EditMode), 씬/물리/생명주기는 `Assets/Tests/PlayMode/`(필요 시 `Scenes/<Feature>/` 테스트 씬을 MCP로 구성). asmdef 없으면 만든다.
 2. `run_tests(mode: EditMode)` → `get_test_job(job_id, wait_timeout: 60, include_failed_tests: true)`; PlayMode는 `init_timeout: 120000`.
 3. 실패는 고친다 (**3회**). 이번 변경으로 **기존 테스트**가 깨졌으면 반드시 고친다. 3회 안에 안 되면 막힘.
 

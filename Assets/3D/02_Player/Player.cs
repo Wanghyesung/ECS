@@ -118,6 +118,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refMovement = GetComponent<PlayerMovement>();
         m_refAim = GetComponent<Aim>();
 
+        ConfigureChargeShot();
+
         ThisPlayer = this;
 
         m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
@@ -129,6 +131,36 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
         DontDestroyOnLoad(this);
         gameObject.SetActive(false);
+    }
+
+    private void ConfigureChargeShot()
+    {
+        // 씬 직렬화에 차지 전용 무기를 추가하지 않고 기본 활성 단발 무기를 컴포넌트식으로 연결한다.
+        if (m_listWeapon == null || m_listWeapon.Count == 0)
+            return;
+
+        Weapon refChargeWeapon = null;
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i] != null && m_listWeapon[i].gameObject.activeSelf)
+            {
+                refChargeWeapon = m_listWeapon[i];
+                break;
+            }
+        }
+
+        if (refChargeWeapon == null)
+            return;
+
+        WeaponCon refWeaponCon = refChargeWeapon.GetComponent<WeaponCon>();
+        if (refWeaponCon == null)
+            refWeaponCon = refChargeWeapon.gameObject.AddComponent<WeaponCon>();
+
+        refChargeWeapon.SetChargeOnly(true);
+        PlayerChargeController refController = GetComponent<PlayerChargeController>();
+        if (refController == null)
+            refController = gameObject.AddComponent<PlayerChargeController>();
+        refController.Configure(refChargeWeapon, m_refAim, m_refTargetScnner);
     }
 
     // DDOL이라 Start는 최초 1회뿐 — 런마다 GameSceneManager가 SetActive(true)를 부르므로 런 시작 = OnEnable.
@@ -230,7 +262,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
-            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController.FireCharged)로만 발사
+            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
                 continue;
 
             if (m_listWeapon[i].CheckTime() == true)
