@@ -1680,6 +1680,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 167411716}
   m_refEffectObject: {fileID: 1750866951}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 16
   m_fSpreadAngle: 45
@@ -2561,6 +2562,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 275622352}
   m_refEffectObject: {fileID: 215045924}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -4506,6 +4508,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 535588476}
   m_refEffectObject: {fileID: 1834045838}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -4706,6 +4709,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 567408011}
   m_refEffectObject: {fileID: 2116763546}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -5300,6 +5304,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 635149973}
   m_refEffectObject: {fileID: 1699613836}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -5351,6 +5356,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 642009414}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -5510,6 +5516,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 644329509}
   m_refEffectObject: {fileID: 145537277}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -7128,6 +7135,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 743943265}
   m_refEffectObject: {fileID: 108404580}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -7407,6 +7415,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 775975074}
   m_refEffectObject: {fileID: 1794229008}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -7757,6 +7766,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 849478706}
   m_refEffectObject: {fileID: 1300362809}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -8217,6 +8227,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 849478706}
   m_refEffectObject: {fileID: 1480493395}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -11888,6 +11899,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1271023127}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -13020,8 +13032,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 0}
-  m_refExSliderImage: {fileID: 0}
   m_refTargetScnner: {fileID: 1369488227}
   TestLock: 0
 --- !u!4 &1369488229
@@ -14519,6 +14529,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1581396496}
   m_refEffectObject: {fileID: 707690361}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -16604,8 +16615,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 644329509}
-  - {fileID: 2076237256}
   - {fileID: 743943265}
+  - {fileID: 2076237256}
   - {fileID: 1581396496}
   - {fileID: 167411716}
   - {fileID: 1948548250}
@@ -17973,8 +17984,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 0}
-  m_refExSliderImage: {fileID: 0}
   m_refTargetScnner: {fileID: 1369488227}
   TestLock: 0
 --- !u!1 &1911331866
@@ -18267,6 +18276,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1948548250}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -19447,6 +19457,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 2076237256}
   m_refEffectObject: {fileID: 1581259}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -19499,6 +19510,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 2096144080}
   m_refEffectObject: {fileID: 231419404}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -20019,6 +20031,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 2143401446}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0

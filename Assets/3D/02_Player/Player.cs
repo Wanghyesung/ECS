@@ -230,6 +230,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
+            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController.FireCharged)로만 발사
+                continue;
+
             if (m_listWeapon[i].CheckTime() == true)
                 m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
         }

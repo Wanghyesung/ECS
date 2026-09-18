@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "repository": "Wanghyesung/ECS",
+  "remote": "origin",
+  "github_provider": "auto",
+  "base_branch": null,
+  "draft": false,
+  "slack_destination": "U0BS15X072M"
+}

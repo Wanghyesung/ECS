@@ -127,6 +127,15 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChargeButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""3f7a1c2e-9b44-4d8a-8e21-6a5c0f9d3b17"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -228,6 +237,17 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""action"": ""MoveButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c2e4f61-5a3d-49b2-9f70-1d6e8a2c4b95"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChargeButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -240,6 +260,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         m_MoveAction_MoveScreen = m_MoveAction.FindAction("MoveScreen", throwIfNotFound: true);
         m_MoveAction_Delta = m_MoveAction.FindAction("Delta", throwIfNotFound: true);
         m_MoveAction_MoveButton = m_MoveAction.FindAction("MoveButton", throwIfNotFound: true);
+        m_MoveAction_ChargeButton = m_MoveAction.FindAction("ChargeButton", throwIfNotFound: true);
     }
 
     ~@PlayerAction()
@@ -324,6 +345,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_MoveAction_MoveScreen;
     private readonly InputAction m_MoveAction_Delta;
     private readonly InputAction m_MoveAction_MoveButton;
+    private readonly InputAction m_MoveAction_ChargeButton;
     /// <summary>
     /// Provides access to input actions defined in input action map "MoveAction".
     /// </summary>
@@ -351,6 +373,10 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "MoveAction/MoveButton".
         /// </summary>
         public InputAction @MoveButton => m_Wrapper.m_MoveAction_MoveButton;
+        /// <summary>
+        /// Provides access to the underlying input action "MoveAction/ChargeButton".
+        /// </summary>
+        public InputAction @ChargeButton => m_Wrapper.m_MoveAction_ChargeButton;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -389,6 +415,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @MoveButton.started += instance.OnMoveButton;
             @MoveButton.performed += instance.OnMoveButton;
             @MoveButton.canceled += instance.OnMoveButton;
+            @ChargeButton.started += instance.OnChargeButton;
+            @ChargeButton.performed += instance.OnChargeButton;
+            @ChargeButton.canceled += instance.OnChargeButton;
         }
 
         /// <summary>
@@ -412,6 +441,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @MoveButton.started -= instance.OnMoveButton;
             @MoveButton.performed -= instance.OnMoveButton;
             @MoveButton.canceled -= instance.OnMoveButton;
+            @ChargeButton.started -= instance.OnChargeButton;
+            @ChargeButton.performed -= instance.OnChargeButton;
+            @ChargeButton.canceled -= instance.OnChargeButton;
         }
 
         /// <summary>
@@ -480,5 +512,12 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMoveButton(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ChargeButton" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnChargeButton(InputAction.CallbackContext context);
     }
 }

@@ -27,6 +27,12 @@ public sealed class InputManager : MonoBehaviour
     private readonly Subject<Unit> m_subjectMoveButton = new();
     public Observable<Unit> OnMoveButtonPressed => m_subjectMoveButton;
 
+    // 좌클릭 차지샷 - 누름/뗌을 각각 한 번씩만 발행 (PlayerChargeController가 구독)
+    private readonly Subject<Unit> m_subjectChargeStarted = new();
+    private readonly Subject<Unit> m_subjectChargeReleased = new();
+    public Observable<Unit> OnChargeButtonStarted => m_subjectChargeStarted;
+    public Observable<Unit> OnChargeButtonReleased => m_subjectChargeReleased;
+
     private PlayerAction m_refActions;
     private tInputInfo m_tInputInfo;
 
@@ -60,11 +66,15 @@ public sealed class InputManager : MonoBehaviour
 
         m_refActions.MoveAction.Enable();
         m_refActions.MoveAction.MoveButton.performed += OnMoveButtonPerformed;
+        m_refActions.MoveAction.ChargeButton.started += OnChargeButtonStartedPerformed;
+        m_refActions.MoveAction.ChargeButton.canceled += OnChargeButtonCanceledPerformed;
     }
 
     private void OnDisable()
     {
         m_refActions.MoveAction.MoveButton.performed -= OnMoveButtonPerformed;
+        m_refActions.MoveAction.ChargeButton.started -= OnChargeButtonStartedPerformed;
+        m_refActions.MoveAction.ChargeButton.canceled -= OnChargeButtonCanceledPerformed;
         m_refActions.MoveAction.Disable();
     }
 
@@ -100,4 +110,7 @@ public sealed class InputManager : MonoBehaviour
     {
         m_subjectMoveButton.OnNext(Unit.Default);
     }
+
+    private void OnChargeButtonStartedPerformed(InputAction.CallbackContext _tContext) => m_subjectChargeStarted.OnNext(Unit.Default);
+    private void OnChargeButtonCanceledPerformed(InputAction.CallbackContext _tContext) => m_subjectChargeReleased.OnNext(Unit.Default);
 }

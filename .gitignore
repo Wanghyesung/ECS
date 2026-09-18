@@ -78,3 +78,7 @@ crashlytics-build.properties
 .claude/settings.local.json
 .claude/state/*
 !.claude/state/.gitkeep
+
+# Codex local runtime state
+.codex/state/*
+!.codex/state/.gitkeep

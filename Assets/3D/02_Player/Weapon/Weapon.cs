@@ -50,6 +50,15 @@ public class Weapon : MonoBehaviour
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
 
+    // true면 Player.Fire()의 자동사격 루프에서 제외되고 PlayerChargeController.FireCharged()로만
+    // 발사됨. m_listWeapon에는 그대로 있으므로 AddAttackRate/AddBulletSpeed 등 카드 강화 루프는
+    // 평소처럼 이 무기에도 적용됨
+    [SerializeField] private bool m_bChargeOnly = false;
+    public bool ChargeOnly => m_bChargeOnly;
+
+    // FireCharged() 호출 동안만 잠깐 세팅되는 임시값 - 평소엔 항상 1
+    private float m_fChargeSpeedMultiplier = 1.0f;
+
     [Header("Inaccuracy")]
     [SerializeField] private float m_fInaccuracyAngle = 0f; // 조준 방향에서 좌우/상하로 흔들리는 오차 각도
 
@@ -98,7 +107,7 @@ public class Weapon : MonoBehaviour
         m_fLastFireTime = Time.time;
     }
 
-    public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
+    public GameObject Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.TargetPos = _vTargetPos;
@@ -108,7 +117,7 @@ public class Weapon : MonoBehaviour
         if (m_iBulletCount > 1)
         {
             FireCircularSector(_vTargetPos, refShotInfo);
-            return;
+            return null;  // 다수 펠릿 - 단일 GameObject를 정할 수 없어 FireCharged 대상 밖(단발 무기 전용)
         }
 
         Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
@@ -118,10 +127,32 @@ public class Weapon : MonoBehaviour
 
         GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
-            return;
+            return null;
 
         ApplyActions(refObj);
         OnBulletFired();
+        return refObj;
+    }
+
+    // 차지샷 전용 진입점. Fire()의 회전/스폰/ApplyActions/쿨다운 갱신을 그대로 타고, 그 사이에만
+    // RollSpeed()가 곱할 배율을 세팅한다. Fire()는 동기 호출이라 세팅→호출→해제 사이에 다른 코드가
+    // 끼어들 수 없음(ChargeOnly 가드가 자동 Fire() 호출을 막아줘서 경합 자체가 없음)
+    public GameObject FireCharged(Vector3 _vTargetPos, Transform _refTargetTr, float _fSpeedMultiplier, float _fColliderRadius, float _fVisualScale)
+    {
+        m_fChargeSpeedMultiplier = _fSpeedMultiplier;
+        GameObject refObj = Fire(_vTargetPos, _refTargetTr);
+        m_fChargeSpeedMultiplier = 1.0f;
+
+        if (refObj == null)
+            return null;
+
+        refObj.transform.localScale = Vector3.one * _fVisualScale;
+
+        CircleCollider refCollider = refObj.GetComponent<CircleCollider>();
+        if (refCollider != null)
+            refCollider.SetRadius(_fColliderRadius);
+
+        return refObj;
     }
 
     // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
@@ -184,7 +215,7 @@ public class Weapon : MonoBehaviour
 
     private float RollSpeed()
     {
-        float fSpeed = m_refAttackInfo.Speed;
+        float fSpeed = m_refAttackInfo.Speed * m_fChargeSpeedMultiplier;
         return UnityEngine.Random.Range(fSpeed - m_SOAttackInfo.SpeedOffset, fSpeed + m_SOAttackInfo.SpeedOffset);
     }
 
