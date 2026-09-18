@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: awaiting-review
 artifact: .codex/docs/prd/PlayerChargeShot.md
 ---
 
@@ -137,7 +137,7 @@ public void Release(Vector3 _vTargetPos, Transform _refTarget)
 1. **Weapon.Begin:** 단발 Bullet/CircleCollider 프리팹을 확인하고 풀에서 인출한다. Bullet 컴포넌트와 CircleCollider를 비활성화하고 풀의 자동반납 예약을 중지한다. 아직 SetAttack은 호출하지 않는다. Bullet 비활성화는 기존 OnDisable을 통해 이동 Job과 OnPush 공격 액션 구독을 해제한다.
 2. **Weapon.Fire 오버로드:** 준비한 탄환에 현재 조준 회전과 tShotInfo.Speed를 적용한다. Bullet을 활성화해 기존 구독을 복구하고, SetAttack/ApplyActions/OnBulletFired를 호출한다. CircleCollider는 발사 준비가 끝나면 활성화한다. 일반 Fire도 공통 발사 처리로 연결해 로직 복제를 줄인다.
 3. **풀 기능:** PoolObject에 차지라는 이름/상태 없이 `SuspendLifetime()`을 추가한다. Generation만 올려 기존 예약을 무효화한다. `SetAliveTime(0)`은 즉시 반납이므로 사용하지 않는다.
-4. **풀 복구 컴포넌트:** 차지에 쓰는 탄환 프리팹에 작은 `PoolProjectileReset`을 붙여 원래 부모·크기·반경과 Bullet/Collider의 기본 enabled 상태를 캐싱하고 반납 시 복원한다. 차지 타이머나 차지 상태는 갖지 않는다. 이 복구 책임을 Bullet 안에 넣지 않는다. 일반탄과 풀을 공유해도 확대된 상태가 다음 발사로 남지 않게 한다.
+4. **풀 복구:** `WeaponCon`이 준비 탄환의 `PoolObject.OnPush`를 차지 중에만 구독한다. 취소·ActiveCap 강제 회수 등 모든 반납 경로에서 원래 부모·크기·반경을 복원하고 `ClearCharge`에서 구독을 해제한다. 별도 컴포넌트와 Bullet 차지 상태를 추가하지 않는다.
 5. **ClearCharge/Cancel:** ClearCharge는 컨트롤러 참조와 효과만 정리한다. Cancel은 현재 Generation을 소유한 준비 탄환만 반납한다. 비활성화·사망·포커스 상실·입력 중단은 발사 대신 Cancel로 연결한다. 비활성화된 Bullet은 OnPush 공격 액션을 구독하지 않으므로 취소로 폭발/분열을 실행하지 않는다.
 6. **충돌 그리드:** ColliderManager는 발사 다음 프레임부터 최종 반경을 읽는다. 최초 셀보다 큰 반경에서도 누락되지 않도록 기존 SoA 순회에서 최대 반경을 구해 Job의 조회 셀 범위에 반영한다. 차지 Update에서 그리드를 갱신하지 않는다.
 
@@ -169,3 +169,12 @@ sequenceDiagram
 - 큰 탄환도 초기 인접 셀 범위 밖에서 충돌을 놓치지 않는다.
 
 기존 자동사격 유지와 별도 차지 무기 추가는 앞선 제안대로다. 수치·효과는 Inspector에서 조절한다. 완료 후 기존 Slack 대상에 검증 결과와 PR 링크를 보낸다.
+
+## Result
+
+- `PlayerChargeController`가 있는 플레이어만 차지 입력을 구독하도록 `Player`의 암묵적 의존을 제거하고, `WeaponCon`을 필수 직렬화 참조로 명시했다.
+- 준비 탄환 반납 시 부모·스케일·반경을 `PoolObject.OnPush`에서 복원해 취소와 강제 회수 뒤 풀 상태가 남지 않게 했다.
+- `LobyScene`의 `MainPlayer`와 `BaseWeapon_0`에 컴포넌트와 참조를 저장했다.
+- Unity 스크립트 컴파일과 로비 Play 진입에서 오류 0건을 확인했다. 관련 자동 테스트는 저장소에 없어 실행하지 않았다.
+- 독립 Unity 리뷰의 치명적 2건을 반영했고 재검증에서 치명적·성능 문제 0건을 확인했다.
+- 수동 확인: 실제 전투에서 차지 시작→취소→재차지, 최대 차지 발사, ActiveCap 강제 회수 뒤 탄환 크기·부모 상태를 확인한다.

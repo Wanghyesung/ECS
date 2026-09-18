@@ -130,13 +130,7 @@ public class Weapon : MonoBehaviour
     // SetAttack을 호출하지 않고 준비 상태로 인출한다. 풀 수명·이동·판정은 발사 때 시작한다.
     public GameObject Begin()
     {
-        if (m_refAttackInfo == null || m_refFireTr == null || m_iBulletCount != 1)
-            return null;
-        if (ObjectPoolManager.m_Instance == null)
-            return null;
-
-        PoolObject refPrefab = ObjectPoolManager.m_Instance.GetPoolPrefab(FireBulletPrefab);
-        if (refPrefab == null)
+        if (m_iBulletCount != 1)
             return null;
 
         GameObject refObj = ObjectPoolManager.m_Instance.GetObject(FireBulletPrefab);
@@ -146,12 +140,6 @@ public class Weapon : MonoBehaviour
         Bullet refBullet = refObj.GetComponent<Bullet>();
         CircleCollider refCollider = refObj.GetComponent<CircleCollider>();
         PoolObject refPoolObj = refObj.GetComponent<PoolObject>();
-        if (refBullet == null || refCollider == null || refPoolObj == null)
-        {
-            ObjectPoolManager.m_Instance.PushObject(refObj);
-            return null;
-        }
-
         refBullet.enabled = false;
         refCollider.enabled = false;
         refPoolObj.SuspendLifetime();
@@ -173,7 +161,7 @@ public class Weapon : MonoBehaviour
     private void FirePrepared(GameObject _refObj, tShotInfo _tShotInfo)
     {
         Vector3 vLookDir = _tShotInfo.TargetPos - m_refFireTr.position;
-        Quaternion qRot = m_bLookTarget && vLookDir.sqrMagnitude > 0.0001f
+        Quaternion qRot = m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f
             ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
         _refObj.transform.SetPositionAndRotation(m_refFireTr.position, ApplyInaccuracy(qRot));
 

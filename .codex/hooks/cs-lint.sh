@@ -57,6 +57,7 @@ if [ "$IS_EDITOR" -eq 0 ]; then
     echo "$NEW" | grep -qE '\basync\s+void\b'            && warn "async void → async UniTaskVoid"
     echo "$NEW" | grep -qE '\b(SendMessage|BroadcastMessage)\s*\(' && warn "SendMessage/BroadcastMessage → 직접 참조 또는 event Action<T>"
     echo "$NEW" | grep -qE '\bInput\.(GetKey|GetKeyDown|GetKeyUp|GetAxis|GetAxisRaw|GetButton|GetButtonDown|GetMouseButton|mousePosition)\b' && warn "레거시 Input API → InputManager(New Input System) 경유"
+    echo "$NEW" | grep -qE '(^|[[:space:](&|?:,])![A-Za-z_(]' && warn 'bool 부정은 !value 대신 value == false 사용'
     if echo "$NEW" | grep -qE '\.material\s*[.=]' && ! echo "$NEW" | grep -qE '\.sharedMaterial'; then
         warn ".material 은 머티리얼을 복제해 배칭을 깨뜨림 → .sharedMaterial 또는 MaterialPropertyBlock"
     fi

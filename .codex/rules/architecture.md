@@ -41,6 +41,7 @@ UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치
 - **금지:** `PlayerSystem`/`ScoreSystem`처럼 기능 하나짜리 클래스의 습관적 싱글톤화 (→ `[SerializeField]` 직접 참조), 모든 걸 다 가진 `GameManager`(→ 갓 오브젝트 금지)
 - `public static T m_Instance { get; private set; }` **프로퍼티**로 선언한다. `public static T m_Instance;` 처럼 raw 필드로 노출하지 말 것 — 외부에서 실수로 재할당할 수 있다. 이름은 프로젝트 전반(`BattleManager`, `FeatureManager`, `ObjectPoolManager` 등)과 통일해 `m_Instance` 를 쓴다
 - Awake 가드에서 **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `m_Instance`를 덮어쓴다:
+- 부트스트랩 순서와 수명이 보장된 뒤에는 `ObjectPoolManager.m_Instance` 같은 싱글톤을 호출할 때마다 null 체크하지 않는다. 초기화 순서가 보장되지 않는 위치라면 호출부 방어를 늘리지 말고 부트스트랩이나 실행 순서를 고친다.
 
 ```csharp
 private void Awake()

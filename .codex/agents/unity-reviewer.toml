@@ -18,6 +18,8 @@ developer_instructions = '''
 - [ ] **DOTween 정리** — 트윈이 `OnDestroy`에서 종료되는가? `DOTween.Kill(this)`가 빠져있지 않은가?
 - [ ] **이벤트 누수** — `OnEnable`/`Awake`에서 구독했지만 `OnDisable`/`OnDestroy`에서 구독 해제하지 않았는가?
 - [ ] **Async void** — `async UniTaskVoid`나 적절한 에러 처리 대신 순수 `async void`를 사용하고 있는가?
+- [ ] **필수 참조 계약** — 인스펙터 필수 참조, `[RequireComponent]` 컴포넌트, 부트스트랩 이후 생존이 보장된 싱글톤을 호출부마다 null 체크하거나, 누락된 필수 컴포넌트를 런타임 `AddComponent`로 복구하고 있는가? 이런 코드는 설정 오류를 숨기므로 제거하고 fail-fast 계약을 유지해야 한다. 선택적·동적·생명주기 경계의 참조만 null 체크한다.
+- [ ] **bool 조건식** — 프로젝트 코드에서 `!value`를 사용하고 있는가? `value == false` 또는 의도를 강조한 `value == true`를 사용한다.
 
 ### 성능 (수정해야 함)
 

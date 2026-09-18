@@ -118,8 +118,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refMovement = GetComponent<PlayerMovement>();
         m_refAim = GetComponent<Aim>();
 
-        ConfigureChargeShot();
-
         ThisPlayer = this;
 
         m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
@@ -133,39 +131,6 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         gameObject.SetActive(false);
     }
 
-    private void ConfigureChargeShot()
-    {
-        // 씬 직렬화에 차지 전용 무기를 추가하지 않고 기본 활성 단발 무기를 컴포넌트식으로 연결한다.
-        if (m_listWeapon == null || m_listWeapon.Count == 0)
-            return;
-
-        Weapon refChargeWeapon = null;
-        for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i] != null && m_listWeapon[i].gameObject.activeSelf)
-            {
-                refChargeWeapon = m_listWeapon[i];
-                break;
-            }
-        }
-
-        if (refChargeWeapon == null)
-            return;
-
-        WeaponCon refWeaponCon = refChargeWeapon.GetComponent<WeaponCon>();
-        if (refWeaponCon == null)
-            refWeaponCon = refChargeWeapon.gameObject.AddComponent<WeaponCon>();
-
-        refChargeWeapon.SetChargeOnly(true);
-        PlayerChargeController refController = GetComponent<PlayerChargeController>();
-        if (refController == null)
-            refController = gameObject.AddComponent<PlayerChargeController>();
-        refController.Configure(refChargeWeapon, m_refAim, m_refTargetScnner);
-    }
-
-    // DDOL이라 Start는 최초 1회뿐 — 런마다 GameSceneManager가 SetActive(true)를 부르므로 런 시작 = OnEnable.
-    // 카드 Cancel을 역순으로 돌리지 않고 SO 기본값에서 다시 조립한다 (AddAttack/AddSpeed는 SO Max로 클램프해서
-    // Apply(+X)→Cancel(-X)가 정확히 0으로 안 돌아옴). 로비 강화·장비만 영구 성장이라 마지막에 다시 얹는다
     private void OnEnable()
     {
         if (ThisPlayer != this)   // Awake 가드로 파괴 예약된 중복 인스턴스도 이 프레임엔 OnEnable이 돈다 — 캐싱 안 된 참조로 ResetRun 하면 NRE

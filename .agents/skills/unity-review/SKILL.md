@@ -39,6 +39,7 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 - `SendMessage` / `BroadcastMessage`
 - 캐싱되지 않은 `WaitForSeconds`
 - `static readonly`로 캐싱되지 않은 `Animator.StringToHash`
+- 인스펙터 필수 참조, `[RequireComponent]` 컴포넌트, 수명이 보장된 싱글톤에 반복되는 불필요한 null 방어
 
 ### 3. 아키텍처 제안 (고려 사항)
 - 2단계보다 깊은 MonoBehaviour 상속
@@ -46,6 +47,8 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 - 시스템 간의 강한 결합
 - `[SerializeField] private`로 바뀌어야 하는 public 필드
 - 누락된 `[RequireComponent]` 속성
+- 필수 컴포넌트가 없을 때 런타임 `AddComponent`로 조용히 복구하는 코드
+- bool 값에 `!value`를 쓰는 코드 (`value == false` 또는 `value == true` 사용)
 
 ### 4. Unity 특유의 경고
 - 코루틴 생명주기 문제

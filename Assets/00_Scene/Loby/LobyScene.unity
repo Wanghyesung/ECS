@@ -4670,6 +4670,7 @@ GameObject:
   m_Component:
   - component: {fileID: 567408011}
   - component: {fileID: 567408012}
+  - component: {fileID: 567408013}
   m_Layer: 3
   m_Name: BaseWeapon_0
   m_TagString: Untagged
@@ -4713,6 +4714,22 @@ MonoBehaviour:
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
+--- !u!114 &567408013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567408010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 058548829b1d1544086be0b9f63b1f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_fMaxChargeTime: 2
+  m_fMaxVisualScale: 2
+  m_fMaxSpeedMultiplier: 2.5
+  m_refFullChargeEffect: {fileID: 0}
 --- !u!1 &578543109
 GameObject:
   m_ObjectHideFlags: 0
@@ -12861,6 +12878,7 @@ GameObject:
   - component: {fileID: 1369488224}
   - component: {fileID: 1369488223}
   - component: {fileID: 1369488230}
+  - component: {fileID: 1369488231}
   m_Layer: 3
   m_Name: MainPlayer
   m_TagString: Untagged
@@ -13068,6 +13086,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   m_fMaxLength: 10000
+--- !u!114 &1369488231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369488222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90bef6f6e8755b74a93bc542829c9e8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refWeaponCon: {fileID: 567408013}
 --- !u!1 &1372634693
 GameObject:
   m_ObjectHideFlags: 0

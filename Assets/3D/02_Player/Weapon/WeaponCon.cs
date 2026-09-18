@@ -1,3 +1,5 @@
+using System;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -20,12 +22,13 @@ public sealed class WeaponCon : MonoBehaviour
     private Transform m_refPoolParent;
     private CircleCollider m_refCircleCollider;
     private PoolObject m_refPoolObj;
+
     private Vector3 m_vBaseScale;
     private float m_fBaseRadius;
     private float m_fChargeTimer;
     private int m_iGeneration;
     private bool m_bFullCharge;
-    private bool m_bOwnsFullChargeEffect;
+    private IDisposable m_disposablePoolPush;
 
     private bool OwnsBullet => m_refPoolObj != null &&
         m_refPoolObj.Generation == m_iGeneration && m_refPoolObj.PushCount == 0;
@@ -33,30 +36,8 @@ public sealed class WeaponCon : MonoBehaviour
     private void Awake()
     {
         m_refWeapon = GetComponent<Weapon>();
-        if (m_refFullChargeEffect == null)
-            CreateDefaultFullChargeEffect();
         OnValidate();
         ClearCharge();
-    }
-
-    private void CreateDefaultFullChargeEffect()
-    {
-        ParticleSystem refSource = GetComponentInChildren<ParticleSystem>();
-        if (refSource == null)
-            return;
-
-        m_refFullChargeEffect = Instantiate(refSource, transform);
-        m_refFullChargeEffect.name = "ChargeFullEffect";
-        ParticleSystem.MainModule tMain = m_refFullChargeEffect.main;
-        tMain.loop = true;
-        m_refFullChargeEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        m_bOwnsFullChargeEffect = true;
-    }
-
-    private void OnDestroy()
-    {
-        if (m_bOwnsFullChargeEffect && m_refFullChargeEffect != null)
-            Destroy(m_refFullChargeEffect.gameObject);
     }
 
     private void OnValidate()
@@ -70,12 +51,12 @@ public sealed class WeaponCon : MonoBehaviour
     {
         if (m_refBulletObj == null)
             return;
-        if (!OwnsBullet)
+        if (OwnsBullet == false)
         {
             ClearCharge();
             return;
         }
-        if (Time.timeScale <= 0f || !m_refWeapon.isActiveAndEnabled)
+        if (Time.timeScale <= 0f || m_refWeapon.isActiveAndEnabled == false)
         {
             Cancel();
             return;
@@ -85,20 +66,23 @@ public sealed class WeaponCon : MonoBehaviour
         float fRatio = m_fChargeTimer / m_fMaxChargeTime;
         m_refBulletTr.localScale = m_vBaseScale * Mathf.Lerp(1f, m_fMaxVisualScale, fRatio);
 
-        if (m_bFullCharge || fRatio < 1f)
+        if (m_bFullCharge == true || fRatio < 1f)
             return;
         m_bFullCharge = true;
+
         if (m_refFullChargeEffect != null)
             m_refFullChargeEffect.Play(true);
     }
 
     private void OnDisable() => Cancel();
 
+    public void SetChargeOnly() => m_refWeapon.SetChargeOnly(true);
+
     public void Begin()
     {
-        if (!isActiveAndEnabled || !m_refWeapon.isActiveAndEnabled || Time.timeScale <= 0f)
+        if (isActiveAndEnabled == false || m_refWeapon.isActiveAndEnabled == false || Time.timeScale <= 0f)
             return;
-        if (OwnsBullet)
+        if (OwnsBullet == true)
             return;
 
         ClearCharge();
@@ -109,18 +93,11 @@ public sealed class WeaponCon : MonoBehaviour
         m_refBulletTr = m_refBulletObj.transform;
         m_refCircleCollider = m_refBulletObj.GetComponent<CircleCollider>();
         m_refPoolObj = m_refBulletObj.GetComponent<PoolObject>();
-        if (m_refCircleCollider == null || m_refPoolObj == null)
-        {
-            if (m_refPoolObj != null && ObjectPoolManager.m_Instance != null)
-                ObjectPoolManager.m_Instance.PushObject(m_refBulletObj);
-            ClearCharge();
-            return;
-        }
-
         m_iGeneration = m_refPoolObj.Generation;
         m_refPoolParent = m_refBulletTr.parent;
         m_vBaseScale = m_refBulletTr.localScale;
         m_fBaseRadius = m_refCircleCollider.Radius;
+        m_disposablePoolPush = m_refPoolObj.OnPush.Subscribe(_ => RestorePreparedBullet());
 
         m_refBulletTr.SetParent(m_refWeapon.FireTransform, false);
         m_refBulletTr.localPosition = Vector3.zero;
@@ -129,12 +106,12 @@ public sealed class WeaponCon : MonoBehaviour
 
     public void Release(Vector3 _vTargetPos, Transform _refTarget)
     {
-        if (!OwnsBullet)
+        if (OwnsBullet == false)
         {
             ClearCharge();
             return;
         }
-        if (!isActiveAndEnabled || !m_refWeapon.isActiveAndEnabled || Time.timeScale <= 0f)
+        if (isActiveAndEnabled == false || m_refWeapon.isActiveAndEnabled == false || Time.timeScale <= 0f)
         {
             Cancel();
             return;
@@ -152,13 +129,15 @@ public sealed class WeaponCon : MonoBehaviour
 
     public void Cancel()
     {
-        if (OwnsBullet && ObjectPoolManager.m_Instance != null)
+        if (OwnsBullet == true)
             ObjectPoolManager.m_Instance.PushObject(m_refBulletObj);
         ClearCharge();
     }
 
     private void ClearCharge(bool _bStopEffect = true)
     {
+        m_disposablePoolPush?.Dispose();
+        m_disposablePoolPush = null;
         m_refBulletObj = null;
         m_refBulletTr = null;
         m_refPoolParent = null;
@@ -166,8 +145,18 @@ public sealed class WeaponCon : MonoBehaviour
         m_refPoolObj = null;
         m_fChargeTimer = 0f;
         m_bFullCharge = false;
-        if (_bStopEffect)
+        if (_bStopEffect == true)
             StopFullChargeEffect();
+    }
+
+    private void RestorePreparedBullet()
+    {
+        if (m_refPoolObj.Generation != m_iGeneration)
+            return;
+
+        m_refBulletTr.SetParent(m_refPoolParent, false);
+        m_refBulletTr.localScale = m_vBaseScale;
+        m_refCircleCollider.SetRadius(m_fBaseRadius);
     }
 
     private void StopFullChargeEffect()

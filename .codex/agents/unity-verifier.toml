@@ -27,6 +27,9 @@ git diff --cached --name-only  # 스테이징된 변경 사항
 **자동 수정 가능한 이슈** (자동으로 수정):
 - 이름이 변경된 `[SerializeField]` 필드에 `[FormerlySerializedAs("oldName")]` 누락
 - Unity 오브젝트에 대한 `?.` 또는 `is null` → `== null` 체크로 교체
+- 필수 참조에 대한 반복 null 가드 제거. 단, 선택적·동적 참조나 초기화 전 `OnDisable` 같은 실제 생명주기 경계는 유지
+- 필수 컴포넌트를 복구하는 런타임 `AddComponent` 제거 후 `[RequireComponent]` 또는 명시적 구성 계약 사용
+- bool 조건의 `!value` → `value == false`
 - `tag == "string"` → `CompareTag("string")`
 - Update/FixedUpdate/LateUpdate 안의 `GetComponent<T>()` / `Camera.main` / `FindObjectOfType` → Awake에서 캐싱
 - 런타임 코드에서 `UnityEditor` 사용 시 `#if UNITY_EDITOR` 가드 누락
