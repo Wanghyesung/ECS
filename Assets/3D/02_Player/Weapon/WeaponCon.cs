@@ -12,7 +12,7 @@ using UnityEngine;
 public sealed class WeaponCon : MonoBehaviour
 {
     [SerializeField, Min(0.01f)] private float m_fMaxChargeTime = 2f;
-    [SerializeField, Min(1f)] private float m_fMaxVisualScale = 2f;
+    [SerializeField, Min(1f)] private float m_fMaxVisualScale = 10f;
     [SerializeField, Min(1f)] private float m_fMaxSpeedMultiplier = 2.5f;
     [SerializeField] private ParticleSystem m_refFullChargeEffect;
 
@@ -145,6 +145,7 @@ public sealed class WeaponCon : MonoBehaviour
         m_refPoolObj = null;
         m_fChargeTimer = 0f;
         m_bFullCharge = false;
+
         if (_bStopEffect == true)
             StopFullChargeEffect();
     }
