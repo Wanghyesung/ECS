@@ -16,7 +16,7 @@ MonoBehaviour:
     \uC21C\uAC04 \uBC1C\uC0AC \uBE54"
   Damage: 24
   AttackPower: 5
-  Speed: 1000
+  Speed: 1500
   SpeedOffset: 0
   AliveTime: 0.4
   HitCount: 5
