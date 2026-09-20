@@ -35,6 +35,7 @@
 | 상황 | 쓰는 것 |
 |---|---|
 | 낮 · 새 기능 "~만들어줘" | `workflow_view` 스킬(자동 발동) → PRD 승인 → 지금 구현(`$unity-workflow`) 또는 밤 큐(`status: approved`) |
+| 낮 · 여러 기능이 얽힌 프로젝트 단위 작업 | `$unity-project-orchestrator` → 계약/소유권 확정 → 최대 3개 모듈 병렬 구현 → 메인 MCP 통합 |
 | 낮 · 버그 | `$unity-fix` |
 | 낮 · 리뷰/테스트/빌드 | `$unity-review`, `$unity-test`, `$unity-build`, `$unity-ralph`(검증 루프) |
 | **밤 · 무인** | `.codex/autopilot.ps1` → PRD마다 `codex exec '$unity-autopilot <prd>'` (새 컨텍스트, 질문 없음, `auto/<날짜>` 브랜치에 PRD당 커밋 1개). 아침에 `git log auto/*` + PRD `status` + `git stash list`(blocked) 확인 |
@@ -66,7 +67,7 @@
 
 ## 스킬
 
-프로젝트 전용: `object-pooling`(이 프로젝트 풀 구조 — Bullet/FX/Enemy 필수), `r3`, `workflow_view`, `deep-interview`, `unity-mcp-patterns`. 패키지별: `unitask`, `dotween`, `addressables`, `input-system`, `cinemachine`, `navmesh`, `urp-pipeline`, `textmeshpro`, `animation`, `physics`, `event-systems`, `scriptable-objects`.
+프로젝트 전용: `object-pooling`(이 프로젝트 풀 구조 — Bullet/FX/Enemy 필수), `r3`, `workflow_view`, `unity-project-orchestrator`, `deep-interview`, `unity-mcp-patterns`. 패키지별: `unitask`, `dotween`, `addressables`, `input-system`, `cinemachine`, `navmesh`, `urp-pipeline`, `textmeshpro`, `animation`, `physics`, `event-systems`, `scriptable-objects`.
 
 ---
 
