@@ -14,11 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: "\uD575\uD3ED\uD0C4 \uBBF8\uC0AC\uC77C. \uB9F5 \uC911\uC559 \uB099\uD558
     \uD6C4 \uC804\uCCB4 \uBAAC\uC2A4\uD130 \uCC98\uCE58"
-  WeaponType: 0
-  PoolPrefab: {fileID: 11400000, guid: 818a8b1c47f8e1749be0ee2079e2b56e, type: 2}
   Damage: 2147483647
   AttackPower: 0
-  Cooldown: 2.1474836e+9
   Speed: 12
   SpeedOffset: 4
   AliveTime: 0
@@ -28,10 +25,6 @@ MonoBehaviour:
   KnockbackForce: 40
   KnockbackDuration: 0.2
   StunDuration: 0
-  BaseRotationSpeed: 90
-  MaxRotationSpeed: 180
-  RotationAccelRate: 0
-  ProximityRadius: 1.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

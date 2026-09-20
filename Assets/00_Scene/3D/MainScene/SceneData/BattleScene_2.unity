@@ -725,6 +725,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 5
+  m_refBulletPoolData: {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 30608954}
   m_refEffectObject: {fileID: 0}
@@ -2494,6 +2497,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
@@ -3651,6 +3657,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
@@ -4830,6 +4839,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 261239894}
   m_refEffectObject: {fileID: 0}
@@ -5392,6 +5404,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 6
+  m_refBulletPoolData: {fileID: 11400000, guid: 22c04f67e37f7ec4c9a124ef94df5611, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 44345befe75704243ad800615e982a68, type: 2}
   m_refFireTr: {fileID: 280640786}
   m_refEffectObject: {fileID: 961741912}
@@ -8188,6 +8203,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: dcfd1cf6282135f4093a3943958a5e47, type: 2}
+  m_fCooldown: 0.45
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
@@ -12715,6 +12733,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
@@ -12768,6 +12789,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 786673697}
@@ -14652,6 +14676,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 294316630}
@@ -16151,6 +16178,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
@@ -17053,6 +17083,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
@@ -21867,6 +21900,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 5
+  m_refBulletPoolData: {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 1143103863}
   m_refEffectObject: {fileID: 0}
@@ -24120,6 +24156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 0
+  m_refBulletPoolData: {fileID: 11400000, guid: 994d0b6ac1c9a7847b5d842d725666bf, type: 2}
+  m_fCooldown: 4
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1258235451}
   m_refEffectObject: {fileID: 0}
@@ -26376,6 +26415,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
@@ -28784,6 +28826,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 950688566}
@@ -29738,6 +29783,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
@@ -37622,6 +37670,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: dcfd1cf6282135f4093a3943958a5e47, type: 2}
+  m_fCooldown: 0.45
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}

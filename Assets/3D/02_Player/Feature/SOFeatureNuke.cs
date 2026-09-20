@@ -2,14 +2,15 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 SOFeatureNuke
-기능 : 확정되는 순간 즉시 발동하는 레전더리 카드. 미사일/데미지는 다른 무기와 같은 SOAttackInfo로
-       정의하고(PoolPrefab = NukeMissile, Damage = 최대), 씬의 NukeStrike(맵 중앙 앵커)에 발사를 위임.
+기능 : 확정되는 순간 즉시 발동하는 레전더리 카드. 미사일 풀(NukeMissile)은 이 SO가, 데미지는
+       다른 무기와 같은 SOAttackInfo로 정의하고, 씬의 NukeStrike(맵 중앙 앵커)에 발사를 위임.
        등급·가중치·확률은 이 SO의 Tier/Weight + SOJokerCard 등급 곡선이 담당
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_FeatureNuke", menuName = "Game/Feature/SOFeatureNuke")]
 public class SOFeatureNuke : SOFeature
 {
+    [SerializeField] private SOPoolData m_refMissilePoolData;   // NukeMissile 풀 - Weapon 과 같은 규칙: 풀은 쏘는 쪽이 든다
     [SerializeField] private SOAttackInfo m_SOAttackInfo;
 
     public override void Apply(Player _refPlayer, int _iNewLevel)
@@ -20,7 +21,7 @@ public class SOFeatureNuke : SOFeature
             return;
         }
 
-        NukeStrike.Current.Fire(m_SOAttackInfo);
+        NukeStrike.Current.Fire(m_refMissilePoolData, m_SOAttackInfo);
     }
 
     // 조커 실패로 몰수되어도 이미 터진 뒤라 되돌릴 게 없음

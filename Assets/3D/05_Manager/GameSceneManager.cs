@@ -11,8 +11,6 @@ using UnityEngine.UI;
                 GameSceneManager
 기능 : 로비(SelectStage)에서 고른 스테이지 idx에 대응하는 SOSceneData를 찾아
       Addressable 씬을 비동기로 로드하고, 진행률을 이미지(fillAmount)로 보여준다.
-      씬 전환 도중에도 살아있어야 해서 로비에서 생성되는 DontDestroyOnLoad
-      싱글톤으로 유지하고, 씬 로드가 끝나면 그 씬에서 쓸 오브젝트 풀 데이터까지 이어서 로드한다.
       씬이 바뀔 때 TimeScaleManager 의 정지를 통째로 해제하고, 게임 종료(QuitGame)도 여기서 맡는다.
  *///////////////////////////////////////////
 public class GameSceneManager : MonoBehaviour

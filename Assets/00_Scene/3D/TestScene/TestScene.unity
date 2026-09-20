@@ -1023,7 +1023,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   m_fMaxLength: 1000
-  m_refAimImage: {fileID: 86218943}
 --- !u!1 &90492040
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,7 +1143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 0.5
   m_refImage: {fileID: 93696236}
 --- !u!1 &102447539
 GameObject:
@@ -1998,10 +1996,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -2439,10 +2441,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 00ba95647b31bd74fa47802e8ce8d995, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 4fe8ff87a6be4254e96920cc1a561fb9, type: 2}
   m_refFireTr: {fileID: 209899764}
   m_refEffectObject: {fileID: 1618127072}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -2604,10 +2610,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -2975,7 +2985,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 1
   m_refImage: {fileID: 258074448}
 --- !u!1 &261239893
 GameObject:
@@ -3021,10 +3030,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 261239894}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -3734,10 +3747,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 6
+  m_refBulletPoolData: {fileID: 11400000, guid: 22c04f67e37f7ec4c9a124ef94df5611, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 44345befe75704243ad800615e982a68, type: 2}
   m_refFireTr: {fileID: 280640786}
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 60
   m_fSpreadAngle: 10
@@ -4797,10 +4814,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 00ba95647b31bd74fa47802e8ce8d995, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 4fe8ff87a6be4254e96920cc1a561fb9, type: 2}
   m_refFireTr: {fileID: 396608229}
   m_refEffectObject: {fileID: 221755804}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -5531,10 +5552,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: dcfd1cf6282135f4093a3943958a5e47, type: 2}
+  m_fCooldown: 0.45
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -5826,10 +5851,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 5522f88365af0c64282e4bff7f6bf866, type: 2}
+  m_fCooldown: 1
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 467237348}
   m_refEffectObject: {fileID: 879611010}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -7134,10 +7163,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 3b5b7f78b89c34343a0e993ed7b6948c, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 14674ac2d3f42eb46a905cc01a6b39d8, type: 2}
   m_refFireTr: {fileID: 607825572}
   m_refEffectObject: {fileID: 636183126}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 60
   m_fSpreadAngle: 10
@@ -8839,7 +8872,6 @@ MonoBehaviour:
   m_listDrone:
   - {fileID: 407726468}
   m_refAnimTable: {fileID: 0}
-  m_refAim: {fileID: 86218945}
   m_refVisualPlayer: {fileID: 1111899277}
   m_fRollTime: 2
   m_fMaxRollDuration: 0.5
@@ -8848,7 +8880,6 @@ MonoBehaviour:
   m_refObjectInfo:
     State: 0
     MaxHP: 0
-    CurrentHP: 0
     Speed: 0
     Attack: 0
     Defense: 0
@@ -8875,8 +8906,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 93696238}
-  m_refExSliderImage: {fileID: 258074450}
   m_refTargetScnner: {fileID: 715353657}
   TestLock: 0
 --- !u!1 &715872778
@@ -8924,10 +8953,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -8976,10 +9009,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 786673697}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -9710,10 +9747,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 294316630}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -10515,10 +10556,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -11059,10 +11104,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -12006,10 +12055,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 1040721637}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -12560,10 +12613,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: 226aa90991ac6604992c011de3fa89cf, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 4a65e7e97660b29499365b71050d14a2, type: 2}
   m_refFireTr: {fileID: 1066022900}
   m_refEffectObject: {fileID: 107014439}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -13531,14 +13588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f82595768f66bea4cb805f31d97980d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_listMoveAction:
-  - {fileID: -2274258936009778141, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listScreenAction:
-  - {fileID: -6401907108130545138, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listDeltaAction:
-  - {fileID: -4947440016848714923, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
-  m_listMoveSpaceAction:
-  - {fileID: 7181921023243160326, guid: 00111c1331f2cdc48bff1cadc5e07818, type: 3}
 --- !u!1 &1178200870
 GameObject:
   m_ObjectHideFlags: 0
@@ -14471,10 +14520,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 0
+  m_refBulletPoolData: {fileID: 11400000, guid: 994d0b6ac1c9a7847b5d842d725666bf, type: 2}
+  m_fCooldown: 4
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1258235451}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -14953,10 +15006,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 5522f88365af0c64282e4bff7f6bf866, type: 2}
+  m_fCooldown: 1
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 1915846211}
   m_refEffectObject: {fileID: 1093112746}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -15157,10 +15214,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: f233f9fe5f6d42e49acd0be3748bf0be, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 15564d828a90d8345ac23f6d7c9c0650, type: 2}
   m_refFireTr: {fileID: 1312085793}
   m_refEffectObject: {fileID: 2028461489}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -15284,10 +15345,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -16369,10 +16434,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 950688566}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -16992,7 +17061,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c91fb695e43972147acc174368448f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fCoSecond: 0.5
   m_refImage: {fileID: 1468893269}
 --- !u!1 &1472460815
 GameObject:
@@ -17039,10 +17107,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -17162,10 +17234,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: f233f9fe5f6d42e49acd0be3748bf0be, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 15564d828a90d8345ac23f6d7c9c0650, type: 2}
   m_refFireTr: {fileID: 1486357480}
   m_refEffectObject: {fileID: 1479282580}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -18024,10 +18100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: 226aa90991ac6604992c011de3fa89cf, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 4a65e7e97660b29499365b71050d14a2, type: 2}
   m_refFireTr: {fileID: 1558657590}
   m_refEffectObject: {fileID: 582229175}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -18999,10 +19079,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 1bfba8fb23143ca489691be76be2dc76, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 9993e481de5d64b48a419ff1dd80a913, type: 2}
   m_refFireTr: {fileID: 1683071217}
   m_refEffectObject: {fileID: 1288358014}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -19742,10 +19826,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: 1bfba8fb23143ca489691be76be2dc76, type: 2}
+  m_fCooldown: 0.02
   m_SOAttackInfo: {fileID: 11400000, guid: 9993e481de5d64b48a419ff1dd80a913, type: 2}
   m_refFireTr: {fileID: 1750521517}
   m_refEffectObject: {fileID: 70087527}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -20978,7 +21066,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_refMainCamera: {fileID: 963194227}
-  m_refPlayer: {fileID: 3250488527711361830}
   m_vOffset: {x: 0, y: 7, z: -15}
   m_refBloodScreen: {fileID: 1651052821}
 --- !u!1 &1887544747
@@ -21239,10 +21326,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 3
+  m_refBulletPoolData: {fileID: 11400000, guid: dcfd1cf6282135f4093a3943958a5e47, type: 2}
+  m_fCooldown: 0.45
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -21434,10 +21525,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 5522f88365af0c64282e4bff7f6bf866, type: 2}
+  m_fCooldown: 1
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 1915846211}
   m_refEffectObject: {fileID: 1530149594}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -22097,10 +22192,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 0
+  m_refBulletPoolData: {fileID: 11400000, guid: 994d0b6ac1c9a7847b5d842d725666bf, type: 2}
+  m_fCooldown: 4
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1962723263}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -23006,10 +23105,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 4
+  m_refBulletPoolData: {fileID: 11400000, guid: 5522f88365af0c64282e4bff7f6bf866, type: 2}
+  m_fCooldown: 1
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 2079641171}
   m_refEffectObject: {fileID: 1911295848}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -24443,7 +24546,6 @@ MonoBehaviour:
   m_listDrone:
   - {fileID: 9129693645490222007}
   m_refAnimTable: {fileID: 0}
-  m_refAim: {fileID: 86218945}
   m_refVisualPlayer: {fileID: 703703997}
   m_fRollTime: 2
   m_fMaxRollDuration: 0.5
@@ -24452,7 +24554,6 @@ MonoBehaviour:
   m_refObjectInfo:
     State: 0
     MaxHP: 0
-    CurrentHP: 0
     Speed: 0
     Attack: 0
     Defense: 0
@@ -24479,8 +24580,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
-  m_refHPSliderImage: {fileID: 93696238}
-  m_refExSliderImage: {fileID: 258074450}
   m_refTargetScnner: {fileID: 4420039787527282766}
   TestLock: 0
 --- !u!114 &4420039787527282766

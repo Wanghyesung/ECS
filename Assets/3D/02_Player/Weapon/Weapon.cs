@@ -21,7 +21,11 @@ public class Weapon : MonoBehaviour
     }
     
     
-    [SerializeField] private SOAttackInfo m_SOAttackInfo;
+    [Header("Weapon")]
+    [SerializeField] private eWeaponType m_eWeaponType = eWeaponType.None;
+    [SerializeField] private SOPoolData m_refBulletPoolData;   // 이 무기가 쏘는 탄의 풀
+    [SerializeField] private float m_fCooldown = 0.5f;         // 카드 배율이 곱해지기 전 기본 발사 주기
+    [SerializeField] private SOAttackInfo m_SOAttackInfo;      // 탄 데이터만
 
     private AttackInfo m_refAttackInfo;
 
@@ -35,19 +39,16 @@ public class Weapon : MonoBehaviour
     public Transform FireTransform => m_refFireTr;
     [SerializeField] private ParticleSystem m_refEffectObject;
 
-    private float m_fFireTime = 0.2f;
-    private float m_fBaseCooldown = 0.2f;
+    private float m_fFireTime = 0.2f;   // 현재 발사 주기 = m_fCooldown × SetCooldown 배율
     private float m_fLastFireTime = -Mathf.Infinity;
 
     // SO 원본 데미지. 공격력 스탯은 여기에 배율로 얹으므로, 누적 곱 대신 매번 base 기준으로 재계산한다
-    // (SetCooldown이 m_fBaseCooldown을 쓰는 것과 같은 이유 - Repeatable 기능 재적용 시 드리프트 방지)
+    // (SetCooldown이 m_fCooldown을 쓰는 것과 같은 이유 - Repeatable 기능 재적용 시 드리프트 방지)
     private int m_iBaseDamage;
     private float m_fAttackBonusRate;
 
-    private eWeaponType m_eWeapoonType = eWeaponType.None;
-    public eWeaponType WeaponType => m_eWeapoonType;
-
-    public SOPoolData FireBulletPrefab => m_SOAttackInfo.PoolPrefab;
+    public eWeaponType WeaponType => m_eWeaponType;             // 직렬화 필드라 Init 전(Monster.Start 등)에도 유효
+    public SOPoolData FireBulletPrefab => m_refBulletPoolData;
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
@@ -78,12 +79,10 @@ public class Weapon : MonoBehaviour
         // 이미 발사한 무기에 다시 부르는 건 런 시작(풀이 씬과 함께 재생성돼 이전 총알이 없는 시점)에서만 — 런 도중 재호출 금지
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_refAttackInfo.Owner = gameObject.transform;
-        m_eWeapoonType = m_SOAttackInfo.WeaponType;
-        m_fBaseCooldown = m_refAttackInfo.CoolDown;
         m_iBaseDamage = m_refAttackInfo.Damage;
 
         // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
-        m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fFireTime = m_fCooldown;
         m_fAttackBonusRate = 0.0f;
         if (m_listArriveActions != null) 
             m_listArriveActions.Clear();
@@ -104,7 +103,6 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        m_fFireTime = m_refAttackInfo.CoolDown;
         m_fLastFireTime = Time.time;
     }
 
@@ -121,7 +119,7 @@ public class Weapon : MonoBehaviour
             return null;  // 다수 펠릿은 준비 탄환 하나를 반환할 수 없어 차지샷 대상에서 제외
         }
 
-        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_SOAttackInfo.PoolPrefab);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_refBulletPoolData);
         if (refObj == null)
             return null;
 
@@ -214,7 +212,7 @@ public class Weapon : MonoBehaviour
             tShotInfo refPelletShotInfo = _refShotInfo;
             refPelletShotInfo.Speed = RollSpeed();
 
-            GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
+            GameObject refObj = Bullet.SpawnAttackObject(m_refBulletPoolData, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
             if (refObj == null)
                 continue;
 
@@ -235,7 +233,7 @@ public class Weapon : MonoBehaviour
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.Speed = RollSpeed();
 
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.PoolPrefab, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
+        GameObject refObj = Bullet.SpawnAttackObject(m_refBulletPoolData, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
             return;
 
@@ -269,7 +267,6 @@ public class Weapon : MonoBehaviour
             m_refEffectObject.Play();
 
         m_fLastFireTime = Time.time;
-        m_fFireTime = m_refAttackInfo.CoolDown;
     }
 
 
@@ -282,15 +279,10 @@ public class Weapon : MonoBehaviour
     public void SetCooldown(float _fValue)
     {
         float fClamped = Mathf.Max(_fValue, 0.1f);
-
-        m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
-        m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fFireTime = m_fCooldown * fClamped;
     }
 
-    // Player.AddAttack()에서 호출. m_refAttackInfo는 이 무기가 만든 모든 총알이 참조하는 인스턴스라
-    // 여기만 고치면 이미 날아가는 총알을 뺀 다음 발사분부터 전부 반영된다.
-    // 평탄 가산이 아니라 '% 증가'인 이유 : 한 번에 여러 발 나가는 무기(m_iBulletCount)에 평탄 가산을 하면
-    // 실제 증가폭이 탄 개수에 비례해 터진다 (샷건 16발 = 가산치의 16배). 배율이면 탄 개수와 무관하게 같은 비율로 오른다
+    
     public void AddAttackRate(float _fRate)
     {
         m_fAttackBonusRate += _fRate;

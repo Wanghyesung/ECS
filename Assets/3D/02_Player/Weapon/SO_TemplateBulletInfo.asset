@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: SO_TemplateBulletInfo
   m_EditorClassIdentifier: 
   Description: "\uC784\uC2DC \uCD1D\uC54C\n"
-  WeaponType: 1
-  PoolPrefab: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
   Damage: 14
   AttackPower: 5
-  Cooldown: 0.1
   Speed: 260
   SpeedOffset: 30
   AliveTime: 2
@@ -27,10 +24,6 @@ MonoBehaviour:
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0
-  BaseRotationSpeed: 60
-  MaxRotationSpeed: 720
-  RotationAccelRate: 40
-  ProximityRadius: 1.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

@@ -5,7 +5,7 @@ using UnityEngine;
 /*///////////////////////////////////////////
                 NukeStrike
 목적 : 핵폭탄의 착탄 지점(씬 앵커) + 카메라 컷신. BattleScene의 맵 중앙에 빈 오브젝트로 배치.
-       미사일 자체는 SOAttackInfo.PoolPrefab(NukeMissile)을 Bullet.SpawnAttackObject로 꺼내 쓴다.
+       미사일 자체는 SOFeatureNuke가 넘긴 풀(NukeMissile)을 Bullet.SpawnAttackObject로 꺼내 쓴다.
        미사일은 착탄점 + LaunchOffset에서 출발해 착탄점을 바라보며 대각선으로 진입한다.
        카메라: 낙하 전반은 미사일 뒤 위(로컬 오프셋)에서 추적(CameraManager.FollowTarget)하고,
        FollowRatio 지점부터는 맵 전경 지점으로 후진(MoveToPoint)해 착탄/임팩트를 넓게 보여준 뒤 복귀.
@@ -41,12 +41,12 @@ public sealed class NukeStrike : MonoBehaviour
             Current = null;
     }
 
-    public void Fire(SOAttackInfo _SOAttackInfo)
+    public void Fire(SOPoolData _refMissilePoolData, SOAttackInfo _SOAttackInfo)
     {
-        FireAsync(_SOAttackInfo, this.GetCancellationTokenOnDestroy()).Forget();
+        FireAsync(_refMissilePoolData, _SOAttackInfo, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    private async UniTaskVoid FireAsync(SOAttackInfo _SOAttackInfo, CancellationToken _token)
+    private async UniTaskVoid FireAsync(SOPoolData _refMissilePoolData, SOAttackInfo _SOAttackInfo, CancellationToken _token)
     {
         Vector3 vCenter = transform.position;
 
@@ -55,7 +55,7 @@ public sealed class NukeStrike : MonoBehaviour
         tShot.HitPosition = vCenter;
 
         Vector3 vLaunchPos = vCenter + m_vLaunchOffset;
-        GameObject refObj = Bullet.SpawnAttackObject(_SOAttackInfo.PoolPrefab, vLaunchPos, Quaternion.LookRotation(-m_vLaunchOffset), _SOAttackInfo.MakeAttackInfo(), tShot);
+        GameObject refObj = Bullet.SpawnAttackObject(_refMissilePoolData, vLaunchPos, Quaternion.LookRotation(-m_vLaunchOffset), _SOAttackInfo.MakeAttackInfo(), tShot);
         if (refObj == null || refObj.TryGetComponent(out NukeMissile refMissile) == false)
             return;
 

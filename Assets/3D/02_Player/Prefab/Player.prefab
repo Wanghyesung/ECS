@@ -105,7 +105,6 @@ MonoBehaviour:
   - {fileID: 8982239708251843227}
   m_listDrone: []
   m_refAnimTable: {fileID: 0}
-  m_refAim: {fileID: 0}
   m_refVisualPlayer: {fileID: 0}
   m_fRollTime: 2
   m_fMaxRollDuration: 0.5
@@ -114,7 +113,6 @@ MonoBehaviour:
   m_refObjectInfo:
     State: 0
     MaxHP: 0
-    CurrentHP: 0
     Speed: 0
     Attack: 0
     Defense: 0
@@ -141,8 +139,6 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 0}
-  m_refHPSliderImage: {fileID: 0}
-  m_refExSliderImage: {fileID: 0}
   m_refTargetScnner: {fileID: 0}
   TestLock: 0
 --- !u!114 &7474009929202663394
@@ -205,10 +201,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 4809255346028413864}
   m_refEffectObject: {fileID: 6927910296949444326}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -256,10 +256,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 5
+  m_refBulletPoolData: {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  m_fCooldown: 0.5
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 2491844135127419779}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -308,10 +312,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_eWeaponType: 1
+  m_refBulletPoolData: {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  m_fCooldown: 0.1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 1370286331299951429}
   m_refEffectObject: {fileID: 4387701038701273086}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
