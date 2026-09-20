@@ -242,6 +242,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: caa7deba45e733544b81853c31a1f9ae
+    m_Address: Assets/3D/02_Player/Weapon/BulletAction/BulletLargeEx.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cd73770bc75a1eb4ca62b973bbcd9361
     m_Address: Assets/02_Player/Weapon/Bullet/JobBullet/JobBaseBullet.prefab
     m_ReadOnly: 0

@@ -10,7 +10,7 @@
 |------|-----|
 | **Unity 버전** | 2022.3.62f2 · URP · 주 타겟 Windows, 부 타겟 Android |
 | **패키지** | Addressables, AI Navigation, Cinemachine, Input System, TextMeshPro, Test Framework, Unity MCP |
-| **비동기/반응형/트윈** | **UniTask**(`Assets/Plugins/UniTask`, 코루틴 전면 대체 — 필수) · **DOTween**(`Assets/Plugins/Demigiant`) · **R3**(Cysharp — 프로젝트 표준 Reactive. **아직 미설치**: 사용 전 `Packages/manifest.json`에 `com.cysharp.r3` 있는지 확인, 없으면 `r3` 스킬의 설치 안내를 사용자에게 제시하고 코드를 쓰지 말 것) |
+| **비동기/반응형/트윈** | **UniTask**(`Assets/Plugins/UniTask`, 코루틴 전면 대체 — 필수) · **DOTween**(`Assets/Plugins/Demigiant`) · **R3**(Cysharp — 프로젝트 표준 Reactive. : 사용 전 `Packages/manifest.json`에 `com.cysharp.r3` 있는지 확인, 없으면 `r3` 스킬의 설치 안내를 사용자에게 제시하고 코드를 쓰지 말 것) |
 | **안 쓰는 것** | VContainer(DI), UniRx(→R3), 코루틴, 레거시 Input, MessagePipe |
 
 **게임 기획:** 3D 슈팅 · 로그라이트. 컨셉/게임 루프/조커 카드 시스템은 `.codex/docs/game-design.md`, 밸런스는 `.codex/docs/balance-guide.md`.

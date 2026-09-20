@@ -183,6 +183,11 @@ public class ColliderManager : MonoBehaviour
         m_grid?.Dispose();
     }
 
+    private void LateUpdate()
+    {
+        CompleteAndDrainGridJob();
+    }
+
     private static long MakePairKey(int _iA, int _iB)
     {
         int iLow = _iA < _iB ? _iA : _iB;
@@ -300,10 +305,6 @@ public class ColliderManager : MonoBehaviour
         ScheduleGridJob();
     }
 
-    private void LateUpdate()
-    {
-        CompleteAndDrainGridJob();
-    }
 
     // 위치/축 갱신은 ColliderCenterRefresher에 위임. CachedCenter를 읽는 외부 코드
     // (RaycastMask/FindAllInRadius/Aim 등)가 여전히 동기 프로퍼티로 읽을 수 있어야 하므로

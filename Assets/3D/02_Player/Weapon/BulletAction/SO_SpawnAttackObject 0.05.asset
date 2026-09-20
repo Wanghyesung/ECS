@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d39730ce2333c0e4992d3ad99c02e7e2, type: 3}
-  m_Name: SO_SpawnAttackObject 0.1
+  m_Name: SO_SpawnAttackObject 0.05
   m_EditorClassIdentifier: 
-  m_refAttackObjectPoolData: {fileID: 11400000, guid: bfebb6399654c164b95a22f5713e4ab2, type: 2}
-  m_fTriggerChance: 0.1
+  m_refAttackObjectPoolData: {fileID: 11400000, guid: eafb730d454bc994faabecef4fea997c, type: 2}
+  m_fTriggerChance: 0.05
   m_fBaseRadius: 2
   m_fRadiusPerLevel: 0.1
+  m_iMaxHitCount: 5
