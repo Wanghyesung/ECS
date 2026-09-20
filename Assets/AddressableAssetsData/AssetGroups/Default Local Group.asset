@@ -272,6 +272,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa3106ad7d6c68845938b52c09f5ae9c
+    m_Address: Assets/3D/02_Player/Weapon/Bullet/ChargetBullet.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fba1f25a91a4948488941097bed386f8
     m_Address: Assets/02_Player/Weapon/Bullet/MidBullet.prefab
     m_ReadOnly: 0

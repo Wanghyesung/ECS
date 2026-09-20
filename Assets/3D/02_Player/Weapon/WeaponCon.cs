@@ -14,7 +14,7 @@ public sealed class WeaponCon : MonoBehaviour
     [SerializeField, Min(0.01f)] private float m_fMaxChargeTime = 2f;
     [SerializeField, Min(1f)] private float m_fMaxVisualScale = 2f;
     [SerializeField, Min(1f)] private float m_fMaxSpeedMultiplier = 2.5f;
-    [SerializeField] private ParticleSystem m_refFullChargeEffect;
+    [SerializeField] private ParticleSystem m_refChargeEffect;
 
     private Weapon m_refWeapon;
     private GameObject m_refBulletObj;
@@ -66,12 +66,6 @@ public sealed class WeaponCon : MonoBehaviour
         float fRatio = m_fChargeTimer / m_fMaxChargeTime;
         m_refBulletTr.localScale = m_vBaseScale * Mathf.Lerp(1f, m_fMaxVisualScale, fRatio);
 
-        if (m_bFullCharge == true || fRatio < 1f)
-            return;
-        m_bFullCharge = true;
-
-        if (m_refFullChargeEffect != null)
-            m_refFullChargeEffect.Play(true);
     }
 
     private void OnDisable() => Cancel();
@@ -90,6 +84,7 @@ public sealed class WeaponCon : MonoBehaviour
         if (m_refBulletObj == null)
             return;
 
+        //볼렛의 설정값을 캐싱하고 자식 오브젝트로 설정
         m_refBulletTr = m_refBulletObj.transform;
         m_refCircleCollider = m_refBulletObj.GetComponent<CircleCollider>();
         m_refPoolObj = m_refBulletObj.GetComponent<PoolObject>();
@@ -97,11 +92,14 @@ public sealed class WeaponCon : MonoBehaviour
         m_refPoolParent = m_refBulletTr.parent;
         m_vBaseScale = m_refBulletTr.localScale;
         m_fBaseRadius = m_refCircleCollider.Radius;
-        m_disposablePoolPush = m_refPoolObj.OnPush.Subscribe(_ => RestorePreparedBullet());
+        m_disposablePoolPush = m_refPoolObj.OnPush.Subscribe(_ => ResetBullet());
 
         m_refBulletTr.SetParent(m_refWeapon.FireTransform, false);
         m_refBulletTr.localPosition = Vector3.zero;
         m_refBulletTr.localRotation = Quaternion.identity;
+
+        if (m_refChargeEffect != null)
+            m_refChargeEffect.gameObject.SetActive(true);
     }
 
     public void Release(Vector3 _vTargetPos, Transform _refTarget)
@@ -116,7 +114,7 @@ public sealed class WeaponCon : MonoBehaviour
             Cancel();
             return;
         }
-
+        //마우스를 때는 즉시 크기, 스피드를 잡고 총알을 쏜다
         float fRatio = m_fChargeTimer / m_fMaxChargeTime;
         float fScale = Mathf.Lerp(1f, m_fMaxVisualScale, fRatio);
         float fSpeedMultiplier = Mathf.Lerp(1f, m_fMaxSpeedMultiplier, fRatio);
@@ -132,6 +130,8 @@ public sealed class WeaponCon : MonoBehaviour
         if (OwnsBullet == true)
             ObjectPoolManager.m_Instance.PushObject(m_refBulletObj);
         ClearCharge();
+        if (m_refChargeEffect != null)
+            m_refChargeEffect.gameObject.SetActive(false);
     }
 
     private void ClearCharge(bool _bStopEffect = true)
@@ -149,7 +149,7 @@ public sealed class WeaponCon : MonoBehaviour
             StopFullChargeEffect();
     }
 
-    private void RestorePreparedBullet()
+    private void ResetBullet()
     {
         if (m_refPoolObj.Generation != m_iGeneration)
             return;
@@ -161,7 +161,7 @@ public sealed class WeaponCon : MonoBehaviour
 
     private void StopFullChargeEffect()
     {
-        if (m_refFullChargeEffect != null)
-            m_refFullChargeEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        if (m_refChargeEffect != null)
+            m_refChargeEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 }

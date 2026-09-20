@@ -85,8 +85,10 @@ public class Weapon : MonoBehaviour
         // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
         m_fFireTime = m_refAttackInfo.CoolDown;
         m_fAttackBonusRate = 0.0f;
-        if (m_listArriveActions != null) m_listArriveActions.Clear();
-        if (m_listHitActions != null) m_listHitActions.Clear();
+        if (m_listArriveActions != null) 
+            m_listArriveActions.Clear();
+        if (m_listHitActions != null) 
+            m_listHitActions.Clear();
     }
 
     private void Start()
