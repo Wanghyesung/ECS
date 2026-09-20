@@ -146,12 +146,12 @@ public class DungeonManager : MonoBehaviour
     private async UniTaskVoid SpawnBossWhenCameraFree()
     {
         await UniTask.WaitUntil(() => CameraManager.m_Instance.IsLocked == false, PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
-        SpawnBoss();
+        SpawnBoss().Forget();
     }
 
     // 그 스테이지의 일반 몬스터를 다 처치했을 때 호출: 마지막 스테이지면 보스 등장, 아니면 다음 스테이지로
     
-    private void SpawnBoss()
+    private async UniTaskVoid SpawnBoss()
     {
         m_bBossSpawned = true;
 
@@ -163,11 +163,14 @@ public class DungeonManager : MonoBehaviour
         Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition + (vBossForward.normalized * m_SOTargetStage.BossShowDistance);
         Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
 
-        CameraManager.m_Instance.MoveToPoint(
-            this.GetCancellationTokenOnDestroy(),vCamTargetPos,qCamTargetRot,3.0f,2.0f).Forget();
+        // 등장 컷신 동안 정지. 컷신 중 레벨업 카드가 열리고 닫혀도 여기 Pause 가 남아 있어 컷신이 끝나기 전엔 풀리지 않는다
+        // (카메라는 시간을 건드리지 않으므로 복귀도 여기서 - 예전엔 MoveToPoint 가 끝에서 timeScale=1 을 대신 썼다)
+        TimeScaleManager.m_Instance.Pause(this);
 
+        await CameraManager.m_Instance.MoveToPoint(
+            this.GetCancellationTokenOnDestroy(), vCamTargetPos, qCamTargetRot, 3.0f, 2.0f);
 
-        Time.timeScale = 0.0f;
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
 

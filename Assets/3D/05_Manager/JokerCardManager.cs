@@ -78,6 +78,9 @@ public class JokerCardManager : MonoBehaviour
         m_refPickContainer.gameObject.SetActive(true);
         m_refSelectContainer.gameObject.SetActive(true);
 
+        // 픽 UI 가 열려 있는 동안 정지 소유권을 이어받는다 - 이 직후 CardCreator 가 자기 Pause 를 풀어도 여기 것이 남아 0 유지
+        TimeScaleManager.m_Instance.Pause(this);
+
         m_iLevel++;
 
         //내 조커 레벨에 맞게 나오는 티어 가중치 변경
@@ -153,7 +156,7 @@ public class JokerCardManager : MonoBehaviour
         m_refSelectContainer.gameObject.SetActive(false);
         m_refPickContainer.gameObject.SetActive(false);
 
-        Time.timeScale = 1.0f;
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
 
@@ -165,7 +168,9 @@ public class JokerCardManager : MonoBehaviour
 
         m_listPendingFeature.Clear();
         m_iLevel = 0;
-        Time.timeScale = 1.0f;
+
+        // 지금 유일한 호출자(ApplyFail)는 Pause 를 걸지 않았으므로 no-op. 나중에 픽 도중 몰수 경로가 생기면 그때 실제로 풀린다
+        TimeScaleManager.m_Instance.Resume(this);
 
     }
 }

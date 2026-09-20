@@ -59,16 +59,18 @@ public sealed class NukeStrike : MonoBehaviour
         if (refObj == null || refObj.TryGetComponent(out NukeMissile refMissile) == false)
             return;
 
-        // CardCreator.HandleCardClicked / JokerCardManager.PickData가 SelectFeature 직후 timeScale=1로
-        await UniTask.Yield(_token);
-        Time.timeScale = 0f;
+        // 연출 동안 정지. 이 직후 CardCreator/JokerCardManager 가 자기 Pause 를 풀어도 여기 것이 남아 0 유지
+        // (예전엔 그쪽이 timeScale=1 로 덮어써서 한 프레임 Yield 후 다시 0 으로 되돌리는 우회가 필요했다)
+        TimeScaleManager.m_Instance.Pause(this);
 
         float fFollowTime = refMissile.FallTime * m_fFollowRatio;
         await CameraManager.m_Instance.FollowTarget(_token, refMissile.transform, m_vFollowOffset, fFollowTime);
 
-        // 남은 낙하 시간 동안 전경 지점으로 후진 → 착탄과 동시에 도착. 끝나면 MoveToPoint가 timeScale=1 + 시점 복귀
+        // 남은 낙하 시간 동안 전경 지점으로 후진 → 착탄과 동시에 도착. 끝나면 MoveToPoint 가 시점 복귀
         Vector3 vOverviewPos = vCenter + m_vOverviewOffset;
         await CameraManager.m_Instance.MoveToPoint(
             _token, vOverviewPos, Quaternion.LookRotation(vCenter - vOverviewPos), refMissile.FallTime - fFollowTime, m_fHoldAfterImpact);
+
+        TimeScaleManager.m_Instance.Resume(this);
     }
 }

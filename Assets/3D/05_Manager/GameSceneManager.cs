@@ -13,6 +13,7 @@ using UnityEngine.UI;
       Addressable 씬을 비동기로 로드하고, 진행률을 이미지(fillAmount)로 보여준다.
       씬 전환 도중에도 살아있어야 해서 로비에서 생성되는 DontDestroyOnLoad
       싱글톤으로 유지하고, 씬 로드가 끝나면 그 씬에서 쓸 오브젝트 풀 데이터까지 이어서 로드한다.
+      씬이 바뀔 때 TimeScaleManager 의 정지를 통째로 해제하고, 게임 종료(QuitGame)도 여기서 맡는다.
  *///////////////////////////////////////////
 public class GameSceneManager : MonoBehaviour
 {
@@ -76,6 +77,11 @@ public class GameSceneManager : MonoBehaviour
         var tDestroyToken = this.GetCancellationTokenOnDestroy();
 
         ObjectPoolManager.m_Instance.SceneChange();
+
+        // 정지를 잡은 UI/연출이 씬과 함께 파괴되면 Resume 을 못 불러 영구 정지가 된다 - 씬이 넘어갈 때 통째로 해제
+        if (TimeScaleManager.m_Instance != null)
+            TimeScaleManager.m_Instance.ClearAll();
+
         await ObjectPoolManager.m_Instance.LoadStaticPoolDataAsync(tDestroyToken, refPersistentPoolProgress);
 
         m_tSceneHandle = Addressables.LoadSceneAsync(_refSceneData.SceneAddress, LoadSceneMode.Single);
@@ -112,11 +118,25 @@ public class GameSceneManager : MonoBehaviour
 
         ObjectPoolManager.m_Instance.SceneChange();
 
+        // 정지를 잡은 UI/연출이 씬과 함께 파괴되면 Resume 을 못 불러 영구 정지가 된다 - 씬이 넘어갈 때 통째로 해제
+        if (TimeScaleManager.m_Instance != null)
+            TimeScaleManager.m_Instance.ClearAll();
+
         await SceneManager.LoadSceneAsync(m_strFirstSceneName, LoadSceneMode.Single)
             .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
 
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.CompletedLoading();
         Player.CurrentPlayer.gameObject.SetActive(false);
+    }
+
+    // 게임 종료. 에디터에선 Application.Quit 이 무시되므로 Play 모드를 끈다
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
