@@ -161,14 +161,14 @@ PRD 골격은 [PRD 템플릿](https://gist.github.com/gkossakowski/21cd41fc3801d
 
 [PR 리뷰 절차](references/pr-review.md) 2~5단계를 수행한다. `.codex/review-workflow.json`의 활성화 설정은 이 워크플로 작업의 명시적 파일 커밋·push·PR 생성/갱신과 지정된 Slack 대상 알림에 대한 사용자 사전 승인이다. 별도 merge 권한은 포함하지 않는다.
 
-이번 작업의 변경만 커밋하고 리뷰 가능한 PR을 생성한다. 기존 PR이면 갱신한다. PR URL과 최신 head를 확인한 뒤 Slack으로 한 번 알린다. 수신 대상/연결이 없으면 PR 링크를 최종 답변에 제공하고 알림을 대기로 남긴다. 실제 성공 결과 없이 PR/Slack 전송 완료라고 말하지 않는다.
+이번 작업의 변경만 커밋하고 리뷰 가능한 PR을 생성한다. 기존 PR이면 갱신한다. PR URL과 최신 head를 확인한 뒤 인증된 사용자의 Slackbot 리마인더를 한 번 생성한다. 사용자 계정의 자기 DM으로 메시지를 보내지 않는다. 실제 성공 결과 없이 PR/Slack 리마인더 생성 완료라고 말하지 않는다.
 
 ```mermaid
 flowchart LR
     A[구현] --> B[컴파일·테스트·AI 리뷰]
     B --> C[awaiting-review]
     C --> D[커밋·push·GitHub PR]
-    D --> E[Slack 리뷰 요청]
+    D --> E[Slackbot 리뷰 리마인더]
     E --> F[사용자 리뷰]
     F -->|수정 요청| A
     F -->|승인 또는 병합 확인| G[done]

@@ -729,6 +729,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 30608954}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -2497,6 +2498,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -3653,6 +3655,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -4770,6 +4773,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 261239894}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -5331,6 +5335,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 280640786}
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 16
   m_fSpreadAngle: 45
@@ -8126,6 +8131,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -12587,6 +12593,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -12639,6 +12646,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 786673697}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -14522,6 +14530,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 294316630}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -16020,6 +16029,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -16792,7 +16802,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1771154732}
   - {fileID: 1172552258}
   - {fileID: 1886168159}
   - {fileID: 1689528489}
@@ -16920,6 +16929,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -19596,51 +19606,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_refHPSliderImage: {fileID: 1396249399}
   m_refExSliderImage: {fileID: 1840434584}
---- !u!1 &1046577049
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1046577052}
-  - component: {fileID: 1046577053}
-  m_Layer: 0
-  m_Name: TestCodeStart
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1046577052
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1046577049}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1046577053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1046577049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6be5ff09ce3b6294f8f42ff122ea6290, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SOData: {fileID: 11400000, guid: ecdfc2152e0780846946e2a7c6c47490, type: 2}
 --- !u!1 &1049722002
 GameObject:
   m_ObjectHideFlags: 0
@@ -21733,6 +21698,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1143103863}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -23985,6 +23951,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1258235451}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -26237,6 +26204,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -28644,6 +28612,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 950688566}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -29536,6 +29505,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -29885,7 +29855,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1480233289}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f2f850248e221649b3812115d3cab37, type: 3}
   m_Name: 
@@ -34713,50 +34683,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3, y: 3, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &1771154731
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1771154732}
-  - component: {fileID: 1771154733}
-  m_Layer: 0
-  m_Name: PoolManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1771154732
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1771154731}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 936170815}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1771154733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1771154731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f24b6d73ca3dbb54eb3f709067f96429, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1782590366
 GameObject:
   m_ObjectHideFlags: 0
@@ -37432,6 +37358,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -42741,7 +42668,6 @@ SceneRoots:
   - {fileID: 1085554305}
   - {fileID: 936170815}
   - {fileID: 257673829}
-  - {fileID: 1046577052}
   - {fileID: 1372296926}
   - {fileID: 924492070}
   - {fileID: 2091366250}

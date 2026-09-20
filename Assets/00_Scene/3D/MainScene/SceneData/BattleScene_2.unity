@@ -729,6 +729,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 30608954}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -2497,6 +2498,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -3653,6 +3655,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -4831,6 +4834,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 261239894}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -5392,6 +5396,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 280640786}
   m_refEffectObject: {fileID: 961741912}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 16
   m_fSpreadAngle: 45
@@ -8187,6 +8192,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -12713,6 +12719,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -12765,6 +12772,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 786673697}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -14648,6 +14656,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 294316630}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -16146,6 +16155,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -17047,6 +17057,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -21860,6 +21871,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1143103863}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -24112,6 +24124,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1258235451}
   m_refEffectObject: {fileID: 0}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -26367,6 +26380,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 4
@@ -28774,6 +28788,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 950688566}
   m_bLookTarget: 1
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -29727,6 +29742,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -30076,7 +30092,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1480233289}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f2f850248e221649b3812115d3cab37, type: 3}
   m_Name: 
@@ -34913,7 +34929,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1771154732}
-  - component: {fileID: 1771154733}
   m_Layer: 0
   m_Name: PoolManager
   m_TagString: Untagged
@@ -34936,18 +34951,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 936170815}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1771154733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1771154731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f24b6d73ca3dbb54eb3f709067f96429, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1782590366
 GameObject:
   m_ObjectHideFlags: 0
@@ -37623,6 +37626,7 @@ MonoBehaviour:
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}
   m_bLookTarget: 0
+  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6

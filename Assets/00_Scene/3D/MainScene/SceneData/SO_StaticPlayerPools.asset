@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57564505bde74f948b0fcd1d63a19867, type: 3}
+  m_Name: SO_StaticPlayerPools
+  m_EditorClassIdentifier: 
+  m_listPoolData:
+  - {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
+  - {fileID: 11400000, guid: fe4f09a5c63d3aa46b21eee9666d1118, type: 2}
+  - {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  - {fileID: 11400000, guid: bfebb6399654c164b95a22f5713e4ab2, type: 2}
+  - {fileID: 11400000, guid: 39620b64234039c4796d6f31dae06d73, type: 2}
+  - {fileID: 11400000, guid: ce49b6bd690378a40baf9974d391807a, type: 2}
+  - {fileID: 11400000, guid: 8cdf7dcf920475f46aa21095511aa9f3, type: 2}
+  - {fileID: 11400000, guid: a9adf77cc8df897459df8a96ff8f837d, type: 2}
+  - {fileID: 11400000, guid: 22c04f67e37f7ec4c9a124ef94df5611, type: 2}
+  - {fileID: 11400000, guid: 91fcfda63b281f74ca3a036e9949a2a9, type: 2}
+  - {fileID: 11400000, guid: dcfd1cf6282135f4093a3943958a5e47, type: 2}
+  - {fileID: 11400000, guid: e574b933adc81ea49af4f9e6f49a45ae, type: 2}
+  - {fileID: 11400000, guid: 818a8b1c47f8e1749be0ee2079e2b56e, type: 2}
+  - {fileID: 11400000, guid: 994d0b6ac1c9a7847b5d842d725666bf, type: 2}
+  - {fileID: 11400000, guid: 7d50739123346e741b2e24a9b63cb6f9, type: 2}
+  - {fileID: 11400000, guid: 217c51b087a3c6046b71fda2d675ce4c, type: 2}
+  - {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}

@@ -69,15 +69,19 @@ public class GameSceneManager : MonoBehaviour
             m_refLoadingOverlay.gameObject.SetActive(true);
 
         SetProgress(0.0f);
-        //씬 로드가 끝났다고 100%가 되면 안 되므로(뒤에 풀 로딩이 남음) 구간을 절반씩 나눠서 표시
-        //씬 로드 0~0.5, 풀 로드 0.5~1.0
-        var refSceneProgress = Progress.Create<float>(fPercent => SetProgress(fPercent * 0.5f));
-        var refPoolProgress = Progress.Create<float>(fPercent => SetProgress(0.5f + fPercent * 0.5f));
+
+        var refPersistentPoolProgress = Progress.Create<float>(fPercent => SetProgress(fPercent * 0.25f));
+        var refSceneProgress = Progress.Create<float>(fPercent => SetProgress(0.25f + fPercent * 0.4f));
+        var refScenePoolProgress = Progress.Create<float>(fPercent => SetProgress(0.65f + fPercent * 0.35f));
+        var tDestroyToken = this.GetCancellationTokenOnDestroy();
+
+        ObjectPoolManager.m_Instance.SceneChange();
+        await ObjectPoolManager.m_Instance.LoadStaticPoolDataAsync(tDestroyToken, refPersistentPoolProgress);
 
         m_tSceneHandle = Addressables.LoadSceneAsync(_refSceneData.SceneAddress, LoadSceneMode.Single);
-        await m_tSceneHandle.ToUniTask(refSceneProgress, cancellationToken: this.GetCancellationTokenOnDestroy());
+        await m_tSceneHandle.ToUniTask(refSceneProgress, cancellationToken: tDestroyToken);
 
-        await ObjectPoolManager.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy(), refPoolProgress);
+        await ObjectPoolManager.m_Instance.ReplaceScenePoolsAsync(_refSceneData.ScenePoolDataList, tDestroyToken, refScenePoolProgress);
 
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.gameObject.SetActive(false);
@@ -105,6 +109,8 @@ public class GameSceneManager : MonoBehaviour
         //진행률 계산 없이 배경(오버레이)만 켰다 끄기
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.ShowLoadingImage();
+
+        ObjectPoolManager.m_Instance.SceneChange();
 
         await SceneManager.LoadSceneAsync(m_strFirstSceneName, LoadSceneMode.Single)
             .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());

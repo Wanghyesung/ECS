@@ -4,7 +4,7 @@ using UnityEngine;
 /*///////////////////////////////////////////
               TestSceneLoader
 목적 : Loby -> GameSceneManager.LoadStage() 흐름을 거치지 않고 씬을 곧바로 재생(Play)할
-       때, 원래 그 흐름이 해줬을 SOSceneData.PoolDataList 로딩을 대신 해주는 테스트
+       때, 원래 그 흐름이 해줬을 SOSceneData.ScenePoolDataList 로딩을 대신 해주는 테스트
        전용 부트스트랩. ObjectPool이 씬에 없으면 직접 만들어서 씬을 그 자리에서 바로
        테스트할 수 있게 한다.
 
@@ -33,7 +33,7 @@ public class TestSceneLoader : MonoBehaviour
             refPoolObj.AddComponent<ObjectPoolManager>();
         }
         
-        await ObjectPoolManager.m_Instance.LoadPoolAsync(m_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
-        Debug.Log("TestSceneLoader: 풀 로딩 완료 (" + m_refSceneData.PoolDataList.Count + "개)");
+        await ObjectPoolManager.m_Instance.LoadPoolAsync(m_refSceneData.ScenePoolDataList, this.GetCancellationTokenOnDestroy());
+        Debug.Log("TestSceneLoader: 풀 로딩 완료 (" + m_refSceneData.ScenePoolDataList.Count + "개)");
     }
 }

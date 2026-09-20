@@ -5,5 +5,6 @@
   "github_provider": "auto",
   "base_branch": null,
   "draft": false,
-  "slack_destination": "U0BS15X072M"
+  "slack_provider": "reminder",
+  "slack_reminder_delay_minutes": 1
 }
