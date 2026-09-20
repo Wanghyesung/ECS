@@ -1,9 +1,9 @@
-model_reasoning_effort = "medium"
-skills.max_context_tokens = 3500
-tool_output_token_limit = 6000
-
 [mcp_servers.UnityMCP]
 url = "http://127.0.0.1:8080/mcp"
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
 
 [agents.unity-reviewer]
 description = "Unity C# 독립 읽기 전용 리뷰: 정확성, 성능, 직렬화 안전성."
@@ -13,28 +13,6 @@ config_file = "agents/unity-reviewer.toml"
 description = "Unity 검증과 수정, 최대 3회 재검증."
 config_file = "agents/unity-verifier.toml"
 
-# Unity 프로젝트에서 사용하지 않는 범용 제작/GUI 플러그인은 끈다.
-# GitHub/Slack용 codex-app-tools와 공식 문서 검색용 browser는 유지한다.
-[plugins."unified-computer-use@openai-bundled"]
-enabled = false
-
-[plugins."visualize@openai-bundled"]
-enabled = false
-
-[plugins."documents@openai-primary-runtime"]
-enabled = false
-
-[plugins."pdf@openai-primary-runtime"]
-enabled = false
-
-[plugins."spreadsheets@openai-primary-runtime"]
-enabled = false
-
-[plugins."presentations@openai-primary-runtime"]
-enabled = false
-
-[plugins."template-creator@openai-primary-runtime"]
-enabled = false
-
-[plugins."computer-use@openai-bundled"]
-enabled = false
+[agents.unity-module-worker]
+description = "할당된 Unity 기능 모듈만 구현하고 통합 인계서를 작성하는 병렬 작업자."
+config_file = "agents/unity-module-worker.toml"
