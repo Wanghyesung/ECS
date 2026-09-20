@@ -22,7 +22,8 @@
 
 ## 작업 라우팅
 
-- 일반 기능/리팩터링: 이 세션이 직접 조사→구현→검증한다. 코드 전 3줄 사전조사만 제시한다.
+- 일반 기능/국소 리팩터링: 이 세션이 직접 조사→구현→검증한다. 코드 전 3줄 사전조사만 제시한다.
+- 전체 구조 감사, 싱글톤/DI, 책임·수명 경계 재설계: `$unity-architecture-refactor`.
 - 대형 기능의 PRD·실제 코드 설계·PR·Slack 리뷰가 필요할 때만 사용자가 `$workflow_view`를 명시 호출한다.
 - 버그 수정: `$unity-fix`. 리뷰/테스트/빌드/검증 루프: 각각 `$unity-review`, `$unity-test`, `$unity-build`, `$unity-ralph`.
 - 밤 무인 실행: 승인된 PRD만 `.codex/autopilot.ps1`과 `$unity-autopilot`로 처리한다.
