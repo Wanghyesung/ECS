@@ -34,8 +34,6 @@ public class SOSelectNode : SOListNode
                 return eNodeState.Success;
             }
 
-
-            //���� �õ����̶�� ���� ���� ���
             else if (eState == eNodeState.Running)
             {
                 iCurrentIdx = i;

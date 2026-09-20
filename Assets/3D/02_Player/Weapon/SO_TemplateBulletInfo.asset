@@ -14,15 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Description: "\uC784\uC2DC \uCD1D\uC54C\n"
   WeaponType: 1
-  PoolPrefab: {fileID: 2094707447846978870, guid: 06babf01eeaad3c4ba3750b558b4e6fe, type: 3}
-  Damage: 10
+  PoolPrefab: {fileID: 11400000, guid: 7f894aa82f2a69348a2814810c13b329, type: 2}
+  Damage: 14
   AttackPower: 5
-  Cooldown: 0.02
-  Speed: 240
-  SpeedOffset: 60
+  Cooldown: 0.1
+  Speed: 260
+  SpeedOffset: 30
   AliveTime: 2
   HitCount: 1
   HitStep: 1
+  TelegraphDuration: 0
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0

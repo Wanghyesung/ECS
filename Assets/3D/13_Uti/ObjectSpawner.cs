@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -13,16 +14,25 @@ using UnityEngine;
  *///////////////////////////////////////////
 public class ObjectSpawner : MonoBehaviour
 {
+    [SerializeField] private SOPoolData m_refSpawnEffect;
+
+    [Tooltip("풀이 비어 스폰에 실패했을 때 다시 시도하기까지의 간격(초)")]
+    [SerializeField] private float m_fRetryInterval = 1.0f;
+
     private PriorityQueue<tSpawnData> m_PQObject;
 
     public int RemainObject => m_PQObject.Count;
+
+    // 스폰 결과를 알아야 하는 쪽(DungeonManager의 활성 몬스터 목록 등)에 통지. 스포너는 누가 듣는지 모름
+    private readonly Subject<GameObject> m_subjectSpawned = new();
+    public Observable<GameObject> OnSpawned => m_subjectSpawned;
     private struct tSpawnData
     {
         public float fSpawnTime;
-        public PoolObject refSpawnObject;
+        public SOPoolData refSpawnObject;
         public Vector3 vPosition;
-        
-        public tSpawnData(float _fTime, PoolObject _refSpawnObj, Vector3 _vPosition)
+
+        public tSpawnData(float _fTime, SOPoolData _refSpawnObj, Vector3 _vPosition)
         {
             fSpawnTime = _fTime;
             refSpawnObject = _refSpawnObj;
@@ -45,6 +55,7 @@ public class ObjectSpawner : MonoBehaviour
     private void Start()
     {
         //이 비동기 작업의 결과를 안 기다리고 그냥 던진다
+        //풀에 재등록
         UpdateSpawnObject(this.GetCancellationTokenOnDestroy()).Forget();
     }
     
@@ -67,22 +78,43 @@ public class ObjectSpawner : MonoBehaviour
             }
 
             m_PQObject.Dequeue();
-            SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition);
+
+            // 풀이 비었으면(GetObject == null) 버리지 않고 다시 예약한다.
+            // 그냥 스킵하면 예약된 몬스터가 영영 안 나와서, 그 수만큼 처치를 기다리는
+            // DungeonManager 가 다음 단계로 못 넘어간다 (Docs/TODO.md 3번)
+            if (SpawnObject(tSpawn.refSpawnObject, tSpawn.vPosition) == false)
+            {
+                m_PQObject.Enqueue(new tSpawnData(Time.time + m_fRetryInterval, tSpawn.refSpawnObject, tSpawn.vPosition));
+                await UniTask.Yield(_tToken);
+                continue;
+            }
+
+            ObjectPoolManager.m_Instance.GetObject(m_refSpawnEffect, tSpawn.vPosition);
        }
     }
 
-    public void AddSpawnObject(float _fNextSpawnTime, PoolObject _refPoolData, Vector3 _vPosition = default)//default를 쓰면 컴파일 타임 상수로
+    // DungeonManager가 런 종료/시작 시 호출. 스포너는 DDOL(로비 소속)이라 씬이 바뀌어도 예약이 남고,
+    // 다음 씬에서 파괴된 풀을 건드려 MissingReference로 루프가 죽으면 그 뒤 런은 몬스터가 영영 안 나온다
+    public void Clear()
+    {
+        m_PQObject.Clear();
+    }
+
+    public void AddSpawnObject(float _fNextSpawnTime, SOPoolData _refPoolData, Vector3 _vPosition = default)//default를 쓰면 컴파일 타임 상수로
     {
         tSpawnData tData = new tSpawnData(Time.time + _fNextSpawnTime, _refPoolData, _vPosition);
         m_PQObject.Enqueue(tData);
     }
 
-    private void SpawnObject(PoolObject _refSpawnObject, Vector3 _vPosition)
+    // 반환값 : 실제로 꺼내서 배치했는지 (false = 풀 고갈, 호출부가 재예약)
+    private bool SpawnObject(SOPoolData _refSpawnObject, Vector3 _vPosition)
     {
-        GameObject refGameObject = ObjectPool.m_Instance.GetObject(_refSpawnObject);
+        GameObject refGameObject = ObjectPoolManager.m_Instance.GetObject(_refSpawnObject);
         if (refGameObject == null)
-            return;
+            return false;
 
         refGameObject.transform.position = _vPosition;
+        m_subjectSpawned.OnNext(refGameObject);
+        return true;
     }
 }

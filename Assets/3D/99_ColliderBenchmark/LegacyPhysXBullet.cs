@@ -1,3 +1,5 @@
+using System;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -35,15 +37,17 @@ public class LegacyPhysXBullet : MonoBehaviour
         m_refTrigger = GetComponent<TriggerEnterObject>();
     }
 
+    private IDisposable m_disposableHit;
+
     private void OnEnable()
     {
-        m_refTrigger.OnHitTargetEnter += OnHit;
+        m_disposableHit = m_refTrigger.OnHitTargetEnter.Subscribe(OnHit);
         m_fAliveTimer = 0f;
     }
 
     private void OnDisable()
     {
-        m_refTrigger.OnHitTargetEnter -= OnHit;
+        m_disposableHit?.Dispose();
     }
 
     public void Init(Vector3 _vBoundsCenter, float _fBoundsRadius, Vector3 _vVelocity, float _fLifetime, LayerMask _tHitLayer)

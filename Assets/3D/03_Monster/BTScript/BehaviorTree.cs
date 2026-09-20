@@ -70,6 +70,10 @@ public class BlackBoard
     public SpawnInfo CurrentAttackSpawn;
     public Charge CurrentCharge;
 
+    // 조준 노드가 각도 임계에 수렴하지 못한 채 Running으로 굳는 것을 막는 안전밸브 타이머.
+    // 리프 노드(SO)는 여러 몬스터가 원본 에셋을 공유하므로 진행 상태는 몬스터별 BlackBoard가 들고 있어야 함
+    public float AimTimer;
+
     //이동 타이머
     [Header("Strafe")]
     public Vector3 StrafeDir;

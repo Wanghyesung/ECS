@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -38,6 +39,9 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     protected PoolObject m_refPoolObj;
     protected CircleCollider m_refCircleCollider;
+    private Transform m_refInitialParent;
+    private Vector3 m_vInitialScale;
+    private float m_fInitialRadius;
 
     // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
@@ -46,7 +50,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     [FormerlySerializedAs("m_refLineInfo")]
     [SerializeField] protected BulletLineDrawer m_refLineDrawer; // 볼렛 예고선 담당 (일반 클래스라 인스펙터에 필드가 그대로 펼쳐짐)
 
-    [SerializeField] private PoolObject m_refHitEffectObj;
+    [SerializeField] private SOPoolData m_refHitEffectObj;
     // 프리팹 고유 동작. 명중/AliveTime 만료로 풀에 반납되는 시점(=도착)에 실행. 인스펙터에서 조합, 런타임에 안 건드림
     [SerializeField] private SOBulletAction[] m_arrArriveActions;
     // 프리팹 고유 동작. 실제로 대상에 데미지를 입힌 순간(=명중)에만 실행. 인스펙터에서 조합, 런타임에 안 건드림
@@ -61,18 +65,38 @@ public class Bullet : MonoBehaviour, IAttackObject
     // (풀 생애주기 중 Awake에서 딱 한 번만 배정). 하위 클래스도 DeactivateMoveJob 등에서 써야 해서 protected
     protected int m_iMoveManagerIndex = -1;
 
-    // 차지샷 등 SizeScale 적용용. 풀 재사용 시 배율이 누적되지 않도록 원본 스케일을 Awake에서 캐싱
-    private Vector3 m_vBaseScale = Vector3.one;
-    // m_vBaseScale이 이미 1배 상태로 캐싱되므로, 기본값을 1로 잡아두면 SizeScale을 안 쓰는
-    // 대다수 총알(몬스터 포함)은 생애 첫 발사에서도 무의미한 Transform 재대입을 안 하게 된다
-    private float m_fLastAppliedScale = 1f;
+    // 히트 이펙트(ParticleSystem) 동시 재생 상한 - 교전이 몰리면 한 프레임에 수십 건씩 명중이
+    // 겹칠 수 있는데, 명중마다 무조건 이펙트를 재생하면 동시에 살아있는 ParticleSystem
+    // 컴포넌트 수가 급증해 ParticleSystem.Update 비용이 튄다(프로파일러로 확인됨). 총알 종류와
+    // 무관하게 전역으로 공유해야 의미가 있어서 모든 Bullet 인스턴스가 공유하는 static으로 둔다
+    private const int MAX_HIT_EFFECT_PER_FRAME = 8;
+    private static int s_iHitEffectCountThisFrame = 0;
+    private static int s_iHitEffectFrame = -1;
+
+    // 이번 프레임에 히트 이펙트를 재생해도 되는지 예약 - 프레임이 바뀌면 카운터를 리셋하고,
+    private static bool TryReserveHitEffectSlot()
+    {
+        if (Time.frameCount != s_iHitEffectFrame)
+        {
+            s_iHitEffectFrame = Time.frameCount;
+            s_iHitEffectCountThisFrame = 0;
+        }
+
+        if (s_iHitEffectCountThisFrame >= MAX_HIT_EFFECT_PER_FRAME)
+            return false;
+
+        ++s_iHitEffectCountThisFrame;
+        return true;
+    }
 
     protected virtual void Awake()
     {
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
         m_refCircleCollider = GetComponent<CircleCollider>();
-        m_vBaseScale = transform.localScale;
+        m_refInitialParent = transform.parent;
+        m_vInitialScale = transform.localScale;
+        m_fInitialRadius = m_refCircleCollider != null ? m_refCircleCollider.Radius : 0f;
 
         m_iMoveManagerIndex = RegisterMoveJob();
 
@@ -83,7 +107,7 @@ public class Bullet : MonoBehaviour, IAttackObject
     // (MissileMoveManager/GuidedMoveManager)에 등록하도록 오버라이드함
     protected virtual int RegisterMoveJob()
     {
-        return BulletMoveManager.m_Instance.RegisterPermanent(this);
+        return BulletMoveManager.m_Instance.RegisterPermanent(transform);
     }
 
     // 발사 시점(SetAttack)에 이동 Job을 활성화. Missiles/GuidedBullet은 타겟 등 추가 정보를
@@ -100,27 +124,31 @@ public class Bullet : MonoBehaviour, IAttackObject
             BulletMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
     }
 
+    private DisposableBag m_bagEvents;
+
     protected virtual void OnEnable()
     {
         if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter += Attack;
+            m_refCircleCollider.OnHitTargetEnter.Subscribe(Attack).AddTo(ref m_bagEvents);
 
         if (m_refPoolObj != null)
-            m_refPoolObj.OnPush += RunArriveActions;
+            m_refPoolObj.OnPush.Subscribe(_ => RunArriveActions()).AddTo(ref m_bagEvents);
 
         m_tShotInfo.HitCount = 0;
     }
     protected virtual void OnDisable()
     {
-        if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter -= Attack;
-
-        if (m_refPoolObj != null)
-            m_refPoolObj.OnPush -= RunArriveActions;
+        m_bagEvents.Clear();
 
         m_refLineDrawer?.CutLine();
 
         UnactivateMoveJob();
+
+        if (m_refInitialParent != null || transform.parent != null)
+            transform.SetParent(m_refInitialParent, false);
+        transform.localScale = m_vInitialScale;
+        if (m_refCircleCollider != null)
+            m_refCircleCollider.SetRadius(m_fInitialRadius);
     }
 
     private void RunArriveActions()
@@ -178,15 +206,15 @@ public class Bullet : MonoBehaviour, IAttackObject
             RunHitActions();
         }
 
-        if (m_refHitEffectObj != null)
+        if (m_refHitEffectObj != null && TryReserveHitEffectSlot())
         {
-            GameObject refHitEffect = ObjectPool.m_Instance.GetObject(m_refHitEffectObj);
+            GameObject refHitEffect = ObjectPoolManager.m_Instance.GetObject(m_refHitEffectObj);
             if (refHitEffect != null)
                 refHitEffect.transform.position = transform.position;
         }
 
         if (m_tShotInfo.HitCount >= m_refAttackInfo.MaxHitCount)
-            ObjectPool.m_Instance.PushObject(gameObject);
+            ObjectPoolManager.m_Instance.PushObject(gameObject);
 
     }
 
@@ -196,29 +224,10 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refAttackInfo = _refAttackInfo;
         m_tShotInfo = _tShotInfo;
         m_tShotInfo.MoveDir = transform.forward;
-        if (m_refPoolObj != null)
-            m_refPoolObj.SetAliveTime(_refAttackInfo.AliveTime);
+        m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         ActivateMoveJob();
 
-        ApplySizeScale(); // 반드시 UpdateLine()보다 먼저 - UpdateLine()이 lossyScale을 읽음
         UpdateLine();
-    }
-
-    // Missiles/GuidedBullet/JobBullet 등 Bullet 파생 클래스가 전부 base.SetAttack()을 호출하므로
-    // 이 메서드는 차지 무기뿐 아니라 프로젝트의 모든 총알(몬스터 포함)에서 매 발사마다 실행된다.
-    // 대다수는 fScale == 1(변화 없음)이라 불필요한 Transform 쓰기를 막는 가드를 둠
-    private void ApplySizeScale()
-    {
-        float fScale = m_tShotInfo.SizeScale > 0f ? m_tShotInfo.SizeScale : 1f;
-
-        if (fScale != m_fLastAppliedScale)
-        {
-            transform.localScale = m_vBaseScale * fScale;
-            m_fLastAppliedScale = fScale;
-        }
-
-        if (m_refCircleCollider != null) // `?.` 대신 명시적 null 체크 (serialization.md 규칙)
-            m_refCircleCollider.SetRadiusScale(fScale); // 대입뿐이라 매번 실행해도 무방
     }
 
     // 예고선 방향/거리 계산 - 직선으로만 날아가는 기본 볼렛 기준. 유도탄처럼 곡선으로 휘는 총알은
@@ -230,9 +239,9 @@ public class Bullet : MonoBehaviour, IAttackObject
 
 
     // Weapon뿐 아니라 BulletAction 등 "총알 생성 주체(Weapon)를 알 수 없는" 코드도 같은 경로로 스폰하게 함
-    public static GameObject SpawnAttackObject(PoolObject _refPrefab, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    public static GameObject SpawnAttackObject(SOPoolData _refPoolData, Vector3 _vPos, Quaternion _qRot, AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        GameObject refObj = ObjectPool.m_Instance.GetObject(_refPrefab);
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(_refPoolData);
         if (refObj == null)
             return null;
 
@@ -240,8 +249,7 @@ public class Bullet : MonoBehaviour, IAttackObject
         refObj.transform.rotation = _qRot;
 
         IAttackObject refAttackObj = refObj.GetComponent<IAttackObject>();
-        if (refAttackObj != null)
-            refAttackObj.SetAttack(_refAttackInfo, _refShotInfo);
+        refAttackObj?.SetAttack(_refAttackInfo, _refShotInfo);
 
         return refObj;
     }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using R3;
 using UnityEngine;
-using static UnityEngine.Mesh;
 
 /*///////////////////////////////////////////
                 JokerCardManager
@@ -31,7 +30,7 @@ public class JokerCardManager : MonoBehaviour
 
     [SerializeField] private Container m_refPickContainer;   //내가 고른 기능
     [SerializeField] private Container m_refSelectContainer; //내가 선택할 수 있는 기능
-    [SerializeField] private Container m_refFeatContainer; //내가 가지고 있는 기능
+    [SerializeField] private Container m_refFeatContainer;   //내가 가지고 있는 기능
 
     private void Awake()
     {
@@ -46,16 +45,20 @@ public class JokerCardManager : MonoBehaviour
 
     private void Start()
     {
-        //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
-        m_refSelectContainer.OnSelectEvt += AddData;
+        m_refPickContainer.Init();
+        m_refSelectContainer.Init();
+        m_refFeatContainer.Init();
 
-        m_refPickContainer.OnSelectEvt += DeleteData;
+        //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
+        m_refSelectContainer.OnSelectEvt.Subscribe(AddData).AddTo(this);
+
+        m_refPickContainer.OnSelectEvt.Subscribe(DeleteData).AddTo(this);
 
         //Container/SlotView는 SOData 범용이라 등급을 모름 - 조커 후보 슬롯에 뜨는 등급 색상은
         //SOFeature/Tier를 이미 알고 있는 이쪽(JokerCardManager)에서 판단해서 밀어준다
-        m_refFeatContainer.OnSlotBind += ApplyTierColor;
-        m_refSelectContainer.OnSlotBind += ApplyTierColor;
-        m_refPickContainer.OnSlotBind += ApplyTierColor;
+        m_refFeatContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refSelectContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refPickContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
     }
 
 
@@ -75,12 +78,21 @@ public class JokerCardManager : MonoBehaviour
         m_refPickContainer.gameObject.SetActive(true);
         m_refSelectContainer.gameObject.SetActive(true);
 
+        // 픽 UI 가 열려 있는 동안 정지 소유권을 이어받는다 - 이 직후 CardCreator 가 자기 Pause 를 풀어도 여기 것이 남아 0 유지
+        TimeScaleManager.m_Instance.Pause(this);
+
         m_iLevel++;
 
         //내 조커 레벨에 맞게 나오는 티어 가중치 변경
         m_SOJokerCard.UpdateTierWeight(m_arrTierMultiplierBuffer, m_iLevel);
 
-        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(m_SOJokerCard.GetCandidateCount(m_iLevel), m_arrTierMultiplierBuffer);
+        //이전 회차(미확정) 후보가 남아있으면 새 후보와 섞여 누적 표시되므로, 채우기 전에 비우고 이번 회차 후보 수로 리셋
+        //(Resize는 이전 카운트와 같으면 아무 동작도 하지 않아 남은 데이터를 지우지 못하므로 ClearData를 먼저 호출)
+        int iCandidateCount = m_SOJokerCard.GetCandidateCount(m_iLevel);
+        m_refSelectContainer.ClearData();
+        m_refSelectContainer.Resize(iCandidateCount, eDataType.Features);
+
+        m_listPendingFeature = FeatureManager.m_Instance.RequestFeature(iCandidateCount, m_arrTierMultiplierBuffer);
         for (int i = 0; i < m_listPendingFeature.Count; ++i)
             m_refSelectContainer.AddData(m_listPendingFeature[i], 1);
 
@@ -111,8 +123,9 @@ public class JokerCardManager : MonoBehaviour
     }
 
     // 실제 SOFeature 카드가 뜬 슬롯에만 등급색을 입힌다 - 빈 슬롯 리셋은 SlotView가 자체적으로 처리
-    private void ApplyTierColor(SOData _SOData, SlotView _refSlot)
+    private void ApplyTierColor((SOData refData, SlotView refSlot) _t)
     {
+        (SOData _SOData, SlotView _refSlot) = _t;
         if (_SOData is not SOFeature refFeature)
             return;
 
@@ -143,7 +156,7 @@ public class JokerCardManager : MonoBehaviour
         m_refSelectContainer.gameObject.SetActive(false);
         m_refPickContainer.gameObject.SetActive(false);
 
-        Time.timeScale = 1.0f;
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
 
@@ -155,7 +168,9 @@ public class JokerCardManager : MonoBehaviour
 
         m_listPendingFeature.Clear();
         m_iLevel = 0;
-        Time.timeScale = 1.0f;
+
+        // 지금 유일한 호출자(ApplyFail)는 Pause 를 걸지 않았으므로 no-op. 나중에 픽 도중 몰수 경로가 생기면 그때 실제로 풀린다
+        TimeScaleManager.m_Instance.Resume(this);
 
     }
 }

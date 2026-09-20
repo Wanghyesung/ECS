@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.Events;
 using static PoolObject;
@@ -9,15 +10,16 @@ using static PoolObject;
 
 public interface ITriggerable
 {
-    public event Action<Collider> OnHitTargetEnter; //««∞› ¿Ã∫•∆Æ
+    public Observable<Collider> OnHitTargetEnter { get; }
     public LayerMask LayerMask { get; set; }
 }
 
 public class TriggerEnterObject : MonoBehaviour, ITriggerable
 {
-    public event Action<Collider> OnHitTargetEnter; //««∞› ¿Ã∫•∆Æ
+    private readonly Subject<Collider> m_subjectEnter = new();
+    public Observable<Collider> OnHitTargetEnter => m_subjectEnter;
 
-    [SerializeField] private UnityEvent OnHitEvent; //√Êµπ ¿Ã∫•∆Æ
+    [SerializeField] private UnityEvent OnHitEvent; //Ï∂©Îèå Ïù¥Î≤§Ìä∏
 
     [SerializeField] private LayerMask m_tHitLayer;
 
@@ -31,7 +33,7 @@ public class TriggerEnterObject : MonoBehaviour, ITriggerable
     {
         if ((m_tHitLayer.value & (1 << other.gameObject.layer)) != 0)
         {
-            OnHitTargetEnter?.Invoke(other);
+            m_subjectEnter.OnNext(other);
 
             OnHitEvent?.Invoke();
         }

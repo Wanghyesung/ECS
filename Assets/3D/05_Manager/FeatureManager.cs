@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -24,8 +26,10 @@ public class FeatureManager : MonoBehaviour, ICountable
     private List<SOFeature> m_listResultBuffer = new List<SOFeature>();
     private List<SOFeature> m_listApplyBuffer = new List<SOFeature>();
 
-    public event Action<SOFeature, int> OnFeatureSelect;
-    public event Action<SOFeature, int> OnFeatureDelete;
+    private readonly Subject<(SOFeature refFeature, int iLevel)> m_subjectFeatureSelect = new();
+    private readonly Subject<(SOFeature refFeature, int iLevel)> m_subjectFeatureDelete = new();
+    public Observable<(SOFeature refFeature, int iLevel)> OnFeatureSelect => m_subjectFeatureSelect;
+    public Observable<(SOFeature refFeature, int iLevel)> OnFeatureDelete => m_subjectFeatureDelete;
 
 
     [SerializeField] private List<SOFeature> m_listPreLoadFeautre; //임시로 넣은 플레이어 기능
@@ -49,6 +53,16 @@ public class FeatureManager : MonoBehaviour, ICountable
 
     private void Start()
     {
+        TestCode().Forget();
+    }
+
+    private async UniTaskVoid TestCode()
+    {
+        // 2초 고정 대기였음 — 풀 로딩이 2초를 넘기면 Player.ResetRun(OnEnable)이 그 뒤에 돌아 여기서 얹은 프리로드 카드를 지워버린다.
+        // '런 시작(활성화)' 자체를 기다리면 ResetRun 다음 프레임에 적용됨이 보장된다
+        await UniTask.WaitUntil(() => Player.CurrentPlayer != null && Player.CurrentPlayer.gameObject.activeInHierarchy,
+                                cancellationToken: this.GetCancellationTokenOnDestroy());
+
         Player refTarget = Player.CurrentPlayer;
         for (int i = 0; i < m_listPreLoadFeautre.Count; ++i)
         {
@@ -180,7 +194,7 @@ public class FeatureManager : MonoBehaviour, ICountable
         m_arrFeatureLevel[iIndex]++;
 
         _SOFeature.Apply(_refPlayer, m_arrFeatureLevel[iIndex]);
-        OnFeatureSelect?.Invoke(_SOFeature, m_arrFeatureLevel[iIndex]);
+        m_subjectFeatureSelect.OnNext((_SOFeature, m_arrFeatureLevel[iIndex]));
 
         m_listApplyBuffer.Add(_SOFeature);
     }

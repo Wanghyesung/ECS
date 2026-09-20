@@ -1,4 +1,4 @@
-using System;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -21,9 +21,12 @@ public enum eColliderShape
 
 public abstract class BaseCollider : MonoBehaviour
 {
-    public event Action<BaseCollider> OnHitTargetEnter;
-    public event Action<BaseCollider> OnHitTargetStay;
-    public event Action<BaseCollider> OnHitTargetExit;
+    private readonly Subject<BaseCollider> m_subjectEnter = new();
+    private readonly Subject<BaseCollider> m_subjectStay = new();
+    private readonly Subject<BaseCollider> m_subjectExit = new();
+    public Observable<BaseCollider> OnHitTargetEnter => m_subjectEnter;
+    public Observable<BaseCollider> OnHitTargetStay => m_subjectStay;
+    public Observable<BaseCollider> OnHitTargetExit => m_subjectExit;
 
     // 생애주기 동안 고정되는 자체 ID. ColliderManager가 쌍(pair) 키를 만들 때 이 ID를 사용
     private static int NEXT_ID = 0;
@@ -32,13 +35,23 @@ public abstract class BaseCollider : MonoBehaviour
     public int ID { get; private set; }
     public eColliderShape Shape { get; protected set; }
 
-    // 판정에 쓰이는 실제 중심 좌표. Circle은 매 프레임(RefreshCenter) 다시 계산하고,
-    // Obb는 Start에서 한 번만 계산해 넣은 뒤 다시 안 건드림
+    // 판정에 쓰이는 실제 중심 좌표. Static이 아니면 매 프레임 ColliderManager의
+    // RefreshCenterJob이 병렬로 갱신한 뒤 ApplyCachedCenter로 되돌려 쓴다(§ApplyCachedCenter 참고)
     public Vector3 CachedCenter { get; protected set; }
 
     private bool m_bActivated = false; // ColliderManager 레이어 리스트에 실제로 등록된 상태인지
 
     public bool StaticObject { get; protected set; }
+
+    // 도형 무관 공통 반지름 상한 - 그리드 셀 크기 산정과 구-구 선판정(broad bound check)에
+    // 쓰인다. Circle은 자기 Radius, Box는 half-extent 대각선 길이(Start에서 한 번만 계산)
+    public virtual float BoundingRadius => 0f;
+
+    // 모델 피벗이 실제 판정 중심과 다를 때 로컬 공간 기준으로 보정하는 값 - Circle/Obb 둘 다
+    // 자기 m_vOffset을 반환하도록 override. ColliderManager가 TransformAccessArray 등록
+    // 시점에 한 번 읽어가는 용도(Burst Job은 관리형 필드를 직접 못 읽으므로 값으로 넘겨야 함)
+    public virtual Vector3 Offset => Vector3.zero;
+
     protected virtual void Awake()
     {
         ID = NEXT_ID++;
@@ -81,13 +94,19 @@ public abstract class BaseCollider : MonoBehaviour
         }
     }
 
-    // ColliderManager.PreLoadCenter()가 판정 루프 전에 프레임당 한 번씩 호출.
-    // Circle/Obb 둘 다 이걸 오버라이드해서 실제로 CachedCenter(Obb는 축도 함께)를 갱신함 -
-    // 기본 구현은 빈 채로 둬서, 다른 도형이 추가될 때 굳이 오버라이드 안 해도 안전하게 no-op
+    // 생애주기 중 최초 1회(Start)용 동기 계산 경로 - Circle/Obb 둘 다 이걸 오버라이드해서
+    // 실제로 CachedCenter(Obb는 축도 함께)를 갱신함. 매 프레임 갱신은 더 이상 이 경로를 안 쓰고
+    // ColliderManager가 TransformAccessArray + Job(RefreshCenterJob)으로 병렬 처리한 뒤
+    // ApplyCachedCenter로 되돌려 쓴다(§ColliderManager.PreLoadCenter 참고) - 기본 구현은
+    // 빈 채로 둬서, 다른 도형이 추가될 때 굳이 오버라이드 안 해도 안전하게 no-op
     public virtual void RefreshCenter() { }
 
+    // ColliderManager가 RefreshCenterJob 결과를 되돌려 쓸 때만 호출 - CachedCenter의
+    // protected set을 이 안에서만 대신 열어준다
+    public void ApplyCachedCenter(Vector3 _vCenter) => CachedCenter = _vCenter;
+
     // ColliderManager가 쌍(pair) 상태를 판정한 뒤 Enter/Stay/Exit에 맞춰 호출
-    public void OnEnterCollider(BaseCollider _refOther) => OnHitTargetEnter?.Invoke(_refOther);
-    public void OnStayCollider(BaseCollider _refOther) => OnHitTargetStay?.Invoke(_refOther);
-    public void OnExitCollider(BaseCollider _refOther) => OnHitTargetExit?.Invoke(_refOther);
+    public void OnEnterCollider(BaseCollider _refOther) => m_subjectEnter.OnNext(_refOther);
+    public void OnStayCollider(BaseCollider _refOther) => m_subjectStay.OnNext(_refOther);
+    public void OnExitCollider(BaseCollider _refOther) => m_subjectExit.OnNext(_refOther);
 }

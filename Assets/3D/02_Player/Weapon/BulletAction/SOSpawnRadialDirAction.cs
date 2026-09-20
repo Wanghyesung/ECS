@@ -9,7 +9,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SO_SpawnRadialDirAction", menuName = "Game/Weapon/BulletAction/SOSpawnRadialDirAction")]
 public class SOSpawnRadialDirAction : SOBulletAction
 {
-    [SerializeField] private PoolObject m_refSpawnBulletPrefab;
+    [SerializeField] private SOPoolData m_refSpawnBulletPrefab;
     [SerializeField] private int m_iSpawnCount = 8;
     [SerializeField] private float m_fSpeed = 10f;
 

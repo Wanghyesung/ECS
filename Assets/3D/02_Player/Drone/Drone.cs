@@ -34,7 +34,8 @@ public class Drone : MonoBehaviour
         // 드론의 정면(forward)과 타겟을 향한 방향의 사이 각도 계산
         float fAngleDiff = Vector3.Angle(transform.forward, vTargetDir);
 
-        if(m_fFireAngle < fAngleDiff)
+        // 조준이 허용 오차 안으로 들어왔을 때 발사 (부등호가 반대라 '빗나가는 동안만' 쏘고 있었음)
+        if (fAngleDiff <= m_fFireAngle)
             Fire();
     }
 

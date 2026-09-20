@@ -39,7 +39,7 @@ public class SOPassiveEffectNode : SONode
             if (_refBB.ObjInfo.Effects[i].TickDamage > 0 &&
                 fNow >= _refBB.ObjInfo.Effects[i].NextTickTime)
             {
-                _refBB.ObjInfo.CurrentHP -= _refBB.ObjInfo.Effects[i].TickDamage;
+                _refBB.ObjInfo.CurrentHP.Value -= _refBB.ObjInfo.Effects[i].TickDamage;
                 _refBB.ObjInfo.Effects[i].NextTickTime = fNow + _refBB.ObjInfo.Effects[i].TickInterval;
             }
         }

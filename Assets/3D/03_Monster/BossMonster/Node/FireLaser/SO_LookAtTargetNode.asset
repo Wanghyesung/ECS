@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968bffab903ed9f4a979702147e175a1, type: 3}
   m_Name: SO_LookAtTargetNode
   m_EditorClassIdentifier: 
-  m_fRotateSpeed: 20
+  m_fRotateSpeed: 90
   m_fAngleThreshold: 2

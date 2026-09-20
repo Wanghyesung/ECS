@@ -1,13 +1,12 @@
-using System;
+using R3;
 using UnityEngine;
-using UnityEngine.Events;
 
 public interface IPoolable
 {
-    public PoolObject PoolKey { get; }
+    public SOPoolData PoolKey { get; }
     public int PushCount { get; }
 
-    public void SetOriginalPoolObj(PoolObject _refOriginObj);
+    public void SetPoolKey(SOPoolData _refPoolData);
     public void Push();
     public void Pop();
 }
@@ -15,14 +14,20 @@ public interface IPoolable
 
 public class PoolObject : MonoBehaviour, IPoolable
 {
-    [SerializeField] private PoolObject m_refOriginalPoolObj;
+    // 이 인스턴스가 어느 풀에서 나왔는지(= ObjectPoolManager의 딕셔너리 키).
+    // 프리팹의 PoolObject 컴포넌트를 키로 쓰면, 같은 프리팹이라도 Addressables로 로드된 것과
+    // 직접 참조로 들고 있는 것이 빌드에서 서로 다른 인스턴스가 되어 조회가 실패한다.
+    // SOPoolData 에셋은 Addressables를 거치지 않는 단일 참조라 그런 불일치가 생기지 않음.
+    private SOPoolData m_refPoolData;
 
     [SerializeField] private int m_iPushCount = 0;
     public int PushCount { get { return m_iPushCount; } }
-    public PoolObject PoolKey { get { return m_refOriginalPoolObj; } }
+    public SOPoolData PoolKey { get { return m_refPoolData; } }
 
-    public event Action OnPush;
-    public event Action OnPop;
+    private readonly Subject<Unit> m_subjectPush = new();
+    private readonly Subject<Unit> m_subjectPop = new();
+    public Observable<Unit> OnPush => m_subjectPush;
+    public Observable<Unit> OnPop => m_subjectPop;
 
 
     [SerializeField] private float m_fAliveTime = 3.0f;
@@ -35,21 +40,27 @@ public class PoolObject : MonoBehaviour, IPoolable
     public virtual void Push()
     {
         m_iPushCount = 1;
-        OnPush?.Invoke();
+        m_subjectPush.OnNext(Unit.Default);
     }
 
     public virtual void Pop()
     {
         m_iPushCount = 0;
         ++Generation;
-        OnPop?.Invoke();
+        m_subjectPop.OnNext(Unit.Default);
 
         // SetAliveTime을 따로 안 부르는 오브젝트(예: 히트 이펙트)도 프리팹 기본 m_fAliveTime으로
         // 자동 반납되도록 일단 예약해둠. 이후 SetAliveTime이 호출되면 Generation이 다시 올라가
         // 이 예약은 자동으로 무효화되고 새 시간으로 재예약됨. 0 이하로 세팅된 프리팹은
         // "수동으로만 반납한다"는 의도로 보고 자동 예약을 안 함
         if (m_fAliveTime > 0f)
-            ObjectPool.m_Instance.ScheduleTime(this, m_fAliveTime);
+            ObjectPoolManager.m_Instance.ScheduleTime(this, m_fAliveTime);
+    }
+
+    // 준비 중인 오브젝트는 새 만료 예약 없이 기존 예약만 무효화한다.
+    public void SuspendLifetime()
+    {
+        ++Generation;
     }
 
     // 매 프레임 직접 카운트다운하지 않고, ObjectPool의 우선순위 큐에 "이 시각에 반납"으로
@@ -58,11 +69,11 @@ public class PoolObject : MonoBehaviour, IPoolable
     {
         m_fAliveTime = _fPushTime;
         ++Generation;
-        ObjectPool.m_Instance.ScheduleTime(this, _fPushTime);
+        ObjectPoolManager.m_Instance.ScheduleTime(this, _fPushTime);
     }
 
-    public void SetOriginalPoolObj(PoolObject _refOriginObj)
+    public void SetPoolKey(SOPoolData _refPoolData)
     {
-        m_refOriginalPoolObj = _refOriginObj;
+        m_refPoolData = _refPoolData;
     }
 }

@@ -51,7 +51,7 @@ MonoBehaviour:
   m_refLineDrawer:
     m_refBulletLinePoolObj: {fileID: 0}
     m_refVisualMeshFilter: {fileID: 0}
-  m_refHitEffectObj: {fileID: 2573818985882799060, guid: 4c68c24dc1ecdc94baea408c38aed288, type: 3}
+  m_refHitEffectObj: {fileID: 11400000, guid: a9adf77cc8df897459df8a96ff8f837d, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []
 --- !u!114 &6256924035152576670
@@ -66,7 +66,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refOriginalPoolObj: {fileID: 0}
   m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &3613304018432001097

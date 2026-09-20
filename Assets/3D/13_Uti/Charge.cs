@@ -9,7 +9,7 @@ using static UnityEngine.ParticleSystem;
 
 /*///////////////////////////////////////////
                Charge
-±â´É : ¸ó½ºÅÍ°¡ °ø°İ ¿ÀºêÁ§Æ®¸¦ ¼ÒÈ¯ÇÏ±â ±îÁö ¿¬ÃâÀ» ´ã´ç (ÆÄÆ¼Å¬ ½Ã°£..)
+ëª©ì  : ì¼ì • ì‹œê°„ë™ì•ˆ ì°¨ì§€ íŒŒí‹°í´ ì‹¤í–‰, ì¿¨íƒ€ì„ ëŒ€ê¸°
  *///////////////////////////////////////////
 
 public class Charge : MonoBehaviour
@@ -24,7 +24,6 @@ public class Charge : MonoBehaviour
 
     private bool m_bCompleted = false;
 
-    //Â÷Áö°¡ ³¡¤¤³ª¸é ¼ÒÈ¯ÇÒ ¿ÀºêÁ§Æ®¸¦ ÁöÁ¤ÇØÁÖ±â À§ÇØ¼­
     private SpawnInfo m_refSpawnInfo = null;
     private void Awake()
     {
@@ -51,6 +50,15 @@ public class Charge : MonoBehaviour
         //mainModule.startLifetime = new ParticleSystem.MinMaxCurve(_fDuration);
 
         m_refParticleSystem.Play();
+    }
+
+    public void StopCharge()
+    {
+        if (m_refParticleSystem == null)
+            return;
+
+        m_refParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        m_bCompleted = true;
     }
 
     public void Update()

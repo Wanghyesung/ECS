@@ -19264,10 +19264,6 @@ GameObject:
   - component: {fileID: 6072545786689086002}
   - component: {fileID: 6174697285583689592}
   - component: {fileID: 4236619912756461124}
-  - component: {fileID: 2241574678279987762}
-  - component: {fileID: 4740491780134154252}
-  - component: {fileID: 206724815673752622}
-  - component: {fileID: 7145071305799935591}
   m_Layer: 11
   m_Name: BossLaser
   m_TagString: Untagged
@@ -19310,8 +19306,10 @@ MonoBehaviour:
     AttackPower: 0
     AliveTime: 0
     CoolDown: 0
+    Speed: 0
     MaxHitCount: 0
     HitStep: 0
+    TelegraphDuration: 0
     RotationSpeed: 90
     MaxRotationSpeed: 180
     RotateSpeedRate: 0
@@ -19322,6 +19320,12 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 4294967295
   m_refHitEffectPoolObj: {fileID: 0}
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
+  m_refBeamRenderer: {fileID: 0}
+  m_fRange: 260
+  m_fBeamRadius: 6.5
 --- !u!114 &4236619912756461124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19334,94 +19338,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refOriginalPoolObj: {fileID: 0}
+  m_iPushCount: 0
   m_fAliveTime: 3
---- !u!65 &2241574678279987762
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2984665342065019129}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 10, y: 13, z: 260}
-  m_Center: {x: 0, y: 0, z: 130}
---- !u!65 &4740491780134154252
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2984665342065019129}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 150, y: 150, z: 20}
-  m_Center: {x: 0, y: 0, z: 260}
---- !u!114 &206724815673752622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2984665342065019129}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 295dab19d11c4b440800729250655309, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnHitEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_tHitLayer:
-    serializedVersion: 2
-    m_Bits: 0
---- !u!54 &7145071305799935591
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2984665342065019129}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &3584893342998697499
 GameObject:
   m_ObjectHideFlags: 0

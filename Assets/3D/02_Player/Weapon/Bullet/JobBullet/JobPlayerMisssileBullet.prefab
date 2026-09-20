@@ -204,6 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8947669210e3c48bdd45a6c307fa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_iPushCount: 0
   m_fAliveTime: 3
 --- !u!114 &-24981856286500795
 MonoBehaviour:
@@ -217,7 +218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74d49c81c70a67a4e922574151ddf149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refHitEffectObj: {fileID: 8032535726414308635, guid: aa9fb594a22551241a8460f7f2da8d7c, type: 3}
+  m_refLineDrawer:
+    m_refBulletLinePoolObj: {fileID: 0}
+    m_refVisualMeshFilter: {fileID: 0}
+  m_refHitEffectObj: {fileID: 11400000, guid: 217c51b087a3c6046b71fda2d675ce4c, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []
   m_bTraceTarget: 0

@@ -1,10 +1,13 @@
 using NUnit.Framework;
+using Unity.Collections;
 using UnityEngine;
 
 /*///////////////////////////////////////////
            ColliderManagerTests
-목적 : ColliderManager.IsCircleBoxOverlap(원-OBB 판정 순수 함수)를 씬 없이 검증한다.
-       계획서(운석 Box-Circle 충돌 판정) §완료 기준 5가지를 그대로 테스트 케이스로 옮김.
+목적 : ColliderManager의 씬 독립적인 순수 함수들을 검증한다 - 도형별 겹침 판정
+       (IsCircleBoxOverlap/IsCircleCircleOverlap)과 레이어 매트릭스 판정(IsLayerCollider).
+       전부 GridOverlapJob이 Execute(index) 안에서 그대로 호출하는 함수들이라, 여기서
+       독립적으로 검증해두면 Job 자체를 NativeArray로 직접 스케줄해보지 않아도 로직을 신뢰할 수 있다.
  *///////////////////////////////////////////
 public class ColliderManagerTests
 {
@@ -83,5 +86,112 @@ public class ColliderManagerTests
 
         Assert.IsTrue(bOverlapOnWideAxis);
         Assert.IsFalse(bOverlapOnNarrowAxis);
+    }
+
+    [Test]
+    public void IsCircleCircleOverlap_두_원이_멀리_떨어져있으면_겹치지_않는다()
+    {
+        bool bOverlap = ColliderManager.IsCircleCircleOverlap(
+            _vCenterA: Vector3.zero, _fRadiusA: 1f,
+            _vCenterB: new Vector3(100f, 0f, 0f), _fRadiusB: 1f);
+
+        Assert.IsFalse(bOverlap);
+    }
+
+    [Test]
+    public void IsCircleCircleOverlap_두_원이_겹치는_위치에_있으면_겹친다()
+    {
+        bool bOverlap = ColliderManager.IsCircleCircleOverlap(
+            _vCenterA: Vector3.zero, _fRadiusA: 1f,
+            _vCenterB: new Vector3(1.5f, 0f, 0f), _fRadiusB: 1f);
+
+        Assert.IsTrue(bOverlap);
+    }
+
+    [Test]
+    public void IsCircleCircleOverlap_두_원_반지름_합과_거리가_정확히_같으면_겹친다()
+    {
+        // 중심 거리 = 2, 반지름 합 = 1+1 = 2 - 정확히 맞닿음(경계 포함, <=)
+        bool bOverlap = ColliderManager.IsCircleCircleOverlap(
+            _vCenterA: Vector3.zero, _fRadiusA: 1f,
+            _vCenterB: new Vector3(2f, 0f, 0f), _fRadiusB: 1f);
+
+        Assert.IsTrue(bOverlap);
+    }
+
+    [Test]
+    public void IsCircleCircleOverlap_반지름이_달라도_거리와_반지름합만으로_판정한다()
+    {
+        // 중심 거리 = 3, 반지름 합 = 0.5+2 = 2.5 -> 안 겹침
+        bool bOverlapFar = ColliderManager.IsCircleCircleOverlap(
+            _vCenterA: Vector3.zero, _fRadiusA: 0.5f,
+            _vCenterB: new Vector3(3f, 0f, 0f), _fRadiusB: 2f);
+
+        // 중심 거리 = 2, 반지름 합 = 0.5+2 = 2.5 -> 겹침
+        bool bOverlapNear = ColliderManager.IsCircleCircleOverlap(
+            _vCenterA: Vector3.zero, _fRadiusA: 0.5f,
+            _vCenterB: new Vector3(2f, 0f, 0f), _fRadiusB: 2f);
+
+        Assert.IsFalse(bOverlapFar);
+        Assert.IsTrue(bOverlapNear);
+    }
+
+    [Test]
+    public void IsLayerCollider_매트릭스에_등록된_레이어_쌍은_충돌로_인식된다()
+    {
+        NativeArray<int> arrMatrix = new NativeArray<int>(4, Allocator.Temp);
+        try
+        {
+            arrMatrix[0] = 1 << 1; // 레이어0 -> 레이어1과 충돌
+            arrMatrix[1] = 0;
+            arrMatrix[2] = 0;
+            arrMatrix[3] = 0;
+
+            Assert.IsTrue(ColliderManager.IsLayerCollider(arrMatrix, 0, 1));
+        }
+        finally
+        {
+            arrMatrix.Dispose();
+        }
+    }
+
+    [Test]
+    public void IsLayerCollider_한쪽_방향만_등록해도_양방향으로_인식된다()
+    {
+        // Unity Physics 매트릭스처럼 A->B만 등록해도 B->A 조회에서도 true여야 함
+        NativeArray<int> arrMatrix = new NativeArray<int>(4, Allocator.Temp);
+        try
+        {
+            arrMatrix[0] = 1 << 1;
+            arrMatrix[1] = 0; // 반대 방향은 비어있음
+            arrMatrix[2] = 0;
+            arrMatrix[3] = 0;
+
+            Assert.IsTrue(ColliderManager.IsLayerCollider(arrMatrix, 1, 0));
+        }
+        finally
+        {
+            arrMatrix.Dispose();
+        }
+    }
+
+    [Test]
+    public void IsLayerCollider_매트릭스에_없는_레이어_쌍은_충돌로_인식되지_않는다()
+    {
+        NativeArray<int> arrMatrix = new NativeArray<int>(4, Allocator.Temp);
+        try
+        {
+            arrMatrix[0] = 1 << 1; // 레이어0은 레이어1하고만 충돌
+            arrMatrix[1] = 0;
+            arrMatrix[2] = 0;
+            arrMatrix[3] = 0;
+
+            Assert.IsFalse(ColliderManager.IsLayerCollider(arrMatrix, 0, 2));
+            Assert.IsFalse(ColliderManager.IsLayerCollider(arrMatrix, 2, 3));
+        }
+        finally
+        {
+            arrMatrix.Dispose();
+        }
     }
 }

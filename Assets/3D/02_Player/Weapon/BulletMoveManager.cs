@@ -6,8 +6,9 @@ using UnityEngine.Jobs;
 
 /*///////////////////////////////////////////
               BulletMoveManager
-목적 : 직선으로만 움직이는 Bullet(플레인 총알)의 이동을 한곳에 모아 Job(Burst)으로
-       일괄 계산한다. 별도의 JobBullet 서브클래스 없이 Bullet이 직접 이 매니저에 등록됨.
+목적 : 직선으로만 움직이는 발사체(Bullet, Beam 등)의 이동을 한곳에 모아 Job(Burst)으로
+       일괄 계산한다. Transform 하나만 등록받으므로 "제자리 회전 방향으로 등속 직선 이동"만
+       하면 되는 발사체는 별도 서브클래스 없이 이 매니저에 직접 등록해서 쓸 수 있다.
 
        TransformAccessArray를 써서 Job이 Transform에 직접 쓴다. 프리팹에 Rigidbody/Collider가
        이미 없어서(PhysX 트리거를 CircleCollider로 대체) Physics.SyncColliderTransform 비용이
@@ -41,7 +42,7 @@ public class BulletMoveManager : MonoBehaviour
     private bool m_bDisposed = false;
 
     private int COUNt = 0;
-    private int imax = 0;
+    private int Max = 0;
     private void Awake()
     {
         if (m_Instance != null)
@@ -58,20 +59,20 @@ public class BulletMoveManager : MonoBehaviour
         m_listActive = new NativeList<bool>(m_iInitialCapacity, Allocator.Persistent);
     }
 
-    // Bullet.Awake()에서 총알 생애주기 중 딱 한 번만 호출
-    public int RegisterPermanent(Bullet _refOwner)
+    // 발사체 Awake()에서 생애주기 중 딱 한 번만 호출 (Bullet, Beam 등)
+    public int RegisterPermanent(Transform _refTransform)
     {
         int iIndex = m_listSpeed.Length;
 
-        m_transformArray.Add(_refOwner.transform);
+        m_transformArray.Add(_refTransform);
         m_listSpeed.Add(0f);
         m_listActive.Add(false);
 
-       
+
         return iIndex;
     }
 
-    // Bullet.SetAttack()(발사 시점)에서 호출
+    // 발사체 SetAttack()(발사 시점)에서 호출
     public void Activate(int _iIndex, float _fSpeed)
     {
         if (m_bDisposed)
@@ -80,6 +81,7 @@ public class BulletMoveManager : MonoBehaviour
         ++COUNt;
         m_listSpeed[_iIndex] = _fSpeed;
         m_listActive[_iIndex] = true;
+        
     }
 
     // Bullet.OnDisable()(풀 반납 시점)에서 호출. 플레이모드 종료/씬 전환 시 다른 오브젝트의
@@ -88,14 +90,14 @@ public class BulletMoveManager : MonoBehaviour
     {
         if (m_bDisposed)
             return;
-        
-        --COUNt;
-        if(imax < COUNt)
-        {
-           imax = COUNt;
-            Debug.Log(imax);
-        }
 
+        --COUNt;
+        //if(Max < COUNt)
+        //{
+        //    Debug.Log(COUNt);
+        //    Max = COUNt;
+        //}    
+        
         m_listActive[_iIndex] = false;
     }
 

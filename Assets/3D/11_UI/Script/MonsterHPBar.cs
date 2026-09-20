@@ -1,5 +1,9 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -15,9 +19,9 @@ public class MonsterHPBar : MonoBehaviour
     [SerializeField] private SliderImage m_refSlider;
     [SerializeField] private float m_fHideDelay = 2.0f;
     
-    private WaitForSeconds m_refWaitSecond = null; 
     private Monster m_refCurTarget = null;
-    private Coroutine m_CoHide = null;
+    private IDisposable m_disposableHp;
+    private CancellationTokenSource m_ctsHide;
 
     private void Awake()
     {
@@ -30,36 +34,40 @@ public class MonsterHPBar : MonoBehaviour
 
         if (m_refRoot != null)
             m_refRoot.SetActive(false);
-
-        m_refWaitSecond = new WaitForSeconds(m_fHideDelay);
     }
 
-    public void ShowHp(Monster _refTarget, long _lCurrentHp, long _lMaxHp)
+    public void Show(Monster _refTarget)
     {
         if (_refTarget != m_refCurTarget)
         {
             m_refCurTarget = _refTarget;
-            m_refSlider.SetRange(_lMaxHp, _lCurrentHp);
-        }
-        else
-        {
-            m_refSlider.UpdateSlider(_lCurrentHp, _lMaxHp);
+            m_disposableHp?.Dispose();
+            m_refSlider.SetRange(_refTarget.MaxHp, _refTarget.Hp.CurrentValue);
+            m_disposableHp = _refTarget.Hp.Subscribe(_lHp => m_refSlider.UpdateSlider(_lHp, _refTarget.MaxHp));
         }
 
         if (m_refRoot != null)
             m_refRoot.SetActive(true);
 
-        if (m_CoHide != null)
-            StopCoroutine(m_CoHide);
-        m_CoHide = StartCoroutine(CoHideAfterDelay());
+        if (m_ctsHide != null)
+        {
+            m_ctsHide.Cancel();
+            m_ctsHide.Dispose();
+        }
+        m_ctsHide = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        HideAfterDelayAsync(m_ctsHide.Token).Forget();
     }
 
-    private IEnumerator CoHideAfterDelay()
+    private async UniTaskVoid HideAfterDelayAsync(CancellationToken _ct)
     {
-        yield return m_refWaitSecond;
+        await UniTask.Delay(TimeSpan.FromSeconds(m_fHideDelay), cancellationToken: _ct);
 
-        m_refRoot?.SetActive(false);
+        if (m_refRoot != null)
+            m_refRoot.SetActive(false);
+        m_disposableHp?.Dispose();
+        m_disposableHp = null;
         m_refCurTarget = null;
-        m_CoHide = null;
+        m_ctsHide.Dispose();
+        m_ctsHide = null;
     }
 }

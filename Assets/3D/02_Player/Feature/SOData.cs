@@ -10,6 +10,7 @@ public enum eDataType
 {
     Features,
     Equip,
+    StatUpgrade,
     End
 }
 

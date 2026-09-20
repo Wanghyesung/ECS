@@ -1,5 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
+using System.Threading;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -17,17 +20,18 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private CardCreator m_refCardCreator = null;
 
     private int m_iCurrentExp = 0;
-    private int m_iCurrentLevel = 1;
     private int m_iPendingLevelUps = 0; // ExSlider가 다 찰 때까지 미뤄둔 레벨업 개수
 
-    public int CurrentExp => m_iCurrentExp;
+    // 슬라이더 목표값. 연속 레벨업 시 Max→Max 도 다시 흘려야 하므로 중복 억제 끔
+    private readonly ReactiveProperty<int> m_rpExp = new(0, equalityComparer: null);
+    private readonly ReactiveProperty<int> m_rpLevel = new(1);
+
     public int MaxExp => m_iMaxExp;
-    public int CurrentLevel => m_iCurrentLevel;
+    public ReadOnlyReactiveProperty<int> Exp => m_rpExp;
+    public ReadOnlyReactiveProperty<int> Level => m_rpLevel;
 
-    public event Action<int, int> OnExpChanged; // (현재 Exp, Max Exp)
-    public event Action<int> OnLevelUp;         // (새 레벨)
-
-    private Coroutine m_COLevelUp = null;
+    private CancellationTokenSource m_refCancell;
+    private IDisposable m_disposableDied;
     private void Awake()
     {
         if (m_Instance != null && m_Instance != this)
@@ -42,17 +46,31 @@ public class BattleManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Monster.OnMonsterDied += HandleMonsterDied;
+        m_disposableDied = Monster.OnMonsterDied.Subscribe(AddExp);
     }
 
     private void OnDisable()
     {
-        Monster.OnMonsterDied -= HandleMonsterDied;
+        m_disposableDied?.Dispose();
     }
 
-    private void HandleMonsterDied(int _iAmount)
+    private void OnDestroy()
     {
-        AddExp(_iAmount);
+        m_rpExp.Dispose();
+        m_rpLevel.Dispose();
+    }
+
+   
+
+    // ExSlider의 채우기 연출이 실제로 Max에 도달했을 때 Player가 호출
+    public void LevelUp()
+    {
+        if (m_iPendingLevelUps <= 0)
+            return;
+
+        m_iPendingLevelUps -= 1;
+        m_rpLevel.Value += 1;
+        m_refCardCreator?.ShowChoices();
     }
 
     private void AddExp(int _iAmount)
@@ -62,50 +80,47 @@ public class BattleManager : MonoBehaviour
 
         m_iCurrentExp += _iAmount;
 
-        // 한 번에 여러 레벨을 넘길 수도 있어 while로 처리 (초과분 이월)
-
         while (m_iCurrentExp >= m_iMaxExp)
         {
             m_iCurrentExp -= m_iMaxExp;
             ++m_iPendingLevelUps;
         }
 
-        // 이미 순차 처리 중이면 m_iPendingLevelUps만 늘려두고 코루틴은 그대로 두면
-        // 진행 중인 while 루프가 알아서 늘어난 만큼 이어서 처리함 (중복 실행 방지)
-        if (m_COLevelUp == null)
-            m_COLevelUp = StartCoroutine(CoLevelUP());
+        // 이전 작업이 진행 중이라면 Cancel 및 Dispose (StopCoroutine 역할)
+        if (m_refCancell != null)
+        {
+            m_refCancell.Cancel();
+            m_refCancell.Dispose();
+        }
+
+        // Unity Destroy 토큰과 연동된 새 CTS 생성
+        m_refCancell = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+
+        LevelUPAsync(m_refCancell.Token).Forget();
     }
 
-    // ExSlider의 채우기 연출이 실제로 Max에 도달했을 때 Player가 호출
-    public void LevelUp()
+    private async UniTaskVoid LevelUPAsync(CancellationToken _tToken)
     {
-        if (m_iPendingLevelUps <= 0)
-            return;
-
-        m_iCurrentLevel += 1;
-        m_iPendingLevelUps -= 1;
-
-        OnLevelUp?.Invoke(m_iCurrentLevel);
-        m_refCardCreator?.ShowChoices();
-    }
-
-
-    // m_iPendingLevelUps 만큼 ExSlider를 Max까지 채우는 연출을 한 레벨씩 순차 재생
-    // (한 번에 10레벨을 올려도 카드가 10번 순서대로 뜨도록)
-    private IEnumerator CoLevelUP()
-    {
+       
         while (m_iPendingLevelUps > 0)
         {
             int iCountBefore = m_iPendingLevelUps;
 
-            OnExpChanged?.Invoke(m_iMaxExp, m_iMaxExp);
+            m_rpExp.Value = m_iMaxExp;
 
             // ExSlider가 Max까지 다 차서 LevelUp()이 호출되어 보류 개수가 줄어들 때까지 대기
-            yield return new WaitUntil(() => m_iPendingLevelUps < iCountBefore);
+            await UniTask.WaitUntil(() => m_iPendingLevelUps < iCountBefore, cancellationToken: _tToken);
         }
 
         // 보류된 레벨업을 모두 처리했으면 실제 잔여 경험치로 슬라이더를 되돌림
-        OnExpChanged?.Invoke(m_iCurrentExp, m_iMaxExp);
-        m_COLevelUp = null;
+        m_rpExp.Value = m_iCurrentExp;
+     
+        // 작업 정상 종료 시 CTS 정리
+        if (m_refCancell != null && m_refCancell.Token == _tToken)
+        {
+            m_refCancell.Dispose();
+            m_refCancell = null;
+        }
+        
     }
 }

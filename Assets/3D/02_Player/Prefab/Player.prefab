@@ -36,6 +36,7 @@ Transform:
   - {fileID: 1370286331299951429}
   - {fileID: 4809255346028413864}
   - {fileID: 5775252780759140440}
+  - {fileID: 2491844135127419779}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3138087311709452716
@@ -101,7 +102,49 @@ MonoBehaviour:
   m_listWeapon:
   - {fileID: 7352211905901410390}
   - {fileID: 7999312229858609791}
+  - {fileID: 8982239708251843227}
+  m_listDrone: []
   m_refAnimTable: {fileID: 0}
+  m_refAim: {fileID: 0}
+  m_refVisualPlayer: {fileID: 0}
+  m_fRollTime: 2
+  m_fMaxRollDuration: 0.5
+  m_fMaxRollSpeedBoost: 2.5
+  m_fMaxRollSpeedDecay: 3
+  m_refObjectInfo:
+    State: 0
+    MaxHP: 0
+    CurrentHP: 0
+    Speed: 0
+    Attack: 0
+    Defense: 0
+    CurrentEffects: 0
+    Effects:
+    - EndTime: 0
+      TickInterval: 0
+      NextTickTime: 0
+      TickDamage: 0
+    - EndTime: 0
+      TickInterval: 0
+      NextTickTime: 0
+      TickDamage: 0
+    - EndTime: 0
+      TickInterval: 0
+      NextTickTime: 0
+      TickDamage: 0
+    - EndTime: 0
+      TickInterval: 0
+      NextTickTime: 0
+      TickDamage: 0
+    - EndTime: 0
+      TickInterval: 0
+      NextTickTime: 0
+      TickDamage: 0
+  m_SOObjectInfo: {fileID: 0}
+  m_refHPSliderImage: {fileID: 0}
+  m_refExSliderImage: {fileID: 0}
+  m_refTargetScnner: {fileID: 0}
+  TestLock: 0
 --- !u!114 &7474009929202663394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,6 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32e89a997cb1f04ba2f9eb64ae67517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_refVSObject: {fileID: 0}
   m_fMoveSpeed: 12
   m_fAngleSpeed: 25
 --- !u!1 &1983923448939221706
@@ -161,11 +205,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eWeaponType: 1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 4809255346028413864}
   m_refEffectObject: {fileID: 6927910296949444326}
-  m_fFireTime: 0.4
+  m_bLookTarget: 1
+  m_fInaccuracyAngle: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
+--- !u!1 &5155738110852804197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2491844135127419779}
+  - component: {fileID: 8982239708251843227}
+  m_Layer: 3
+  m_Name: Weapon (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2491844135127419779
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155738110852804197}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.048, y: 0.42999887, z: 12.670001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1612791353751533430}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8982239708251843227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155738110852804197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
+  m_refFireTr: {fileID: 2491844135127419779}
+  m_refEffectObject: {fileID: 0}
+  m_bLookTarget: 1
+  m_fInaccuracyAngle: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &5509439187670128036
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,11 +308,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c499c4705603c14f92ff585860834af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eWeaponType: 1
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 1370286331299951429}
   m_refEffectObject: {fileID: 4387701038701273086}
-  m_fFireTime: 0.4
+  m_bLookTarget: 1
+  m_fInaccuracyAngle: 0
+  m_iBulletCount: 1
+  m_fSpreadAngle: 30
 --- !u!1 &6393394087634973785
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,6 +415,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_fMaxRollAngle: 45
   m_fRollSpeed: 5
+  m_fHitShakeDuration: 0.35
+  m_fHitShakeFrequency: 30
+  m_fHitRollKick: 6
+  m_fHitPitchKick: 4
 --- !u!1 &7352115898433154597
 GameObject:
   m_ObjectHideFlags: 0

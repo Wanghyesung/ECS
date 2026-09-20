@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class TriggerStayObject : MonoBehaviour, ITriggerable
 {
-    public event Action<Collider> OnHitTargetEnter; //피격 이벤트
+    private readonly Subject<Collider> m_subjectEnter = new();
+    public Observable<Collider> OnHitTargetEnter => m_subjectEnter;
 
     [SerializeField] private UnityEvent OnHitEvent; //충돌 이벤트
 
@@ -22,7 +24,7 @@ public class TriggerStayObject : MonoBehaviour, ITriggerable
     {
         if ((m_tHitLayer.value & (1 << other.gameObject.layer)) != 0)
         {
-            OnHitTargetEnter?.Invoke(other);
+            m_subjectEnter.OnNext(other);
 
             OnHitEvent?.Invoke();
         }

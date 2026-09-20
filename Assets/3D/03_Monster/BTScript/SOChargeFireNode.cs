@@ -22,11 +22,13 @@ public class SOChargeFireNode : SONode
             return eNodeState.Failure;
     
         SpawnInfo refSpawnInfo = refCurCharge.SpawnInfo;
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletPrefab);
+        int iPoolCount = ObjectPoolManager.m_Instance.GetObjectCount(refSpawnInfo.Weapon.FireBulletPrefab);
         int iSpawnCount = refSpawnInfo.SpawnCount;
 
         if (iPoolCount < iSpawnCount)
             return eNodeState.Failure;
+
+        refCurCharge.StopCharge();
 
         for (int i = 0; i < iSpawnCount; ++i)
             refSpawnInfo.Weapon.Fire(_refBB.TargetTr.position, _refBB.TargetTr);

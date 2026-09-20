@@ -1,8 +1,6 @@
 using DG.Tweening;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using R3;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,24 +11,13 @@ public class LobyOption : MonoBehaviour
     [SerializeField] private float m_fMoveTime;
 
     private int m_iCurSelectIdx = -1;
-    private List<Action> m_listClickAction = new();
 
     private void Start()
     {
         for (int i = 0; i < m_listOptionButton.Count; ++i)
         {
             int idx = i;
-            Action clickAction = () => MoveToIdx(idx);
-            m_listClickAction.Add(clickAction);
-            m_listOptionButton[i].OnClickEvt += clickAction;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        for (int i = 0; i < m_listOptionButton.Count; ++i)
-        {
-            m_listOptionButton[i].OnClickEvt -= m_listClickAction[i];
+            m_listOptionButton[i].OnClickEvt.Subscribe(_ => MoveToIdx(idx)).AddTo(this);
         }
     }
 

@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -6,74 +9,115 @@ using UnityEngine;
               ColliderManager
 목적 : BaseCollider(Circle/Obb)들을 PhysX 없이 자체적으로 충돌 판정한다.
 
-       - 레이어 0~31마다 List<BaseCollider>를 Awake에서 미리 만들어두고, 어떤 레이어끼리
-         충돌할지는 m_arrLayerCollisionMatrix로 이 매니저가 중앙에서 결정한다.
-       - Circle-Circle 쌍(총알-몬스터 등)은 브루트포스가 그리드보다 빠르므로 그대로 두고,
-         Shape==Box가 낀 쌍만 BoxColliderGrid로 브로드페이즈한다. m_refPlayer가 있으면
-         사거리(m_fMaxBulletRange) 밖 Box는 그리드에서 아예 빠진다(UpdateBoxGrids 참고).
-       - m_hashPairInfo에 쌍 항목이 있다 = 지금 겹치는 중. CheckPair 하나가 Enter/Stay/Exit을
-         그 자리에서 전부 판정하므로 "지우는 걸 깜빡한다" 류의 버그가 구조적으로 없다.
-       - PreLoadCenter가 판정 전에 프레임당 한 번만 CachedCenter를 캐싱해서 CheckPair는
-         그 값만 읽는다. 어떤 도형 조합인지는 IsOverlapping이 Shape을 보고 바로 호출한다.
-       - Bullet 등은 Update에서 이동하므로, 그게 끝난 뒤인 LateUpdate에서 판정한다.
+       레이어 무관 활성 콜라이더 전부를 SoA 하나 + BoxColliderGrid 하나에 담는다 - 그리드
+       소유/조회 구분 없이, 그리드에 들어간 콜라이더 자신이 곧 조회 주체다(이웃 27칸 탐색,
+       후보 index가 자기 이하면 스킵). GridOverlapJob.Execute 하나가 이웃 탐색 + 레이어
+       매트릭스 필터 + 도형 분기(Circle-Circle/Circle-Box/Box-Box)까지 전부 처리한다.
+
+       Job Schedule과 Complete를 서로 다른 실행 순서로 쪼갠다 - ScheduleFrame()은
+       ColliderManagerScheduler([DefaultExecutionOrder(-1000)], 이 프레임에서 가장 먼저)가
+       부르고, Complete+드레인은 이 클래스의 LateUpdate([DefaultExecutionOrder(1000)], 가장
+       나중)가 한다. 한 클래스는 메서드별로 다른 실행 순서를 못 가지므로 Schedule 쪽만 별도
+       컴포넌트로 뗀 것 - 이렇게 하면 충돌 Job이 이번 프레임 나머지 Update 전체 + LateUpdate
+       전체 동안 워커 스레드에서 겹쳐 돈다. 한 프레임의 모든 Enter/Stay/Exit이 동일한 위치
+       스냅샷(정확히 한 프레임 전) 기준으로 계산되므로 콜백 순서에 판정이 갈리는 문제도 없다.
+       대가는 판정이 실제 최신 위치보다 한 프레임(~16ms@60fps) 늦음.
+
+       위치/축(transform.position/rotation) 갱신은 ColliderCenterRefresher가 전담한다 -
+       "이동 추적"과 "충돌 판정"을 분리한 것.
  *///////////////////////////////////////////
 
-// Bullet/Missile/Guided MoveManager가 각자 LateUpdate에서 이동 Job을 끝내는 것보다
-// 뒤에 돌아야 최신 위치로 판정하므로, 기본 실행 순서보다 뒤로 고정해둔다
+// LateUpdate가 이 프레임에서 가장 늦게 돌수록 ColliderManagerScheduler가 미리 Schedule한
+// Job이 겹쳐 도는 시간이 길어진다(클래스 헤더 참고) - 그래서 기본 순서보다 뒤로 고정
 [DefaultExecutionOrder(1000)]
 public class ColliderManager : MonoBehaviour
 {
     public static ColliderManager m_Instance = null;
 
-    // m_arrLayerCollisionMatrix[i] = 레이어 i가 충돌할 레이어 마스크. 한쪽만 등록해도
-    // 인식됨(IsLayerCollider 참고), Unity Physics 매트릭스와 동일한 개념
-    [SerializeField] private LayerMask[] m_arrLayerCollisionMatrix = new LayerMask[32];
+    private const int LAYER_COUNT = 32;
+    private const int JOB_BATCH_SIZE = 64;
+    private const int INITIAL_CAPACITY = 1024;
+    private const int COLLIDER_TYPE_BOX = (int)eColliderShape.Box;
 
-    // Box 콜라이더 그리드 컬링 기준점. 비워두면 컬링 없이 전부 판정 대상(안전한 기본값)
+    // 레이어 i가 충돌할 레이어 마스크. 한쪽만 등록해도 양방향 인식됨(IsLayerCollider 참고)
+    [SerializeField] private LayerMask[] m_arrLayerCollisionMatrix = new LayerMask[LAYER_COUNT];
+
+    // Box(Obstacle) 컬링 기준점 - 비워두면 컬링 없이 전부 대상(안전한 기본값). Circle엔 미적용
     [SerializeField] private Transform m_refPlayer;
-    // 플레이어의 총알이 도달할 수 있는 최대 거리 - 이보다 먼 Box 콜라이더는 그리드에서 제외됨
     [SerializeField] private float m_fMaxBulletRange = 1000f;
 
-    // 레이어(0~31) -> 그 레이어에 속한 활성 콜라이더 목록. Circle/Obb 공용 -
-    // 레이어 하나엔 한 가지 도형만 들어간다는 게 전제(§IsOverlapping 참고)
+    // 레이어(0~31) -> 활성 콜라이더 목록. 레이어 하나엔 한 가지 도형만 들어간다는 게 전제
     private List<BaseCollider>[] m_arrCollider;
 
-    // UnActivate 예약 - 다음 프레임 Update() 맨 앞에서 일괄 스왑백 제거(DeleteCollider 참고)
+    // UnActivate 예약 - 다음 프레임 Update() 맨 앞에서 일괄 스왑백 제거(판정 순회 중 스왑백하면
+    // 방금 옮겨온 콜라이더가 이번 프레임에서 스킵될 수 있어서 즉시 제거하지 않음)
     private List<BaseCollider> m_listPendingDelete;
 
-    // ID -> 그 콜라이더가 자기 레이어 리스트에서 몇 번째 자리인지 (스왑백 O(1) 제거용)
-    private List<int> m_listIndexInLayerList;
-
-    // ID -> 지금 이 ID와 실제로 겹쳐있다고 기록된 상대 ID들. UnActivate 시 관련 쌍 정리용
+    // ID -> 레이어 리스트에서 몇 번째 자리인지 (스왑백 O(1) 제거용)
+    private List<int> m_listIDToLayerCount;
+    // ID -> BaseCollider 본체. Job 결과(ID 쌍)를 객체로 되돌릴 때 사용
+    private List<BaseCollider> m_listColliderByID;
+    // ID -> 지금 겹쳐있다고 기록된 상대 ID들. Exit 조회 스킵/DeleteCollider 정리에 사용
     private List<HashSet<int>> m_listOther;
 
-    // 쌍(A,B) 항목 존재 = 지금 겹치는 중. CheckPair가 이 하나로 Enter/Stay/Exit 전부
-    // 처리, Circle/Box 구분 없이 공용(ID 공간을 BaseCollider가 공유해서 가능)
+    // 위치/축 갱신(이동 추적) 전담 - Activate/DeleteCollider와 짝 맞춰 Register/Unregister 호출
+    private ColliderCenterRefresher m_refCenterRefresher;
+
+    // 쌍(A,B) 존재 = 지금 겹치는 중. CheckPair가 이 하나로 Enter/Stay/Exit 전부 처리
     private Dictionary<long, tColliderPair> m_hashPairInfo;
 
-    // Stay만 별도 마커로 뗀 이유 - CheckPair 전체를 감싸면 프레임당 수만 콜에 마커
-    // 오버헤드가 측정을 왜곡하지만, Stay 발생 쌍은 상대적으로 적어서 감싸도 괜찮음
     private static readonly ProfilerMarker s_tMarkerStay = new ProfilerMarker("ColliderManager.OnStay");
-
-    // LateUpdate 구간별(센터 캐싱/그리드 갱신/레이어 대조) 비용을 나눠보기 위한 마커 -
-    // 전부 레이어 단위로만 불려서 마커 오버헤드가 측정을 왜곡할 걱정은 없음
     private static readonly ProfilerMarker s_tMarkerRefreshCenter = new ProfilerMarker("ColliderManager.PreLoadCenter");
-    private static readonly ProfilerMarker s_tMarkerSameLayer = new ProfilerMarker("ColliderManager.CheckSameLayer");
-    private static readonly ProfilerMarker s_tMarkerCrossLayer = new ProfilerMarker("ColliderManager.CheckCrossLayer");
-    private static readonly ProfilerMarker s_tMarkerBoxGridUpdate = new ProfilerMarker("ColliderManager.UpdateBoxGrid");
-    private static readonly ProfilerMarker s_tMarkerCrossLayerGrid = new ProfilerMarker("ColliderManager.CheckCrossLayerGrid");
+    private static readonly ProfilerMarker s_tMarkerGather = new ProfilerMarker("ColliderManager.Gather");
+    private static readonly ProfilerMarker s_tMarkerGridBuild = new ProfilerMarker("ColliderManager.GridBuild");
+    private static readonly ProfilerMarker s_tMarkerGridSchedule = new ProfilerMarker("ColliderManager.GridJobSchedule");
+    private static readonly ProfilerMarker s_tMarkerGridComplete = new ProfilerMarker("ColliderManager.GridJobComplete");
+    private static readonly ProfilerMarker s_tMarkerGridDrain = new ProfilerMarker("ColliderManager.GridJobDrain");
 
-    // 레이어(0~31) -> Shape==Box 콜라이더 그룹 전용 공간 그리드. Box가 아닌 레이어는 빈 채로 둠
-    private BoxColliderGrid[] m_arrBoxGrid;
+    // 활성 콜라이더 전부가 들어가는 단일 공간 그리드
+    private BoxColliderGrid m_grid;
 
-    // BoxColliderGrid.NeighborColliders 결과 재사용 버퍼 - 총알 수만큼 매 프레임
-    // 호출되므로(CheckCrossLayerGrid) 매번 새 List를 안 만들게 함
-    private List<BaseCollider> m_listGridNeighbor;
+    // m_grid.Build()용 일회성 스크래치(그리드가 아직 안 지어졌을 때만 채움) - SoA/그리드
+    // 자체는 m_arrCollider[layer]를 매 프레임 직접 순회해서 채운다(BuildGrid 참고)
+    private List<BaseCollider> m_listActiveCollider;
+
+    // --- Job 입력용 SoA (Allocator.Persistent, 매 프레임 통째로 덮어씀) ---
+    // AxisX/Y/Z/HalfExtent는 ColliderType==Box일 때만 채워지고 Circle 항목은 안 읽힘
+    private NativeArray<Vector3> m_arrCenter;
+    private NativeArray<Vector3> m_arrAxisX;
+    private NativeArray<Vector3> m_arrAxisY;
+    private NativeArray<Vector3> m_arrAxisZ;
+    private NativeArray<Vector3> m_arrHalfExtent;
+    private NativeArray<float> m_arrBoundingRadius;
+    private NativeArray<int> m_arrColliderId;
+    private NativeArray<int> m_arrColliderType;
+    private NativeArray<int> m_arrLayer;
+    // 안 겹친 결과를 큐에 담을지 결정하는 필터 - 기록 없으면 Exit도 없으므로 안 담아도 결과는 동일
+    private NativeArray<bool> m_arrHasPair;
+    private int m_iCount;
+    private float m_fMaxActiveRadius;
+
+    // 레이어 매트릭스를 Burst Job이 읽을 수 있는 값 배열로 복사(Awake 시 한 번, 런타임 불변)
+    private NativeArray<int> m_arrLayerMatrixValue;
+
+    // Job 결과. NativeQueue라 사전 용량 예약 없이도 최악의 프레임에 결과가 유실되지 않는다
+    private NativeQueue<tPairResult> m_queResult;
+
+    private JobHandle m_tJobHandle;
+    private bool m_bScheduled;
 
     private struct tColliderPair
     {
         public BaseCollider ColliderA;
         public BaseCollider ColliderB;
+    }
+
+    // Overlap=false 항목은 "후보였는데 안 겹쳤다"는 뜻 - 저번 프레임 겹침의 Exit 판정에 필요
+    private struct tPairResult
+    {
+        public int IdA;
+        public int IdB;
+        public bool Overlap;
     }
 
     private void Awake()
@@ -85,22 +129,63 @@ public class ColliderManager : MonoBehaviour
         }
 
         m_Instance = this;
-        DontDestroyOnLoad(this);
 
-        m_arrCollider = new List<BaseCollider>[32];
-        m_arrBoxGrid = new BoxColliderGrid[32];
-        for (int i = 0; i < 32; ++i)
-        {
+        // ScheduleFrame()을 이 프레임 최대한 일찍 호출해줄 트리거를 자동으로 붙인다 -
+        gameObject.AddComponent<ColliderManagerScheduler>();
+
+        m_arrCollider = new List<BaseCollider>[LAYER_COUNT];
+        for (int i = 0; i < LAYER_COUNT; ++i)
             m_arrCollider[i] = new List<BaseCollider>();
-            m_arrBoxGrid[i] = new BoxColliderGrid();
-        }
+
+        m_grid = new BoxColliderGrid();
+        m_listActiveCollider = new List<BaseCollider>();
+        m_refCenterRefresher = new ColliderCenterRefresher(INITIAL_CAPACITY);
 
         m_listPendingDelete = new List<BaseCollider>();
-        m_listIndexInLayerList = new List<int>();
+        m_listIDToLayerCount = new List<int>();
+        m_listColliderByID = new List<BaseCollider>();
         m_listOther = new List<HashSet<int>>();
-        m_listGridNeighbor = new List<BaseCollider>();
 
         m_hashPairInfo = new Dictionary<long, tColliderPair>();
+
+        m_arrLayerMatrixValue = new NativeArray<int>(LAYER_COUNT, Allocator.Persistent);
+        for (int i = 0; i < LAYER_COUNT; ++i)
+            m_arrLayerMatrixValue[i] = m_arrLayerCollisionMatrix[i].value;
+
+        AllocateSoa(INITIAL_CAPACITY);
+        m_queResult = new NativeQueue<tPairResult>(Allocator.Persistent);
+
+    }
+    private void Start()
+    {
+        m_refPlayer = Player.CurrentPlayer.transform;
+    }
+
+    // 진행 중인 Job을 먼저 끝낸 뒤 모든 NativeContainer를 해제한다(워커가 이미 Dispose된
+    // 메모리를 만지지 않도록). 중복 인스턴스는 Awake에서 아무것도 할당하지 않았으므로 안전
+    private void OnDestroy()
+    {
+        if (m_bScheduled)
+        {
+            m_tJobHandle.Complete();
+            m_bScheduled = false;
+        }
+
+        DisposeSoa();
+
+        if (m_arrLayerMatrixValue.IsCreated)
+            m_arrLayerMatrixValue.Dispose();
+
+        if (m_queResult.IsCreated)
+            m_queResult.Dispose();
+
+        m_refCenterRefresher?.Dispose();
+        m_grid?.Dispose();
+    }
+
+    private void LateUpdate()
+    {
+        CompleteAndDrainGridJob();
     }
 
     private static long MakePairKey(int _iA, int _iB)
@@ -110,61 +195,66 @@ public class ColliderManager : MonoBehaviour
         return ((long)iLow << 32) | (uint)iHigh;
     }
 
-    // 레이어 i가 레이어 j와 충돌하는지. Unity Physics 매트릭스처럼 어느 한쪽 방향만 등록해도 인식됨
-    private bool IsLayerCollider(int _iLayerA, int _iLayerB)
+    // 관리형 참조 없이 값 배열만 받는 raw-parameter 버전 - Burst Job이 그대로 호출 가능,
+    // 씬 없이 EditMode 테스트로도 검증 가능
+    public static bool IsLayerCollider(NativeArray<int> _arrMatrixValue, int _iLayerA, int _iLayerB)
     {
-        bool bAToB = (m_arrLayerCollisionMatrix[_iLayerA].value & (1 << _iLayerB)) != 0;
-        bool bBToA = (m_arrLayerCollisionMatrix[_iLayerB].value & (1 << _iLayerA)) != 0;
+        bool bAToB = (_arrMatrixValue[_iLayerA] & (1 << _iLayerB)) != 0;
+        bool bBToA = (_arrMatrixValue[_iLayerB] & (1 << _iLayerA)) != 0;
         return bAToB || bBToA;
     }
 
-    // ID 기준 보조 리스트 크기를 맞춰줌 (등록 순서 = ID 순서라 사실상 Add와 동일하게 채워짐)
     private void ResizeCapacity(int _iID)
     {
-        while (m_listIndexInLayerList.Count <= _iID)
+        while (m_listIDToLayerCount.Count <= _iID)
         {
-            m_listIndexInLayerList.Add(-1);
+            m_listIDToLayerCount.Add(-1);
+            m_listColliderByID.Add(null);
             m_listOther.Add(new HashSet<int>());
         }
+
+        m_refCenterRefresher.ResizeIdCapacity(_iID);
     }
 
-    // BaseCollider.Awake()에서 생애주기 중 딱 한 번만 호출. 레이어 리스트엔 아직 안 들어감(Activate가 담당)
+    // BaseCollider.Start()에서 생애주기 중 한 번만 호출. 레이어 리스트엔 아직 안 들어감(Activate가 담당)
     public void RegisterCollider(BaseCollider _refCollider)
     {
         ResizeCapacity(_refCollider.ID);
+        m_listColliderByID[_refCollider.ID] = _refCollider;
     }
 
-    // BaseCollider.OnEnable()/Start()에서 호출 - 그 즉시 자기 레이어 리스트에 편입.
-    // 재발사 등으로 죽은 직후 다시 활성화될 때 중복 등록(유령 항목) 방지 - 이미 등록돼 있으면 무시
+    // BaseCollider.OnEnable()/Start()에서 호출. 이미 등록돼 있으면 무시(재발사 등 중복 등록 방지)
     public void Activate(BaseCollider _refCollider)
     {
         ResizeCapacity(_refCollider.ID);
 
-        if (m_listIndexInLayerList[_refCollider.ID] >= 0)
+        // OnEnable이 Start(=RegisterCollider)보다 먼저 도는 경로가 있어 여기서도 채워둠 -
+        // 비어 있으면 Job 결과를 객체로 되돌릴 때 그 쌍이 통째로 무시된다
+        m_listColliderByID[_refCollider.ID] = _refCollider;
+
+        if (m_listIDToLayerCount[_refCollider.ID] >= 0)
             return;
 
         List<BaseCollider> listLayer = m_arrCollider[_refCollider.Layer];
-        m_listIndexInLayerList[_refCollider.ID] = listLayer.Count;
+        m_listIDToLayerCount[_refCollider.ID] = listLayer.Count;
         listLayer.Add(_refCollider);
+
+        m_refCenterRefresher.Register(_refCollider);
     }
 
-    // BaseCollider.OnDisable()에서 호출. 레이어 리스트 제거는 즉시 안 하고 다음 프레임
-    // Update()로 예약만 함 - 판정 순회 중 스왑백하면 방금 그 자리로 옮겨온 콜라이더가
-    // 이번 프레임 판정에서 통째로 스킵될 수 있기 때문
     public void UnActivate(BaseCollider _refCollider)
     {
         m_listPendingDelete.Add(_refCollider);
     }
 
-    // 예약된 콜라이더를 레이어 리스트에서 스왑백 제거, ColliderExit호출, 충돌 쌍 제거
+    // 레이어 리스트/위치 추적에서 스왑백 제거, 겹쳐있던 쌍은 Exit 발화 후 정리
     private void DeleteCollider(BaseCollider _refCollider)
     {
         int iID = _refCollider.ID;
-        int iMyIndex = m_listIndexInLayerList[iID];
+        int iMyIndex = m_listIDToLayerCount[iID];
         if (iMyIndex < 0)
             return; // 이미 처리됨 (중복 예약 가드)
 
-        // 관여하던 쌍 기록을 전부 정리(겹친 채로 반납되면 Exit도 쏴줌) - Circle/Box 구분 없이 동일 처리
         HashSet<int> hashOther = m_listOther[iID];
         foreach (int iOtherID in hashOther)
         {
@@ -180,198 +270,240 @@ public class ColliderManager : MonoBehaviour
 
         hashOther.Clear();
 
-        // 그리드는 이동분만 갱신하는 구조라, 파괴/풀 반납 시 여기서 명시적으로 지우지 않으면
-        // 죽은 참조가 셀에 영원히 남는다
-        if (_refCollider.Shape == eColliderShape.Box)
-            m_arrBoxGrid[_refCollider.Layer].RemoveCollider(_refCollider);
-
         List<BaseCollider> listLayer = m_arrCollider[_refCollider.Layer];
         int iLastIndex = listLayer.Count - 1;
 
         BaseCollider refMoved = listLayer[iLastIndex];
         listLayer[iMyIndex] = refMoved;
         listLayer.RemoveAt(iLastIndex);
-        m_listIndexInLayerList[refMoved.ID] = iMyIndex;
-        m_listIndexInLayerList[iID] = -1;
+        m_listIDToLayerCount[refMoved.ID] = iMyIndex;
+        m_listIDToLayerCount[iID] = -1;
+
+        // 파괴 전에 반드시 빼야 다음 프레임 위치 갱신 Job이 죽은 Transform을 참조하지 않는다
+        m_refCenterRefresher.Unregister(iID);
     }
 
-    private void Update()
+    // ColliderManagerScheduler([DefaultExecutionOrder(-1000)])가 이 프레임에서 가장 먼저
+    // 호출한다 - 충돌 Job이 이번 프레임 나머지 Update + LateUpdate 전체 동안 워커 스레드에서
+    // 겹쳐 돌 수 있도록(클래스 헤더 참고)
+    public void ScheduleFrame()
     {
-        // Update()가 LateUpdate(판정)보다 항상 먼저 도니, 여기서 다 지우면 이번 프레임
-        // CheckOverlaps 순회 중엔 리스트가 안 흔들림
+        // 삭제 정리가 먼저 와야 이번 프레임 그리드/SoA에 죽은 콜라이더가 안 섞인다
         for (int i = 0; i < m_listPendingDelete.Count; ++i)
         {
             BaseCollider refCollider = m_listPendingDelete[i];
 
-            // 예약 이후 재사용으로 다시 활성화됐으면 지우면 안 됨 - 실제로 비활성인 것만 삭제
-            if (refCollider.gameObject.activeInHierarchy == false)
+            // 예약 이후 재사용으로 다시 활성화됐으면 지우면 안 됨
+            if (refCollider.isActiveAndEnabled == false)
                 DeleteCollider(refCollider);
         }
 
         m_listPendingDelete.Clear();
-    }
 
-    private void LateUpdate()
-    {
-        CheckOverlaps();
-    }
-
-    private void CheckOverlaps()
-    {
         PreLoadCenter();
-        UpdateBoxGrids();
-
-        // 레이어 0~31을 이중 순회(A<=B), 매트릭스에서 충돌하는 조합만 실제로 대조
-        for (int iLayerA = 0; iLayerA < 32; ++iLayerA)
-        {
-            List<BaseCollider> listA = m_arrCollider[iLayerA];
-            if (listA.Count == 0)
-                continue;
-
-            for (int iLayerB = iLayerA; iLayerB < 32; ++iLayerB)
-            {
-                if (!IsLayerCollider(iLayerA, iLayerB))
-                    continue;
-
-                List<BaseCollider> listB = m_arrCollider[iLayerB];
-                if (listB.Count == 0)
-                    continue;
-
-                if (iLayerA == iLayerB)
-                    CheckSameLayer(listA);
-                else if (listA[0].Shape == eColliderShape.Box)
-                    CheckCrossLayerGrid(m_arrBoxGrid[iLayerA], listB, _bBoxIsA: true);
-                else if (listB[0].Shape == eColliderShape.Box)
-                    CheckCrossLayerGrid(m_arrBoxGrid[iLayerB], listA, _bBoxIsA: false);
-                else
-                    CheckCrossLayer(listA, listB);
-            }
-        }
+        BuildGrid();
+        ScheduleGridJob();
     }
 
-    // Shape==Box 레이어만 대상. 그리드는 레이어당 한 번만 지어지고("정적 분할",
-    // BoxColliderGrid.Build) 그 뒤로 매 프레임: 사거리 밖으로 나간 애는 그리드에서
-    // 빼고, 사거리 안이면서 Static이고 이미 그리드에 있으면 스킵, 나머지만 UpdateCell
-    private void UpdateBoxGrids()
-    {
-        using (s_tMarkerBoxGridUpdate.Auto())
-        {
-            bool bCullByRange = m_refPlayer != null;
-            Vector3 vPlayerPos = bCullByRange ? m_refPlayer.position : Vector3.zero;
-            float fMaxRangeSq = m_fMaxBulletRange * m_fMaxBulletRange;
 
-            for (int iLayer = 0; iLayer < 32; ++iLayer)
-            {
-                List<BaseCollider> listLayer = m_arrCollider[iLayer];
-                if (listLayer.Count == 0 || listLayer[0].Shape != eColliderShape.Box)
-                    continue;
-
-                BoxColliderGrid refGrid = m_arrBoxGrid[iLayer];
-                if (!refGrid.IsBuilt)
-                    refGrid.Build(listLayer);
-
-                for (int i = 0; i < listLayer.Count; ++i)
-                {
-                    BaseCollider refCollider = listLayer[i];
-
-                    bool bInRange = bCullByRange == false
-                        || (refCollider.CachedCenter - vPlayerPos).sqrMagnitude <= fMaxRangeSq;
-
-                    if (bInRange == false)
-                    {
-                        refGrid.RemoveCollider(refCollider);
-                        continue;
-                    }
-
-                    if (refCollider.StaticObject && refGrid.Contains(refCollider))
-                        continue;
-
-                    refGrid.UpdateCell(refCollider);
-                }
-            }
-        }
-    }
-
-    // Box 콜라이더 레이어와 교차하는 쌍 전용 - N×M 완전 대조 대신, 반대쪽 콜라이더마다
-    // 자기 셀 기준 이웃 그리드 후보만 CheckPair로 넘긴다
-    private void CheckCrossLayerGrid(BoxColliderGrid _refGrid, List<BaseCollider> _listOtherSide, bool _bBoxIsA)
-    {
-        using (s_tMarkerCrossLayerGrid.Auto())
-        {
-            for (int i = 0; i < _listOtherSide.Count; ++i)
-            {
-                BaseCollider refOther = _listOtherSide[i];
-                // Box-Box 크로스 레이어일 때도 이 함수를 타지만 IsBoxBoxOverlap이 항상 false라 실질적
-                // 쌍이 아니므로 반지름 0(=링 1겹)으로 둬도 무해. 나중에 OBB-OBB 판정을 구현하면 재검토할 것
-                float fQueryRadius = (refOther is CircleCollider refCircleOther) ? refCircleOther.Radius : 0f;
-                _refGrid.NeighborColliders(refOther.CachedCenter, fQueryRadius, m_listGridNeighbor);
-
-                for (int j = 0; j < m_listGridNeighbor.Count; ++j)
-                {
-                    BaseCollider refBox = m_listGridNeighbor[j];
-                    if (_bBoxIsA == true)
-                        CheckPair(refBox, refOther);
-                    else
-                        CheckPair(refOther, refBox);
-                }
-            }
-        }
-    }
-
+    // 위치/축 갱신은 ColliderCenterRefresher에 위임. CachedCenter를 읽는 외부 코드
+    // (RaycastMask/FindAllInRadius/Aim 등)가 여전히 동기 프로퍼티로 읽을 수 있어야 하므로
+    // Job 완료 즉시 콜라이더별로 Apply해서 되돌려 쓴다
     private void PreLoadCenter()
     {
         using (s_tMarkerRefreshCenter.Auto())
         {
-            for (int iLayer = 0; iLayer < 32; ++iLayer)
+            m_refCenterRefresher.ScheduleAndComplete();
+
+            for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+            {
+                List<BaseCollider> listLayer = m_arrCollider[iLayer];
+                for (int i = 0; i < listLayer.Count; ++i)
+                    m_refCenterRefresher.Apply(listLayer[i]);
+            }
+        }
+    }
+
+    // 활성 콜라이더 전부를 SoA에 채우고 같은 순서로 그리드에 넣는다. 그리드는 한 번만 지어지고
+    // ("정적 분할") 이후 매 프레임 셀 소속만 다시 계산한다
+    private void BuildGrid()
+    {
+        int iTotalActive;
+
+        using (s_tMarkerGather.Auto())
+        {
+            iTotalActive = 0;
+            for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+                iTotalActive += m_arrCollider[iLayer].Count;
+
+            m_iCount = 0;
+            if (iTotalActive == 0)
+                return;
+
+            ResizeSoaCapacity(iTotalActive);
+
+            if (m_grid.IsBuilt == false)
+            {
+                m_listActiveCollider.Clear();
+                for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+                    m_listActiveCollider.AddRange(m_arrCollider[iLayer]);
+
+                m_grid.Build(m_listActiveCollider);
+            }
+        }
+
+        if (m_grid.IsBuilt == false)
+            return;
+
+        using (s_tMarkerGridBuild.Auto())
+        {
+            //이전 프레임의 데이터는 지우고 새로 시작
+            m_grid.BeginRebuild(iTotalActive);
+
+            bool bCullByRange = m_refPlayer != null;
+            Vector3 vPlayerPos = bCullByRange ? m_refPlayer.position : Vector3.zero;
+            float fMaxRangeSq = m_fMaxBulletRange * m_fMaxBulletRange;
+
+            int iIdx = 0;
+            m_fMaxActiveRadius = 0f;
+            for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
             {
                 List<BaseCollider> listLayer = m_arrCollider[iLayer];
                 for (int i = 0; i < listLayer.Count; ++i)
                 {
-                    if (listLayer[i].StaticObject == false)
-                        listLayer[i].RefreshCenter();
+                    BaseCollider refCollider = listLayer[i];
+                    Vector3 vCenter = refCollider.CachedCenter;
+                    bool bIsBox = refCollider.Shape == eColliderShape.Box;
+
+                    // Box(Obstacle)만 플레이어 사거리 밖이면 이번 프레임 대상에서 제외
+                    if (bIsBox && bCullByRange && (vCenter - vPlayerPos).sqrMagnitude > fMaxRangeSq)
+                        continue;
+
+                    m_arrCenter[iIdx] = vCenter;
+                    m_arrBoundingRadius[iIdx] = refCollider.BoundingRadius;
+                    m_fMaxActiveRadius = Mathf.Max(m_fMaxActiveRadius, m_arrBoundingRadius[iIdx]);
+                    m_arrColliderId[iIdx] = refCollider.ID;
+                    m_arrColliderType[iIdx] = (int)refCollider.Shape;
+                    m_arrLayer[iIdx] = refCollider.Layer;
+                    m_arrHasPair[iIdx] = m_listOther[refCollider.ID].Count > 0;
+
+                    if (bIsBox)
+                    {
+                        ObbCollider refBox = (ObbCollider)refCollider;
+                        m_arrAxisX[iIdx] = refBox.AxisX;
+                        m_arrAxisY[iIdx] = refBox.AxisY;
+                        m_arrAxisZ[iIdx] = refBox.AxisZ;
+                        m_arrHalfExtent[iIdx] = refBox.HalfExtent;
+                    }
+
+                    m_grid.AddCollider(iIdx, vCenter);
+                    ++iIdx;
                 }
             }
+
+            m_grid.EndRebuild();
+            m_iCount = iIdx;
         }
     }
 
-    private void CheckSameLayer(List<BaseCollider> _listCollider)
+    // 그리드가 곧 조회 대상이자 조회 주체라 레이어별로 나눠 여러 번 스케줄할 필요가 없다
+    private void ScheduleGridJob()
     {
-        using (s_tMarkerSameLayer.Auto())
+        using (s_tMarkerGridSchedule.Auto())
         {
-            for (int a = 0; a < _listCollider.Count; ++a)
+            if (m_iCount == 0)
             {
-                BaseCollider refI = _listCollider[a];
+                m_bScheduled = false;
+                return;
+            }
 
-                for (int b = a + 1; b < _listCollider.Count; ++b)
-                    CheckPair(refI, _listCollider[b]);
+            GridOverlapJob tJob = new GridOverlapJob
+            {
+                CellStart = m_grid.CellStart,
+                CellCount = m_grid.CellCount,
+                CellItems = m_grid.CellItems,
+                GridOrigin = m_grid.Origin,
+                CellSize = m_grid.CellSize,
+                MaxRadius = m_fMaxActiveRadius,
+                CountX = m_grid.CountX,
+                CountY = m_grid.CountY,
+                CountZ = m_grid.CountZ,
+
+                Center = m_arrCenter,
+                AxisX = m_arrAxisX,
+                AxisY = m_arrAxisY,
+                AxisZ = m_arrAxisZ,
+                HalfExtent = m_arrHalfExtent,
+                BoundingRadius = m_arrBoundingRadius,
+                ColliderId = m_arrColliderId,
+                ColliderType = m_arrColliderType,
+                Layer = m_arrLayer,
+                HasPair = m_arrHasPair,
+
+                LayerMatrixValue = m_arrLayerMatrixValue,
+
+                Output = m_queResult.AsParallelWriter()
+            };
+
+            m_tJobHandle = tJob.Schedule(m_iCount, JOB_BATCH_SIZE);
+            m_bScheduled = true;
+
+            // 워커 스레드가 Complete까지 기다리지 않고 지금 바로 집어가게 한다
+            JobHandle.ScheduleBatchedJobs();
+        }
+    }
+
+    // Job 결과를 BaseCollider로 되돌려 Enter/Stay/Exit을 발화시키는 유일한 지점 - 낮은
+    // 레이어가 항상 CheckPair의 A로 들어가도록 정렬해 콜백 발화 순서(A->B)를 안정적으로 유지
+    private void CompleteAndDrainGridJob()
+    {
+        if (m_bScheduled == false)
+            return;
+
+        using (s_tMarkerGridComplete.Auto())
+        {
+            m_tJobHandle.Complete();
+        }
+        m_bScheduled = false;
+
+        using (s_tMarkerGridDrain.Auto())
+        {
+            while (m_queResult.TryDequeue(out tPairResult tResult))
+            {
+                BaseCollider refA = GetColliderByID(tResult.IdA);
+                BaseCollider refB = GetColliderByID(tResult.IdB);
+
+                if (refA == null || refB == null)
+                    continue;
+
+                if (!refA.isActiveAndEnabled || !refB.isActiveAndEnabled)
+                    continue;
+
+                if (refA.Layer < refB.Layer)
+                    CheckPair(refA, refB, tResult.Overlap);
+                else
+                    CheckPair(refB, refA, tResult.Overlap);
             }
         }
     }
 
-    private void CheckCrossLayer(List<BaseCollider> _listA, List<BaseCollider> _listB)
+    private BaseCollider GetColliderByID(int _iID)
     {
-        using (s_tMarkerCrossLayer.Auto())
-        {
-            for (int a = 0; a < _listA.Count; ++a)
-            {
-                BaseCollider refA = _listA[a];
+        if (_iID < 0 || _iID >= m_listColliderByID.Count)
+            return null;
 
-                for (int b = 0; b < _listB.Count; ++b)
-                    CheckPair(refA, _listB[b]);
-            }
-        }
+        return m_listColliderByID[_iID];
     }
 
-    private void CheckPair(BaseCollider _refA, BaseCollider _refB)
+    // 겹침 여부를 이미 아는 호출부(Job 결과 드레인)를 위해 판정 결과를 인자로 받는다 -
+    // 메인스레드에서 같은 수학을 두 번 돌리지 않기 위함
+    private void CheckPair(BaseCollider _refA, BaseCollider _refB, bool _bOverlapping)
     {
-        bool bOverlapping = IsOverlapping(_refA, _refB);
-
-        if (bOverlapping)
+        if (_bOverlapping)
         {
             long lKey = MakePairKey(_refA.ID, _refB.ID);
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tPair))
             {
-                // 이번 프레임에도 맞음 -> Stay
                 using (s_tMarkerStay.Auto())
                 {
                     tPair.ColliderA.OnStayCollider(tPair.ColliderB);
@@ -380,7 +512,6 @@ public class ColliderManager : MonoBehaviour
             }
             else
             {
-                // 이번 프레임에 처음 맞음 -> Enter
                 tPair = new tColliderPair { ColliderA = _refA, ColliderB = _refB };
                 m_hashPairInfo.Add(lKey, tPair);
                 m_listOther[_refA.ID].Add(_refB.ID);
@@ -392,15 +523,13 @@ public class ColliderManager : MonoBehaviour
         }
         else
         {
-            // A가 지금 아무와도 안 겹치면 이 쌍도 당연히 기록이 없으므로 조회 자체를 스킵 -
-            // 안 겹치는 쌍이 압도적으로 많은 구조라(총알 vs 운석 등) 이 한 줄이 비용을 크게 아낌
+            // 안 겹치는 쌍이 압도적으로 많은 구조라 이 얼리아웃이 비용을 크게 아낌
             if (m_listOther[_refA.ID].Count == 0)
                 return;
 
             long lKey = MakePairKey(_refA.ID, _refB.ID);
             if (m_hashPairInfo.TryGetValue(lKey, out tColliderPair tOld))
             {
-                // 저번 프레임까진 맞았는데 이번에 떨어짐 -> Exit
                 m_hashPairInfo.Remove(lKey);
                 m_listOther[_refA.ID].Remove(_refB.ID);
                 m_listOther[_refB.ID].Remove(_refA.ID);
@@ -411,35 +540,19 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
-    // ---- 도형별 겹침 판정 ----
 
-    // 두 콜라이더의 Shape을 직접 보고 맞는 판정 함수를 바로 호출한다(델리게이트 테이블 없음)
-    private static bool IsOverlapping(BaseCollider _refA, BaseCollider _refB)
+    // ---- 도형별 겹침 판정 (raw-parameter, 관리형 참조 없음 - Burst Job이 그대로 호출) ----
+
+    public static bool IsCircleCircleOverlap(
+        Vector3 _vCenterA, float _fRadiusA, Vector3 _vCenterB, float _fRadiusB)
     {
-        if (_refA.Shape == eColliderShape.Circle && _refB.Shape == eColliderShape.Circle)
-            return IsCircleCircleOverlap(_refA, _refB);
-        if (_refA.Shape == eColliderShape.Circle && _refB.Shape == eColliderShape.Box)
-            return IsCircleBoxOverlapPair(_refA, _refB);
-        if (_refA.Shape == eColliderShape.Box && _refB.Shape == eColliderShape.Circle)
-            return IsBoxCircleOverlapPair(_refA, _refB);
-
-        return IsBoxBoxOverlap(_refA, _refB);
-    }
-
-    // 원-원(구-구) 판정. 3D 전체 거리(X/Y/Z)로 겹침 판정
-    private static bool IsCircleCircleOverlap(BaseCollider _refA, BaseCollider _refB)
-    {
-        CircleCollider refCircleA = (CircleCollider)_refA;
-        CircleCollider refCircleB = (CircleCollider)_refB;
-
-        Vector3 vDelta = refCircleB.CachedCenter - refCircleA.CachedCenter;
+        Vector3 vDelta = _vCenterB - _vCenterA;
         float fDistSq = vDelta.sqrMagnitude;
-        float fRadiusSum = refCircleA.Radius + refCircleB.Radius;
+        float fRadiusSum = _fRadiusA + _fRadiusB;
         return fDistSq <= fRadiusSum * fRadiusSum;
     }
 
-    // 원(구)-OBB 판정. 구 중심을 박스의 로컬 축 3개에 투영 -> half-extent로 클램프 ->
-    // 델타 제곱합을 반지름 제곱과 비교. 씬 없이 EditMode 테스트로 검증 가능하도록 public static
+    // 구 중심을 박스 로컬 축 3개에 투영 -> half-extent로 클램프 -> 델타 제곱합을 반지름 제곱과 비교
     public static bool IsCircleBoxOverlap(
         Vector3 _vSphereCenter, float _fRadius,
         Vector3 _vBoxCenter, Vector3 _vAxisX, Vector3 _vAxisY, Vector3 _vAxisZ, Vector3 _vHalfExtent)
@@ -461,37 +574,7 @@ public class ColliderManager : MonoBehaviour
         return (fEx * fEx + fEy * fEy + fEz * fEz) <= _fRadius * _fRadius;
     }
 
-    // IsOverlapping이 Shape==(Circle,Box)일 때만 호출 - _refA는 항상 CircleCollider, _refB는 항상 ObbCollider
-    private static bool IsCircleBoxOverlapPair(BaseCollider _refA, BaseCollider _refB)
-    {
-        CircleCollider refCircle = (CircleCollider)_refA;
-        ObbCollider refBox = (ObbCollider)_refB;
-
-        // 구-구 선판정으로 먼저 거른다 - BoundingRadius는 넉넉한 상한이라, 통과 못 하면
-        // 진짜 OBB 판정(내적 3회+클램프) 없이도 100% 안 겹침(오탐/누락 없음)
-        float fBoundSum = refCircle.Radius + refBox.BoundingRadius;
-        if ((refCircle.CachedCenter - refBox.CachedCenter).sqrMagnitude > fBoundSum * fBoundSum)
-            return false;
-
-        return IsCircleBoxOverlap(
-            refCircle.CachedCenter, refCircle.Radius,
-            refBox.CachedCenter, refBox.AxisX, refBox.AxisY, refBox.AxisZ, refBox.HalfExtent);
-    }
-
-    // IsOverlapping이 Shape==(Box,Circle)일 때만 호출 - 인자만 바꿔 위 함수를 그대로 재사용
-    private static bool IsBoxCircleOverlapPair(BaseCollider _refA, BaseCollider _refB)
-    {
-        return IsCircleBoxOverlapPair(_refB, _refA);
-    }
-
-    // 지금 매트릭스상 절대 호출 안 됨(Obstacle은 자기 자신과 비충돌) - 설정 실수 대비 안전 스텁.
-    // 운석끼리 판정이 필요해지면 여기에 OBB-OBB(SAT 등) 구현
-    private static bool IsBoxBoxOverlap(BaseCollider _refA, BaseCollider _refB)
-    {
-        return false;
-    }
-
-    // Physics.Raycast 대체용(PhysX 없음) - Aim 등 화면 좌표 기반 조준에서 사용. Circle 전용
+    // Physics.Raycast 대체용(PhysX 없음). Circle 전용
     public bool RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, LayerMask _tMask, out CircleCollider _refHit)
     {
         _vDir.Normalize();
@@ -499,7 +582,7 @@ public class ColliderManager : MonoBehaviour
         CircleCollider refClosest = null;
         float fClosestT = float.MaxValue;
 
-        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
         {
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
@@ -528,14 +611,67 @@ public class ColliderManager : MonoBehaviour
         return refClosest != null;
     }
 
-    // Physics.OverlapSphereNonAlloc 대체용(PhysX 없음) - 범위 내 전체 목록. Circle 전용,
-    // 호출부 재사용 리스트를 Clear 후 채우므로 무할당
+    // Physics.RaycastNonAlloc 대체용(PhysX 없음). Circle 전용, 관통 판정용(Laser가 매 프레임
+    // 호출할 수 있어 무할당이 중요 - Sort()의 람다 클로저 할당을 피하려고 삽입 정렬 사용).
+    // _fBeamRadius: 레이 자체의 두께(0이면 순수 선) - 대상 판정 반경에 더해서 검사.
+    // 결과는 t(원점에서의 투영 거리) 오름차순으로 채워짐 - 호출부가 관통 순서대로 순회 가능
+    public void RaycastMask(Vector3 _vOrigin, Vector3 _vDir, float _fMaxLength, float _fBeamRadius, LayerMask _tMask, List<CircleCollider> _listResult)
+    {
+        _listResult.Clear();
+        _vDir.Normalize();
+
+        for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
+        {
+            if ((_tMask.value & (1 << iLayer)) == 0)
+                continue;
+
+            List<BaseCollider> listLayer = m_arrCollider[iLayer];
+            for (int i = 0; i < listLayer.Count; ++i)
+            {
+                if (!(listLayer[i] is CircleCollider refCollider))
+                    continue;
+
+                Vector3 vToCenter = refCollider.CachedCenter - _vOrigin;
+                float fT = Mathf.Clamp(Vector3.Dot(vToCenter, _vDir), 0f, _fMaxLength);
+                Vector3 vClosePoint = _vOrigin + _vDir * fT;
+                float fDistSq = (vClosePoint - refCollider.CachedCenter).sqrMagnitude;
+
+                float fHitRadius = refCollider.Radius + _fBeamRadius;
+                if (fDistSq > fHitRadius * fHitRadius)
+                    continue;
+
+                InsertSortedByDistance(_listResult, refCollider, _vOrigin, _vDir);
+            }
+        }
+    }
+
+    // _listResult를 t(원점 기준 투영 거리) 오름차순으로 유지하며 삽입 - 관통 대상 수 규모(수십 개
+    // 이하)에서는 List.Sort의 델리게이트 클로저 할당보다 이 편이 매 프레임 호출에 더 안전함
+    private static void InsertSortedByDistance(List<CircleCollider> _listResult, CircleCollider _refNew, Vector3 _vOrigin, Vector3 _vDir)
+    {
+        float fNewT = Vector3.Dot(_refNew.CachedCenter - _vOrigin, _vDir);
+
+        int iInsertIndex = _listResult.Count;
+        for (int i = 0; i < _listResult.Count; ++i)
+        {
+            float fT = Vector3.Dot(_listResult[i].CachedCenter - _vOrigin, _vDir);
+            if (fNewT < fT)
+            {
+                iInsertIndex = i;
+                break;
+            }
+        }
+
+        _listResult.Insert(iInsertIndex, _refNew);
+    }
+
+    // Physics.OverlapSphereNonAlloc 대체용(PhysX 없음). Circle 전용, 무할당
     public void FindAllInRadius(Vector3 _vPos, float _fRadius, LayerMask _tMask, List<CircleCollider> _listResult)
     {
         _listResult.Clear();
         float fRadiusSq = _fRadius * _fRadius;
 
-        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
         {
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
@@ -554,14 +690,14 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
-    // Physics.OverlapSphere 대체용(PhysX 없음) - 범위 내 최근접 하나. Circle 전용
+    // Physics.OverlapSphere 대체용(PhysX 없음). Circle 전용, 범위 내 최근접 하나
     public bool FindNearest(Vector3 _vPos, float _fRadius, LayerMask _tMask, out CircleCollider _refHit)
     {
         CircleCollider refNearest = null;
         float fNearestDistSq = float.MaxValue;
         float fRadiusSq = _fRadius * _fRadius;
 
-        for (int iLayer = 0; iLayer < 32; ++iLayer)
+        for (int iLayer = 0; iLayer < LAYER_COUNT; ++iLayer)
         {
             if ((_tMask.value & (1 << iLayer)) == 0)
                 continue;
@@ -586,4 +722,171 @@ public class ColliderManager : MonoBehaviour
         return refNearest != null;
     }
 
+
+    // ---- NativeContainer 관리 (프레임 스크래치라 매 프레임 통째로 덮어씀, 보존 불필요) ----
+
+    private void ResizeSoaCapacity(int _iCount)
+    {
+        if (m_arrCenter.IsCreated && m_arrCenter.Length >= _iCount)
+            return;
+
+        int iNewCapacity = m_arrCenter.IsCreated ? m_arrCenter.Length : INITIAL_CAPACITY;
+        while (iNewCapacity < _iCount)
+            iNewCapacity <<= 1;
+
+        DisposeSoa();
+        AllocateSoa(iNewCapacity);
+    }
+
+    private void AllocateSoa(int _iCapacity)
+    {
+        m_arrCenter = new NativeArray<Vector3>(_iCapacity, Allocator.Persistent);
+        m_arrAxisX = new NativeArray<Vector3>(_iCapacity, Allocator.Persistent);
+        m_arrAxisY = new NativeArray<Vector3>(_iCapacity, Allocator.Persistent);
+        m_arrAxisZ = new NativeArray<Vector3>(_iCapacity, Allocator.Persistent);
+        m_arrHalfExtent = new NativeArray<Vector3>(_iCapacity, Allocator.Persistent);
+        m_arrBoundingRadius = new NativeArray<float>(_iCapacity, Allocator.Persistent);
+        m_arrColliderId = new NativeArray<int>(_iCapacity, Allocator.Persistent);
+        m_arrColliderType = new NativeArray<int>(_iCapacity, Allocator.Persistent);
+        m_arrLayer = new NativeArray<int>(_iCapacity, Allocator.Persistent);
+        m_arrHasPair = new NativeArray<bool>(_iCapacity, Allocator.Persistent);
+    }
+
+    private void DisposeSoa()
+    {
+        if (m_arrCenter.IsCreated)
+            m_arrCenter.Dispose();
+        if (m_arrAxisX.IsCreated)
+            m_arrAxisX.Dispose();
+        if (m_arrAxisY.IsCreated)
+            m_arrAxisY.Dispose();
+        if (m_arrAxisZ.IsCreated)
+            m_arrAxisZ.Dispose();
+        if (m_arrHalfExtent.IsCreated)
+            m_arrHalfExtent.Dispose();
+        if (m_arrBoundingRadius.IsCreated)
+            m_arrBoundingRadius.Dispose();
+        if (m_arrColliderId.IsCreated)
+            m_arrColliderId.Dispose();
+        if (m_arrColliderType.IsCreated)
+            m_arrColliderType.Dispose();
+        if (m_arrLayer.IsCreated)
+            m_arrLayer.Dispose();
+        if (m_arrHasPair.IsCreated)
+            m_arrHasPair.Dispose();
+    }
+
+    // ---- Job ----
+
+    // 그리드에 들어간 콜라이더 하나(index)당 이웃 27칸의 후보만 검사한다. 후보 index가
+    // 자기 이하면 스킵(자기 자신이거나 이미 반대 방향에서 검사된 쌍) - 이 규칙 하나로
+    // "그리드 소유/조회" 구분이나 레이어별 중복 방지 가드 없이 중복 없는 순회가 된다
+    [BurstCompile]
+    private struct GridOverlapJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<int> CellStart;
+        [ReadOnly] public NativeArray<int> CellCount;
+        [ReadOnly] public NativeArray<int> CellItems;
+
+        public Vector3 GridOrigin;
+        public float CellSize;
+        public int CountX;
+        public int CountY;
+        public int CountZ;
+        public float MaxRadius;
+
+        [ReadOnly] public NativeArray<Vector3> Center;
+        [ReadOnly] public NativeArray<Vector3> AxisX;
+        [ReadOnly] public NativeArray<Vector3> AxisY;
+        [ReadOnly] public NativeArray<Vector3> AxisZ;
+        [ReadOnly] public NativeArray<Vector3> HalfExtent;
+        [ReadOnly] public NativeArray<float> BoundingRadius;
+        [ReadOnly] public NativeArray<int> ColliderId;
+        [ReadOnly] public NativeArray<int> ColliderType;
+        [ReadOnly] public NativeArray<int> Layer;
+        [ReadOnly] public NativeArray<bool> HasPair;
+
+        [ReadOnly] public NativeArray<int> LayerMatrixValue;
+
+        public NativeQueue<tPairResult>.ParallelWriter Output;
+
+        public void Execute(int index)
+        {
+            Vector3 vMyCenter = Center[index];
+            float fMyRadius = BoundingRadius[index];
+            int iMyType = ColliderType[index];
+            int iMyLayer = Layer[index];
+            int iMyId = ColliderId[index];
+            bool bMyHasPair = HasPair[index];
+
+            BoxColliderGrid.ComputeCellCoord(vMyCenter, GridOrigin, CellSize, CountX, CountY, CountZ,
+                out int iCX, out int iCY, out int iCZ);
+
+            // 최초 그리드 빌드 이후 커진 반경도 놓치지 않는다. 배열 재할당은 없다.
+            int iRange = Mathf.Max(1, Mathf.CeilToInt((fMyRadius + MaxRadius) / CellSize));
+            int iMinX = Mathf.Max(0, iCX - iRange);
+            int iMaxX = Mathf.Min(CountX - 1, iCX + iRange);
+            int iMinY = Mathf.Max(0, iCY - iRange);
+            int iMaxY = Mathf.Min(CountY - 1, iCY + iRange);
+            int iMinZ = Mathf.Max(0, iCZ - iRange);
+            int iMaxZ = Mathf.Min(CountZ - 1, iCZ + iRange);
+
+            for (int ix = iMinX; ix <= iMaxX; ++ix)
+                for (int iy = iMinY; iy <= iMaxY; ++iy)
+                    for (int iz = iMinZ; iz <= iMaxZ; ++iz)
+                    {
+                        int iCell = BoxColliderGrid.FlattenIndex(ix, iy, iz, CountX, CountY);
+                        int iStart = CellStart[iCell];
+                        int iEnd = iStart + CellCount[iCell];
+
+                        for (int k = iStart; k < iEnd; ++k)
+                        {
+                            int j = CellItems[k];
+
+                            if (j <= index)
+                                continue;
+
+                            if (!ColliderManager.IsLayerCollider(LayerMatrixValue, iMyLayer, Layer[j]))
+                                continue;
+
+                            int iOtherType = ColliderType[j];
+                            Vector3 vOtherCenter = Center[j];
+                            float fOtherRadius = BoundingRadius[j];
+
+                            bool bOverlap;
+                            if (iMyType != COLLIDER_TYPE_BOX && iOtherType != COLLIDER_TYPE_BOX)
+                                bOverlap = ColliderManager.IsCircleCircleOverlap(vMyCenter, fMyRadius, vOtherCenter, fOtherRadius);
+                            else if (iMyType == COLLIDER_TYPE_BOX && iOtherType == COLLIDER_TYPE_BOX)
+                                bOverlap = false; // Box-Box (지금 매트릭스엔 없음, 방어적 스텁)
+                            else
+                            {
+                                // 구-구 선판정으로 먼저 거른다 - 통과 못 하면 진짜 OBB 판정 없이도 100% 안 겹침
+                                float fBoundSum = fMyRadius + fOtherRadius;
+                                Vector3 vDelta = vOtherCenter - vMyCenter;
+                                bOverlap = false;
+
+                                if (vDelta.sqrMagnitude <= fBoundSum * fBoundSum)
+                                {
+                                    bOverlap = iMyType == COLLIDER_TYPE_BOX
+                                        ? ColliderManager.IsCircleBoxOverlap(
+                                            vOtherCenter, fOtherRadius, vMyCenter, AxisX[index], AxisY[index], AxisZ[index], HalfExtent[index])
+                                        : ColliderManager.IsCircleBoxOverlap(
+                                            vMyCenter, fMyRadius, vOtherCenter, AxisX[j], AxisY[j], AxisZ[j], HalfExtent[j]);
+                                }
+                            }
+
+                            // 안 겹친 결과는 "저번 프레임까지 겹쳐있던 쌍"의 Exit 판정에만 필요
+                            if (bOverlap || bMyHasPair || HasPair[j])
+                            {
+                                Output.Enqueue(new tPairResult
+                                {
+                                    IdA = iMyId,
+                                    IdB = ColliderId[j],
+                                    Overlap = bOverlap
+                                });
+                            }
+                        }
+                    }
+        }
+    }
 }

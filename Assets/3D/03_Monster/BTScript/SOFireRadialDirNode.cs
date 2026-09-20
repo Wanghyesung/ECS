@@ -21,7 +21,7 @@ public class SOFireRadialDirNode : SONode
 
 
         Weapon refAttackWeapon = refSpawnInfo.Weapon;
-        int iPoolCount = ObjectPool.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
+        int iPoolCount = ObjectPoolManager.m_Instance.GetObjectCount(refAttackWeapon.FireBulletPrefab);
         int iTotalCount = refSpawnInfo.SpawnCount;
 
 
