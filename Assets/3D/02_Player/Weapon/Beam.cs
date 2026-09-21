@@ -50,7 +50,7 @@ public sealed class Beam : MonoBehaviour, IAttackObject
     {
         m_refAttackInfo = _refAttackInfo;
         m_tShotInfo = _tShotInfo;
-        m_tShotInfo.MoveDir = transform.forward;
+        m_tShotInfo.MoveDir = _tShotInfo.MoveDir; 
         m_tShotInfo.HitCount = 0;
 
         m_refPoolObj.SetAliveTime(_refAttackInfo.AliveTime);   // 자동 반납 전담 (Bullet.cs와 동일 패턴, 별도 타이머 없음)

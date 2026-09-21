@@ -15,7 +15,7 @@ MonoBehaviour:
   ObjectName: New Monster
   Description: 
   MaxHP: 300
-  MaxSpeed: 5
+  MaxSpeed: 11
   MaxAtack: 1000
   MaxDefense: 100
   ExpReward: 36

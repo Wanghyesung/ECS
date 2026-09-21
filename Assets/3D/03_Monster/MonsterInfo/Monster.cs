@@ -58,7 +58,6 @@ public class SpawnInfo
 public class Monster : MonoBehaviour, IDamageable
 { 
   
-    [SerializeField] private GameObject m_refTargetPlayer;
     [SerializeField] private VisualObject m_refVisualObj = null;
 
     [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
@@ -153,12 +152,8 @@ public class Monster : MonoBehaviour, IDamageable
     {
         m_refPoolObj.SetAliveTime(float.MaxValue);
         // DeleteTem
-        var player = FindObjectOfType<Player>();
-        if (player == null) 
-            return;
 
-        m_refTargetPlayer = player.gameObject;
-        m_refBlackBoard.TargetTr = player.transform;
+        m_refBlackBoard.TargetTr = Player.CurrentPlayer.transform;
         
         int iCount = m_listSpawn.Count;
         if (iCount > 0)

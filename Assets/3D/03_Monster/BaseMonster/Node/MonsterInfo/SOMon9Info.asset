@@ -15,7 +15,7 @@ MonoBehaviour:
   ObjectName: StarSparrow9
   Description: "\uC77C\uBC18 \uBAAC\uC2A4\uD130 - StarSparrow9 (Tier 7)"
   MaxHP: 2100
-  MaxSpeed: 6.8
+  MaxSpeed: 14.5
   MaxAtack: 2400
   MaxDefense: 240
   ExpReward: 78

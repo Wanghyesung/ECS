@@ -15,7 +15,7 @@ MonoBehaviour:
   ObjectName: StarSparrow6
   Description: "\uC77C\uBC18 \uBAAC\uC2A4\uD130 - StarSparrow6 (Tier 4)"
   MaxHP: 1050
-  MaxSpeed: 5.6
+  MaxSpeed: 14.4
   MaxAtack: 1800
   MaxDefense: 180
   ExpReward: 60

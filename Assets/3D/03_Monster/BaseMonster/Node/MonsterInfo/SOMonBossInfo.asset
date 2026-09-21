@@ -15,7 +15,7 @@ MonoBehaviour:
   ObjectName: Boss
   Description: 
   MaxHP: 45000
-  MaxSpeed: 10
+  MaxSpeed: 13
   MaxAtack: 1000
   MaxDefense: 100
   ExpReward: 200
