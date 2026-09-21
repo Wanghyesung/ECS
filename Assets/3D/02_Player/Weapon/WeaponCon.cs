@@ -16,7 +16,7 @@ public sealed class WeaponCon : MonoBehaviour
     [SerializeField, Min(1f)] private float m_fMaxSpeedMultiplier = 2.5f;
     [SerializeField] private ParticleSystem m_refChargeEffect;
 
-    private Weapon m_refWeapon;
+    [SerializeField] private Weapon m_refWeapon;
     private GameObject m_refBulletObj;
     private Transform m_refBulletTr;
     private Transform m_refPoolParent;
@@ -35,7 +35,8 @@ public sealed class WeaponCon : MonoBehaviour
 
     private void Awake()
     {
-        m_refWeapon = GetComponent<Weapon>();
+        if(m_refWeapon == null)
+            m_refWeapon = GetComponent<Weapon>();
         OnValidate();
         ClearCharge();
     }

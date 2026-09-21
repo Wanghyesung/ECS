@@ -555,7 +555,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
         {
-            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].ChargeOnly == false)
+            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == true)
                 m_listWeapon[i].AddBulletCount(_iValue);
         }
     }
