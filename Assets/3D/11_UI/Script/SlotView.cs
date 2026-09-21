@@ -28,6 +28,8 @@ public class SlotView : BaseButtonUI
     public SOData SOData { get => m_SOTargetSO; }
     public int SlotIdx { get => m_iSlotIdx; }
 
+    protected override SOData TooltipData => m_SOTargetSO;
+
     public void Init(ISelectDataable _refContainer)
     {
         m_refContainer = _refContainer;
@@ -96,6 +98,9 @@ public class SlotView : BaseButtonUI
 
         SetCount(_iCount);
         m_iSlotIdx = _iSlotIdx;
+
+        //드래그 스크롤/정렬은 슬롯 오브젝트를 재사용하고 데이터만 바꿔 Enter/Exit 가 안 온다
+        RefreshTooltip();
     }
 
     //등급 색상 표시 여부/색상은 이 슬롯을 쓰는 Container가 결정해서 밀어줌 (SlotView는 그리기만 담당)
