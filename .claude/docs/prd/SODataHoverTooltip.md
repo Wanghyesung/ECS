@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 artifact: https://claude.ai/artifact/JTTUnfqeD26oYKcZ39B3p3
 ---
 
@@ -79,7 +79,7 @@ stateDiagram-v2
 |---|---|---|
 | M1 코드 | `.cs` 2개 — `SODataTooltipView`(신규) · `SlotView`(수정) | 컴파일 에러 0 |
 | M2 Unity 배선 | `Assets/3D/11_UI/Item/SODataTooltip.prefab` 생성, BattleScene `PopupCanvas` · LobyScene `PopUpCanvas` 마지막 자식으로 배치 | 두 씬에서 hover 시 창 표시 |
-| M3 검증 | 아래 Acceptance 전부 + `unity-reviewer` | `status: done` |
+| M3 검증 | 아래 Acceptance 플레이 검증 (`unity-reviewer` 는 사용자 결정으로 생략) | `status: done` |
 
 ## 7. Acceptance Criteria (BDD)
 
@@ -95,7 +95,7 @@ Given Container 드래그 스크롤 중             When 행이 바뀜          
 ## 8. Prefab Spec (M2)
 
 ```
-SODataTooltip   RectTransform(pivot 0,1 · width 320) · Image(Sci-Fi 배경 icon_btn, raycastTarget OFF)
+SODataTooltip   RectTransform(pivot 0,1 · 500×790) · Image(Sci-Fi 배경 icon_btn, raycastTarget OFF)
                 CanvasGroup · DataDescUI · SODataTooltipView
                 VerticalLayoutGroup(padding 16, spacing 8) · ContentSizeFitter(Vertical = Preferred)
 ├─ ItemSlot     Image(슬롯 프레임, raycastTarget OFF, preserveAspect) · LayoutElement(min/preferred 250×250)
@@ -107,9 +107,16 @@ DataDescUI      m_refImage → Icon · m_refDescTex → Desc · m_refOriginSprit
 
 ## 9. Out of Scope
 
-Android 길게 누르기 · 커서 추적 · 페이드 연출 · SO 이름/희귀도 필드 · BattleScene_2/MainScene/2D 씬 배치 · `guard-editor-runtime.sh` 백슬래시 경로 수정(별도).
+Android 길게 누르기 · 커서 추적 · 페이드 연출 · SO 이름/희귀도 필드 · 2D 씬 배치 · `guard-editor-runtime.sh` 백슬래시 경로 수정(별도).
 
 ## Changelog
 
 - 2026-09-22 — 승인, M1 코드 + M2 프리팹·두 씬 배치 완료(845f2a0, b4fb9c8). LobyScene 플레이 모드에서 Enter/Exit/OnDisable/빈 슬롯/교체 검증.
-- 2026-09-22 — 범위 축소: SlotView 전용으로 이동, BaseButtonUI·RandomFeatureCard 훅 제거, 소유자 가드·카메라 변환 제거(사용자 결정). 프리팹 크기 250/500 으로 확대 예정(M2 잔여).
+- 2026-09-22 — 범위 축소: SlotView 전용으로 이동, BaseButtonUI·RandomFeatureCard 훅 제거, 소유자 가드·카메라 변환 제거(사용자 결정). 프리팹 500×790(슬롯 250, 아이콘 200, 설명 minHeight 500)으로 확대.
+
+## Result
+
+- 컴파일 에러/경고 0 (2022.3.62f2).
+- LobyScene 플레이 모드, 실제 `StatContainer`/`InvenContainer` 슬롯으로 검증: 진입→표시·텍스트 바인딩·슬롯 오른쪽 +8 / 이탈→숨김 / hover 중 부모 SetActive(false)→숨김 / hover 아닌 다른 패널 닫힘→유지 / 빈 슬롯 진입→안 뜸 / A→B 이동 시 내용 교체. 790 높이라 위아래 clamp 가 실제로 동작함(슬롯 윗변보다 위로 밀림).
+- 프리팹 `Assets/3D/11_UI/Item/SODataTooltip.prefab`(500×790), LobyScene `PopUpCanvas` · BattleScene / BattleScene_2 `PopupCanvas` 마지막 자식.
+- 독립 리뷰(`unity-reviewer`)는 사용자 결정으로 생략.
