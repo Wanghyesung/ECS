@@ -46,37 +46,19 @@ public class BaseButtonUI : MonoBehaviour,
     [SerializeField] private UnityEvent OnEndDragUEvt;
     [SerializeField] private UnityEvent OnClickUEvt;
 
-    //hover 설명창 - 파생 클래스가 현재 SOData 를 돌려주면 진입 시 SODataTooltipView 가 뜬다
-    protected virtual SOData TooltipData => null;
-    private bool m_bPointerInside = false;
-    private Camera m_refEventCamera = null;
-
     //[SerializeField] private SOAudio m_pClickAudio;
     //[SerializeField] private SOAudio m_pDownAudio;
 
-    //SetActive(false) 된 UI 에는 PointerExit 가 오지 않으므로 여기서 닫는다
-    protected virtual void OnDisable()
-    {
-        m_bPointerInside = false;
-        SODataTooltipView.Hide(this);
-    }
-
+   
     virtual public void OnPointerExit(PointerEventData e)
     {
         OnExitUEvt?.Invoke();
         m_subjectExit.OnNext(Unit.Default);
-
-        m_bPointerInside = false;
-        SODataTooltipView.Hide(this);
     }
     virtual public void OnPointerEnter(PointerEventData e)
     {
         OnEnterUEvt?.Invoke();
         m_subjectEnter.OnNext(Unit.Default);
-
-        m_bPointerInside = true;
-        m_refEventCamera = e.enterEventCamera;
-        RefreshTooltip();
     }
     public void OnPointerUp(PointerEventData _eventData)
     {
@@ -119,19 +101,6 @@ public class BaseButtonUI : MonoBehaviour,
     public void PushScale()
     {
         transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0), 0.2f, 1, 0.5f);
-    }
-
-    //데이터가 바뀐 직후 파생 클래스가 호출 - 마우스가 위에 없으면 아무것도 안 함
-    protected void RefreshTooltip()
-    {
-        if (m_bPointerInside == false)
-            return;
-
-        SOData refData = TooltipData;
-        if (refData == null)
-            SODataTooltipView.Hide(this);
-        else
-            SODataTooltipView.Show(this, refData, (RectTransform)transform, m_refEventCamera);
     }
 
       

@@ -25,9 +25,6 @@ public class RandomFeatureCard : BaseButtonUI
     [SerializeField] private float m_fShowTime = 2.0f;
     private SOData m_SOData = null;
     public SOData Data => m_SOData;
-    private bool m_bRevealed = false;   //뒷면(회전 중)일 땐 설명창을 띄우지 않는다
-
-    protected override SOData TooltipData => m_bRevealed ? m_SOData : null;
 
     private readonly Subject<SOData> m_subjectCardClick = new();
     public Observable<SOData> OnCardClicked => m_subjectCardClick;
@@ -45,8 +42,6 @@ public class RandomFeatureCard : BaseButtonUI
     public void Setup(SOData _SOData)
     {
         m_SOData = _SOData;
-        m_bRevealed = false;
-        RefreshTooltip();
 
         m_refTargetSprite = _SOData.Icon;
         gameObject.SetActive(true);
@@ -81,8 +76,5 @@ public class RandomFeatureCard : BaseButtonUI
         m_refImage.raycastTarget = true;
 
         m_refSlotImage.color = m_SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
-
-        m_bRevealed = true;
-        RefreshTooltip();
     }
 }
