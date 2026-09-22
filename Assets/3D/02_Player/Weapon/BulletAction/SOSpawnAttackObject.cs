@@ -19,6 +19,12 @@ public class SOSpawnAttackObject : SOBulletAction
     [SerializeField] private float m_fBaseRadius = 1f;
     [SerializeField] private float m_fRadiusPerLevel = 0.1f;
 
+    [Header("Hit Count")]
+    // 폭발 하나가 데미지를 줄 수 있는 최대 몬스터 수.
+    // CircleCollider의 Enter 이벤트는 몬스터당 1회만 오므로 "명중 횟수 = 맞은 몬스터 수"
+    [Min(1)]
+    [SerializeField] private int m_iMaxHitCount = 5;
+
     public override void Execute(IAttackObject _refOwner)
     {
         if (m_refAttackObjectPoolData == null)
@@ -35,9 +41,10 @@ public class SOSpawnAttackObject : SOBulletAction
 
         AttackObject refAttackObj = refObj.GetComponent<AttackObject>();
         refAttackObj.SetAttack(_refOwner.AttackInfo, new tShotInfo());
+        refAttackObj.SetMaxHitCount(m_iMaxHitCount);
 
         //refAttackObj.SetWeaponHitActions(_refOwner.)
-        int iLevel = BattleManager.m_Instance.CurrentLevel;
+        int iLevel = BattleManager.m_Instance.Level.CurrentValue;
         refAttackObj.SetScale(m_fBaseRadius + m_fRadiusPerLevel * iLevel);
 
 //#if UNITY_EDITOR

@@ -17,7 +17,7 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  PoolDataList:
+  m_listScenePoolData:
   - {fileID: 11400000, guid: daf39257175396c41815a173700d1878, type: 2}
   - {fileID: 11400000, guid: fe4f09a5c63d3aa46b21eee9666d1118, type: 2}
   - {fileID: 11400000, guid: 5f01528a4b8655440934fb4da677f58f, type: 2}
@@ -56,3 +56,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dc4472fb561877843a6bb02378499b5b, type: 2}
   - {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
   - {fileID: 11400000, guid: ab3ca9a07a82b8f4c8aa5594a9b7b705, type: 2}
+  - {fileID: 11400000, guid: bfebb6399654c164b95a22f5713e4ab2, type: 2}
+  - {fileID: 11400000, guid: eafb730d454bc994faabecef4fea997c, type: 2}
+  Stage: {fileID: 0}

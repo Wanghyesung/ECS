@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: SO_MidAttackInfo 1
   m_EditorClassIdentifier: 
   Description: 
-  WeaponType: 1
-  PoolPrefab: {fileID: 11400000, guid: f233f9fe5f6d42e49acd0be3748bf0be, type: 2}
   Damage: 2
   AttackPower: 5
-  Cooldown: 0.02
   Speed: 180
   SpeedOffset: 40
   AliveTime: 2
@@ -27,10 +24,6 @@ MonoBehaviour:
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0
-  BaseRotationSpeed: 0
-  MaxRotationSpeed: 0
-  RotationAccelRate: 0
-  ProximityRadius: 0
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

@@ -21,7 +21,7 @@ public class TestStartCode : MonoBehaviour
     private async UniTaskVoid LoadSceneDataAsync(SOSceneData _refSceneData)
     {
 
-        await ObjectPoolManager.m_Instance.LoadPoolAsync(_refSceneData.PoolDataList, this.GetCancellationTokenOnDestroy());
+        await ObjectPoolManager.m_Instance.LoadPoolAsync(_refSceneData.ScenePoolDataList, this.GetCancellationTokenOnDestroy());
         Debug.Log("로딩완료");
     }
    

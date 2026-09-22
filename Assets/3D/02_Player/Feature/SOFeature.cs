@@ -19,6 +19,12 @@ public enum eFeatureID
     UpDefense,
     UpBulletSpeed,
     UPDrone,
+    Nuke,
+    LaserUp,
+    AddBulletCount,
+    AddMissileBulletCount,
+    AddMissileCount,
+    AddBeamCount,
     End,
 
     //AttackUp,
@@ -72,6 +78,10 @@ public abstract class SOFeature : SOData
     [Tooltip("이 기능의 최대 레벨. 0이면 제한 없음")]
     [SerializeField] private int m_iMaxLevel = 0;
     public int MaxLevel => m_iMaxLevel;
+
+    [Tooltip("이 카드를 먼저 1레벨 이상 갖고 있어야 후보에 나온다. 비우면 조건 없음")]
+    [SerializeField] private SOFeature m_refRequire;
+    public SOFeature Require => m_refRequire;
 
     // _iNewLevel : 이 기능을 선택한 시점의 누적 획득 횟수 (FeatureManager가 갱신 후 전달)
     public abstract void Apply(Player _refPlayer, int _iNewLevel); 

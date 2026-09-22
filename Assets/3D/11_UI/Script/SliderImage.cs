@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,21 +22,18 @@ public class SliderImage : MonoBehaviour
     private float m_fCurValue = 0.0f;
     private float m_fLerpDuration = 0.5f;
 
-    [SerializeField] private float m_fCoSecond = 0.5f;
-
-    private Coroutine m_CoLerpSlider = null;
-    private WaitForSeconds m_refWaitSecond = null;
+    private CancellationTokenSource m_ctsLerp;
     [SerializeField] private Image m_refImage = null;
 
-    public event Action OnFillCompleted;   // 목표치가 0(빈 상태)이 되는 즉시 호출 (예: HP 소진 -> 사망)
-    public event Action OnFillMaxReached;  // 실제로 fill 애니메이션이 Max까지 다 찬 뒤에 호출 (예: EXP 만땅 -> 레벨업)
+    private readonly Subject<Unit> m_subjectFillCompleted = new();
+    private readonly Subject<Unit> m_subjectFillMaxReached = new();
+    public Observable<Unit> OnFillCompleted => m_subjectFillCompleted;   // 목표치가 0(빈 상태)이 되는 즉시 (예: HP 소진 -> 사망)
+    public Observable<Unit> OnFillMaxReached => m_subjectFillMaxReached; // fill 애니메이션이 Max까지 다 찬 뒤 (예: EXP 만땅 -> 레벨업)
 
     private void Awake()
     {
         if(m_refImage == null)
             m_refImage = GetComponent<Image>();
-
-        m_refWaitSecond = new WaitForSeconds(m_fCoSecond);
     }
     
     public void SetRange(float _fMaxValue, float _fCurValue)
@@ -48,25 +48,30 @@ public class SliderImage : MonoBehaviour
     // 외부에서 새로운 현재값을 받아 슬라이더를 업데이트하는 함수
     public void UpdateSlider(float _fNewValue, float _fMaxValue)
     {
-        if (m_CoLerpSlider != null)
-            StopCoroutine(m_CoLerpSlider);
+        if (_fMaxValue <= 0.0f) return;   // HUD가 Player.Start보다 먼저 구독하면 (0,0)이 한 번 들어온다 — NaN 방지
+
+        if (m_ctsLerp != null)
+        {
+            m_ctsLerp.Cancel();
+            m_ctsLerp.Dispose();
+        }
 
         // 데이터 갱신
         m_fCurValue = _fNewValue;
 
         float fTargetFill = _fNewValue / _fMaxValue;
         if (fTargetFill <= 0.0f)
-            OnFillCompleted?.Invoke();
+            m_subjectFillCompleted.OnNext(Unit.Default);
 
-        m_CoLerpSlider = StartCoroutine(CoLerpSlider(m_refImage.fillAmount, fTargetFill));
+        m_ctsLerp = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        LerpSliderAsync(m_refImage.fillAmount, fTargetFill, m_ctsLerp.Token).Forget();
     }
 
-    // 실제 보간을 담당하는 코루틴
-    private IEnumerator CoLerpSlider(float _fStartFill, float _fEndFill)
+    private async UniTaskVoid LerpSliderAsync(float _fStartFill, float _fEndFill, CancellationToken _ct)
     {
         float fElapsed = 0f;
 
-        while (fElapsed < m_fLerpDuration)
+        while (fElapsed < m_fLerpDuration )
         {
             fElapsed += Time.deltaTime;
 
@@ -76,19 +81,18 @@ public class SliderImage : MonoBehaviour
             // 시작 fillAmount에서 목표 fillAmount까지 보간
             m_refImage.fillAmount = Mathf.Lerp(_fStartFill, _fEndFill, fProgress);
 
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
-        // 애니메이션이 실제로 Max까지 다 찬 시점에만 호출 (UpdateSlider 호출 즉시가 아님)
+        m_refImage.fillAmount = _fEndFill;
+
+        // 애니메이션이 실제로 Max까지 다 찬 시점에만 호출 (UpdateSlider 호출 즉시가 아님).
+        // 0으로 되감는 건 EXP 전용 연출이라 구독자(PlayerSlider)가 한다 — 여기서 하면 HP 만땅일 때 바가 비어 보임
         if (_fEndFill >= 1.0f)
-        {
-            OnFillMaxReached?.Invoke();
-            m_refImage.fillAmount = 0.0f;
-        }
-        else
-             m_refImage.fillAmount = _fEndFill;
+            m_subjectFillMaxReached.OnNext(Unit.Default);
 
-        m_CoLerpSlider = null;
+        m_ctsLerp.Dispose();
+        m_ctsLerp = null;
     }
 
 }

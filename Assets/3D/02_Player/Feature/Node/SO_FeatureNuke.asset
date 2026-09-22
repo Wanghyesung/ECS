@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d38a8b8586c31d49a3b8a2f5efa4068, type: 3}
+  m_Name: SO_FeatureNuke
+  m_EditorClassIdentifier: 
+  m_strDescription: Nuke. Destroys every monster on the map.
+  m_sprIcon: {fileID: 545253405, guid: f2e64e84491e92446b8e5476359ea9bb, type: 3}
+  m_eID: 15
+  m_eAcquireType: 0
+  m_iWeight: 1
+  m_eTier: 4
+  m_iMaxLevel: 1
+  m_refMissilePoolData: {fileID: 11400000, guid: 818a8b1c47f8e1749be0ee2079e2b56e, type: 2}
+  m_SOAttackInfo: {fileID: 11400000, guid: 4d1f88de1b7965a43ab7a0af0af512fa, type: 2}

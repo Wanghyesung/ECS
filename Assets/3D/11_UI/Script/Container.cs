@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using R3;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -90,14 +90,22 @@ public class Container : BaseButtonUI , ISelectDataable
     [Header("TargetSLOT")]
     private SlotView m_refTargetSlot;//id로 바꿀 수 있음 (매니저에서 가져오게 아니면 그냥 SO들고있기)
 
-    public event Action<SOData> OnSelectEvt;
-    public event Action<SOData> OnAddEvt;
-    public event Action<SOData> OnDeleteEvt;
-    public event Action<SlotView> OnSelectSlotView;
-    public event Action OnFullEvt;
+    private readonly Subject<SOData> m_subjectSelect = new();
+    private readonly Subject<SOData> m_subjectAdd = new();
+    private readonly Subject<SOData> m_subjectDelete = new();
+    private readonly Subject<SlotView> m_subjectSelectSlot = new();
+    private readonly Subject<Unit> m_subjectFull = new();
+    private readonly Subject<(SOData refData, SlotView refSlot)> m_subjectSlotBind = new();
+    public Observable<SOData> OnSelectEvt => m_subjectSelect;
+    public Observable<SOData> OnAddEvt => m_subjectAdd;
+    public Observable<SOData> OnDeleteEvt => m_subjectDelete;
+    public Observable<SlotView> OnSelectSlotView => m_subjectSelectSlot;
+    public Observable<Unit> OnFullEvt => m_subjectFull;
 
     // 등급 색상처럼 특정 도메인에만 해당하는 표시는 구독자가 알아서 판단해서 처리)
-    public event Action<SOData, SlotView> OnSlotBind;
+    public Observable<(SOData refData, SlotView refSlot)> OnSlotBind => m_subjectSlotBind;
+
+    private IDisposable m_disposableFeature;
 
     [SerializeField] private GameObject m_refSelectFramePrefab;
     private RectTransform m_refFrameRectTrasnform;
@@ -141,7 +149,12 @@ public class Container : BaseButtonUI , ISelectDataable
 
         //Feature 전용 컨테이너면 기능 흭득/레벨업 이벤트를 구독해서 슬롯에 자동 반영
         if (m_eType == eContainerType.Feature && FeatureManager.m_Instance != null)
-            FeatureManager.m_Instance.OnFeatureSelect += OnFeatureAcquired;
+        {
+            m_disposableFeature?.Dispose();
+            m_disposableFeature = FeatureManager.m_Instance.OnFeatureSelect
+                .Subscribe(_t => OnFeatureAcquired(_t.refFeature, _t.iLevel))
+                .AddTo(this);
+        }
 
         if (m_refSelectFramePrefab != null)
         {
@@ -233,7 +246,7 @@ public class Container : BaseButtonUI , ISelectDataable
 
         //데이터 새로 바인딩
         BindData(iCategoryIdx);
-        OnDeleteEvt?.Invoke(SOData);
+        m_subjectDelete.OnNext(SOData);
 
         return true;
     }
@@ -263,7 +276,7 @@ public class Container : BaseButtonUI , ISelectDataable
             return false;
 
         SortData(_SOData.DataType);
-        OnDeleteEvt?.Invoke(_SOData);
+        m_subjectDelete.OnNext(_SOData);
         return true;
     }
 
@@ -295,7 +308,7 @@ public class Container : BaseButtonUI , ISelectDataable
 
 
             if (pCategoryData.m_iCurrentRemnantData == 0)
-                OnFullEvt?.Invoke();
+                m_subjectFull.OnNext(Unit.Default);
 
             //구조가 바뀌었으니(슬롯 하나가 새로 채워짐) 전체 재바인딩
             BindData();
@@ -303,7 +316,7 @@ public class Container : BaseButtonUI , ISelectDataable
 
         //이미 화면에 보이는 슬롯이면 전체 재바인딩 없이 카운트만 갱신
         SetSlotCount(iIdx, _iCount);
-        OnAddEvt?.Invoke(_SOData);
+        m_subjectAdd.OnNext(_SOData);
         return true;
     }
         
@@ -517,7 +530,7 @@ public class Container : BaseButtonUI , ISelectDataable
                      iCount = ICountSource.GetCount(refFeat);
 
             m_listView[i].Bind(refFeat, iDataIdx, iCount);
-            OnSlotBind?.Invoke(refFeat, m_listView[i]);
+            m_subjectSlotBind.OnNext((refFeat, m_listView[i]));
         }
     }
 
@@ -597,8 +610,8 @@ public class Container : BaseButtonUI , ISelectDataable
         m_refTargetSlot = _pTargetSlot;
 
         //콜백함수
-        OnSelectEvt?.Invoke(_pTargetSlot.SOData);
-        OnSelectSlotView?.Invoke(_pTargetSlot);
+        m_subjectSelect.OnNext(_pTargetSlot.SOData);
+        m_subjectSelectSlot.OnNext(_pTargetSlot);
     }
 
     public SlotView GetTargetSlot()
@@ -704,7 +717,7 @@ public class Container : BaseButtonUI , ISelectDataable
             for (int i = _iCount; i < listData.Count; ++i)
             {
                 if (listData[i] != null)
-                    OnDeleteEvt?.Invoke(listData[i]);
+                    m_subjectDelete.OnNext(listData[i]);
             }
 
             // _iCount 번 인덱스부터 iDeleteCount 개수만큼 삭제

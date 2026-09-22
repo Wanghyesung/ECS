@@ -76,8 +76,9 @@ crashlytics-build.properties
 
 # Claude Code local settings and session state
 .claude/settings.local.json
-.claude/state/*.json
-.claude/state/*.jsonl
-.claude/state/*.txt
-.claude/state/*.md
-.claude/state/session-start-time
+.claude/state/*
+!.claude/state/.gitkeep
+
+# Codex local runtime state
+.codex/state/*
+!.codex/state/.gitkeep

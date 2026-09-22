@@ -12,6 +12,7 @@ public class JobMissile : Bullet
     [SerializeField] private bool m_bTraceTarget = false;
 
     private int m_iJobIndex = -1;
+    private HomingAttackInfo m_refHomingInfo;   // SetAttack 에서 한 번 캐스팅
 
     protected override void Awake()
     {
@@ -24,6 +25,15 @@ public class JobMissile : Bullet
     {
         base.SetAttack(_refAttackInfo, _refShotInfo);
 
+        m_refHomingInfo = _refAttackInfo as HomingAttackInfo;
+        if (m_refHomingInfo == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError($"[{name}] 발사한 무기의 SO가 SOHomingAttackInfo가 아님", this);
+#endif
+            return;
+        }
+
         Vector3 vTargetPos = _refShotInfo.TargetPos;
         if (m_bTraceTarget == true && _refShotInfo.TargetTr != null)
             vTargetPos = _refShotInfo.TargetTr.position;
@@ -32,8 +42,8 @@ public class JobMissile : Bullet
 
         MissileMoveManager.m_Instance.Activate(
             m_iJobIndex,  _refShotInfo.Speed, fTargetLength,
-            _refAttackInfo.ProximityRadius, _refAttackInfo.RotationSpeed,
-            _refAttackInfo.MaxRotationSpeed, _refAttackInfo.RotateSpeedRate,
+            m_refHomingInfo.ProximityRadius, m_refHomingInfo.RotationSpeed,
+            m_refHomingInfo.MaxRotationSpeed, m_refHomingInfo.RotateSpeedRate,
             m_bTraceTarget, _refShotInfo.TargetTr, _refShotInfo.TargetPos);
     }
 

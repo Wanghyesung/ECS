@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0326068139b236943978a7671a385511, type: 3}
   m_Name: SO_FeatAddBullet
   m_EditorClassIdentifier: 
-  m_strDescription: Bullet UP
-  m_sprIcon: {fileID: -118184348, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
+  m_strDescription: Adds a bullet weapon.
+  m_sprIcon: {fileID: 1632265149, guid: f2e64e84491e92446b8e5476359ea9bb, type: 3}
   m_eID: 7
   m_eAcquireType: 0
   m_iWeight: 1
   m_eTier: 2
-  m_iMaxLevel: 8
+  m_iMaxLevel: 2
   m_eTargetWeaponType: 1

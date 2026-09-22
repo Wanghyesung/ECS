@@ -1,3 +1,4 @@
+using R3;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,10 +16,16 @@ public class Aim : MonoBehaviour
     [SerializeField] private LayerMask m_tLayerMask;
     [SerializeField] private float m_fMaxLength;
 
-    [SerializeField] private Image m_refAimImage;
+  
     private Vector3 m_tTargetPosition = Vector3.zero;
     public Vector3 TargetPosition => m_tTargetPosition;
 
+    private readonly Subject<Unit> m_subOnTarget = new();
+    private readonly Subject<Unit> m_subUnTarget = new();
+    public Observable<Unit> OnTarget => m_subOnTarget;
+    public Observable<Unit> UnTarget => m_subUnTarget;
+
+    private bool m_bPreState = false;
     private void Update()
     {
         m_tTargetPosition = RayCast();
@@ -28,23 +35,32 @@ public class Aim : MonoBehaviour
     {
         Ray tRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0));
 
+        Vector3 vReturnPos = Vector3.zero;
+        bool bCurState = false;
         if (ColliderManager.m_Instance.RaycastMask(tRay.origin, tRay.direction, m_fMaxLength, m_tLayerMask, out CircleCollider refHit))
         {
-            ChangeCollor(true);
-            return refHit.transform.position;
+            bCurState = true;
+            vReturnPos = refHit.transform.position;
+        }
+        else
+        {
+            bCurState = false;
+            vReturnPos =  tRay.origin + tRay.direction * m_fMaxLength;
         }
 
-        ChangeCollor(false);
-        return tRay.origin + tRay.direction * m_fMaxLength;
+
+        if(bCurState != m_bPreState)
+        {
+            m_bPreState = bCurState;
+            if (m_bPreState == true)
+                m_subOnTarget.OnNext(Unit.Default);
+            else
+                m_subUnTarget.OnNext(Unit.Default);
+        }
+
+        return vReturnPos;
     }
 
 
-
-    private void ChangeCollor(bool hit)
-    {
-        if (m_refAimImage == null)
-            return;
-
-        m_refAimImage.color = hit ? Color.red : Color.white;
-    }
+   
 }

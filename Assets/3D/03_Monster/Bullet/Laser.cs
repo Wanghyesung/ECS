@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /*///////////////////////////////////////////
                     Laser
@@ -23,6 +24,7 @@ public class Laser : MonoBehaviour, IAttackObject
     [SerializeField] private SOPoolData m_refHitEffectPoolObj;
     [SerializeField] private BulletLineDrawer m_refLineDrawer;   // 예고선 - optional, 없으면 스킵
     [SerializeField] private float m_fRange = 20f;
+    [FormerlySerializedAs("m_fBeamRadius")]   // BossLaser.prefab 이 옛 이름으로 6.5 를 들고 있음 - 없으면 0.5 로 조용히 리셋됨
     [SerializeField] private float m_fLaserRadius = 0.5f;        // 판정 두께(레이 자체 반경)
 
     [Header("Debug")]

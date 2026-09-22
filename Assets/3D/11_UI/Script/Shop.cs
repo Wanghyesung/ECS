@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 public class Shop : MonoBehaviour
@@ -11,13 +10,20 @@ public class Shop : MonoBehaviour
 
     [SerializeField] private BaseButtonUI m_refBuyButton;
     private SOData m_refSelectData;
+    private DisposableBag m_bagEvents;
+
     private void OnEnable()
     {
         m_refShopContainer.Init();
         m_refInventoryContainer.Init();
 
-        m_refShopContainer.OnSelectEvt += ShowItem;
-        m_refBuyButton.OnClickEvt += BuyItem;
+        m_refShopContainer.OnSelectEvt.Subscribe(ShowItem).AddTo(ref m_bagEvents);
+        m_refBuyButton.OnClickEvt.Subscribe(_ => BuyItem()).AddTo(ref m_bagEvents);
+    }
+
+    private void OnDisable()
+    {
+        m_bagEvents.Clear();
     }
 
 

@@ -17,6 +17,6 @@ MonoBehaviour:
   m_strDisplayName: DEFENSE
   m_tAddValue:
     Type: 2
-    Value: 8
+    Value: 1
   m_iBaseCost: 60
   m_iCostIncrement: 30

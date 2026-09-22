@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Git Bash hooks must retain LF on Windows checkouts.
+.codex/hooks/*.sh text eol=lf

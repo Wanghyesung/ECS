@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 using Unity.AI;
 using UnityEngine.AI;
@@ -48,7 +51,7 @@ public class ObjectInfo
     public eEntityState State;
 
     public long MaxHP;
-    public long CurrentHP;
+    public readonly ReactiveProperty<long> CurrentHP = new();
 
     public float Speed;
 
@@ -65,9 +68,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private List<Drone> m_listDrone = null;
 
     [SerializeField] private AnimationTable m_refAnimTable = null;
-    [SerializeField] private Aim m_refAim= null;
     [SerializeField] private VisualObject m_refVisualPlayer = null;
     private PlayerMovement m_refMovement = null;
+    private Aim m_refAim = null;
+    public Aim Aim => m_refAim;
 
     [Header("Max Roll")]
     [SerializeField] private float m_fRollTime = 2.0f;
@@ -80,82 +84,104 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private ObjectInfo m_refObjectInfo = new ObjectInfo();
     public ObjectInfo ObjectInfo => m_refObjectInfo;
 
+    // 런 시작 시 되돌릴 기본 활성 상태 — 씬에 배치된 그대로(BaseWeapon_0/1만 켜짐)가 곧 기본 로드아웃.
+    // 별도 [SerializeField] 없이 Awake 스냅샷으로 충분 (인스펙터에 같은 정보가 두 번 생기는 걸 피함)
+    private bool[] m_arrWeaponDefaultActive;
+    private bool[] m_arrDroneDefaultActive;
+
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
-    [SerializeField] private SliderImage m_refHPSliderImage = null;
-    [SerializeField] private SliderImage m_refExSliderImage = null;
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
 
 
-    private Coroutine m_CoNockback = null;
+    private CancellationTokenSource m_ctsNockback;
     private Rigidbody m_refRigidbody = null;
+
+    public Rigidbody Rigidbody => m_refRigidbody;
 
     private static Player ThisPlayer = null;
     public static Player CurrentPlayer {  get { return ThisPlayer; } }
 
+    private static readonly Subject<Unit> m_subjectDied = new();
+    public static Observable<Unit> OnPlayerDied => m_subjectDied;   // DungeonManager가 런 종료 처리 (Monster.OnMonsterDied와 동일 구조)
+
     [SerializeField] private bool TestLock = false;
     private void Awake()
     {
+        // 로비는 LoadSceneMode.Single로 매번 다시 로드되므로 씬의 MainPlayer가 런마다 또 Awake 된다.
+        // 가드가 없으면 새 인스턴스가 CurrentPlayer를 덮어써 DDOL 원본은 죽은 채로 남고 런마다 Player가 하나씩 는다 (검증 중 실제 발생).
+        // Destroy는 프레임 끝이라 그 전에 자식 Weapon.Start가 돌면 Init 안 된 AttackInfo로 빌드에선 Application.Quit — 먼저 꺼서 막는다
+        if (ThisPlayer != null && ThisPlayer != this) { gameObject.SetActive(false); Destroy(gameObject); return; }
+
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
+        m_refAim = GetComponent<Aim>();
 
         ThisPlayer = this;
+
+        m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
         for (int i = 0; i < m_listWeapon.Count; ++i)
-            m_listWeapon[i].Init();
+            m_arrWeaponDefaultActive[i] = m_listWeapon[i].gameObject.activeSelf;
+        m_arrDroneDefaultActive = new bool[m_listDrone.Count];
+        for (int i = 0; i < m_listDrone.Count; ++i)
+            m_arrDroneDefaultActive[i] = m_listDrone[i].gameObject.activeSelf;
+
+        DontDestroyOnLoad(this);
+        gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        if (ThisPlayer != this)   // Awake 가드로 파괴 예약된 중복 인스턴스도 이 프레임엔 OnEnable이 돈다 — 캐싱 안 된 참조로 ResetRun 하면 NRE
+            return;
+        ResetRun();
     }
 
     private void Start()
     {
-        m_refObjectInfo.CurrentHP = m_SOObjectInfo.MaxHP;
-        m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
-        PlayerPreLoadData.ApplyTo(this);
+        m_refObjectInfo.CurrentHP.Where(_lHp => _lHp <= 0).Subscribe(_ => Dead()).AddTo(this);   // 사망 판정은 UI가 아니라 Player 자신이
 
-
-        m_refHPSliderImage.OnFillCompleted += Dead;
-        m_refHPSliderImage.SetRange(m_refObjectInfo.MaxHP, m_refObjectInfo.CurrentHP);
-
-        // EXP는 Player 소유가 아닌 BattleManager 소유 지표라 이벤트 구독으로만 UI 갱신
-
-        BattleManager.m_Instance.OnExpChanged += HandleExpChanged;
-        m_refExSliderImage.SetRange(BattleManager.m_Instance.MaxExp, BattleManager.m_Instance.CurrentExp);
-
-        // ExSlider가 실제로 Max까지 다 찬 시점에 레벨업(카드 UI)을 확정 (몬스터 사망 즉시가 아님)
-        m_refExSliderImage.OnFillMaxReached += MapExpSlider;
+        InputManager.m_Instance.OnMoveButtonPressed.Subscribe(_ => MoveRoll()).AddTo(this);
 
         m_fLastRollTime = Time.time;
-
     }
 
-    private void OnDestroy()
+    private void ResetRun()
     {
-        m_refHPSliderImage.OnFillCompleted -= Dead;
-        m_refExSliderImage.OnFillMaxReached -= MapExpSlider;
+        CancelNockback();
 
-        if (BattleManager.m_Instance != null)
-            BattleManager.m_Instance.OnExpChanged -= HandleExpChanged;
-    }
+        // 1) 엔티티 스탯 = SO 기본값. Attack/Defense/Speed는 직렬화 0에서 시작하는 '보너스'라 0으로
+        m_refObjectInfo.MaxHP = m_SOObjectInfo.MaxHP;
+        m_refObjectInfo.Attack = 0.0f;
+        m_refObjectInfo.Defense = 0.0f;
+        m_refObjectInfo.Speed = 0.0f;
+        m_refObjectInfo.CurrentEffects = 0;
+        Array.Clear(m_refObjectInfo.Effects, 0, m_refObjectInfo.Effects.Length);
+        m_refMovement.ResetMoveSpeed();
 
-    private void HandleExpChanged(int _iCurrentExp, int _iMaxExp)
-    {
-        m_refExSliderImage.UpdateSlider(_iCurrentExp, _iMaxExp);
-    }
-    
-    private void MapExpSlider()
-    {
-        BattleManager.m_Instance.LevelUp();
+        // 2) 무기/드론 = 씬 배치 상태로. Weapon.Init이 AttackInfo를 SO에서 새로 만들어
+        //    카드로 올린 Damage/CoolDown/Speed/MaxHitCount와 명중·도착 액션이 같이 사라진다
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            m_listWeapon[i].Init();
+            m_listWeapon[i].gameObject.SetActive(m_arrWeaponDefaultActive[i]);
+        }
+        for (int i = 0; i < m_listDrone.Count; ++i)
+            m_listDrone[i].gameObject.SetActive(m_arrDroneDefaultActive[i]);
+
+        // 3) 영구 성장(로비 강화·장비)만 다시 얹는다 — 기본값 위에 리스트 전체를 적용하므로 런을 거듭해도 중복 누적 없음
+        PlayerPreLoadData.ApplyTo(this);
+
+        // 4) 장비 HP 보너스까지 포함해 만땅으로 시작 (기존엔 SO값으로 먼저 채워 100/120 상태로 시작했음)
+        m_refObjectInfo.State = eEntityState.Idle;
+        m_refObjectInfo.CurrentHP.Value = m_refObjectInfo.MaxHP;
+        m_refMovement.enabled = true;
     }
 
     private void Update()
     {
-        tInputInfo tInfo = InputManager.m_Instance.InputInfo;
-        bool bOnSpace = tInfo.OnSpace;
-
-        if (bOnSpace == true)
-            MoveRoll();
-
-
-        if (TestLock == true) return;
+        if (TestLock == true || m_refObjectInfo.State == eEntityState.Dead) return;
 
         Fire();
     }
@@ -201,6 +227,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
+            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
+                continue;
+
             if (m_listWeapon[i].CheckTime() == true)
                 m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
         }
@@ -209,23 +238,40 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     private void Dead()
     {
-        //플레이어가 죽었을 때
+        CancelNockback();
+        m_refObjectInfo.State = eEntityState.Dead;   // Update의 Fire 차단
+        m_refMovement.enabled = false;               // PlayerMovement는 상태를 안 보므로 컴포넌트째 끔 (OnEnable에서 복구)
+        m_subjectDied.OnNext(Unit.Default);
     }
 
     public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
-        if (m_CoNockback != null)
-            StopCoroutine(m_CoNockback);
+        if (m_refObjectInfo.State == eEntityState.Dead)   // Monster.TakeDamage와 같은 가드 — 중복 사망 방지
+            return;
+
+        CancelNockback();
 
         m_refObjectInfo.State = eEntityState.Hit;
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
-        m_refObjectInfo.CurrentHP -= iFinalDamage;
-        m_refHPSliderImage.UpdateSlider(m_refObjectInfo.CurrentHP, m_refObjectInfo.MaxHP);
-        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
+        m_refObjectInfo.CurrentHP.Value -= iFinalDamage;
+        if (m_refObjectInfo.State == eEntityState.Dead)   // 위 대입에서 Dead()가 동기 호출됨 — 넉백을 시작하면 끝에서 State=Idle로 되살아난다
+            return;
+
+        m_ctsNockback = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        NockbackAsync(_refAttackInfo, _refShotInfo, m_ctsNockback.Token).Forget();
     }
 
-    private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    private void CancelNockback()
+    {
+        if (m_ctsNockback == null) 
+            return;
+        m_ctsNockback.Cancel();
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
+    }
+
+    private async UniTaskVoid NockbackAsync(AttackInfo _refAttackInfo, tShotInfo _refShotInfo, CancellationToken _ct)
     {
         Vector3 vDir = _refShotInfo.MoveDir;
         float fDuration = Mathf.Max(_refAttackInfo.KnockbackDuration, 0.0001f);
@@ -250,10 +296,11 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
             fElapsed += Time.deltaTime;
 
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
-        m_CoNockback = null;
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
         m_refObjectInfo.State = eEntityState.Idle;
     }
 
@@ -403,9 +450,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void AddHP(long _lValue)
     {
-        m_refObjectInfo.CurrentHP += _lValue;
-        if (m_refObjectInfo.CurrentHP >= m_refObjectInfo.MaxHP)
-            m_refObjectInfo.CurrentHP = m_refObjectInfo.MaxHP;
+        m_refObjectInfo.CurrentHP.Value = System.Math.Min(m_refObjectInfo.CurrentHP.Value + _lValue, m_refObjectInfo.MaxHP);
     }
 
     // 장비 등으로 얻는 HP 증가분은 무기별 상한이 없는 BulletSpeed와 동일하게 상한 없이 누적.
@@ -415,9 +460,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.MaxHP += _lValue;
     }
 
+    // 공격력 스탯은 무기 데미지에 얹는 '증가율(%)'이고, MaxAtack이 그 상한이다 (기준이 MaxHP였던 건 오타)
     public void UpAttackRatio(float _fRatio)
     {
-        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        float fAccValue = m_SOObjectInfo.MaxAtack * _fRatio;
         int iAccValue = (int)fAccValue;
 
         AddAttack(iAccValue);
@@ -425,7 +471,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void DownAttackRatio(float _fRatio)
     {
-        float fAccValue = m_SOObjectInfo.MaxHP * _fRatio;
+        float fAccValue = m_SOObjectInfo.MaxAtack * _fRatio;
         int iAccValue = (int)fAccValue;
 
         AddAttack(-iAccValue);
@@ -435,20 +481,17 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         float fPrevAttack = m_refObjectInfo.Attack;
 
-        m_refObjectInfo.Attack += _iValue;
-        if (m_refObjectInfo.Attack >= m_SOObjectInfo.MaxAtack)
-            m_refObjectInfo.Attack = m_SOObjectInfo.MaxAtack;
-
-        else if (m_refObjectInfo.Attack <= 1)
-            m_refObjectInfo.Attack = 1;
+        m_refObjectInfo.Attack = Mathf.Clamp(m_refObjectInfo.Attack + _iValue, 0.0f, m_SOObjectInfo.MaxAtack);
 
         // MaxAtack 클램프로 실제 증가분이 _iValue보다 작을 수 있어 그 차이만 무기에 반영.
-        int iAppliedValue = (int)(m_refObjectInfo.Attack - fPrevAttack);
+        float fAppliedValue = m_refObjectInfo.Attack - fPrevAttack;
+        if (fAppliedValue == 0.0f)
+            return;
+
+        // 비활성(미해금) 무기까지 전부 반영한다 - 활성 무기만 갱신하면 공격력 카드를 먼저 먹고
+        // 나중에 해금한 무기가 그때까지 쌓인 보너스를 영영 못 받는다
         for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].AddAttackDamage(iAppliedValue);
-        }
+            m_listWeapon[i].AddAttackRate(fAppliedValue);
     }
 
     public void UpSpeedRatio(float _fRatio)
@@ -466,9 +509,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         float fPrevSpeed = m_refObjectInfo.Speed;
 
-        m_refObjectInfo.Speed += _fValue;
-        if (m_refObjectInfo.Speed >= m_SOObjectInfo.MaxSpeed)
-            m_refObjectInfo.Speed = m_SOObjectInfo.MaxSpeed;
+        m_refObjectInfo.Speed = Mathf.Clamp(m_refObjectInfo.Speed + _fValue, 0.0f, m_SOObjectInfo.MaxSpeed);
 
         // MaxSpeed 클램프로 실제 증가분이 _fValue보다 작을 수 있어 그 차이만 PlayerMovement에 반영.
         float fAppliedValue = m_refObjectInfo.Speed - fPrevSpeed;
@@ -489,28 +530,33 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 
     public void AddDefense(float _fValue)
     {
-        m_refObjectInfo.Defense += _fValue;
-        if (m_refObjectInfo.Defense >= m_SOObjectInfo.MaxDefense)
-            m_refObjectInfo.Defense = m_SOObjectInfo.MaxDefense;
+        // 하한 0 - 조커 실패로 방어 카드가 몰수될 때 음수가 되면 피해가 오히려 늘어난다
+        m_refObjectInfo.Defense = Mathf.Clamp(m_refObjectInfo.Defense + _fValue, 0.0f, m_SOObjectInfo.MaxDefense);
     }
 
     // FeatureSO.Apply()에서 총알 속도 강화 기능(예: SOFeatureUpBulletSpeed)이 호출.
     // 무기별 상한이 없어 Attack/Speed처럼 클램프하지 않고 그대로 누적
     public void UpBulletSpeed(float _fValue)
     {
+        // AddAttack과 같은 이유로 비활성 무기까지 반영 - 나중에 해금해도 누적분을 그대로 받는다
         for (int i = 0; i < m_listWeapon.Count; ++i)
-        {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].AddBulletSpeed(_fValue);
-        }
+            m_listWeapon[i].AddBulletSpeed(_fValue);
     }
 
     public void DownBulletSpeed(float _fValue)
     {
         for (int i = 0; i < m_listWeapon.Count; ++i)
+            m_listWeapon[i].DownBulletSpeed(_fValue);
+    }
+
+    // FeatureSO.Apply()에서 발당 탄수를 늘리는 기능(SOFeatureAddBulletCount)이 호출.
+    // AddAttack과 같은 이유로 비활성 무기까지 반영. 차지 무기는 제외 - Weapon.Begin()이 탄수≠1이면 null을 돌려줘 차지샷이 죽는다
+    public void AddWeaponBulletCount(eWeaponType _eType, int _iValue)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
         {
-            if (m_listWeapon[i].gameObject.activeSelf == true)
-                m_listWeapon[i].DownBulletSpeed(_fValue);
+            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == true)
+                m_listWeapon[i].AddBulletCount(_iValue);
         }
     }
 }

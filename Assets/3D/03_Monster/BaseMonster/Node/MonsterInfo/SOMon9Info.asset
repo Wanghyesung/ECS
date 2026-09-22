@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectName: StarSparrow9
   Description: "\uC77C\uBC18 \uBAAC\uC2A4\uD130 - StarSparrow9 (Tier 7)"
-  MaxHP: 380
-  MaxSpeed: 6.8
+  MaxHP: 21000
+  MaxSpeed: 14.5
   MaxAtack: 2400
   MaxDefense: 240
-  ExpReward: 225
+  ExpReward: 78

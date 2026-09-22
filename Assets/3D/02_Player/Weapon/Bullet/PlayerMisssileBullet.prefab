@@ -151,7 +151,7 @@ MonoBehaviour:
   m_refHitEffectObj: {fileID: 11400000, guid: 217c51b087a3c6046b71fda2d675ce4c, type: 2}
   m_arrArriveActions: []
   m_arrHitActions: []
-  m_bTraceTarget: 0
+  m_bTraceTarget: 1
 --- !u!114 &7683057067777928174
 MonoBehaviour:
   m_ObjectHideFlags: 0

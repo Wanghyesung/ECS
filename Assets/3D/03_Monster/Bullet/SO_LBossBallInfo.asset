@@ -13,12 +13,9 @@ MonoBehaviour:
   m_Name: SO_LBossBallInfo
   m_EditorClassIdentifier: 
   Description: "\uD50C\uB808\uC774\uC5B4\uB97C \uCD94\uACA9\uD558\uC5EC \uACF5\uACA9"
-  WeaponType: 2
-  PoolPrefab: {fileID: 11400000, guid: 9cc573237f1285b44ae4f7a72286f30a, type: 2}
-  Damage: 5
+  Damage: 30
   AttackPower: 2
-  Cooldown: 1
-  Speed: 10
+  Speed: 12
   SpeedOffset: 5
   AliveTime: 10
   HitCount: 1
@@ -27,10 +24,6 @@ MonoBehaviour:
   KnockbackForce: 3
   KnockbackDuration: 0.2
   StunDuration: 0
-  BaseRotationSpeed: 0
-  MaxRotationSpeed: 180
-  RotationAccelRate: 0
-  ProximityRadius: 1.5
   CriticalChance: 0
   HitLayers:
     serializedVersion: 2

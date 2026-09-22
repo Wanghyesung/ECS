@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -38,6 +39,9 @@ public class Bullet : MonoBehaviour, IAttackObject
 
     protected PoolObject m_refPoolObj;
     protected CircleCollider m_refCircleCollider;
+    private Transform m_refInitialParent;
+    private Vector3 m_vInitialScale;
+    private float m_fInitialRadius;
 
     // BulletAction 등 외부에서 이 총알을 쐈던 AttackInfo를 그대로 재사용해야 할 때 참조
     public AttackInfo AttackInfo => m_refAttackInfo;
@@ -70,8 +74,6 @@ public class Bullet : MonoBehaviour, IAttackObject
     private static int s_iHitEffectFrame = -1;
 
     // 이번 프레임에 히트 이펙트를 재생해도 되는지 예약 - 프레임이 바뀌면 카운터를 리셋하고,
-    // 한도 내면 자리를 예약(true)한다. Update 콜백 없이 호출 시점에 Time.frameCount로만
-    // 판단하므로 별도 초기화/해제 로직이 필요 없다
     private static bool TryReserveHitEffectSlot()
     {
         if (Time.frameCount != s_iHitEffectFrame)
@@ -92,6 +94,9 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refPoolObj = GetComponent<PoolObject>();
         m_refCircleCollider = GetComponent<CircleCollider>();
+        m_refInitialParent = transform.parent;
+        m_vInitialScale = transform.localScale;
+        m_fInitialRadius = m_refCircleCollider != null ? m_refCircleCollider.Radius : 0f;
 
         m_iMoveManagerIndex = RegisterMoveJob();
 
@@ -119,27 +124,31 @@ public class Bullet : MonoBehaviour, IAttackObject
             BulletMoveManager.m_Instance.Deactivate(m_iMoveManagerIndex);
     }
 
+    private DisposableBag m_bagEvents;
+
     protected virtual void OnEnable()
     {
         if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter += Attack;
+            m_refCircleCollider.OnHitTargetEnter.Subscribe(Attack).AddTo(ref m_bagEvents);
 
         if (m_refPoolObj != null)
-            m_refPoolObj.OnPush += RunArriveActions;
+            m_refPoolObj.OnPush.Subscribe(_ => RunArriveActions()).AddTo(ref m_bagEvents);
 
         m_tShotInfo.HitCount = 0;
     }
     protected virtual void OnDisable()
     {
-        if(m_refCircleCollider != null)
-            m_refCircleCollider.OnHitTargetEnter -= Attack;
-
-        if (m_refPoolObj != null)
-            m_refPoolObj.OnPush -= RunArriveActions;
+        m_bagEvents.Clear();
 
         m_refLineDrawer?.CutLine();
 
         UnactivateMoveJob();
+
+        if (m_refInitialParent != null || transform.parent != null)
+            transform.SetParent(m_refInitialParent, false);
+        transform.localScale = m_vInitialScale;
+        if (m_refCircleCollider != null)
+            m_refCircleCollider.SetRadius(m_fInitialRadius);
     }
 
     private void RunArriveActions()

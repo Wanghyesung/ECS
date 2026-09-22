@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using R3;
 using TMPro;
 using UnityEngine;
 
@@ -32,27 +32,13 @@ public class SelectStage : MonoBehaviour
     {
       
         if (m_refPrevBtn != null)
-            m_refPrevBtn.OnClickEvt += MovePrev;
+            m_refPrevBtn.OnClickEvt.Subscribe(_ => MovePrev()).AddTo(this);
 
         if (m_refNextBtn != null)
-            m_refNextBtn.OnClickEvt += MoveNext;
+            m_refNextBtn.OnClickEvt.Subscribe(_ => MoveNext()).AddTo(this);
 
         if (m_refStartBtn != null)
-            m_refStartBtn.OnClickEvt += StartStage;
-
-    }
-
-    private void OnDestroy()
-    {
-
-        if (m_refPrevBtn != null)
-            m_refPrevBtn.OnClickEvt -= MovePrev;
-
-        if (m_refNextBtn != null)
-            m_refNextBtn.OnClickEvt -= MoveNext;
-
-        if(m_refStartBtn != null)
-            m_refStartBtn.OnClickEvt -= StartStage;
+            m_refStartBtn.OnClickEvt.Subscribe(_ => StartStage()).AddTo(this);
     }
 
     /*/////////////////////////////////////

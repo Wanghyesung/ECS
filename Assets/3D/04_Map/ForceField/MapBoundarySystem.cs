@@ -19,16 +19,20 @@ public sealed class MapBoundarySystem : MonoBehaviour
     {
         m_refRenderer = GetComponent<Renderer>();
         m_propBlock = new MaterialPropertyBlock();
+        m_refProximityTarget = Player.CurrentPlayer.transform;
+
     }
 
     private void Update()
     {
-        if (m_refProximityTarget == null) return;
+        if (m_refProximityTarget == null) 
+            return;
 
         // ExecuteAlways는 에디터 리로드 후 Awake가 Update보다 늦게(또는 안) 불릴 때가 있어 매 프레임 방어
         if (m_refRenderer == null) m_refRenderer = GetComponent<Renderer>();
         if (m_propBlock == null) m_propBlock = new MaterialPropertyBlock();
-        if (m_refRenderer == null) return;
+        if (m_refRenderer == null) 
+            return;
 
         Vector3 vTargetPos = m_refProximityTarget.position;
 

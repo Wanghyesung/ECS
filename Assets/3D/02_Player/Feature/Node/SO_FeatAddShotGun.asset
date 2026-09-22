@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0326068139b236943978a7671a385511, type: 3}
   m_Name: SO_FeatAddShotGun
   m_EditorClassIdentifier: 
-  m_strDescription: Missile UP
-  m_sprIcon: {fileID: 1337498356, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_strDescription: Adds a shotgun.
+  m_sprIcon: {fileID: -566696890, guid: f2e64e84491e92446b8e5476359ea9bb, type: 3}
   m_eID: 6
-  m_eAcquireType: 0
+  m_eAcquireType: 1
   m_iWeight: 1
   m_eTier: 2
   m_iMaxLevel: 1

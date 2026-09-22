@@ -42,11 +42,11 @@ public class EnemySystem
 // 좋은 예 — 최소한의 실질적인 가시성
 public sealed class EnemySystem
 {
-    private readonly EnemyModel _model;
-    
+    private readonly EnemyModel m_refModel;
+
     private void Initialize() { }
     private int CalculateDamage() => 5;
-    public void TakeDamage(int amount) { }  // CombatSystem이 이걸 호출함
+    public void TakeDamage(int _iAmount) { }  // CombatSystem이 이걸 호출함
 }
 ```
 

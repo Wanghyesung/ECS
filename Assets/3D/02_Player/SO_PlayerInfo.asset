@@ -15,6 +15,6 @@ MonoBehaviour:
   ObjectName: Player
   Description: "\uAE30\uBCF8 \uD50C\uB808\uC774\uC5B4"
   MaxHP: 1000
-  MaxSpeed: 3
-  MaxAtack: 1000
-  MaxDefense: 100
+  MaxSpeed: 6
+  MaxAtack: 150
+  MaxDefense: 10

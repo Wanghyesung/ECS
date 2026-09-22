@@ -27,6 +27,9 @@ public class CircleCollider : BaseCollider
 
     public float Radius => m_fRadius;
     public override float BoundingRadius => m_fRadius;
+
+    // 발사 시 WeaponCon이 최종 반경을 적용하고 Bullet.OnDisable이 풀 반납 시 원복한다.
+    public void SetRadius(float _fRadius) => m_fRadius = _fRadius;
     public override Vector3 Offset => m_vOffset;
 
     // 회전까지 반영된 실제 판정 중심 (오프셋이 0이면 transform.position과 동일)

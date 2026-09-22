@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 using UnityEngine.AI;
 using static Weapon;
@@ -55,7 +58,6 @@ public class SpawnInfo
 public class Monster : MonoBehaviour, IDamageable
 { 
   
-    [SerializeField] private GameObject m_refTargetPlayer;
     [SerializeField] private VisualObject m_refVisualObj = null;
 
     [SerializeField] private SOMonsterInfo m_SOMonsterInfo;
@@ -70,7 +72,7 @@ public class Monster : MonoBehaviour, IDamageable
     private Dictionary<eWeaponType, List<SpawnInfo>> m_hashSpawn = new Dictionary<eWeaponType, List<SpawnInfo>>();
     public Dictionary<eWeaponType, List<SpawnInfo>> HashSpawn => m_hashSpawn;
 
-    private Coroutine m_CoNockback = null;
+    private CancellationTokenSource m_ctsNockback;
 
     private PoolObject m_refPoolObj;
 
@@ -79,8 +81,14 @@ public class Monster : MonoBehaviour, IDamageable
 
     // DeadEffect 크기 비례용 - 모듈형 파츠(Wing/MainBody 등) 전체 Renderer를 합산한 바운드 크기.
     private float m_fMonsterSize = 0f;
-    // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적 이벤트로 공유)
-    public static event Action<int> OnMonsterDied;
+    // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적으로 공유)
+    private static readonly Subject<int> m_subjectDied = new();
+    public static Observable<int> OnMonsterDied => m_subjectDied;
+
+    public ReadOnlyReactiveProperty<long> Hp => m_refBlackBoard.ObjInfo.CurrentHP;
+    public long MaxHp => m_SOMonsterInfo.MaxHP;
+
+    private IDisposable m_disposablePush;
 
     private void Awake()
     {
@@ -96,6 +104,7 @@ public class Monster : MonoBehaviour, IDamageable
         m_refPoolObj = GetComponent<PoolObject>();
 
         m_refBlackBoard.Owner = this;
+
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
 
@@ -119,30 +128,22 @@ public class Monster : MonoBehaviour, IDamageable
     {
         m_refBlackBoard.ObjInfo.State = eEntityState.Idle;
         m_refBlackBoard.ObjInfo.Speed = m_SOMonsterInfo.MaxSpeed; //Range로 잡기
-        m_refBlackBoard.ObjInfo.CurrentHP = m_SOMonsterInfo.MaxHP;
-
-        m_refBlackBoard.TargetTr = Player.CurrentPlayer.transform;
-        
+        m_refBlackBoard.ObjInfo.CurrentHP.Value = m_SOMonsterInfo.MaxHP;
 
         if (m_refPoolObj != null)
-            m_refPoolObj.OnPush += ResetState;
+            m_disposablePush = m_refPoolObj.OnPush.Subscribe(_ => ResetState());
     }
 
     private void OnDisable()
     {
-        if (m_refPoolObj != null)
-            m_refPoolObj.OnPush -= ResetState;
+        m_disposablePush?.Dispose();
     }
 
     // 풀에 반납되는 시점(OnPush)에 실행. OnEnable의 State/Speed/HP 리셋만으로는 안 지워지는
     // "이전 생"의 잔여물(넉백 코루틴, 상태이상 비트마스크)을 정리해 재사용 시 새는 걸 막음
     private void ResetState()
     {
-        if (m_CoNockback != null)
-        {
-            StopCoroutine(m_CoNockback);
-            m_CoNockback = null;
-        }
+        CancelNockback();
 
         m_refBlackBoard.ObjInfo.CurrentEffects = 0;
     }
@@ -151,12 +152,8 @@ public class Monster : MonoBehaviour, IDamageable
     {
         m_refPoolObj.SetAliveTime(float.MaxValue);
         // DeleteTem
-        var player = FindObjectOfType<Player>();
-        if (player == null) 
-            return;
 
-        m_refTargetPlayer = player.gameObject;
-        m_refBlackBoard.TargetTr = player.transform;
+        m_refBlackBoard.TargetTr = Player.CurrentPlayer.transform;
         
         int iCount = m_listSpawn.Count;
         if (iCount > 0)
@@ -188,10 +185,11 @@ public class Monster : MonoBehaviour, IDamageable
         if (/*m_refBlackBoard.ObjInfo.State == eEntityState.Hit ||*/ m_refBlackBoard.ObjInfo.State == eEntityState.Dead)
             return;
 
-        m_refBlackBoard.ObjInfo.CurrentHP -= _refAttackInfo.Damage;
-        MonsterHPBar.m_Instance?.ShowHp(this, m_refBlackBoard.ObjInfo.CurrentHP, m_SOMonsterInfo.MaxHP);
+        m_refBlackBoard.ObjInfo.CurrentHP.Value -= _refAttackInfo.Damage;
+        if (MonsterHPBar.m_Instance != null)
+            MonsterHPBar.m_Instance.Show(this);
 
-        if (m_refBlackBoard.ObjInfo.CurrentHP <= 0)
+        if (m_refBlackBoard.ObjInfo.CurrentHP.Value <= 0)
         {
             Dead();
             GameObject refDeadEffect = ObjectPoolManager.m_Instance.GetObject(m_refDeadEffect, transform.position);
@@ -208,10 +206,17 @@ public class Monster : MonoBehaviour, IDamageable
         }
 
         //TODO BossMonster과 차별점을 생각
-        if(m_CoNockback !=null)
-            StopCoroutine(m_CoNockback);
+        CancelNockback();
+        m_ctsNockback = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        NockbackAsync(_refAttackInfo, _refShotInfo, m_ctsNockback.Token).Forget();
+    }
 
-        m_CoNockback = StartCoroutine(CoNockback(_refAttackInfo, _refShotInfo));
+    private void CancelNockback()
+    {
+        if (m_ctsNockback == null) return;
+        m_ctsNockback.Cancel();
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
     }
 
     private void Dead()
@@ -219,7 +224,7 @@ public class Monster : MonoBehaviour, IDamageable
         //m_refVisualObj.RollX = 1;//여기 문제
 
         ChangeState(eEntityState.Dead);
-        OnMonsterDied?.Invoke(m_SOMonsterInfo.ExpReward);
+        m_subjectDied.OnNext(m_SOMonsterInfo.ExpReward);
 
         if (m_refPoolObj != null)
             ObjectPoolManager.m_Instance.PushObject(gameObject);
@@ -227,7 +232,7 @@ public class Monster : MonoBehaviour, IDamageable
             gameObject.SetActive(false);
     }
 
-    private IEnumerator CoNockback(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
+    private async UniTaskVoid NockbackAsync(AttackInfo _refAttackInfo, tShotInfo _refShotInfo, CancellationToken _ct)
     {
         ChangeState(eEntityState.Hit);
 
@@ -247,11 +252,12 @@ public class Monster : MonoBehaviour, IDamageable
             transform.position += vDelta;
 
             fElapsed += Time.deltaTime;
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
         ChangeState(eEntityState.Idle);
-        m_CoNockback = null;
+        m_ctsNockback.Dispose();
+        m_ctsNockback = null;
     }
 
 

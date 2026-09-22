@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using R3;
 using TMPro;
 using UnityEngine;
 
@@ -28,12 +29,11 @@ public class CardCreator : MonoBehaviour
     {
         for (int i = 0; i < m_arrCard.Length; ++i)
         {
-            RandomFeatureCard refCard = m_arrCard[i];
-            refCard.OnCardClicked += HandleCardClicked;
+            m_arrCard[i].OnCardClicked.Subscribe(HandleCardClicked).AddTo(this);
         }
 
         if (m_refJokerCard != null)
-            m_refJokerCard.OnCardClicked += HandleJokerCardClicked;
+            m_refJokerCard.OnCardClicked.Subscribe(HandleJokerCardClicked).AddTo(this);
     }
 
     private void OnEnable()
@@ -49,10 +49,11 @@ public class CardCreator : MonoBehaviour
     public void ShowChoices()
     {
         // 기능 카드 UI를 제외한 나머지(몬스터 BT, 무기 쿨타임, 애니메이션 등)는
-        // Time.time / Time.deltaTime 기반이라 timeScale만 0으로 만들면 별도 처리 없이 정지됨
+        // Time.time / Time.deltaTime 기반이라 timeScale만 0으로 만들면 별도 처리 없이 정지됨.
+        // timeScale 은 직접 쓰지 않고 TimeScaleManager 에 소유자(this)로 정지를 건다 - 조커 픽/핵 연출이 겹쳐도 마지막 주체가 풀 때까지 0 유지
         gameObject.SetActive(true);
 
-        Time.timeScale = 0f;
+        TimeScaleManager.m_Instance.Pause(this);
 
         //레벨업 3택도 조커 레벨에 따른 등급 배율을 그대로 반영 (조커 스트릭이 쌓일수록 3택도 좋아짐)
         m_SOJokerCard.UpdateTierWeight(m_arrTierMultiplierBuffer, JokerCardManager.m_Instance.Level);
@@ -74,7 +75,7 @@ public class CardCreator : MonoBehaviour
 
         Close();
 
-        Time.timeScale = 1f;
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
     //조커카드는 트리거일 뿐이라 payload(SOData)는 안 씀 - JokerCardManager가 자기 SO를 이미 들고 있음
@@ -95,6 +96,9 @@ public class CardCreator : MonoBehaviour
             JokerCardManager.m_Instance.ApplyFail();
 
         Close();
+
+        // 성공이면 ApplySuccess 가 JokerCardManager 명의의 Pause 를 이미 걸었으므로 여기서 풀어도 픽이 끝날 때까지 0 유지
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
 

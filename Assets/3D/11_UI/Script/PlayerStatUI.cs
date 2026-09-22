@@ -1,3 +1,4 @@
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -6,10 +7,6 @@ using UnityEngine;
       DungeonManager가 스폰을 ObjectSpawner에 위임하듯, 실제 표시는
       StatDetailView/UpgradeButtonView 두 View 컴포넌트에 위임하고
       이 클래스는 "무엇을 언제 보여줄지"(선택/계산/트랜잭션)만 담당한다.
-      강화 버튼을 누르면 PlayerCurrency에서 재화를 차감한 뒤 장비 스탯과 동일하게
-      PlayerPreLoadData에 보너스를 추가한다(파이프라인 재사용).
-      레벨은 따로 저장하지 않고 PlayerPreLoadData의 누적 보너스에서 역산한다
-      (씬이 다시 로드돼도 실제 적용된 보너스와 항상 일치하도록).
  *///////////////////////////////////////////
 public sealed class PlayerStatUI : MonoBehaviour, ICountable
 {
@@ -27,17 +24,8 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
     private void Start()
     {
         m_refContainer.Init();
-        m_refContainer.OnSelectEvt += SelectStat;
-        m_refUpgradeView.OnClickEvt += TryUpgrade;
-
-    }
-
-    private void OnDestroy()
-    {
-     
-
-        m_refContainer.OnSelectEvt -= SelectStat;
-        m_refUpgradeView.OnClickEvt -= TryUpgrade;
+        m_refContainer.OnSelectEvt.Subscribe(SelectStat).AddTo(this);
+        m_refUpgradeView.OnClickEvt.Subscribe(_ => TryUpgrade()).AddTo(this);
     }
 
     private void OnEnable()
@@ -87,7 +75,7 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
         int iCost = GetCost(m_refSelectData);
 
         m_refDetailView.Show(m_refSelectData.Icon, m_refSelectData.DisplayName, GetDisplayValue(m_refSelectData), iLevel);
-        m_refUpgradeView.Show(iCost, PlayerCurrency.Amount >= iCost);
+        m_refUpgradeView.Show(iCost, PlayerCurrency.Amount.CurrentValue >= iCost);
     }
 
     // HP는 기본값+보너스 합계로, 그 외 스탯은 진짜 기본값이 무기/이동 등에 흩어져

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using R3;
 using UnityEngine;
-using static UnityEngine.Mesh;
 
 /*///////////////////////////////////////////
                 JokerCardManager
@@ -51,15 +50,15 @@ public class JokerCardManager : MonoBehaviour
         m_refFeatContainer.Init();
 
         //만약 데이터를 골랐다면 다른 컨테이너에서 선택할 수 있게
-        m_refSelectContainer.OnSelectEvt += AddData;
+        m_refSelectContainer.OnSelectEvt.Subscribe(AddData).AddTo(this);
 
-        m_refPickContainer.OnSelectEvt += DeleteData;
+        m_refPickContainer.OnSelectEvt.Subscribe(DeleteData).AddTo(this);
 
         //Container/SlotView는 SOData 범용이라 등급을 모름 - 조커 후보 슬롯에 뜨는 등급 색상은
         //SOFeature/Tier를 이미 알고 있는 이쪽(JokerCardManager)에서 판단해서 밀어준다
-        m_refFeatContainer.OnSlotBind += ApplyTierColor;
-        m_refSelectContainer.OnSlotBind += ApplyTierColor;
-        m_refPickContainer.OnSlotBind += ApplyTierColor;
+        m_refFeatContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refSelectContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
+        m_refPickContainer.OnSlotBind.Subscribe(ApplyTierColor).AddTo(this);
     }
 
 
@@ -76,8 +75,12 @@ public class JokerCardManager : MonoBehaviour
     // 도박 성공 결과 반영: 이번 회차의 후보 목록을 컨테이너에 표시
     public void ApplySuccess()
     {
+        m_refPickContainer.ClearData();
         m_refPickContainer.gameObject.SetActive(true);
         m_refSelectContainer.gameObject.SetActive(true);
+
+        // 픽 UI 가 열려 있는 동안 정지 소유권을 이어받는다 - 이 직후 CardCreator 가 자기 Pause 를 풀어도 여기 것이 남아 0 유지
+        TimeScaleManager.m_Instance.Pause(this);
 
         m_iLevel++;
 
@@ -121,8 +124,9 @@ public class JokerCardManager : MonoBehaviour
     }
 
     // 실제 SOFeature 카드가 뜬 슬롯에만 등급색을 입힌다 - 빈 슬롯 리셋은 SlotView가 자체적으로 처리
-    private void ApplyTierColor(SOData _SOData, SlotView _refSlot)
+    private void ApplyTierColor((SOData refData, SlotView refSlot) _t)
     {
+        (SOData _SOData, SlotView _refSlot) = _t;
         if (_SOData is not SOFeature refFeature)
             return;
 
@@ -153,7 +157,7 @@ public class JokerCardManager : MonoBehaviour
         m_refSelectContainer.gameObject.SetActive(false);
         m_refPickContainer.gameObject.SetActive(false);
 
-        Time.timeScale = 1.0f;
+        TimeScaleManager.m_Instance.Resume(this);
     }
 
 
@@ -165,7 +169,9 @@ public class JokerCardManager : MonoBehaviour
 
         m_listPendingFeature.Clear();
         m_iLevel = 0;
-        Time.timeScale = 1.0f;
+
+        // 지금 유일한 호출자(ApplyFail)는 Pause 를 걸지 않았으므로 no-op. 나중에 픽 도중 몰수 경로가 생기면 그때 실제로 풀린다
+        TimeScaleManager.m_Instance.Resume(this);
 
     }
 }

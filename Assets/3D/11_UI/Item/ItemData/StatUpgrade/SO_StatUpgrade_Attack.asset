@@ -17,6 +17,6 @@ MonoBehaviour:
   m_strDisplayName: ATTACK
   m_tAddValue:
     Type: 1
-    Value: 15
+    Value: 5
   m_iBaseCost: 60
   m_iCostIncrement: 30

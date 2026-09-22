@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39730ce2333c0e4992d3ad99c02e7e2, type: 3}
   m_Name: SO_SpawnAttackObject 0.05
   m_EditorClassIdentifier: 
-  m_refAttackObjectPrefab: {fileID: 4553685338349539536, guid: b0c60f4a6d1c0124485dcf1ab1185b08, type: 3}
+  m_refAttackObjectPoolData: {fileID: 11400000, guid: eafb730d454bc994faabecef4fea997c, type: 2}
   m_fTriggerChance: 0.05
-  m_fBaseRadius: 1.5
+  m_fBaseRadius: 2
   m_fRadiusPerLevel: 0.1
+  m_iMaxHitCount: 5

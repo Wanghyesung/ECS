@@ -6,7 +6,7 @@ using UnityEngine;
 /*///////////////////////////////////////////
             SOTraceNode
 기능 : 몬스터의 이동속드를 기준으로 플레이어를 따라가는 기능
- *///////////////////////////////////////////
+ *///////////////////////////////////////monst////
 
 [CreateAssetMenu(fileName = "SO_TraceNode", menuName = "Game/Monster/ActionNode/TraceNode")]
 public class SOTraceNode : SONode

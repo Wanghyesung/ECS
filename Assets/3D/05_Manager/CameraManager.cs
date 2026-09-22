@@ -14,7 +14,7 @@ public class CameraManager : MonoBehaviour
     public static CameraManager m_Instance = null;
 
     [SerializeField] private Camera m_refMainCamera;
-    [SerializeField] private Transform m_refPlayer;
+    private Transform m_refPlayer;
     [SerializeField] private Vector3 m_vOffset = new Vector3(0.0f, 5.0f, -10.0f);
 
     [SerializeField] private Image m_refBloodScreen = null;
@@ -22,6 +22,8 @@ public class CameraManager : MonoBehaviour
 
     private Vector3 m_vShakeOffset = Vector3.zero;
     private bool m_bLock = false;
+    // 컷신(MoveToPoint/FollowTarget) 진행 중 여부. 다른 연출(보스 등장 등)이 겹치지 않게 대기하는 데 사용
+    public bool IsLocked => m_bLock;
 
     private void Awake()
     {
@@ -33,6 +35,7 @@ public class CameraManager : MonoBehaviour
 
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
+        m_refPlayer = Player.CurrentPlayer.transform;
     }
 
     private void Start()
@@ -112,7 +115,29 @@ public class CameraManager : MonoBehaviour
         if (_fWaitTime > 0.0f)
             await UniTask.Delay((int)(_fWaitTime * 1000), ignoreTimeScale: true, cancellationToken: _tToken);
 
-        Time.timeScale = 1.0f;
+        // timeScale 은 여기서 건드리지 않는다 - 정지/복귀는 호출자(DungeonManager 보스 컷신, NukeStrike)가 TimeScaleManager 로 소유한다
         m_bLock = false;
+    }
+
+    // 지정 시간 동안 타겟을 타겟 로컬 오프셋(z- = 뒤, y+ = 위) 위치에서 바라보며 따라간다
+    // (unscaled - 컷신 중 timeScale 0 전제). 타겟이 어느 방향으로 날아가든 항상 "뒤 위에서" 보게 됨.
+    // 끝나도 잠금은 풀지 않는다 - 이어서 MoveToPoint로 빠져나오는 연출(핵폭탄: 미사일 추적 → 맵 전경 후진)을
+    // 붙이기 위함. 잠금 해제는 MoveToPoint 쪽이 담당 (timeScale 은 카메라가 아니라 호출자가 TimeScaleManager 로 관리)
+    public async UniTask FollowTarget(CancellationToken _tToken, Transform _refTarget, Vector3 _vLocalOffset, float _fDuration)
+    {
+        m_bLock = true;
+        Transform refCamTransform = m_refMainCamera.transform;
+
+        float fElapsed = 0f;
+        while (fElapsed < _fDuration && _refTarget != null)
+        {
+            Vector3 vTargetPos = _refTarget.position;
+            refCamTransform.position = vTargetPos + _refTarget.rotation * _vLocalOffset;
+            refCamTransform.rotation = Quaternion.LookRotation(vTargetPos - refCamTransform.position);
+
+            fElapsed += Time.unscaledDeltaTime;
+            // 타겟(미사일) 이동이 끝난 뒤 위치를 잡아야 한 프레임 늦게 따라가는 떨림이 없음
+            await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, _tToken);
+        }
     }
 }

@@ -1,6 +1,6 @@
 // RandomFeatureCard.cs
 using Cysharp.Threading.Tasks;
-using System;
+using R3;
 using System.Collections;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
@@ -26,12 +26,17 @@ public class RandomFeatureCard : BaseButtonUI
     private SOData m_SOData = null;
     public SOData Data => m_SOData;
 
-    public event Action<SOData> OnCardClicked;
-    private Coroutine m_CORotate = null;
+    private readonly Subject<SOData> m_subjectCardClick = new();
+    public Observable<SOData> OnCardClicked => m_subjectCardClick;
 
     private void Awake()
     {
         m_refSlotImage = GetComponent<Image>();
+    }
+
+    private void OnEnable()
+    {
+        m_refSlotImage.color = Color.white;
     }
 
     public void Setup(SOData _SOData)
@@ -44,16 +49,16 @@ public class RandomFeatureCard : BaseButtonUI
         m_refImage.sprite = m_refOriginSprite;
         m_refImage.raycastTarget = false;
 
-        m_CORotate = StartCoroutine(CORotate());
+        RotateAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
     public override void OnPointerClick(PointerEventData _eventData)
     {
         base.OnPointerClick(_eventData);
-        OnCardClicked?.Invoke(m_SOData);
+        m_subjectCardClick.OnNext(m_SOData);
     }
 
-    private IEnumerator CORotate()
+    private async UniTaskVoid RotateAsync(System.Threading.CancellationToken _ct)
     {
         // 레벨업 시 Time.timeScale이 0이 되어도 카드 연출은 계속 움직여야 하므로 unscaledDeltaTime 사용
         float fElapsed = 0.0f;
@@ -62,14 +67,13 @@ public class RandomFeatureCard : BaseButtonUI
             transform.Rotate(Vector3.up * 720f * Time.unscaledDeltaTime);
             fElapsed += Time.unscaledDeltaTime;
 
-            yield return null;
+            await UniTask.Yield(_ct);
         }
 
         transform.Rotate(Vector3.zero);
 
         m_refImage.sprite = m_refTargetSprite;
         m_refImage.raycastTarget = true;
-        m_CORotate = null;
 
         m_refSlotImage.color = m_SOData is SOFeature refFeature ? FeatureTierUI.GetColor(refFeature.Tier) : Color.white;
     }

@@ -1,28 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-using static Weapon;
+/*///////////////////////////////////////////
+                SOAttackInfo
+목적 : 탄(공격 오브젝트) 한 종류의 정적 데이터. 무기 쪽 설정(타입·풀·쿨다운)은 Weapon 이,
+       유도 회전값은 SOHomingAttackInfo 가 든다
+ *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_Attack_Info", menuName = "Game/Attack Info")]
-
 public class SOAttackInfo : ScriptableObject
 {
     [TextArea]
     public string Description;
 
     [Header("Stats")]
-    public eWeaponType WeaponType;
-    // PoolPrefab -> SOData 리네임. 이 어트리뷰트가 없으면 Unity가 기존 직렬화 데이터를
-    // 새 필드에 매핑하지 못해 모든 SOAttackInfo 에셋의 참조가 조용히 null이 된다. 절대 제거하지 말 것
-    [FormerlySerializedAs("PoolPrefab")]
-    public SOPoolData SOData;
-
     public int Damage = 10;
     public int AttackPower = 0;
-    public float Cooldown = 0.5f;
     public float Speed = 12.0f;
     public float SpeedOffset = 4.0f;
     public float AliveTime = 0.2f;
@@ -39,14 +32,6 @@ public class SOAttackInfo : ScriptableObject
     public float KnockbackDuration = 0.2f;
     public float StunDuration = 0f;
 
-   
-    [Header("Homing")]
-    public float BaseRotationSpeed = 90f;
-    public float MaxRotationSpeed = 180f;
-    public float RotationAccelRate = 0f;
-    public float ProximityRadius = 1.5f;
-
-
     [Header("Critical / Misc")]
     [Range(0f, 1f)]
     public float CriticalChance = 0f;
@@ -57,7 +42,8 @@ public class SOAttackInfo : ScriptableObject
     [Header("Audio")]
     public AudioClip HitSound;
 
-    public AttackInfo MakeAttackInfo()
+    // SOHomingAttackInfo 가 오버라이드해 HomingAttackInfo 를 만든다
+    public virtual AttackInfo MakeAttackInfo()
     {
         AttackInfo refAttackInfo = new AttackInfo();
 
@@ -68,13 +54,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.LineDuration = TelegraphDuration;
 
         refAttackInfo.AliveTime = AliveTime;
-        refAttackInfo.CoolDown = Cooldown;
         refAttackInfo.Speed = Speed;
-
-        refAttackInfo.RotationSpeed = BaseRotationSpeed;
-        refAttackInfo.MaxRotationSpeed = MaxRotationSpeed;
-        refAttackInfo.RotateSpeedRate = RotationAccelRate;
-        refAttackInfo.ProximityRadius = ProximityRadius;
 
         refAttackInfo.KnockbackForce = KnockbackForce;
         refAttackInfo.KnockbackDuration = KnockbackDuration;
@@ -101,7 +81,6 @@ public class AttackInfo
     public int Damage;
     public int AttackPower;
     public float AliveTime;
-    public float CoolDown;
     public float Speed;
 
     [Header("Hit Count")]
@@ -110,13 +89,6 @@ public class AttackInfo
 
     [Header("Line Laser")]
     public float LineDuration;
-
-    [Header("Homing")]
-    public float RotationSpeed = 90f;
-    public float MaxRotationSpeed = 180f;
-    public float RotateSpeedRate = 0f;
-    public float ProximityRadius = 1.5f;
-    
 
     [Header("Knockback")]
     public float KnockbackForce;

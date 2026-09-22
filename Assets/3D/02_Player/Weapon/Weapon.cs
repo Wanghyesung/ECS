@@ -1,9 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
+/*///////////////////////////////////////////
+                    Weapon
+목적 : 공격 데이터를 소유하고 새 탄환 또는 준비된 탄환을 같은 경로로 발사한다.
+ *///////////////////////////////////////////
 public class Weapon : MonoBehaviour
 {
     
@@ -16,11 +17,16 @@ public class Weapon : MonoBehaviour
         Missile,
         Laser,
         ShotGun,
+        Charge,
         End,
     }
     
     
-    [SerializeField] private SOAttackInfo m_SOAttackInfo;
+    [Header("Weapon")]
+    [SerializeField] private eWeaponType m_eWeaponType = eWeaponType.None;
+    [SerializeField] private SOPoolData m_refBulletPoolData;   // 이 무기가 쏘는 탄의 풀
+    [SerializeField] private float m_fCooldown = 0.5f;         // 카드 배율이 곱해지기 전 기본 발사 주기
+    [SerializeField] private SOAttackInfo m_SOAttackInfo;      // 탄 데이터만
 
     private AttackInfo m_refAttackInfo;
 
@@ -31,19 +37,28 @@ public class Weapon : MonoBehaviour
     }
 
     [SerializeField] private Transform m_refFireTr = null;
+    public Transform FireTransform => m_refFireTr;
     [SerializeField] private ParticleSystem m_refEffectObject;
 
-    private float m_fFireTime = 0.2f;
-    private float m_fBaseCooldown = 0.2f;
+    private float m_fFireTime = 0.2f;   // 현재 발사 주기 = m_fCooldown × SetCooldown 배율
     private float m_fLastFireTime = -Mathf.Infinity;
 
-    private eWeaponType m_eWeapoonType = eWeaponType.None;
-    public eWeaponType WeaponType => m_eWeapoonType;
+    // SO 원본 데미지. 공격력 스탯은 여기에 배율로 얹으므로, 누적 곱 대신 매번 base 기준으로 재계산한다
+    // (SetCooldown이 m_fCooldown을 쓰는 것과 같은 이유 - Repeatable 기능 재적용 시 드리프트 방지)
+    private int m_iBaseDamage;
+    private float m_fAttackBonusRate;
 
-    public SOPoolData FireBulletPrefab => m_SOAttackInfo.SOData;
+    public eWeaponType WeaponType => m_eWeaponType;             // 직렬화 필드라 Init 전(Monster.Start 등)에도 유효
+    public SOPoolData FireBulletPrefab => m_refBulletPoolData;
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
+
+    // 자동사격에서 제외하되 Player.m_listWeapon의 카드 강화는 그대로 받는다.
+    [SerializeField] private bool m_bChargeOnly = false;
+    public bool ChargeOnly => m_bChargeOnly;
+
+    public void SetChargeOnly(bool _bChargeOnly) => m_bChargeOnly = _bChargeOnly;
 
     [Header("Inaccuracy")]
     [SerializeField] private float m_fInaccuracyAngle = 0f; // 조준 방향에서 좌우/상하로 흔들리는 오차 각도
@@ -51,6 +66,10 @@ public class Weapon : MonoBehaviour
     [Header("Circular Sector Shot")]
     [SerializeField] private int m_iBulletCount = 1; // 1이면 기존처럼 단발
     [SerializeField] private float m_fSpreadAngle = 30f; // 부채꼴(원뿔) 전체 각도
+
+    // 씬 원본 탄수. 멀티샷 카드(AddBulletCount)는 여기에 가산하고 런 리셋(Init) 때 되돌린다 - m_iBaseDamage와 같은 이유.
+    // Awake가 아니라 Init에서 지연 캐싱하는 건 Monster/Drone이 자기 Awake에서 Init을 부르므로 이쪽 Awake가 먼저 돈다는 보장이 없어서
+    private int m_iBaseBulletCount;
 
     private const float GOLDEN_ANGLE_DEG = 137.50776f;
 
@@ -61,10 +80,22 @@ public class Weapon : MonoBehaviour
 
     public void Init()
     {
+        // Awake(Monster/Drone) 또는 런 시작(Player.ResetRun)에서 호출. 이 무기가 쏜 총알은 전부 이 참조를 공유하므로
+        // 이미 발사한 무기에 다시 부르는 건 런 시작(풀이 씬과 함께 재생성돼 이전 총알이 없는 시점)에서만 — 런 도중 재호출 금지
         m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
         m_refAttackInfo.Owner = gameObject.transform;
-        m_eWeapoonType = m_SOAttackInfo.WeaponType;
-        m_fBaseCooldown = m_refAttackInfo.CoolDown;
+        m_iBaseDamage = m_refAttackInfo.Damage;
+
+        // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·탄수·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
+        m_fFireTime = m_fCooldown;
+        m_fAttackBonusRate = 0.0f;
+        if (m_iBaseBulletCount <= 0)
+            m_iBaseBulletCount = m_iBulletCount;
+        m_iBulletCount = m_iBaseBulletCount;
+        if (m_listArriveActions != null) 
+            m_listArriveActions.Clear();
+        if (m_listHitActions != null) 
+            m_listHitActions.Clear();
     }
 
     private void Start()
@@ -80,11 +111,10 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        m_fFireTime = m_refAttackInfo.CoolDown;
         m_fLastFireTime = Time.time;
     }
 
-    public void Fire(Vector3 _vTargetPos, Transform _refTargetTr)
+    public GameObject Fire(Vector3 _vTargetPos, Transform _refTargetTr)
     {
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.TargetPos = _vTargetPos;
@@ -94,19 +124,70 @@ public class Weapon : MonoBehaviour
         if (m_iBulletCount > 1)
         {
             FireCircularSector(_vTargetPos, refShotInfo);
+            return null;  // 다수 펠릿은 준비 탄환 하나를 반환할 수 없어 차지샷 대상에서 제외
+        }
+
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_refBulletPoolData);
+        if (refObj == null)
+            return null;
+
+        FirePrepared(refObj, refShotInfo);
+        return refObj;
+    }
+
+    // SetAttack을 호출하지 않고 준비 상태로 인출한다. 풀 수명·이동·판정은 발사 때 시작한다.
+    public GameObject Begin()
+    {
+        if (m_iBulletCount != 1)
+            return null;
+
+        GameObject refObj = ObjectPoolManager.m_Instance.GetObject(FireBulletPrefab);
+        if (refObj == null)
+            return null;
+
+        Bullet refBullet = refObj.GetComponent<Bullet>();
+        CircleCollider refCollider = refObj.GetComponent<CircleCollider>();
+        PoolObject refPoolObj = refObj.GetComponent<PoolObject>();
+        refBullet.enabled = false;
+        refCollider.enabled = false;
+        refPoolObj.SuspendLifetime();
+        return refObj;
+    }
+
+    public void Fire(GameObject _refPreparedObj, Vector3 _vTargetPos,
+        Transform _refTargetTr, float _fSpeedMultiplier)
+    {
+        var tShotInfo = new tShotInfo
+        {
+            TargetPos = _vTargetPos,
+            TargetTr = _refTargetTr,
+            Speed = Mathf.Max(0.01f, RollSpeed()) * _fSpeedMultiplier
+        };
+        FirePrepared(_refPreparedObj, tShotInfo);
+    }
+
+    private void FirePrepared(GameObject _refObj, tShotInfo _tShotInfo)
+    {
+        Vector3 vLookDir = _tShotInfo.TargetPos - m_refFireTr.position;
+        Quaternion qRot = m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f
+            ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
+        _refObj.transform.SetPositionAndRotation(m_refFireTr.position, ApplyInaccuracy(qRot));
+
+        Bullet refBullet = _refObj.GetComponent<Bullet>();
+        if (refBullet != null)
+            refBullet.enabled = true;
+
+        IAttackObject refAttackObj = _refObj.GetComponent<IAttackObject>();
+        if (refAttackObj == null)
+        {
+            ObjectPoolManager.m_Instance.PushObject(_refObj);
             return;
         }
 
-        Vector3 vLookDir = _vTargetPos - m_refFireTr.position;
-        Quaternion qRot = (m_bLookTarget == true && vLookDir.sqrMagnitude > 0.0001f)
-            ? Quaternion.LookRotation(vLookDir) : m_refFireTr.rotation;
-        qRot = ApplyInaccuracy(qRot);
-
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, m_refFireTr.position, qRot, m_refAttackInfo, refShotInfo);
-        if (refObj == null)
-            return;
-
-        ApplyActions(refObj);
+        ApplyActions(_refObj);
+        refAttackObj.SetAttack(m_refAttackInfo, _tShotInfo);
+        if (refBullet != null && _refObj.TryGetComponent(out CircleCollider refCollider))
+            refCollider.enabled = true;
         OnBulletFired();
     }
 
@@ -139,7 +220,7 @@ public class Weapon : MonoBehaviour
             tShotInfo refPelletShotInfo = _refShotInfo;
             refPelletShotInfo.Speed = RollSpeed();
 
-            GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
+            GameObject refObj = Bullet.SpawnAttackObject(m_refBulletPoolData, m_refFireTr.position, qRot, m_refAttackInfo, refPelletShotInfo);
             if (refObj == null)
                 continue;
 
@@ -160,7 +241,7 @@ public class Weapon : MonoBehaviour
         tShotInfo refShotInfo = new tShotInfo();
         refShotInfo.Speed = RollSpeed();
 
-        GameObject refObj = Bullet.SpawnAttackObject(m_SOAttackInfo.SOData, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
+        GameObject refObj = Bullet.SpawnAttackObject(m_refBulletPoolData, vSpawnPos, qRot, m_refAttackInfo, refShotInfo);
         if (refObj == null)
             return;
 
@@ -194,7 +275,6 @@ public class Weapon : MonoBehaviour
             m_refEffectObject.Play();
 
         m_fLastFireTime = Time.time;
-        m_fFireTime = m_refAttackInfo.CoolDown;
     }
 
 
@@ -207,21 +287,26 @@ public class Weapon : MonoBehaviour
     public void SetCooldown(float _fValue)
     {
         float fClamped = Mathf.Max(_fValue, 0.1f);
-
-        m_refAttackInfo.CoolDown = m_fBaseCooldown * fClamped;
-        m_fFireTime = m_refAttackInfo.CoolDown;
+        m_fFireTime = m_fCooldown * fClamped;
     }
 
-    // Player.UpAttack()에서 레벨업 시점에 호출. m_refAttackInfo는 이 무기가 만든 모든 총알이
     
-    public void AddAttackDamage(int _iValue)
+    public void AddAttackRate(float _fRate)
     {
-        m_refAttackInfo.Damage += _iValue;
+        m_fAttackBonusRate += _fRate;
+        m_refAttackInfo.Damage = Mathf.Max(1, Mathf.RoundToInt(m_iBaseDamage * (1f + (m_fAttackBonusRate * 0.01f))));
     }
 
     public void AddBulletSpeed(float _fValue)
     {
         m_refAttackInfo.Speed += _fValue;
+    }
+
+    // FeatureSO.Apply()에서 멀티샷 카드(SOFeatureAddBulletCount)가 호출.
+    // 하한 1 - 0이 되면 FireCircularSector 루프가 안 돌아 무기가 벙어리가 된다
+    public void AddBulletCount(int _iValue)
+    {
+        m_iBulletCount = Mathf.Max(1, m_iBulletCount + _iValue);
     }
     public void DownBulletSpeed(float _fValue)
     {
@@ -266,17 +351,14 @@ public class Weapon : MonoBehaviour
     // Hit은 IAttackObject 공통 계약이라 Bullet/Laser 모두 적용, Arrive는 Laser에 없는 개념이라 Bullet에만 적용
     private void ApplyActions(GameObject _refBulletObj)
     {
-        if (m_listArriveActions == null && m_listHitActions == null)
-            return;
-
         IAttackObject refAttackObj = _refBulletObj.GetComponent<IAttackObject>();
         if (refAttackObj == null)
             return;
 
-        if (m_listHitActions != null)
-            refAttackObj.SetWeaponHitActions(m_listHitActions);
+        // 같은 풀을 여러 무기가 사용하므로 액션이 없는 무기도 이전 발사분을 지운다.
+        refAttackObj.SetWeaponHitActions(m_listHitActions);
 
-        if (m_listArriveActions != null && refAttackObj is Bullet refBullet)
+        if (refAttackObj is Bullet refBullet)
             refBullet.SetWeaponArriveActions(m_listArriveActions);
     }
 }

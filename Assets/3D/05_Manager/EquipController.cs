@@ -1,5 +1,5 @@
 using DG.Tweening;
-using System.Reflection;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -41,20 +41,9 @@ public class EquipController : MonoBehaviour
     {
         m_refInventoryContainer.Init();
 
-        m_refInventoryContainer.OnSelectSlotView += PickInventorySlot;
-        m_refPlusButton.OnClickEvt += PushInterface;
-        m_refEquipInterface.OnAddData += PushAndApply;
-
-        //m_refInventoryContainer.OnSelectEvt += AddData;
-        //m_refInterFaceContainer.OnSelectEvt += PushAndApply;
-    }
-
-    private void OnDestroy()
-    {
-        m_refInventoryContainer.OnSelectSlotView -= PickInventorySlot;
-        m_refPlusButton.OnClickEvt -= PushInterface;
-        m_refEquipInterface.OnAddData -= PushAndApply;
-
+        m_refInventoryContainer.OnSelectSlotView.Subscribe(PickInventorySlot).AddTo(this);
+        m_refPlusButton.OnClickEvt.Subscribe(_ => PushInterface()).AddTo(this);
+        m_refEquipInterface.OnAddData.Subscribe(PushAndApply).AddTo(this);
     }
 
     private void OnEnable()

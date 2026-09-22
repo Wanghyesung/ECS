@@ -1,4 +1,4 @@
-using System;
+using R3;
 using TMPro;
 using UnityEngine;
 
@@ -17,7 +17,8 @@ public sealed class UpgradeButtonView : MonoBehaviour
     private BaseButtonUI m_refButton;
     private CanvasGroup m_refGroup;
 
-    public event Action OnClickEvt;
+    private readonly Subject<Unit> m_subjectClick = new();
+    public Observable<Unit> OnClickEvt => m_subjectClick;
 
     private void Awake()
     {
@@ -27,17 +28,7 @@ public sealed class UpgradeButtonView : MonoBehaviour
         if (m_refGroup == null)
             m_refGroup = gameObject.AddComponent<CanvasGroup>();
 
-        m_refButton.OnClickEvt += HandleClick;
-    }
-
-    private void OnDestroy()
-    {
-        m_refButton.OnClickEvt -= HandleClick;
-    }
-
-    private void HandleClick()
-    {
-        OnClickEvt?.Invoke();
+        m_refButton.OnClickEvt.Subscribe(m_subjectClick.OnNext).AddTo(this);
     }
 
     public void Show(int _iCost, bool _bCanAfford)

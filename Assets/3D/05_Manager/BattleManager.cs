@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Threading;
+using R3;
 using UnityEngine;
 
 /*///////////////////////////////////////////
@@ -19,17 +20,18 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private CardCreator m_refCardCreator = null;
 
     private int m_iCurrentExp = 0;
-    private int m_iCurrentLevel = 1;
     private int m_iPendingLevelUps = 0; // ExSlider가 다 찰 때까지 미뤄둔 레벨업 개수
 
-    public int CurrentExp => m_iCurrentExp;
-    public int MaxExp => m_iMaxExp;
-    public int CurrentLevel => m_iCurrentLevel;
+    // 슬라이더 목표값. 연속 레벨업 시 Max→Max 도 다시 흘려야 하므로 중복 억제 끔
+    private readonly ReactiveProperty<int> m_rpExp = new(0, equalityComparer: null);
+    private readonly ReactiveProperty<int> m_rpLevel = new(1);
 
-    public event Action<int, int> OnExpChanged; // (현재 Exp, Max Exp)
-    public event Action<int> OnLevelUp;         // (새 레벨)
+    public int MaxExp => m_iMaxExp;
+    public ReadOnlyReactiveProperty<int> Exp => m_rpExp;
+    public ReadOnlyReactiveProperty<int> Level => m_rpLevel;
 
     private CancellationTokenSource m_refCancell;
+    private IDisposable m_disposableDied;
     private void Awake()
     {
         if (m_Instance != null && m_Instance != this)
@@ -44,17 +46,18 @@ public class BattleManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Monster.OnMonsterDied += HandleMonsterDied;
+        m_disposableDied = Monster.OnMonsterDied.Subscribe(AddExp);
     }
 
     private void OnDisable()
     {
-        Monster.OnMonsterDied -= HandleMonsterDied;
+        m_disposableDied?.Dispose();
     }
 
-    private void HandleMonsterDied(int _iAmount)
+    private void OnDestroy()
     {
-        AddExp(_iAmount);
+        m_rpExp.Dispose();
+        m_rpLevel.Dispose();
     }
 
    
@@ -65,10 +68,8 @@ public class BattleManager : MonoBehaviour
         if (m_iPendingLevelUps <= 0)
             return;
 
-        m_iCurrentLevel += 1;
         m_iPendingLevelUps -= 1;
-
-        OnLevelUp?.Invoke(m_iCurrentLevel);
+        m_rpLevel.Value += 1;
         m_refCardCreator?.ShowChoices();
     }
 
@@ -105,14 +106,14 @@ public class BattleManager : MonoBehaviour
         {
             int iCountBefore = m_iPendingLevelUps;
 
-            OnExpChanged?.Invoke(m_iMaxExp, m_iMaxExp);
+            m_rpExp.Value = m_iMaxExp;
 
             // ExSlider가 Max까지 다 차서 LevelUp()이 호출되어 보류 개수가 줄어들 때까지 대기
             await UniTask.WaitUntil(() => m_iPendingLevelUps < iCountBefore, cancellationToken: _tToken);
         }
 
         // 보류된 레벨업을 모두 처리했으면 실제 잔여 경험치로 슬라이더를 되돌림
-        OnExpChanged?.Invoke(m_iCurrentExp, m_iMaxExp);
+        m_rpExp.Value = m_iCurrentExp;
      
         // 작업 정상 종료 시 CTS 정리
         if (m_refCancell != null && m_refCancell.Token == _tToken)
