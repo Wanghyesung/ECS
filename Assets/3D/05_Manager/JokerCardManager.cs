@@ -75,6 +75,7 @@ public class JokerCardManager : MonoBehaviour
     // 도박 성공 결과 반영: 이번 회차의 후보 목록을 컨테이너에 표시
     public void ApplySuccess()
     {
+        m_refPickContainer.ClearData();
         m_refPickContainer.gameObject.SetActive(true);
         m_refSelectContainer.gameObject.SetActive(true);
 
