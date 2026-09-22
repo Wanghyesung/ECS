@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d9db660ae611e4095fdee81d7a9afd, type: 3}
   m_Name: SO_FeatureUpSpeed
   m_EditorClassIdentifier: 
-  m_strDescription: "\uD50C\uB808\uC774\uC5B4 \uC2A4\uD53C\uB4DC 10% \uC99D\uAC00"
-  m_sprIcon: {fileID: -1337330951, guid: 0f2889451146d464ab0258bc0641a63b, type: 3}
+  m_strDescription: Increases move speed by 15%.
+  m_sprIcon: {fileID: -1112054601, guid: f2e64e84491e92446b8e5476359ea9bb, type: 3}
   m_eID: 11
   m_eAcquireType: 0
   m_iWeight: 1

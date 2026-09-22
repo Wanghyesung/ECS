@@ -121,6 +121,10 @@ public class FeatureManager : MonoBehaviour, ICountable
             if (refFeature.MaxLevel > 0 && m_arrFeatureLevel[i] >= refFeature.MaxLevel)
                 continue;
 
+            //선행 카드가 없으면 무시. 조커 실패로 선행 카드가 몰수되면 자동으로 다시 잠긴다 (레벨 배열만 보므로 별도 상태 불필요)
+            if (refFeature.Require != null && m_arrFeatureLevel[(int)refFeature.Require.ID] <= 0)
+                continue;
+
             m_listPoolBuffer.Add(refFeature);
         }
 

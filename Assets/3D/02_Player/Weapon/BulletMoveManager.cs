@@ -41,7 +41,7 @@ public class BulletMoveManager : MonoBehaviour
     private bool m_bScheduled = false;
     private bool m_bDisposed = false;
 
-    private int COUNt = 0;
+    private int COUNT = 0;
     private int Max = 0;
     private void Awake()
     {
@@ -78,7 +78,7 @@ public class BulletMoveManager : MonoBehaviour
         if (m_bDisposed)
             return;
 
-        ++COUNt;
+        ++COUNT;
         m_listSpeed[_iIndex] = _fSpeed;
         m_listActive[_iIndex] = true;
         
@@ -91,12 +91,12 @@ public class BulletMoveManager : MonoBehaviour
         if (m_bDisposed)
             return;
 
-        --COUNt;
-        //if(Max < COUNt)
-        //{
-        //    Debug.Log(COUNt);
-        //    Max = COUNt;
-        //}    
+        --COUNT;
+        if(Max < COUNT)
+        {
+            Debug.Log(COUNT);
+            Max = COUNT;
+        }    
         
         m_listActive[_iIndex] = false;
     }

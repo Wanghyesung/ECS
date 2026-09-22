@@ -26,9 +26,6 @@ public class SOLookAtTargetNode : SONode
             return eNodeState.Failure;
         }
 
-        // 각도를 재는 트랜스폼과 회전을 적용하는 트랜스폼은 반드시 같아야 한다.
-        // 이전에는 OwnerOffset(보스는 전방 108유닛 지점)을 기준으로 방향을 구하면서 회전은 Owner에
-        // 적용해, 회전할수록 기준점이 휘둘려 목표 각도가 계속 바뀌는 피드백 루프가 생겼다.
         // 조준은 몬스터 본체를 돌리는 것이므로 기준을 Owner로 통일한다(발사 위치는 Weapon의 FireTr가 담당)
         Transform refOwnerTr = _refBB.Owner.transform;
 
@@ -39,7 +36,7 @@ public class SOLookAtTargetNode : SONode
             return eNodeState.Success;
         }
 
-        Quaternion qTargetRot = Quaternion.LookRotation(vDir.normalized);
+        Quaternion qTargetRot = CalcAimRotation(_refBB, vDir);
 
         // 임계 안이면 목표 회전으로 딱 맞춰놓고 종료 - 미세 오차가 남아 다시 Running으로 되돌아가는 것을 막음
         if (Quaternion.Angle(refOwnerTr.rotation, qTargetRot) < m_fAngleThreshold)
@@ -60,5 +57,31 @@ public class SOLookAtTargetNode : SONode
         }
 
         return eNodeState.Running;
+    }
+
+    //Offset을 지정하면 해당 지정된 Tr을 기준으로 모델을 회전한다 
+    private static Quaternion CalcAimRotation(BlackBoard _refBB, Vector3 _vToTarget)
+    {
+        Quaternion qLook = Quaternion.LookRotation(_vToTarget);
+        if (_refBB.OwnerOffset == null)
+            return qLook;
+
+        /*
+         * 월드 기준으로 구해진 방향(계속 변하는 값)에 캐릭터의 역회전을 곱해버리면, 
+         * 캐릭터가 돌았던 만큼을 다시 거꾸로 되돌려버리는 효과가 납니다.
+         */
+        Transform refOwnerTr = _refBB.Owner.transform;
+        Vector3 vLocalOffset = Quaternion.Inverse(refOwnerTr.rotation) * (_refBB.OwnerOffset.position - refOwnerTr.position);
+        float fPerpSq = vLocalOffset.x * vLocalOffset.x + vLocalOffset.y * vLocalOffset.y;
+        float fDistSq = _vToTarget.sqrMagnitude;
+        if (fDistSq <= fPerpSq)   // 타겟이 오프셋 반경 안 - 어떤 회전으로도 광선이 못 지나감, 피벗 조준으로 폴백
+            return qLook;
+
+        //타고라스 정리(D² = x² + y² + z²)를 역산하여 앞으로 뻗어갈 z값(Mathf.Sqrt(fDistSq - fPerpSq))을 구함
+        Vector3 vLocalDir = new Vector3(vLocalOffset.x, vLocalOffset.y, Mathf.Sqrt(fDistSq - fPerpSq));
+
+        // 기본 회전(qLook)에서, 총구가 비껴나가 있는 각도(LookRotation(vLocalDir))만큼을 
+        // 반대로 틀어줘서(Inverse) 몸통을 살짝 비틂 -> 총구가 타겟을 정확히 조준하게 됨
+        return qLook * Quaternion.Inverse(Quaternion.LookRotation(vLocalDir));
     }
 }

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d38a8b8586c31d49a3b8a2f5efa4068, type: 3}
   m_Name: SO_FeatureNuke
   m_EditorClassIdentifier: 
-  m_strDescription: "NUKE - \uB9F5 \uC804\uCCB4 \uBAAC\uC2A4\uD130 \uC989\uC2DC \uC18C\uBA78"
-  m_sprIcon: {fileID: 671286194, guid: a4afc3a1fcb6bdf4181c4969c4cf90b5, type: 3}
+  m_strDescription: Nuke. Destroys every monster on the map.
+  m_sprIcon: {fileID: 545253405, guid: f2e64e84491e92446b8e5476359ea9bb, type: 3}
   m_eID: 15
   m_eAcquireType: 0
   m_iWeight: 1
   m_eTier: 4
-  m_iMaxLevel: 0
+  m_iMaxLevel: 1
   m_refMissilePoolData: {fileID: 11400000, guid: 818a8b1c47f8e1749be0ee2079e2b56e, type: 2}
   m_SOAttackInfo: {fileID: 11400000, guid: 4d1f88de1b7965a43ab7a0af0af512fa, type: 2}

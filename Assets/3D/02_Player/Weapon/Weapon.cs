@@ -17,6 +17,7 @@ public class Weapon : MonoBehaviour
         Missile,
         Laser,
         ShotGun,
+        Charge,
         End,
     }
     
@@ -66,6 +67,10 @@ public class Weapon : MonoBehaviour
     [SerializeField] private int m_iBulletCount = 1; // 1이면 기존처럼 단발
     [SerializeField] private float m_fSpreadAngle = 30f; // 부채꼴(원뿔) 전체 각도
 
+    // 씬 원본 탄수. 멀티샷 카드(AddBulletCount)는 여기에 가산하고 런 리셋(Init) 때 되돌린다 - m_iBaseDamage와 같은 이유.
+    // Awake가 아니라 Init에서 지연 캐싱하는 건 Monster/Drone이 자기 Awake에서 Init을 부르므로 이쪽 Awake가 먼저 돈다는 보장이 없어서
+    private int m_iBaseBulletCount;
+
     private const float GOLDEN_ANGLE_DEG = 137.50776f;
 
     // 레벨업 등으로 획득한 동적 능력치. 총알 프리팹 개수와 무관하게 Weapon(적은 개수) 쪽에 모아두고
@@ -81,9 +86,12 @@ public class Weapon : MonoBehaviour
         m_refAttackInfo.Owner = gameObject.transform;
         m_iBaseDamage = m_refAttackInfo.Damage;
 
-        // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
+        // 런 리셋: Start는 1회뿐이라 발사 주기도 여기서. 카드 누적분(공격 배율·탄수·명중/도착 액션)은 새 AttackInfo에 없으니 같이 비운다
         m_fFireTime = m_fCooldown;
         m_fAttackBonusRate = 0.0f;
+        if (m_iBaseBulletCount <= 0)
+            m_iBaseBulletCount = m_iBulletCount;
+        m_iBulletCount = m_iBaseBulletCount;
         if (m_listArriveActions != null) 
             m_listArriveActions.Clear();
         if (m_listHitActions != null) 
@@ -292,6 +300,13 @@ public class Weapon : MonoBehaviour
     public void AddBulletSpeed(float _fValue)
     {
         m_refAttackInfo.Speed += _fValue;
+    }
+
+    // FeatureSO.Apply()에서 멀티샷 카드(SOFeatureAddBulletCount)가 호출.
+    // 하한 1 - 0이 되면 FireCircularSector 루프가 안 돌아 무기가 벙어리가 된다
+    public void AddBulletCount(int _iValue)
+    {
+        m_iBulletCount = Mathf.Max(1, m_iBulletCount + _iValue);
     }
     public void DownBulletSpeed(float _fValue)
     {

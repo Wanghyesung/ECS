@@ -548,4 +548,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         for (int i = 0; i < m_listWeapon.Count; ++i)
             m_listWeapon[i].DownBulletSpeed(_fValue);
     }
+
+    // FeatureSO.Apply()에서 발당 탄수를 늘리는 기능(SOFeatureAddBulletCount)이 호출.
+    // AddAttack과 같은 이유로 비활성 무기까지 반영. 차지 무기는 제외 - Weapon.Begin()이 탄수≠1이면 null을 돌려줘 차지샷이 죽는다
+    public void AddWeaponBulletCount(eWeaponType _eType, int _iValue)
+    {
+        for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
+            if (m_listWeapon[i].WeaponType == _eType && m_listWeapon[i].gameObject.activeSelf == true)
+                m_listWeapon[i].AddBulletCount(_iValue);
+        }
+    }
 }
