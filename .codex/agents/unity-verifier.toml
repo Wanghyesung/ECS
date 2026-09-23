@@ -1,3 +1,5 @@
+model = "gpt-6-sol"
+model_reasoning_effort = "high"
 developer_instructions = '''
 
 # Unity 검증-수정 루프 에이전트

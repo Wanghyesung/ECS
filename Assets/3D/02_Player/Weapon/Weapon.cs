@@ -39,6 +39,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private Transform m_refFireTr = null;
     public Transform FireTransform => m_refFireTr;
     [SerializeField] private ParticleSystem m_refEffectObject;
+    [SerializeField] private SOAudio m_SOFireAudio;   // 발사 1회당 1번 - 샷건 펠릿 수와 무관 (OnBulletFired는 펠릿마다 돌아서 거기엔 안 둠)
 
     private float m_fFireTime = 0.2f;   // 현재 발사 주기 = m_fCooldown × SetCooldown 배율
     private float m_fLastFireTime = -Mathf.Infinity;
@@ -53,12 +54,6 @@ public class Weapon : MonoBehaviour
 
     [Header("Weapon Option")]
     [SerializeField] private bool m_bLookTarget = true;
-
-    // 자동사격에서 제외하되 Player.m_listWeapon의 카드 강화는 그대로 받는다.
-    [SerializeField] private bool m_bChargeOnly = false;
-    public bool ChargeOnly => m_bChargeOnly;
-
-    public void SetChargeOnly(bool _bChargeOnly) => m_bChargeOnly = _bChargeOnly;
 
     [Header("Inaccuracy")]
     [SerializeField] private float m_fInaccuracyAngle = 0f; // 조준 방향에서 좌우/상하로 흔들리는 오차 각도
@@ -189,6 +184,7 @@ public class Weapon : MonoBehaviour
         if (refBullet != null && _refObj.TryGetComponent(out CircleCollider refCollider))
             refCollider.enabled = true;
         OnBulletFired();
+        PlayFireAudio();
     }
 
     // 조준 방향(_vTargetPos)을 중심축으로, 반각 m_fSpreadAngle/2인 원뿔 단면에 m_iBulletCount발을
@@ -200,6 +196,7 @@ public class Weapon : MonoBehaviour
         vSpokeAxis.Normalize();
 
         float fHalfAngle = m_fSpreadAngle * 0.5f;
+        PlayFireAudio();
 
         for (int i = 0; i < m_iBulletCount; ++i)
         {
@@ -247,6 +244,7 @@ public class Weapon : MonoBehaviour
 
         ApplyActions(refObj);
         OnBulletFired();
+        PlayFireAudio();   // 방사형 패턴이 루프로 여러 번 불러도 SO의 MinInterval이 1번으로 걸러줌
     }
 
     private float RollSpeed()
@@ -275,6 +273,12 @@ public class Weapon : MonoBehaviour
             m_refEffectObject.Play();
 
         m_fLastFireTime = Time.time;
+    }
+
+    private void PlayFireAudio()
+    {
+        if (m_SOFireAudio != null && SoundManager.m_Instance != null)
+            SoundManager.m_Instance.PlaySfx(m_SOFireAudio, m_refFireTr.position);
     }
 
 

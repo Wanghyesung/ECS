@@ -71,8 +71,6 @@ public sealed class WeaponCon : MonoBehaviour
 
     private void OnDisable() => Cancel();
 
-    public void SetChargeOnly() => m_refWeapon.SetChargeOnly(true);
-
     public void Begin()
     {
         if (isActiveAndEnabled == false || m_refWeapon.isActiveAndEnabled == false || Time.timeScale <= 0f)

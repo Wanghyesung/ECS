@@ -89,6 +89,10 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private bool[] m_arrWeaponDefaultActive;
     private bool[] m_arrDroneDefaultActive;
 
+    // 차지 무기는 WeaponCon(PlayerChargeController가 구동)이 붙어 있는 것으로 구분한다 — Weapon의 ChargeOnly 플래그를 대체.
+    // Fire()가 Update에서 도는 핫 루프라 TryGetComponent는 Awake에서 한 번만 (performance.md의 캐싱 규칙)
+    private bool[] m_arrWeaponChargeDriven;
+
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
 
 
@@ -121,8 +125,12 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         ThisPlayer = this;
 
         m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
+        m_arrWeaponChargeDriven = new bool[m_listWeapon.Count];
         for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
             m_arrWeaponDefaultActive[i] = m_listWeapon[i].gameObject.activeSelf;
+            m_arrWeaponChargeDriven[i] = m_listWeapon[i].TryGetComponent(out WeaponCon _);
+        }
         m_arrDroneDefaultActive = new bool[m_listDrone.Count];
         for (int i = 0; i < m_listDrone.Count; ++i)
             m_arrDroneDefaultActive[i] = m_listDrone[i].gameObject.activeSelf;
@@ -227,7 +235,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
-            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
+            if (m_arrWeaponChargeDriven[i] == true)   // 차지 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
                 continue;
 
             if (m_listWeapon[i].CheckTime() == true)

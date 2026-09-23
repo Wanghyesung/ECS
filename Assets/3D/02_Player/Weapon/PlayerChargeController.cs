@@ -24,7 +24,6 @@ public sealed class PlayerChargeController : MonoBehaviour
 
     private void Start()
     {
-        m_refWeaponCon.SetChargeOnly();
         InputManager.m_Instance.OnChargeButtonStarted.Subscribe(_ => StartCharge()).AddTo(this);
         InputManager.m_Instance.OnChargeButtonReleased.Subscribe(_ => ReleaseCharge()).AddTo(this);
         InputManager.m_Instance.OnChargeButtonCanceled.Subscribe(_ => CancelCharge()).AddTo(this);
