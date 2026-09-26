@@ -35,8 +35,9 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 - Update/FixedUpdate/LateUpdate 내 GC 할당
 - 캐싱되지 않은 `GetComponent`, `Camera.main`, `FindObjectOfType`
 - 게임플레이 코드 내 LINQ
-- `LayerMask` 대신 사용된 `tag ==`
-- `UniTask`대신 사용된 코루틴이 있는지
+- `CompareTag` 대신 사용된 `tag ==`
+- `SendMessage` / `BroadcastMessage`
+- 캐싱되지 않은 `WaitForSeconds`
 - `static readonly`로 캐싱되지 않은 `Animator.StringToHash`
 - 인스펙터 필수 참조, `[RequireComponent]` 컴포넌트, 수명이 보장된 싱글톤에 반복되는 불필요한 null 방어
 
