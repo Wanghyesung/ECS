@@ -16,8 +16,7 @@ public class SOSpawnExplosionAction : SOBulletAction
         Vector3 vPos = _refOwner.transform.position;
 
         // 이펙트 풀이 비어도 소리는 난다
-        if (SoundManager.m_Instance != null)
-            SoundManager.m_Instance.PlaySfx(m_SOExplodeAudio, vPos);
+        SoundManager.m_Instance.PlaySfx(m_SOExplodeAudio, vPos);
 
         if (m_refExplodeObj == null)
             return;

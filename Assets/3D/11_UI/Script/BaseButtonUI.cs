@@ -46,8 +46,8 @@ public class BaseButtonUI : MonoBehaviour,
     [SerializeField] private UnityEvent OnEndDragUEvt;
     [SerializeField] private UnityEvent OnClickUEvt;
 
-    //[SerializeField] private SOAudio m_pClickAudio;
-    //[SerializeField] private SOAudio m_pDownAudio;
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SOClickAudio;   // 비워두면 무음 - 버튼별로 다른 소리/무음 가능
 
    
     virtual public void OnPointerExit(PointerEventData e)
@@ -62,8 +62,6 @@ public class BaseButtonUI : MonoBehaviour,
     }
     public void OnPointerUp(PointerEventData _eventData)
     {
-        //if (m_pDownAudio != null)
-        //    SoundManager.m_Instance.PlaySfx(m_pDownAudio, null);
         OnUpUEvt?.Invoke();
         m_subjectUp.OnNext(Unit.Default);
     }
@@ -87,8 +85,16 @@ public class BaseButtonUI : MonoBehaviour,
     }
     virtual public void OnPointerClick(PointerEventData e)
     {
+        PlayClickAudio();
         OnClickUEvt?.Invoke();
         m_subjectClick.OnNext(Unit.Default);
+    }
+
+    // base.OnPointerClick 을 부르지 않는 파생(SlotView)도 소리만 낼 수 있게 분리
+    protected void PlayClickAudio()
+    {
+        if (m_SOClickAudio != null)
+            SoundManager.m_Instance.PlaySfx(m_SOClickAudio);
     }
 
     public void OnPointerDown(PointerEventData eventData)

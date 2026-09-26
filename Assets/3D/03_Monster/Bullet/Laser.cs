@@ -124,7 +124,7 @@ public class Laser : MonoBehaviour, IAttackObject
 
     private void PlayLoopAudio()
     {
-        if (m_SOLoopAudio == null || SoundManager.m_Instance == null)
+        if (m_SOLoopAudio == null)
             return;
 
         StopLoopAudio();   // 풀 재사용으로 SetAttack이 다시 불려도 루프가 겹치지 않게
@@ -133,8 +133,9 @@ public class Laser : MonoBehaviour, IAttackObject
 
     private void StopLoopAudio()
     {
-        if (SoundManager.m_Instance != null)
-            SoundManager.m_Instance.StopSfx(m_tLoopHandle);   // 이미 다른 소리로 재사용된 소스면 Generation 가드가 무시함
+        // OnDisable 마다 불리므로 실제로 재생한 적 있을 때만. 이미 다른 소리로 재사용된 소스면 Generation 가드가 무시함
+        if (m_tLoopHandle.IsValid == true)
+            SoundManager.m_Instance.StopSfx(m_tLoopHandle);
         m_tLoopHandle = default;
     }
 

@@ -76,6 +76,7 @@ public class SlotView : BaseButtonUI, ITooltipDataable
         //if (m_refContainer.IsOnSelect == false)
         //    return;
 
+        PlayClickAudio();
         if (m_refContainer != null)
             m_refContainer.SetTargetSlot(this);
     }

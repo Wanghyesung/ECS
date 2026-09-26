@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_Audio_NukeExplode
   m_EditorClassIdentifier: 
   m_listClips:
-  - {fileID: 8300000, guid: 23d80b5297162e9459fea98d1bec36f4, type: 3}
+  - {fileID: 8300000, guid: 1fd31868d68903d4f9e2c4a3b7ef98f3, type: 3}
   m_refOutputGroup: {fileID: 5783306332505341378, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
   m_fVolume: 1
   m_fPitchMin: 0.8

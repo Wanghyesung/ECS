@@ -277,7 +277,7 @@ public class Weapon : MonoBehaviour
 
     private void PlayFireAudio()
     {
-        if (m_SOFireAudio != null && SoundManager.m_Instance != null)
+        if (m_SOFireAudio != null)
             SoundManager.m_Instance.PlaySfx(m_SOFireAudio, m_refFireTr.position);
     }
 

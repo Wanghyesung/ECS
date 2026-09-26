@@ -301,6 +301,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 827773733}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -687,6 +688,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &62583267
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,6 +839,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &84176826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -925,6 +928,7 @@ MonoBehaviour:
   m_fMaxVisualScale: 10
   m_fMaxSpeedMultiplier: 2.5
   m_refChargeEffect: {fileID: 7311519957541997995}
+  m_SOChargeLoopAudio: {fileID: 11400000, guid: 6da3a94fba9533e42a16625fe4ef5a1e, type: 2}
   m_refWeapon: {fileID: 85487889}
 --- !u!114 &85487889
 MonoBehaviour:
@@ -1186,6 +1190,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &112223335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1836,6 +1841,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2051918256}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2415,6 +2421,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 333001235}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2796,6 +2803,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 642411269}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2912,6 +2920,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1759806452}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3178,6 +3187,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 285110770}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3262,6 +3272,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f29ccb238e494daaa0473765e275de30, type: 2}
   m_refLoadingOverlay: {fileID: 686088827}
   m_strFirstSceneName: LobyScene
+  m_SOLobyBgm: {fileID: 11400000, guid: 8bfc17ee8fd45c943be397a35a5271f6, type: 2}
 --- !u!4 &406389754
 Transform:
   m_ObjectHideFlags: 0
@@ -3345,6 +3356,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 412120685}
   m_eType: 0
   m_refContainerView: {fileID: 412120684}
@@ -3510,6 +3522,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &429617193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3623,6 +3636,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 981252278}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4305,6 +4319,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2023264934}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4796,6 +4811,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &538040993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5001,6 +5017,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1929724498}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -5429,6 +5446,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 437857627}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -6087,6 +6105,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &692617498
 GameObject:
   m_ObjectHideFlags: 0
@@ -6813,6 +6832,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 720991977}
   m_eType: 0
   m_refContainerView: {fileID: 720991973}
@@ -7038,6 +7058,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &728063325
 GameObject:
   m_ObjectHideFlags: 0
@@ -7246,6 +7267,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &737117569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7810,6 +7832,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &786721635
 GameObject:
   m_ObjectHideFlags: 0
@@ -9103,6 +9126,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &952113680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9253,6 +9277,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &969579756
 GameObject:
   m_ObjectHideFlags: 0
@@ -9942,6 +9967,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 163268407}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -10095,6 +10121,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1037903957
 GameObject:
   m_ObjectHideFlags: 0
@@ -10207,6 +10234,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1050153416
 GameObject:
   m_ObjectHideFlags: 0
@@ -10281,6 +10309,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1050153419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10443,6 +10472,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1058278134
 GameObject:
   m_ObjectHideFlags: 0
@@ -10517,6 +10547,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1058278137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10707,6 +10738,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 597616008}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -10823,6 +10855,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1214663503}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -10988,6 +11021,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1135052944
 GameObject:
   m_ObjectHideFlags: 0
@@ -11272,6 +11306,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 459833866}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -11388,6 +11423,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1005314023}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -11504,6 +11540,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1137859159}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12140,6 +12177,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1911331868}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12533,6 +12571,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 841698980}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12649,6 +12688,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1288813915}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12764,6 +12804,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1311538130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12877,6 +12918,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 389849578}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12993,6 +13035,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1665934593}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14096,6 +14139,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1457907522
 GameObject:
   m_ObjectHideFlags: 0
@@ -14220,6 +14264,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1460608178
 GameObject:
   m_ObjectHideFlags: 0
@@ -14298,6 +14343,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_listView:
   - vSlotSize: {x: 180, y: 180}
     vPosition: {x: 150, y: -80}
@@ -14467,6 +14513,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 739143484}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -15323,6 +15370,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 485512171}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16017,6 +16065,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1672045744
 GameObject:
   m_ObjectHideFlags: 0
@@ -16143,6 +16192,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1672045749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16298,6 +16348,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 852123721}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16624,6 +16675,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &1742738633
 GameObject:
   m_ObjectHideFlags: 0
@@ -16979,6 +17031,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1757691889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17310,6 +17363,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 1777137972}
   m_eType: 0
   m_refContainerView: {fileID: 1777137971}
@@ -17598,6 +17652,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 443489523}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -17714,6 +17769,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1196916873}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -17913,6 +17969,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 26476241}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -18029,6 +18086,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 795105696}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -18211,6 +18269,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 802874724}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -19034,6 +19093,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &2006711066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19220,6 +19280,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &2020396304
 GameObject:
   m_ObjectHideFlags: 0
@@ -19295,6 +19356,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 116001591}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -19767,6 +19829,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &2070685841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19880,6 +19943,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 169289270}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -20647,6 +20711,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 681551208}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -20763,6 +20828,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1189206962}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}

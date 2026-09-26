@@ -197,6 +197,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 274205526}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1503,6 +1504,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 50609410}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1676,6 +1678,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2037786745}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1951,6 +1954,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &161302928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2002,8 +2006,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 161302929}
   m_refEffectObject: {fileID: 340615013}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -2082,6 +2086,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 846530980}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2447,8 +2452,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 4fe8ff87a6be4254e96920cc1a561fb9, type: 2}
   m_refFireTr: {fileID: 209899764}
   m_refEffectObject: {fileID: 1618127072}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -2527,6 +2532,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &212782169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2616,8 +2622,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 216538520}
   m_refEffectObject: {fileID: 665936095}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -3036,8 +3042,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 261239894}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -3191,6 +3197,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 72077007}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3512,6 +3519,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1724187709}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3753,8 +3761,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 44345befe75704243ad800615e982a68, type: 2}
   m_refFireTr: {fileID: 280640786}
   m_refEffectObject: {fileID: 961741912}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 60
   m_fSpreadAngle: 10
@@ -4329,6 +4337,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 21300010, guid: 4de414ff7f352df35d94b81e9a9c7a44, type: 3}
   m_refOriginSprite: {fileID: 21300010, guid: 4de414ff7f352df35d94b81e9a9c7a44, type: 3}
   m_refImage: {fileID: 727179328}
@@ -4483,6 +4492,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 262509179}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4820,8 +4830,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 4fe8ff87a6be4254e96920cc1a561fb9, type: 2}
   m_refFireTr: {fileID: 396608229}
   m_refEffectObject: {fileID: 221755804}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -5558,8 +5568,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 452813303}
   m_refEffectObject: {fileID: 969335333}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -5857,8 +5867,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 467237348}
   m_refEffectObject: {fileID: 879611010}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -5937,6 +5947,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1349127811}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -6205,6 +6216,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 785129017}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -6321,6 +6333,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 280372964}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -6469,6 +6482,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1955437705}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -7169,8 +7183,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 14674ac2d3f42eb46a905cc01a6b39d8, type: 2}
   m_refFireTr: {fileID: 607825572}
   m_refEffectObject: {fileID: 636183126}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 60
   m_fSpreadAngle: 10
@@ -7419,6 +7433,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1318126454}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -8646,6 +8661,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1268089994}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -8959,8 +8975,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 715872779}
   m_refEffectObject: {fileID: 230817951}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -9015,8 +9031,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 786673697}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -9170,6 +9186,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 647836432}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -9286,6 +9303,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 1358531485}
@@ -9753,8 +9771,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 719089472}
   m_refEffectObject: {fileID: 294316630}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -10186,6 +10204,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1652508790}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -10562,8 +10581,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 887771511}
   m_refEffectObject: {fileID: 1587312647}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -10902,6 +10921,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!1 &924492068
 GameObject:
   m_ObjectHideFlags: 0
@@ -11110,8 +11130,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 937248286}
   m_refEffectObject: {fileID: 658913329}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -12061,8 +12081,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 1040721637}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -12179,6 +12199,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 1717045989}
@@ -12357,6 +12378,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1051749162}
@@ -12619,8 +12641,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 4a65e7e97660b29499365b71050d14a2, type: 2}
   m_refFireTr: {fileID: 1066022900}
   m_refEffectObject: {fileID: 107014439}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -13503,6 +13525,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 611515035}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -13799,6 +13822,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1399782899}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14435,6 +14459,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1862193586}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14526,8 +14551,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1258235451}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -14920,6 +14945,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1698678999}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -15012,8 +15038,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 1915846211}
   m_refEffectObject: {fileID: 1093112746}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -15128,6 +15154,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1415265332}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -15220,8 +15247,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 15564d828a90d8345ac23f6d7c9c0650, type: 2}
   m_refFireTr: {fileID: 1312085793}
   m_refEffectObject: {fileID: 2028461489}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -15351,8 +15378,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 1331114200}
   m_refEffectObject: {fileID: 2082725133570207933}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -15771,6 +15798,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 289223205}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16440,8 +16468,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 1412695963}
   m_refEffectObject: {fileID: 950688566}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -16520,6 +16548,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 457363156}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16816,6 +16845,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1360321800}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16932,6 +16962,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 519710747}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -17113,8 +17144,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 1472460816}
   m_refEffectObject: {fileID: 1289877848}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -17240,8 +17271,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 15564d828a90d8345ac23f6d7c9c0650, type: 2}
   m_refFireTr: {fileID: 1486357480}
   m_refEffectObject: {fileID: 1479282580}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 1
@@ -17459,6 +17490,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1509255863}
@@ -17751,6 +17783,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 486356373}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -18106,8 +18139,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 4a65e7e97660b29499365b71050d14a2, type: 2}
   m_refFireTr: {fileID: 1558657590}
   m_refEffectObject: {fileID: 582229175}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -18268,6 +18301,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 883269723}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -18704,6 +18738,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 54612234}
@@ -19085,8 +19120,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 9993e481de5d64b48a419ff1dd80a913, type: 2}
   m_refFireTr: {fileID: 1683071217}
   m_refEffectObject: {fileID: 1288358014}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -19832,8 +19867,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 9993e481de5d64b48a419ff1dd80a913, type: 2}
   m_refFireTr: {fileID: 1750521517}
   m_refEffectObject: {fileID: 70087527}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -19987,6 +20022,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1206094323}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -20583,6 +20619,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1926608474}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -21332,8 +21369,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 1908555143}
   m_refEffectObject: {fileID: 709646582}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 1
@@ -21531,8 +21568,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 1915846211}
   m_refEffectObject: {fileID: 1530149594}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -21913,6 +21950,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 0}
   m_eType: 1
   m_refContainerView: {fileID: 1941138654}
@@ -22198,8 +22236,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1962723263}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -22473,6 +22511,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1739233304}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -23111,8 +23150,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: aa3e6ab0ca52abd46bc694115ce29d63, type: 2}
   m_refFireTr: {fileID: 2079641171}
   m_refEffectObject: {fileID: 1911295848}
+  m_SOFireAudio: {fileID: 0}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -23452,6 +23491,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &2093606631
 MonoBehaviour:
   m_ObjectHideFlags: 0

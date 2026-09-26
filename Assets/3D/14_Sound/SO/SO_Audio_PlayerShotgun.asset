@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SO_Audio_PlayerShotgun
   m_EditorClassIdentifier: 
   m_listClips:
-  - {fileID: 8300000, guid: 7b889162724f05c4f95da46adbd50ef7, type: 3}
+  - {fileID: 8300000, guid: 6c641842185384646b603322cc7e7559, type: 3}
   - {fileID: 8300000, guid: b9bcff787e03ea4448419527c126e177, type: 3}
   - {fileID: 8300000, guid: b39ec697f76aec04fb8081c0c4f6dbae, type: 3}
   - {fileID: 8300000, guid: 6c641842185384646b603322cc7e7559, type: 3}

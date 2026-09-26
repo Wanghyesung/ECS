@@ -16,6 +16,10 @@ public sealed class WeaponCon : MonoBehaviour
     [SerializeField, Min(1f)] private float m_fMaxSpeedMultiplier = 2.5f;
     [SerializeField] private ParticleSystem m_refChargeEffect;
 
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SOChargeLoopAudio;   // Loop SO - 차지 시작부터 발사/취소까지
+    private SoundManager.SoundHandle m_tChargeHandle;
+
     [SerializeField] private Weapon m_refWeapon;
     private GameObject m_refBulletObj;
     private Transform m_refBulletTr;
@@ -99,6 +103,9 @@ public sealed class WeaponCon : MonoBehaviour
 
         if (m_refChargeEffect != null)
             m_refChargeEffect.gameObject.SetActive(true);
+
+        if (m_SOChargeLoopAudio != null)
+            m_tChargeHandle = SoundManager.m_Instance.PlaySfx(m_SOChargeLoopAudio);
     }
 
     public void Release(Vector3 _vTargetPos, Transform _refTarget)
@@ -146,6 +153,12 @@ public sealed class WeaponCon : MonoBehaviour
         m_bFullCharge = false;
         if (_bStopEffect == true)
             StopFullChargeEffect();
+
+        // 발사·취소·소유권 상실이 전부 여기를 지나므로 루프 정지는 이 한 곳에서.
+        // IsValid 검사: Awake 에서도 불리는데 그 시점엔 SoundManager 의 Awake 가 아직일 수 있음
+        if (m_tChargeHandle.IsValid == true)
+            SoundManager.m_Instance.StopSfx(m_tChargeHandle);
+        m_tChargeHandle = default;
     }
 
     private void ResetBullet()

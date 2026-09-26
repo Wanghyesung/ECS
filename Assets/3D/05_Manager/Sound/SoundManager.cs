@@ -17,6 +17,8 @@ public sealed class SoundManager : MonoBehaviour
         public readonly int Index;
         public readonly int Generation;
 
+        public bool IsValid => Generation != 0;   // default 핸들(재생한 적 없음)은 0 - 첫 재생부터 1
+
         public SoundHandle(int _iIndex, int _iGeneration)
         {
             Index = _iIndex;
@@ -155,9 +157,6 @@ public sealed class SoundManager : MonoBehaviour
     // 옵션 UI 슬라이더(0~1)에서 호출. Slider 타입에 의존하지 않도록 값만 받음
     public void SetVolume(eAudioChannelType _eType, float _fLinear)
     {
-        if (m_refMixer == null)
-            return;
-
         float fDB = _fLinear <= 0.0001f ? MIN_DB : Mathf.Log10(_fLinear) * 20.0f;
         m_refMixer.SetFloat(GetVolumeParam(_eType), fDB);
     }
