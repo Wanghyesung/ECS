@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 /*///////////////////////////////////////////
                 SODataTooltipView
-목적 : SlotView 위에 마우스가 올라가면 그 SOData 의 아이콘 + Description 을 옆에 띄우는 공용 설명창.
-       씬마다 하나, SlotView 가 static Show/Hide 로 호출. Update 없음.
+기능 : SOData 의 아이콘 + Description 을 대상 UI 옆에 띄우는 공용 설명창.
+       씬마다 하나, SODataTooltipTrigger 가 static Show/Hide 로 호출
  *///////////////////////////////////////////
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(DataDescUI))]
