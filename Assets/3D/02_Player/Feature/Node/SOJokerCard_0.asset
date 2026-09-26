@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87b3b7d034fc48949a77368d5f7d5866, type: 3}
   m_Name: SOJokerCard_0
   m_EditorClassIdentifier: 
-  m_strDescription: 
+  m_strDescription: Each success raises the stage and grants more cards. Fail and
+    you lose every feature gained from Joker cards.
   m_sprIcon: {fileID: 21300010, guid: 4de414ff7f352df35d94b81e9a9c7a44, type: 3}
   m_refSuccessChance:
     serializedVersion: 2

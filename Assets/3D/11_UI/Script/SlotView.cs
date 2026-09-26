@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 //(이벤토리 슬롯)
-public class SlotView : BaseButtonUI
+public class SlotView : BaseButtonUI, ITooltipDataable
 {
     //하이라이트도 나중에 추가
     [SerializeField] protected Image m_refIcon = null;
@@ -25,19 +25,15 @@ public class SlotView : BaseButtonUI
 
     protected ISelectDataable m_refContainer = null;
 
-    private bool m_bPointerInside = false;
+    private SODataTooltipTrigger m_refTooltip = null;   //안 붙어 있으면 설명창 없는 슬롯
 
     public SOData SOData { get => m_SOTargetSO; }
     public int SlotIdx { get => m_iSlotIdx; }
+    public SOData TooltipData => m_SOTargetSO;
 
-    //SetActive(false) 된 UI 에는 PointerExit 가 오지 않으므로 여기서 닫는다
-    private void OnDisable()
+    private void Awake()
     {
-        if (m_bPointerInside == false)
-            return;
-
-        m_bPointerInside = false;
-        SODataTooltipView.Hide();
+        m_refTooltip = GetComponent<SODataTooltipTrigger>();
     }
 
     public void Init(ISelectDataable _refContainer)
@@ -55,20 +51,6 @@ public class SlotView : BaseButtonUI
     public virtual void Bind(SOData _SOFeat, int _iSlotIdx, int _iCount = 0)
     {
         BindData(_SOFeat, _iSlotIdx, _iCount);
-    }
-
-    public override void OnPointerEnter(PointerEventData e)
-    {
-        base.OnPointerEnter(e);
-        m_bPointerInside = true;
-        RefreshTooltip();
-    }
-
-    public override void OnPointerExit(PointerEventData e)
-    {
-        base.OnPointerExit(e);
-        m_bPointerInside = false;
-        SODataTooltipView.Hide();
     }
 
     override public void OnBeginDrag(PointerEventData e)
@@ -124,18 +106,8 @@ public class SlotView : BaseButtonUI
         m_iSlotIdx = _iSlotIdx;
 
         //드래그 스크롤/정렬은 슬롯 오브젝트를 재사용하고 데이터만 바꿔 Enter/Exit 가 안 온다
-        RefreshTooltip();
-    }
-
-    private void RefreshTooltip()
-    {
-        if (m_bPointerInside == false)
-            return;
-
-        if (m_SOTargetSO == null)
-            SODataTooltipView.Hide();
-        else
-            SODataTooltipView.Show(m_SOTargetSO, (RectTransform)transform);
+        if (m_refTooltip != null)
+            m_refTooltip.Refresh();
     }
 
     //등급 색상 표시 여부/색상은 이 슬롯을 쓰는 Container가 결정해서 밀어줌 (SlotView는 그리기만 담당)
