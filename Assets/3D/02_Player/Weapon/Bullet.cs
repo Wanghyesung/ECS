@@ -56,13 +56,11 @@ public class Bullet : MonoBehaviour, IAttackObject
     // 프리팹 고유 동작. 실제로 대상에 데미지를 입힌 순간(=명중)에만 실행. 인스펙터에서 조합, 런타임에 안 건드림
     [SerializeField] private SOBulletAction[] m_arrHitActions;
 
-    // Weapon이 부여한 동적 능력치. 풀에서 재사용되는 인스턴스이므로 Add로 누적하면 안 되고,
     // Weapon이 발사할 때마다 SetWeaponArriveActions/SetWeaponHitActions로 항상 통째로 덮어써야 중복 실행을 막을 수 있음
     private List<SOBulletAction> m_listWeaponArriveActions;
     private List<SOBulletAction> m_listWeaponHitActions;
 
     // 이동 계산 매니저(BulletMoveManager 등) 안에서 이 총알이 몇 번째 슬롯인지
-    // (풀 생애주기 중 Awake에서 딱 한 번만 배정). 하위 클래스도 DeactivateMoveJob 등에서 써야 해서 protected
     protected int m_iMoveManagerIndex = -1;
 
     // 히트 이펙트(ParticleSystem) 동시 재생 상한 - 교전이 몰리면 한 프레임에 수십 건씩 명중이

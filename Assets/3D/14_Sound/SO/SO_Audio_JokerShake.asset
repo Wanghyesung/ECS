@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c7cefd5eeceecc4895a4dddc57fca9a, type: 3}
+  m_Name: SO_Audio_JokerShake
+  m_EditorClassIdentifier: 
+  m_listClips:
+  - {fileID: 8300000, guid: 601220ad60cf6bd4b8b4871638079dc5, type: 3}
+  m_refOutputGroup: {fileID: -8301951985316584053, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
+  m_fVolume: 0.7
+  m_fPitchMin: 1
+  m_fPitchMax: 1
+  m_fSpatialBlend: 0
+  m_fMinInterval: 0
+  m_iPriority: 32
+  m_bLoop: 1

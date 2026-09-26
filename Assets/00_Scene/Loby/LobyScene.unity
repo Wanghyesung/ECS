@@ -13235,7 +13235,6 @@ GameObject:
   - component: {fileID: 1369488226}
   - component: {fileID: 1369488225}
   - component: {fileID: 1369488224}
-  - component: {fileID: 1369488223}
   - component: {fileID: 1369488230}
   - component: {fileID: 1369488231}
   m_Layer: 3
@@ -13245,29 +13244,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!136 &1369488223
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1369488222}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 3.44
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: -2.15}
 --- !u!114 &1369488224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13410,6 +13386,7 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
+  m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
   m_refTargetScnner: {fileID: 1369488227}
   TestLock: 0
 --- !u!4 &1369488229
@@ -18553,6 +18530,7 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
+  m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
   m_refTargetScnner: {fileID: 1369488227}
   TestLock: 0
 --- !u!1 &1911331866

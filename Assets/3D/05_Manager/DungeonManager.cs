@@ -8,9 +8,6 @@ using UnityEngine.SceneManagement;
 /*///////////////////////////////////////////
                 DungeonManager
 기능 : 던전 한 판의 진행(몬스터 스폰 예약, 보스 등장, 클리어)을 책임지는 매니저.
-       m_listStage는 '순서대로 도는 코스'가 아니라 로비(SelectStage)에서 고르는
-       난이도 목록이다 - StartStage(idx)로 그 하나만 시작하고, 잡몹을 전부 처치하면
-       그 스테이지의 보스가 등장, 보스를 잡으면 한 판이 끝나 로비로 돌아간다.
  *///////////////////////////////////////////
 public class DungeonManager : MonoBehaviour
 {
@@ -28,8 +25,7 @@ public class DungeonManager : MonoBehaviour
     private bool m_bBossRequested = false;
     private bool m_bBossSpawned = false;
 
-    // 스포너가 꺼낸 몬스터 목록(보스 포함). 스폰 담당인 이쪽이 들고 있어야 Monster 클래스가 자기 개체수를
-    // 몰라도 된다. 죽은(풀 반납=비활성) 몬스터는 CollectAliveMonsters에서 걸러내며 지연 제거
+    // 스포너가 꺼낸 몬스터 목록(보스 포함)
     private List<Monster> m_listSpawnedMonster = new List<Monster>();
 
     // 보스 등장 컷신 진행 중 여부. 시작/끝을 한 스트림으로 알려야 View가 컷신 동안만 경고를 띄울 수 있음

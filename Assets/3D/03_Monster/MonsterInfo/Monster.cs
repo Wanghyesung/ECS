@@ -186,6 +186,8 @@ public class Monster : MonoBehaviour, IDamageable
             return;
 
         m_refBlackBoard.ObjInfo.CurrentHP.Value -= _refAttackInfo.Damage;
+        if (_refAttackInfo.Damage > 0)
+            SoundManager.m_Instance.PlaySfx(_refAttackInfo.HitAudio, transform.position);
         if (MonsterHPBar.m_Instance != null)
             MonsterHPBar.m_Instance.Show(this);
 

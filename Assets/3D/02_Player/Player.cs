@@ -94,6 +94,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     private bool[] m_arrWeaponChargeDriven;
 
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SODeadAudio;
 
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
@@ -248,6 +250,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         CancelNockback();
         m_refObjectInfo.State = eEntityState.Dead;   // Update의 Fire 차단
+        SoundManager.m_Instance.PlaySfx(m_SODeadAudio);
         m_refMovement.enabled = false;               // PlayerMovement는 상태를 안 보므로 컴포넌트째 끔 (OnEnable에서 복구)
         m_subjectDied.OnNext(Unit.Default);
     }
@@ -262,6 +265,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.State = eEntityState.Hit;
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
+        if (iFinalDamage > 0)
+            SoundManager.m_Instance.PlaySfx(_refAttackInfo.HitAudio, transform.position);
         m_refObjectInfo.CurrentHP.Value -= iFinalDamage;
         if (m_refObjectInfo.State == eEntityState.Dead)   // 위 대입에서 Dead()가 동기 호출됨 — 넉백을 시작하면 끝에서 State=Idle로 되살아난다
             return;

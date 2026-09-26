@@ -34,6 +34,8 @@ public class RandomFeatureCard : BaseButtonUI, ITooltipDataable
 
     private readonly Subject<SOData> m_subjectCardClick = new();
     public Observable<SOData> OnCardClicked => m_subjectCardClick;
+    private readonly Subject<Unit> m_subjectRotationCompleted = new();
+    public Observable<Unit> OnRotationCompleted => m_subjectRotationCompleted;
 
     private void Awake()
     {
@@ -99,5 +101,7 @@ public class RandomFeatureCard : BaseButtonUI, ITooltipDataable
         m_bRotate = true;
         if (m_refTooltip != null)
             m_refTooltip.Refresh();
+
+        m_subjectRotationCompleted.OnNext(Unit.Default);
     }
 }

@@ -33,6 +33,7 @@ public class SOHomingAttackInfo : SOAttackInfo
         refHomingInfo.KnockbackDuration = KnockbackDuration;
 
         refHomingInfo.HitLayers = HitLayers;
+        refHomingInfo.HitAudio = HitAudio;
 
         refHomingInfo.RotationSpeed = BaseRotationSpeed;
         refHomingInfo.MaxRotationSpeed = MaxRotationSpeed;

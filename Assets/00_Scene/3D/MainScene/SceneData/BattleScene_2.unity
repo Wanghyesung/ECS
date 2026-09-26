@@ -4077,6 +4077,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
@@ -16494,6 +16502,9 @@ MonoBehaviour:
   m_refSlotImage: {fileID: 0}
   m_fShowTime: 2
   m_refAnimTable: {fileID: 1204814389}
+  m_SOShakeAudio: {fileID: 11400000, guid: f727b940fa2c6d44ca2bb71f977ac794, type: 2}
+  m_SOSuccessAudio: {fileID: 11400000, guid: 9aff784e639bb0a4c8980a4f9757b410, type: 2}
+  m_SOFailAudio: {fileID: 11400000, guid: e6404572ad917e648ab6080aa85a7677, type: 2}
   m_fMoveTime: 0.3
   m_vRevealScale: {x: 1.5, y: 1.5, z: 1.5}
   m_fShakeTime: 2
@@ -21213,6 +21224,7 @@ MonoBehaviour:
   m_refJokerCard: {fileID: 1010915755}
   m_SOJokerCard: {fileID: 11400000, guid: fb94cd05be044ec4a861998a8fc227db, type: 2}
   m_refCenterAnchor: {fileID: 1711387974}
+  m_SOJokerRotateAudio: {fileID: 11400000, guid: c29deca2f8f096146bc5b7514b758ea3, type: 2}
   m_refJokerSuccessText: {fileID: 1887610824}
   m_refCurrentLevel: {fileID: 997698068}
 --- !u!1 &1251586362

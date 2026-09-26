@@ -28,4 +28,4 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  HitSound: {fileID: 0}
+  HitAudio: {fileID: 11400000, guid: a6f39519d513ad441b8524e9e210cccf, type: 2}

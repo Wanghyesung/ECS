@@ -139,6 +139,7 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 0}
+  m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
   m_refTargetScnner: {fileID: 0}
   TestLock: 0
 --- !u!114 &7474009929202663394

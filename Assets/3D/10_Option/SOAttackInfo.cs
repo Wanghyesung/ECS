@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /*///////////////////////////////////////////
                 SOAttackInfo
@@ -40,7 +41,8 @@ public class SOAttackInfo : ScriptableObject
     public LayerMask HitLayers = ~0;
 
     [Header("Audio")]
-    public AudioClip HitSound;
+    [FormerlySerializedAs("HitSound")]
+    public SOAudio HitAudio;
 
     // SOHomingAttackInfo 가 오버라이드해 HomingAttackInfo 를 만든다
     public virtual AttackInfo MakeAttackInfo()
@@ -60,6 +62,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.KnockbackDuration = KnockbackDuration;
 
         refAttackInfo.HitLayers = HitLayers;
+        refAttackInfo.HitAudio = HitAudio;
         return refAttackInfo;
     }
 }
@@ -96,6 +99,7 @@ public class AttackInfo
 
     [Header("Tem")]
     public LayerMask HitLayers = ~0;
+    public SOAudio HitAudio;
 }
 
 /*///////////////////////////////////////////

@@ -4344,6 +4344,9 @@ MonoBehaviour:
   m_refSlotImage: {fileID: 0}
   m_fShowTime: 2
   m_refAnimTable: {fileID: 290754800}
+  m_SOShakeAudio: {fileID: 11400000, guid: f727b940fa2c6d44ca2bb71f977ac794, type: 2}
+  m_SOSuccessAudio: {fileID: 11400000, guid: 9aff784e639bb0a4c8980a4f9757b410, type: 2}
+  m_SOFailAudio: {fileID: 11400000, guid: e6404572ad917e648ab6080aa85a7677, type: 2}
   m_fMoveTime: 0.3
   m_vRevealScale: {x: 1.5, y: 1.5, z: 1.5}
   m_fShakeTime: 2
@@ -8922,6 +8925,7 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
+  m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
   m_refTargetScnner: {fileID: 715353657}
   TestLock: 0
 --- !u!1 &715872778
@@ -23319,6 +23323,7 @@ MonoBehaviour:
   m_refJokerCard: {fileID: 316886639}
   m_SOJokerCard: {fileID: 11400000, guid: fb94cd05be044ec4a861998a8fc227db, type: 2}
   m_refCenterAnchor: {fileID: 1887544748}
+  m_SOJokerRotateAudio: {fileID: 11400000, guid: c29deca2f8f096146bc5b7514b758ea3, type: 2}
   m_refJokerSuccessText: {fileID: 74151602}
   m_refCurrentLevel: {fileID: 515880255}
 --- !u!114 &2089230753
@@ -24620,6 +24625,7 @@ MonoBehaviour:
       NextTickTime: 0
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
+  m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
   m_refTargetScnner: {fileID: 4420039787527282766}
   TestLock: 0
 --- !u!114 &4420039787527282766
