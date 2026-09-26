@@ -23,4 +23,5 @@ public class SOStage : ScriptableObject
     public SOPoolData BossPrefab;
     public Vector3 BossSpawnPosition;
     public float BossShowDistance;
+    public float BossShowHeight;   // 등장 연출 카메라를 보스 기준 위로 올리는 높이 (그 위치에서 보스를 내려다봄)
 }

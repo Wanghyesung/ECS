@@ -13,96 +13,97 @@ MonoBehaviour:
   m_Name: SO_MainStage0
   m_EditorClassIdentifier: 
   ListSpawnEntry:
-  - fSpawnTime: 2.0
+  - fSpawnTime: 2
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -121.71, y: 91.34, z: 739.6}
-  - fSpawnTime: 2.0
+  - fSpawnTime: 2
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 87.77, y: -161.18, z: 844.92}
-  - fSpawnTime: 2.0
+  - fSpawnTime: 2
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 146.99, y: 40.27, z: 774.2}
-  - fSpawnTime: 10.0
+  - fSpawnTime: 10
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -153.81, y: 102.78, z: 821.81}
-  - fSpawnTime: 10.0
+  - fSpawnTime: 10
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 5.62, y: -111.74, z: 1067.38}
-  - fSpawnTime: 10.0
+  - fSpawnTime: 10
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -114.54, y: 131.82, z: 802.42}
-  - fSpawnTime: 18.0
+  - fSpawnTime: 18
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -135.13, y: -26.62, z: 911.91}
-  - fSpawnTime: 18.0
+  - fSpawnTime: 18
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
-    vPosition: {x: -121.0, y: 93.74, z: 949.97}
-  - fSpawnTime: 18.0
+    vPosition: {x: -121, y: 93.74, z: 949.97}
+  - fSpawnTime: 18
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -219.09, y: 43.69, z: 970.9}
-  - fSpawnTime: 26.0
+  - fSpawnTime: 26
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 84.65, y: -4.45, z: 873.54}
-  - fSpawnTime: 26.0
+  - fSpawnTime: 26
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 39.69, y: -93.82, z: 958.61}
-  - fSpawnTime: 26.0
+  - fSpawnTime: 26
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -33.89, y: 151.52, z: 1005.4}
-  - fSpawnTime: 34.0
+  - fSpawnTime: 34
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 11.69, y: 197.93, z: 930.05}
-  - fSpawnTime: 34.0
+  - fSpawnTime: 34
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -170.63, y: 88.41, z: 834.04}
-  - fSpawnTime: 34.0
+  - fSpawnTime: 34
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 149.91, y: 24.54, z: 990.6}
-  - fSpawnTime: 42.0
+  - fSpawnTime: 42
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -53.44, y: 79.5, z: 908.35}
-  - fSpawnTime: 42.0
+  - fSpawnTime: 42
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 127.36, y: -51.61, z: 1023.96}
-  - fSpawnTime: 42.0
+  - fSpawnTime: 42
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 123.46, y: -149.51, z: 1050.78}
-  - fSpawnTime: 50.0
+  - fSpawnTime: 50
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 107.97, y: 175.99, z: 789.19}
-  - fSpawnTime: 50.0
+  - fSpawnTime: 50
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 172.19, y: -46.59, z: 1003.07}
-  - fSpawnTime: 50.0
+  - fSpawnTime: 50
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -165.88, y: 98.3, z: 890.91}
-  - fSpawnTime: 58.0
+  - fSpawnTime: 58
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 70.55, y: -51.43, z: 1143.37}
-  - fSpawnTime: 58.0
+  - fSpawnTime: 58
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -138.31, y: -15.94, z: 791.83}
-  - fSpawnTime: 58.0
+  - fSpawnTime: 58
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 33.94, y: 214.12, z: 1009.54}
-  - fSpawnTime: 66.0
+  - fSpawnTime: 66
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -91.71, y: -156.79, z: 846.52}
-  - fSpawnTime: 66.0
+  - fSpawnTime: 66
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: 149.68, y: -114.3, z: 784.49}
-  - fSpawnTime: 66.0
+  - fSpawnTime: 66
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: -55.27, y: 221.14, z: 1041.39}
-  - fSpawnTime: 74.0
+  - fSpawnTime: 74
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -18.07, y: -88.23, z: 834.94}
-  - fSpawnTime: 74.0
+  - fSpawnTime: 74
     MonsterPrefab: {fileID: 11400000, guid: 99af9ac664fcdda4e87cc2be177ace9d, type: 2}
     vPosition: {x: 140.12, y: 21.33, z: 928.15}
-  - fSpawnTime: 74.0
+  - fSpawnTime: 74
     MonsterPrefab: {fileID: 11400000, guid: beb33ffda970a0d48b1aaf3d5aef1e37, type: 2}
     vPosition: {x: -169.86, y: 5.41, z: 990.88}
   BossPrefab: {fileID: 11400000, guid: 37cd5468d564b844a8ccf64d32b9df29, type: 2}
   BossSpawnPosition: {x: -122.8, y: 83.3, z: 857.1}
   BossShowDistance: 150
+  BossShowHeight: 50

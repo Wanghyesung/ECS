@@ -32,6 +32,10 @@ public class DungeonManager : MonoBehaviour
     // 몰라도 된다. 죽은(풀 반납=비활성) 몬스터는 CollectAliveMonsters에서 걸러내며 지연 제거
     private List<Monster> m_listSpawnedMonster = new List<Monster>();
 
+    // 보스 등장 컷신 진행 중 여부. 시작/끝을 한 스트림으로 알려야 View가 컷신 동안만 경고를 띄울 수 있음
+    private readonly ReactiveProperty<bool> m_rpIsBossCutscene = new ReactiveProperty<bool>(false);
+    public ReadOnlyReactiveProperty<bool> IsBossCutscene => m_rpIsBossCutscene;
+
     private void Awake()
     {
         if (m_Instance != null)
@@ -160,15 +164,25 @@ public class DungeonManager : MonoBehaviour
         // 등장 연출 방향은 스폰된 인스턴스가 아니라 원본 프리팹의 forward를 그대로 씀
         PoolObject refBossPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(m_SOTargetStage.BossPrefab);
         Vector3 vBossForward = refBossPoolObj != null ? refBossPoolObj.transform.forward : Vector3.forward;
-        Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition + (vBossForward.normalized * m_SOTargetStage.BossShowDistance);
-        Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
+        Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition
+                              + (vBossForward.normalized * m_SOTargetStage.BossShowDistance)
+                              + (Vector3.up * m_SOTargetStage.BossShowHeight);
+        Quaternion qCamTargetRot = Quaternion.LookRotation(m_SOTargetStage.BossSpawnPosition - vCamTargetPos);
 
         // 등장 컷신 동안 정지. 컷신 중 레벨업 카드가 열리고 닫혀도 여기 Pause 가 남아 있어 컷신이 끝나기 전엔 풀리지 않는다
         // (카메라는 시간을 건드리지 않으므로 복귀도 여기서 - 예전엔 MoveToPoint 가 끝에서 timeScale=1 을 대신 썼다)
         TimeScaleManager.m_Instance.Pause(this);
+        m_rpIsBossCutscene.Value = true;
 
-        await CameraManager.m_Instance.MoveToPoint(
-            this.GetCancellationTokenOnDestroy(), vCamTargetPos, qCamTargetRot, 3.0f, 2.0f);
+        try
+        {
+            await CameraManager.m_Instance.MoveToPoint(
+                this.GetCancellationTokenOnDestroy(), vCamTargetPos, qCamTargetRot, 3.0f, 2.0f);
+        }
+        finally
+        {
+            m_rpIsBossCutscene.Value = false;
+        }
 
         TimeScaleManager.m_Instance.Resume(this);
     }
