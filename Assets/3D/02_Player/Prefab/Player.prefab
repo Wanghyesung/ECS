@@ -207,8 +207,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 4809255346028413864}
   m_refEffectObject: {fileID: 6927910296949444326}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -262,8 +262,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 2491844135127419779}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: 7e4aa65037d90bc41acff27bf86690b3, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -318,8 +318,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 1370286331299951429}
   m_refEffectObject: {fileID: 4387701038701273086}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30

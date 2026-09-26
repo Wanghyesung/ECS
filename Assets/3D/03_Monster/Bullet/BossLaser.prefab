@@ -19305,15 +19305,10 @@ MonoBehaviour:
     Damage: 0
     AttackPower: 0
     AliveTime: 0
-    CoolDown: 0
     Speed: 0
     MaxHitCount: 0
     HitStep: 0
     LineDuration: 0
-    RotationSpeed: 90
-    MaxRotationSpeed: 180
-    RotateSpeedRate: 0
-    ProximityRadius: 1.5
     KnockbackForce: 0
     KnockbackDuration: 0
     HitLayers:
@@ -19325,6 +19320,7 @@ MonoBehaviour:
     m_refVisualMeshFilter: {fileID: 0}
   m_fRange: 260
   m_fLaserRadius: 7
+  m_SOLoopAudio: {fileID: 11400000, guid: 5ed8daa01cb269148ae646fe984e0cce, type: 2}
   m_bShowDebugGizmo: 0
   m_tGizmoColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &4236619912756461124

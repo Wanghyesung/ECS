@@ -944,8 +944,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 9a7bc30d6660fb049830e02d7ef4c82d, type: 2}
   m_refFireTr: {fileID: 85487887}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: a721547b815c02848bc223bca3813e6a, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -1756,8 +1756,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 44345befe75704243ad800615e982a68, type: 2}
   m_refFireTr: {fileID: 167411716}
   m_refEffectObject: {fileID: 1750866951}
+  m_SOFireAudio: {fileID: 11400000, guid: 025adf76436ef3d4ea2a131edddd6dd8, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 16
   m_fSpreadAngle: 45
@@ -2641,8 +2641,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 275622352}
   m_refEffectObject: {fileID: 215045924}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -3889,6 +3889,134 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 459833864}
   m_CullTransparentMesh: 1
+--- !u!1 &478006049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 478006051}
+  - component: {fileID: 478006050}
+  m_Layer: 0
+  m_Name: BGM
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &478006050
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478006049}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -3500871372373161356, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &478006051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478006049}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1635738222}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &483013156
 GameObject:
   m_ObjectHideFlags: 0
@@ -4589,8 +4717,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 535588476}
   m_refEffectObject: {fileID: 1834045838}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 10
   m_iBulletCount: 3
   m_fSpreadAngle: 0
@@ -4793,8 +4921,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 567408011}
   m_refEffectObject: {fileID: 2116763546}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 10
   m_iBulletCount: 3
   m_fSpreadAngle: 0
@@ -5393,8 +5521,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 635149973}
   m_refEffectObject: {fileID: 1699613836}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -5448,8 +5576,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 642009414}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: 7e4aa65037d90bc41acff27bf86690b3, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -5611,8 +5739,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 644329509}
   m_refEffectObject: {fileID: 145537277}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -7282,8 +7410,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: fe24fd7a9dca573419d6af665d43ab08, type: 2}
   m_refFireTr: {fileID: 743943265}
   m_refEffectObject: {fileID: 108404580}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 6
@@ -7565,8 +7693,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 775975074}
   m_refEffectObject: {fileID: 1794229008}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -7919,8 +8047,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 849478706}
   m_refEffectObject: {fileID: 1300362809}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -8383,8 +8511,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: b72e5dd09f62e3041b8368ec03b06580, type: 2}
   m_refFireTr: {fileID: 849478706}
   m_refEffectObject: {fileID: 1480493395}
+  m_SOFireAudio: {fileID: 11400000, guid: 749061af179bb0148b8fa1d6054d4b85, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -12103,8 +12231,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 1e0f90c5f8a088046aa6fefe0e261afd, type: 2}
   m_refFireTr: {fileID: 1271023127}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: 7e4aa65037d90bc41acff27bf86690b3, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -14859,8 +14987,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 1581396496}
   m_refEffectObject: {fileID: 707690361}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 4
@@ -15370,6 +15498,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612877503}
   m_CullTransparentMesh: 1
+--- !u!1 &1635738220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1635738222}
+  - component: {fileID: 1635738221}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1635738221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635738220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20a842c92367b9045bcef6564de5294d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_refMixer: {fileID: 24100000, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
+  m_refBgmSource: {fileID: 478006050}
+  m_iSfxPoolCount: 24
+  m_refSfxPrefab: {fileID: 0}
+  m_iMaxLowPriorityPerFrame: 4
+--- !u!4 &1635738222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1635738220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 478006051}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1641612375
 GameObject:
   m_ObjectHideFlags: 0
@@ -18610,8 +18788,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 3f11700b16ade764ab70512b8c8f3280, type: 2}
   m_refFireTr: {fileID: 1948548250}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: 7e4aa65037d90bc41acff27bf86690b3, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -19794,8 +19972,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: acc498cd0b0fb804fb254a64dd79fba9, type: 2}
   m_refFireTr: {fileID: 2076237256}
   m_refEffectObject: {fileID: 1581259}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 3
   m_fSpreadAngle: 4
@@ -19850,8 +20028,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 8ea7c2b59f9aff6409d22a6dd141ad9d, type: 2}
   m_refFireTr: {fileID: 2096144080}
   m_refEffectObject: {fileID: 231419404}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 0
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 5
   m_iBulletCount: 2
   m_fSpreadAngle: 3
@@ -20374,8 +20552,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: ab304d72e51b94f44af487c1419523c8, type: 2}
   m_refFireTr: {fileID: 2143401446}
   m_refEffectObject: {fileID: 0}
+  m_SOFireAudio: {fileID: 11400000, guid: be5d700003ef5ce49a662ea862f3453a, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 0
@@ -25774,3 +25952,4 @@ SceneRoots:
   - {fileID: 1381172732}
   - {fileID: 1369488229}
   - {fileID: 991395456}
+  - {fileID: 1635738222}

@@ -226,6 +226,9 @@ public class Monster : MonoBehaviour, IDamageable
         ChangeState(eEntityState.Dead);
         m_subjectDied.OnNext(m_SOMonsterInfo.ExpReward);
 
+        if (SoundManager.m_Instance != null)
+            SoundManager.m_Instance.PlaySfx(m_SOMonsterInfo.DeadAudio, transform.position);
+
         if (m_refPoolObj != null)
             ObjectPoolManager.m_Instance.PushObject(gameObject);
         else

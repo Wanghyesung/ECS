@@ -12,7 +12,6 @@ using UnityEngine.Audio;
 public sealed class SoundManager : MonoBehaviour
 {
     // 재생한 소스를 나중에 멈출 때 쓰는 핸들. 그 사이 소스가 다른 소리로 재사용되면 Generation이 달라져 Stop이 무시된다
-    // (PoolObject.Generation 가드와 같은 방식). default(0,0)는 어떤 재생과도 일치하지 않음 - 첫 재생에서 Generation이 1이 되므로
     public readonly struct SoundHandle
     {
         public readonly int Index;
@@ -53,9 +52,13 @@ public sealed class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        if (m_Instance != null && m_Instance != this) { Destroy(gameObject); return; }
+        if (m_Instance != null && m_Instance != this) 
+        { 
+            Destroy(gameObject); 
+            return; 
+        }
         m_Instance = this;
-        DontDestroyOnLoad(gameObject);   // 루트 오브젝트여야 동작
+        DontDestroyOnLoad(gameObject);   
 
         BuildSfxPool();
     }
@@ -152,6 +155,9 @@ public sealed class SoundManager : MonoBehaviour
     // 옵션 UI 슬라이더(0~1)에서 호출. Slider 타입에 의존하지 않도록 값만 받음
     public void SetVolume(eAudioChannelType _eType, float _fLinear)
     {
+        if (m_refMixer == null)
+            return;
+
         float fDB = _fLinear <= 0.0001f ? MIN_DB : Mathf.Log10(_fLinear) * 20.0f;
         m_refMixer.SetFloat(GetVolumeParam(_eType), fDB);
     }

@@ -51,8 +51,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 6fa1ec2366276ef4db9df5961a125ad9, type: 2}
   m_refFireTr: {fileID: 5305598655518449322}
   m_refEffectObject: {fileID: 922728792116202819}
+  m_SOFireAudio: {fileID: 11400000, guid: 098a34c05ec2022488731e380042eadb, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30
@@ -104,7 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 775b9e8810e4e6d479931455ac08e818, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_refTargetPlayer: {fileID: 0}
   m_refVisualObj: {fileID: 7485088343538245229}
   m_SOMonsterInfo: {fileID: 11400000, guid: 20a939e51b85c7b468e89b150bec23ea, type: 2}
   m_refBlackBoard:
@@ -266,8 +265,8 @@ MonoBehaviour:
   m_SOAttackInfo: {fileID: 11400000, guid: 6fa1ec2366276ef4db9df5961a125ad9, type: 2}
   m_refFireTr: {fileID: 809365986849485300}
   m_refEffectObject: {fileID: 6817695150937236156}
+  m_SOFireAudio: {fileID: 11400000, guid: 098a34c05ec2022488731e380042eadb, type: 2}
   m_bLookTarget: 1
-  m_bChargeOnly: 0
   m_fInaccuracyAngle: 0
   m_iBulletCount: 1
   m_fSpreadAngle: 30

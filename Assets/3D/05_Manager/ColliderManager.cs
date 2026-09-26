@@ -17,11 +17,7 @@ using UnityEngine;
        Job Schedule과 Complete를 서로 다른 실행 순서로 쪼갠다 - ScheduleFrame()은
        ColliderManagerScheduler([DefaultExecutionOrder(-1000)], 이 프레임에서 가장 먼저)가
        부르고, Complete+드레인은 이 클래스의 LateUpdate([DefaultExecutionOrder(1000)], 가장
-       나중)가 한다. 한 클래스는 메서드별로 다른 실행 순서를 못 가지므로 Schedule 쪽만 별도
-       컴포넌트로 뗀 것 - 이렇게 하면 충돌 Job이 이번 프레임 나머지 Update 전체 + LateUpdate
-       전체 동안 워커 스레드에서 겹쳐 돈다. 한 프레임의 모든 Enter/Stay/Exit이 동일한 위치
-       스냅샷(정확히 한 프레임 전) 기준으로 계산되므로 콜백 순서에 판정이 갈리는 문제도 없다.
-       대가는 판정이 실제 최신 위치보다 한 프레임(~16ms@60fps) 늦음.
+       나중)가 한다. 
 
        위치/축(transform.position/rotation) 갱신은 ColliderCenterRefresher가 전담한다 -
        "이동 추적"과 "충돌 판정"을 분리한 것.
@@ -283,9 +279,7 @@ public class ColliderManager : MonoBehaviour
         m_refCenterRefresher.Unregister(iID);
     }
 
-    // ColliderManagerScheduler([DefaultExecutionOrder(-1000)])가 이 프레임에서 가장 먼저
-    // 호출한다 - 충돌 Job이 이번 프레임 나머지 Update + LateUpdate 전체 동안 워커 스레드에서
-    // 겹쳐 돌 수 있도록(클래스 헤더 참고)
+    // ColliderManagerScheduler([DefaultExecutionOrder(-1000)])가 이 프레임에서 가장 먼저 호출한다
     public void ScheduleFrame()
     {
         // 삭제 정리가 먼저 와야 이번 프레임 그리드/SoA에 죽은 콜라이더가 안 섞인다

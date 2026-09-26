@@ -8,4 +8,9 @@ public class SOMonsterInfo : SOObjectInfo
 {
     [Header("Reward")]
     public int ExpReward = 10;
+
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SODeadAudio;
+
+    public SOAudio DeadAudio => m_SODeadAudio;
 }

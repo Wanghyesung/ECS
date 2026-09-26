@@ -27,6 +27,9 @@ public class Laser : MonoBehaviour, IAttackObject
     [FormerlySerializedAs("m_fBeamRadius")]   // BossLaser.prefab 이 옛 이름으로 6.5 를 들고 있음 - 없으면 0.5 로 조용히 리셋됨
     [SerializeField] private float m_fLaserRadius = 0.5f;        // 판정 두께(레이 자체 반경)
 
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SOLoopAudio;   // 판정 구간(예고선 이후)부터 반납까지 재생. Loop SO여야 하며 OnDisable에서 핸들로 정지
+
     [Header("Debug")]
     [SerializeField] private bool m_bShowDebugGizmo = false;
     [SerializeField] private Color m_tGizmoColor = Color.red;
@@ -43,6 +46,7 @@ public class Laser : MonoBehaviour, IAttackObject
     private readonly List<CircleCollider> m_listHitBuffer = new List<CircleCollider>(16);
 
     private bool m_bJudging;   // 예고선 끝나고 실제 판정 구간에 들어왔는지
+    private SoundManager.SoundHandle m_tLoopHandle;
 
     public AttackInfo AttackInfo => m_refAttackInfo;
 
@@ -63,6 +67,7 @@ public class Laser : MonoBehaviour, IAttackObject
 
         m_bJudging = false;
         m_refLineDrawer?.CutLine();
+        StopLoopAudio();
     }
 
     private void Update()
@@ -98,6 +103,7 @@ public class Laser : MonoBehaviour, IAttackObject
         else
         {
             m_bJudging = true;   // 예고선 없으면 이번 프레임부터 바로 판정 (기존 BossLaser와 동일)
+            PlayLoopAudio();
         }
     }
 
@@ -113,6 +119,23 @@ public class Laser : MonoBehaviour, IAttackObject
 
         m_refLineDrawer?.CutLine();
         m_bJudging = true;
+        PlayLoopAudio();
+    }
+
+    private void PlayLoopAudio()
+    {
+        if (m_SOLoopAudio == null || SoundManager.m_Instance == null)
+            return;
+
+        StopLoopAudio();   // 풀 재사용으로 SetAttack이 다시 불려도 루프가 겹치지 않게
+        m_tLoopHandle = SoundManager.m_Instance.PlaySfx(m_SOLoopAudio, transform.position);
+    }
+
+    private void StopLoopAudio()
+    {
+        if (SoundManager.m_Instance != null)
+            SoundManager.m_Instance.StopSfx(m_tLoopHandle);   // 이미 다른 소리로 재사용된 소스면 Generation 가드가 무시함
+        m_tLoopHandle = default;
     }
 
     private void DoHitCheck()

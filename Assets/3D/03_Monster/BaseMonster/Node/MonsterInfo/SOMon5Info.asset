@@ -19,3 +19,4 @@ MonoBehaviour:
   MaxAtack: 1600
   MaxDefense: 160
   ExpReward: 54
+  m_SODeadAudio: {fileID: 11400000, guid: 349d73c9d1bdaa04ca50b2b152d61257, type: 2}
