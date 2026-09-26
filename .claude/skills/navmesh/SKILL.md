@@ -1,120 +1,110 @@
 ---
 name: navmesh
-description: "Unity navigation — NavMeshAgent configuration, NavMeshSurface, off-mesh links, dynamic obstacles, pathfinding patterns."
+description: "Unity 내비게이션 — NavMeshAgent 설정, NavMeshSurface 베이크, 오프메시 링크, 동적 장애물, 경로 상태 확인, 순찰 패턴."
 globs: ["**/*Nav*.cs", "**/*Pathfind*.cs", "**/*Agent*.cs"]
 ---
 
-# NavMesh Navigation
+# NavMesh 내비게이션
 
-## Setup
+## 설정
 
-1. Add `NavMeshSurface` component to environment parent object
-2. Click "Bake" to generate NavMesh
-3. Add `NavMeshAgent` to moving characters
+1. 환경 부모 오브젝트에 `NavMeshSurface`를 붙이고 Bake
+2. 움직이는 캐릭터에 `NavMeshAgent`
 
-## NavMeshAgent Configuration
+## NavMeshAgent
 
 ```csharp
-[SerializeField] private NavMeshAgent _agent;
+private NavMeshAgent m_refAgent;
 
 private void Awake()
 {
-    _agent = GetComponent<NavMeshAgent>();
-    _agent.speed = 3.5f;
-    _agent.acceleration = 8f;
-    _agent.angularSpeed = 120f;
-    _agent.stoppingDistance = 0.5f;
-    _agent.autoBraking = true;
+    m_refAgent = GetComponent<NavMeshAgent>();
+    m_refAgent.speed = 3.5f;
+    m_refAgent.acceleration = 8.0f;
+    m_refAgent.angularSpeed = 120.0f;
+    m_refAgent.stoppingDistance = 0.5f;
+    m_refAgent.autoBraking = true;
 }
 
-public void MoveTo(Vector3 destination)
+public void MoveTo(Vector3 _vDestination)
 {
-    _agent.SetDestination(destination);
+    m_refAgent.SetDestination(_vDestination);
 }
 ```
 
-## Path Status Checking
+## 경로 상태 · 도착 판정
 
 ```csharp
 private void Update()
 {
-    if (_agent.pathPending) return; // Still calculating
+    if (m_refAgent.pathPending == true)
+        return;
 
-    switch (_agent.pathStatus)
-    {
-        case NavMeshPathStatus.PathComplete:
-            // Full path found
-            break;
-        case NavMeshPathStatus.PathPartial:
-            // Can only get partway — obstacle or unreachable
-            break;
-        case NavMeshPathStatus.PathInvalid:
-            // No path possible
-            break;
-    }
+    if (m_refAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+        return;   // 갈 수 없는 목적지
 
-    // Check if arrived
-    if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-    {
-        // Arrived at destination
-    }
+    if (m_refAgent.remainingDistance <= m_refAgent.stoppingDistance)
+        Arrive();
 }
 ```
 
-## Patrol Pattern
+`PathPartial`은 장애물 때문에 중간까지만 갈 수 있다는 뜻이다.
+
+## 순찰
 
 ```csharp
 public sealed class PatrolBehavior : MonoBehaviour
 {
-    [SerializeField] private Transform[] _waypoints;
-    [SerializeField] private float _waitTime = 2f;
+    [SerializeField] private Transform[] m_arrWaypointTr;
+    [SerializeField] private float m_fWaitTime = 2.0f;
 
-    private NavMeshAgent _agent;
-    private int _currentWaypoint;
-    private float _waitTimer;
+    private NavMeshAgent m_refAgent;
+    private int m_iCurrentWaypoint;
+    private float m_fWaitTimer;
+
+    private void Awake()
+    {
+        m_refAgent = GetComponent<NavMeshAgent>();
+    }
 
     private void Update()
     {
-        if (_agent.pathPending) return;
+        if (m_refAgent.pathPending == true)
+            return;
 
-        if (_agent.remainingDistance <= _agent.stoppingDistance)
-        {
-            _waitTimer -= Time.deltaTime;
-            if (_waitTimer <= 0f)
-            {
-                _currentWaypoint = (_currentWaypoint + 1) % _waypoints.Length;
-                _agent.SetDestination(_waypoints[_currentWaypoint].position);
-                _waitTimer = _waitTime;
-            }
-        }
+        if (m_refAgent.remainingDistance > m_refAgent.stoppingDistance)
+            return;
+
+        m_fWaitTimer -= Time.deltaTime;
+        if (m_fWaitTimer > 0.0f)
+            return;
+
+        m_iCurrentWaypoint = (m_iCurrentWaypoint + 1) % m_arrWaypointTr.Length;
+        m_refAgent.SetDestination(m_arrWaypointTr[m_iCurrentWaypoint].position);
+        m_fWaitTimer = m_fWaitTime;
     }
 }
 ```
 
 ## NavMeshObstacle
 
-- **Carve:** cuts a hole in the NavMesh (expensive, use for static/rare movement)
-- **Block:** agents path around without modifying NavMesh (cheaper, use for moving obstacles)
+- **Carve:** NavMesh 에 구멍을 낸다 (비쌈 — 정적이거나 가끔 움직이는 장애물)
+- **Block:** NavMesh 를 바꾸지 않고 에이전트가 돌아간다 (쌈 — 움직이는 장애물)
 
-## Off-Mesh Links
+## 오프메시 링크
 
-For jumps, ladders, teleporters — connections between disconnected NavMesh areas.
-- Auto-generated: set Jump Distance and Drop Height on NavMeshSurface
-- Manual: `NavMeshLink` component between two points
+점프, 사다리, 텔레포터처럼 끊긴 영역을 잇는다.
+- 자동: NavMeshSurface 의 Jump Distance / Drop Height
+- 수동: 두 지점 사이에 `NavMeshLink`
 
-## Runtime NavMesh Modification
+## 런타임 재베이크
 
 ```csharp
-// Rebake at runtime (e.g., after terrain change)
-_navMeshSurface.BuildNavMesh();
-
-// Or update only:
-_navMeshSurface.UpdateNavMesh(_navMeshSurface.navMeshData);
+m_refNavMeshSurface.BuildNavMesh();                                   // 전체 재베이크
+m_refNavMeshSurface.UpdateNavMesh(m_refNavMeshSurface.navMeshData);   // 갱신만
 ```
 
-## Areas and Costs
+## 영역 비용
 
-- Define areas: Walkable, Water, Road (in Navigation settings)
-- Set area cost: higher cost = agents avoid that area
-- Override per-agent: `_agent.SetAreaCost(areaIndex, cost)`
-- Use for: roads (low cost = preferred), mud (high cost = avoided)
+- Navigation 설정에서 영역(Walkable, Water, Road) 정의
+- 비용이 높을수록 에이전트가 피한다. 에이전트별로 `m_refAgent.SetAreaCost(iAreaIndex, fCost)`

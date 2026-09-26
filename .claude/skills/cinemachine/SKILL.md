@@ -1,7 +1,7 @@
 ---
 name: cinemachine
-description: "Cinemachine 카메라 시스템 — virtual camera, FreeLook, 블렌딩, 노이즈 프로파일, 상태 기반 카메라, Confiner, follow/aim 동작. 카메라 연출 작업에 사용합니다."
-globs: ["**/*Cinemachine*", "**/*Camera*.cs", "**/*Cam*.cs"]
+description: "Cinemachine 카메라 시스템 — virtual camera, FreeLook, 블렌딩, 노이즈 프로파일, 상태 기반 카메라, Confiner, follow/aim 동작. Cinemachine 컴포넌트를 쓰는 카메라 작업에만 사용합니다 (Camera.transform 을 직접 움직이는 스크립트에는 해당 없음)."
+globs: ["**/*Cinemachine*", "**/*VirtualCamera*", "**/*VCam*"]
 ---
 
 # Cinemachine

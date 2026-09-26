@@ -51,7 +51,7 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/cs-lint.sh", "timeout": 5000 }
+          { "type": "command", "command": ".claude/hooks/cs-lint.sh", "timeout": 10000 }
         ]
       }
     ],

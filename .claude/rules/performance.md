@@ -35,17 +35,19 @@ Awake에서 캐싱하고 Update에서 절대 호출하지 말 것: `GetComponent
 | `string + string` | `StringBuilder` / `string.Format` |
 | List가 아닌 컬렉션에 `foreach` | 인덱스 `for` |
 | `FindObjectOfType` | 캐싱된 참조 / `[SerializeField]` |
-| `SendMessage` / `BroadcastMessage` | 직접 참조 또는 `event Action<T>` |
-| `Physics.RaycastAll` 등 | `RaycastNonAlloc` / `OverlapSphereNonAlloc` + 미리 할당한 배열 (`private RaycastHit[] m_arrHitBuffer = new RaycastHit[16]`) |
+| `SendMessage` / `BroadcastMessage` | 직접 참조 또는 R3 `Subject<T>` |
+| 충돌·범위 판정 (`Physics.Raycast*`, `OverlapSphere*`, `OnTrigger*`) | **주변에서 서로 판정하는 오브젝트가 1500개를 넘거나 판정이 무거우면** 자체 Collider(`ColliderManager` + `CircleCollider`/`ObbCollider`)로 — [[collider-system]]. 그보다 적으면 PhysX `*NonAlloc` + 미리 할당한 버퍼 |
 | 코루틴 `new WaitForSeconds` | UniTask (`UniTask.Delay`) |
 | LINQ | 게임플레이 코드에서 금지 |
 
-물리 쿼리는 `Update`가 아닌 `FixedUpdate`에서.
+이 프로젝트의 탄·몬스터 판정은 이미 자체 Collider 로 돈다 — 같은 대상과 판정하는 새 코드에 PhysX 를 섞지 않는다 (`TriggerEnterObject`/`TriggerStayObject`의 `OnTrigger*`는 레거시). PhysX `Rigidbody` 이동 코드는 `FixedUpdate`에서.
 
 ## 오브젝트 생명주기
 
 - 자주 생성/삭제되는 Bullet/FX/Enemy는 **반드시 이 프로젝트의 풀**([[object-pooling]] 스킬: `SOPoolData` + `PoolObject` + `ObjectPoolManager`)을 사용 — `Instantiate`/`Destroy` 직접 호출 금지
-- 풀 반환은 `SetActive(false)`; `DontDestroyOnLoad`는 매니저급에만
+- 풀 반납은 `ObjectPoolManager.m_Instance.PushObject(gameObject)` 또는 `PoolObject.SetAliveTime()` 예약 — `SetActive(false)`만 하면 풀로 돌아가지 않는다
+- 이동이 많은 대량 오브젝트(탄, 미사일)는 MoveManager + Job 으로 — [[jobs-burst]]
+- `DontDestroyOnLoad`는 매니저급에만
 
 ## 렌더링 / 드로우 콜
 

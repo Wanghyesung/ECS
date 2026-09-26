@@ -35,13 +35,20 @@ git diff --cached --name-only  # 스테이징된 변경 사항
 - Unity 오브젝트에 대한 `?.` 또는 `is null` → `== null` 체크로 교체
 - Update/FixedUpdate/LateUpdate 안의 `GetComponent<T>()` / `Camera.main` / `FindObjectOfType` → Awake에서 캐싱
 - 런타임 코드에서 `UnityEditor` 사용 시 `#if UNITY_EDITOR` 가드 누락
-- Update 안의 `new WaitForSeconds()` → 필드로 캐싱
 - `async void` → `async UniTaskVoid`
-- `SendMessage` / `BroadcastMessage` → 이벤트로 교체하도록 플래그
+- 이번 변경으로 추가된 줄의 포맷 (rules/csharp-unity.md §7) — 동작이 바뀌지 않는 것만:
+  - 같은 줄 if/else/for 본문 → 다음 줄로 내림
+  - `{ ...; }` 한 줄 블록 → 여러 줄 블록
+  - bool 변수의 `!x` → `x == false`
+  - `for (...; i++)` → `++i`
+  - 새 파일 헤더의 `목적 :` → `기능 :`
 
 **사람의 판단이 필요한 이슈** (보고만 하고 수정하지 않음):
+- 필드/매개변수 이름의 접두사 위반 — `[SerializeField]` 이름 변경은 직렬화 값을 날릴 수 있고, 참조가 여러 파일에 걸친다
+- 코루틴·`new WaitForSeconds` → UniTask 전환 (동작 변경)
+- `SendMessage` / `BroadcastMessage` / C# `event` → R3 Subject 전환
 - 아키텍처 우려 사항 (갓 클래스, 깊은 상속, 강한 결합)
-- 디자인 패턴 선택 (싱글톤 vs DI, 이벤트 시스템 선택)
+- 디자인 패턴 선택 (싱글톤 형태, 이벤트 방식)
 - 동작을 변경하는 성능 트레이드오프
 - 복잡한 로직에 대한 테스트 누락
 - 파일/클래스 이름 불일치 (이름 변경은 부작용을 동반함)

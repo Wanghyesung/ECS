@@ -30,15 +30,15 @@ UniTask(Cysharp)는 Unity의 PlayerLoop와 네이티브로 통합되고, GC 할�
 using Cysharp.Threading.Tasks;
 
 // Awaitable, 반환값 없음
-public async UniTask LoadLevelAsync(CancellationToken _token)
+public async UniTask LoadLevelAsync(CancellationToken _tToken)
 {
-    await UniTask.Delay(1000, cancellationToken: _token);
+    await UniTask.Delay(1000, cancellationToken: _tToken);
 }
 
 // Awaitable, 값을 반환함
-public async UniTask<int> CalculateScoreAsync(CancellationToken _token)
+public async UniTask<int> CalculateScoreAsync(CancellationToken _tToken)
 {
-    await UniTask.Yield(_token);
+    await UniTask.Yield(_tToken);
     return 100;
 }
 
@@ -56,7 +56,7 @@ public async UniTaskVoid OnButtonClickedAsync()
 public async void DoSomething() { ... }
 
 // 좋은 예 — 올바른 에러 전파, 무할당
-public async UniTask DoSomethingAsync(CancellationToken _token) { ... }
+public async UniTask DoSomethingAsync(CancellationToken _tToken) { ... }
 
 // 좋은 예 — 에러 로깅이 포함된 fire-and-forget
 public async UniTaskVoid DoSomethingFireAndForget() { ... }
@@ -66,24 +66,24 @@ public async UniTaskVoid DoSomethingFireAndForget() { ... }
 
 ```csharp
 // 시간 기반 딜레이
-await UniTask.Delay(1000, cancellationToken: _token);                    // 밀리초
-await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: _token);
+await UniTask.Delay(1000, cancellationToken: _tToken);                    // 밀리초
+await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: _tToken);
 
 // 프레임 기반 대기
 await UniTask.Yield();                                                // 다음 프레임
 await UniTask.Yield(PlayerLoopTiming.FixedUpdate);                   // 다음 FixedUpdate
-await UniTask.NextFrame(_token);                                      // 명시적으로 다음 프레임
-await UniTask.DelayFrame(5, cancellationToken: _token);               // N프레임 대기
+await UniTask.NextFrame(_tToken);                                      // 명시적으로 다음 프레임
+await UniTask.DelayFrame(5, cancellationToken: _tToken);               // N프레임 대기
 
 // 조건 대기
-await UniTask.WaitUntil(() => m_bIsReady, cancellationToken: _token);
-await UniTask.WaitWhile(() => m_bIsLoading, cancellationToken: _token);
-await UniTask.WaitUntilValueChanged(transform, _refTr => _refTr.position, cancellationToken: _token);
+await UniTask.WaitUntil(() => m_bIsReady, cancellationToken: _tToken);
+await UniTask.WaitWhile(() => m_bIsLoading, cancellationToken: _tToken);
+await UniTask.WaitUntilValueChanged(transform, _refTr => _refTr.position, cancellationToken: _tToken);
 
 // Unity 비동기 오퍼레이션 래퍼
-await SceneManager.LoadSceneAsync("GameScene").ToUniTask(cancellationToken: _token);
-await Resources.LoadAsync<Texture2D>("myTexture").ToUniTask(cancellationToken: _token);
-await UnityWebRequest.Get(url).SendWebRequest().ToUniTask(cancellationToken: _token);
+await SceneManager.LoadSceneAsync("GameScene").ToUniTask(cancellationToken: _tToken);
+await Resources.LoadAsync<Texture2D>("myTexture").ToUniTask(cancellationToken: _tToken);
+await UnityWebRequest.Get(strUrl).SendWebRequest().ToUniTask(cancellationToken: _tToken);
 ```
 
 ## 취소 토큰 (Cancellation Tokens)
@@ -100,9 +100,9 @@ public sealed class SimpleAsync : MonoBehaviour
     private async UniTaskVoid Start()
     {
         // 이 MonoBehaviour가 파괴되면 토큰이 자동으로 취소된다
-        CancellationToken token = this.GetCancellationTokenOnDestroy();
+        CancellationToken tToken = this.GetCancellationTokenOnDestroy();
 
-        await UniTask.Delay(2000, cancellationToken: token);
+        await UniTask.Delay(2000, cancellationToken: tToken);
         Debug.Log("This won't run if object was destroyed");
     }
 }
@@ -128,11 +128,11 @@ public sealed class ManagedAsync : MonoBehaviour
         m_cts = null;
     }
 
-    private async UniTask RunLoopAsync(CancellationToken _token)
+    private async UniTask RunLoopAsync(CancellationToken _tToken)
     {
-        while (!_token.IsCancellationRequested)
+        while (_tToken.IsCancellationRequested == false)
         {
-            await UniTask.Delay(1000, cancellationToken: _token);
+            await UniTask.Delay(1000, cancellationToken: _tToken);
             DoPeriodicWork();
         }
     }
@@ -144,23 +144,23 @@ public sealed class ManagedAsync : MonoBehaviour
 ```csharp
 public sealed class LinkedTokenExample : MonoBehaviour
 {
-    private CancellationTokenSource m_actionCts;
+    private CancellationTokenSource m_ctsAction;
 
     public async UniTask PerformActionAsync()
     {
         // 이전 액션이 아직 실행 중이면 취소한다
-        m_actionCts?.Cancel();
-        m_actionCts?.Dispose();
-        m_actionCts = new CancellationTokenSource();
+        m_ctsAction?.Cancel();
+        m_ctsAction?.Dispose();
+        m_ctsAction = new CancellationTokenSource();
 
         // 파괴 토큰과 연결해 둘 중 하나라도 발생하면 취소되게 한다
-        CancellationToken destroyToken = this.GetCancellationTokenOnDestroy();
-        CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(
-            m_actionCts.Token, destroyToken);
+        CancellationToken tDestroyToken = this.GetCancellationTokenOnDestroy();
+        CancellationTokenSource ctsLinked = CancellationTokenSource.CreateLinkedTokenSource(
+            m_ctsAction.Token, tDestroyToken);
 
         try
         {
-            await DoWorkAsync(linked.Token);
+            await DoWorkAsync(ctsLinked.Token);
         }
         catch (OperationCanceledException)
         {
@@ -168,7 +168,7 @@ public sealed class LinkedTokenExample : MonoBehaviour
         }
         finally
         {
-            linked.Dispose();
+            ctsLinked.Dispose();
         }
     }
 }
@@ -177,11 +177,11 @@ public sealed class LinkedTokenExample : MonoBehaviour
 ### OperationCanceledException 처리
 
 ```csharp
-public async UniTask LoadDataAsync(CancellationToken _token)
+public async UniTask LoadDataAsync(CancellationToken _tToken)
 {
     try
     {
-        await SomeAsyncOperation(_token);
+        await SomeAsyncOperation(_tToken);
     }
     catch (OperationCanceledException)
     {
@@ -212,10 +212,10 @@ await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
 await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
 
 // FixedUpdate의 특정 타이밍을 대기
-await UniTask.WaitForFixedUpdate(token);
+await UniTask.WaitForFixedUpdate(tToken);
 
 // 프레임의 끝을 대기 (WaitForEndOfFrame 코루틴의 대체재)
-await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, token);
+await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, tToken);
 ```
 
 ## WhenAll / WhenAny — 병렬 실행
@@ -223,36 +223,38 @@ await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, token);
 ```csharp
 // 모든 태스크가 끝날 때까지 대기 (병렬)
 (int iScore, string strName) = await UniTask.WhenAll(
-    LoadScoreAsync(token),
-    LoadNameAsync(token)
+    LoadScoreAsync(tToken),
+    LoadNameAsync(tToken)
 );
 
 // 가장 먼저 끝나는 태스크를 대기
 int iWinnerIndex = await UniTask.WhenAny(
-    WaitForInputAsync(token),
-    WaitForTimeoutAsync(5f, token)
+    WaitForInputAsync(tToken),
+    WaitForTimeoutAsync(5f, tToken)
 );
 
 // 결과를 포함한 타입 있는 WhenAny
 (bool bHasResult, int iResult) = await UniTask.WhenAny(
-    FetchFromCacheAsync(token),
-    FetchFromNetworkAsync(token)
+    FetchFromCacheAsync(tToken),
+    FetchFromNetworkAsync(tToken)
 );
 
-// 여러 에셋을 병렬로 로드
-var textures = await UniTask.WhenAll(
-    paths.Select(_strPath => LoadTextureAsync(_strPath, token))
-);
+// 여러 에셋을 병렬로 로드 (LINQ 없이 배열로)
+var arrTask = new UniTask<Texture2D>[m_listPath.Count];
+for (int i = 0; i < m_listPath.Count; ++i)
+    arrTask[i] = LoadTextureAsync(m_listPath[i], tToken);
+
+Texture2D[] arrTexture = await UniTask.WhenAll(arrTask);
 ```
 
 ## Forget과 Fire-and-Forget
 
 ```csharp
 // Fire and forget — 예외는 Debug.LogException으로 로그가 남는다
-DoSomethingAsync(token).Forget();
+DoSomethingAsync(tToken).Forget();
 
 // 특정 취소 예외를 억제한다
-DoSomethingAsync(token).SuppressCancellationThrow().Forget();
+DoSomethingAsync(tToken).SuppressCancellationThrow().Forget();
 ```
 
 ## UniTaskCompletionSource — 수동 완료
@@ -262,22 +264,22 @@ DoSomethingAsync(token).SuppressCancellationThrow().Forget();
 ```csharp
 public sealed class DialogSystem : MonoBehaviour
 {
-    private UniTaskCompletionSource<DialogResult> m_dialogTcs;
+    private UniTaskCompletionSource<DialogResult> m_refDialogSource;
 
-    public async UniTask<DialogResult> ShowDialogAsync(string _strMessage, CancellationToken _token)
+    public async UniTask<DialogResult> ShowDialogAsync(string _strMessage, CancellationToken _tToken)
     {
-        m_dialogTcs = new UniTaskCompletionSource<DialogResult>();
+        m_refDialogSource = new UniTaskCompletionSource<DialogResult>();
 
         // 취소를 등록한다
-        _token.Register(() => m_dialogTcs.TrySetCanceled());
+        _tToken.Register(() => m_refDialogSource.TrySetCanceled());
 
         ShowDialogUI(_strMessage);
-        return await m_dialogTcs.Task;
+        return await m_refDialogSource.Task;
     }
 
     // UI 버튼에서 호출됨
-    public void OnConfirmClicked() => m_dialogTcs.TrySetResult(DialogResult.Confirm);
-    public void OnCancelClicked() => m_dialogTcs.TrySetResult(DialogResult.Cancel);
+    public void OnConfirmClicked() => m_refDialogSource.TrySetResult(DialogResult.Confirm);
+    public void OnCancelClicked() => m_refDialogSource.TrySetResult(DialogResult.Cancel);
 }
 ```
 
@@ -293,17 +295,17 @@ m_refButton.OnClickAsAsyncEnumerable()
     .ForEachAsync(_ =>
     {
         Debug.Log("Clicked");
-    }, token);
+    }, tToken);
 
 // 입력 스로틀링
 m_refButton.OnClickAsAsyncEnumerable()
     .ThrottleFirst(TimeSpan.FromSeconds(1))
-    .ForEachAsync(_ => ProcessClick(), token);
+    .ForEachAsync(_ => ProcessClick(), tToken);
 
 // 채널 기반 producer/consumer
-var channel = Channel.CreateSingleConsumerUnbounded<int>();
-channel.Writer.TryWrite(42);
-await channel.Reader.ReadAllAsync(token).ForEachAsync(_iItem => Process(_iItem));
+var refChannel = Channel.CreateSingleConsumerUnbounded<int>();
+refChannel.Writer.TryWrite(42);
+await refChannel.Reader.ReadAllAsync(tToken).ForEachAsync(_iItem => Process(_iItem));
 ```
 
 ## DOTween과의 통합
@@ -312,36 +314,36 @@ DOTween-UniTask 브릿지를 사용해 DOTween 애니메이션을 await하라.
 
 ```csharp
 // 단일 트윈을 await
-await transform.DOMove(targetPos, 1f)
+await transform.DOMove(vTargetPos, 1f)
     .SetEase(Ease.OutQuad)
-    .ToUniTask(cancellationToken: token);
+    .ToUniTask(cancellationToken: tToken);
 
 // 시퀀스를 await
-Sequence seq = DOTween.Sequence();
-seq.Append(transform.DOScale(1.2f, 0.2f));
-seq.Append(transform.DOScale(1f, 0.2f));
-await seq.ToUniTask(cancellationToken: token);
+Sequence refSeq = DOTween.Sequence();
+refSeq.Append(transform.DOScale(1.2f, 0.2f));
+refSeq.Append(transform.DOScale(1f, 0.2f));
+await refSeq.ToUniTask(cancellationToken: tToken);
 
 // 순차적인 애니메이션 체인
-await transform.DOMove(pointA, 0.5f).ToUniTask(cancellationToken: token);
-await transform.DOMove(pointB, 0.5f).ToUniTask(cancellationToken: token);
-await transform.DOMove(pointC, 0.5f).ToUniTask(cancellationToken: token);
+await transform.DOMove(vPointA, 0.5f).ToUniTask(cancellationToken: tToken);
+await transform.DOMove(vPointB, 0.5f).ToUniTask(cancellationToken: tToken);
+await transform.DOMove(vPointC, 0.5f).ToUniTask(cancellationToken: tToken);
 ```
 
 ## Addressables와의 통합
 
 ```csharp
 // 에셋 로드
-GameObject prefab = await Addressables.LoadAssetAsync<GameObject>("EnemyPrefab")
-    .ToUniTask(cancellationToken: token);
+GameObject refPrefab = await Addressables.LoadAssetAsync<GameObject>("EnemyPrefab")
+    .ToUniTask(cancellationToken: tToken);
 
 // 인스턴스화
-GameObject instance = await Addressables.InstantiateAsync("EnemyPrefab", position, rotation)
-    .ToUniTask(cancellationToken: token);
+GameObject refInstance = await Addressables.InstantiateAsync("EnemyPrefab", vPosition, qRotation)
+    .ToUniTask(cancellationToken: tToken);
 
 // 씬 로드
 await Addressables.LoadSceneAsync("GameScene", LoadSceneMode.Additive)
-    .ToUniTask(cancellationToken: token);
+    .ToUniTask(cancellationToken: tToken);
 ```
 
 ## 자주 쓰는 패턴
@@ -353,14 +355,14 @@ public sealed class GameBootstrap : MonoBehaviour
 {
     private async UniTaskVoid Start()
     {
-        CancellationToken token = this.GetCancellationTokenOnDestroy();
+        CancellationToken tToken = this.GetCancellationTokenOnDestroy();
 
         try
         {
-            await InitializeServicesAsync(token);
-            await LoadPlayerDataAsync(token);
-            await PreloadAssetsAsync(token);
-            await LoadGameSceneAsync(token);
+            await InitializeServicesAsync(tToken);
+            await LoadPlayerDataAsync(tToken);
+            await PreloadAssetsAsync(tToken);
+            await LoadGameSceneAsync(tToken);
         }
         catch (OperationCanceledException)
         {
@@ -393,23 +395,23 @@ public sealed class EnemyAI : MonoBehaviour
         m_cts?.Dispose();
     }
 
-    private async UniTask RunAIAsync(CancellationToken _token)
+    private async UniTask RunAIAsync(CancellationToken _tToken)
     {
-        while (!_token.IsCancellationRequested)
+        while (_tToken.IsCancellationRequested == false)
         {
-            await PatrolAsync(_token);
-            await ChaseAsync(_token);
-            await AttackAsync(_token);
-            await UniTask.Yield(_token);
+            await PatrolAsync(_tToken);
+            await ChaseAsync(_tToken);
+            await AttackAsync(_tToken);
+            await UniTask.Yield(_tToken);
         }
     }
 
-    private async UniTask PatrolAsync(CancellationToken _token)
+    private async UniTask PatrolAsync(CancellationToken _tToken)
     {
-        while (!_token.IsCancellationRequested && !CanSeePlayer())
+        while (_tToken.IsCancellationRequested == false && CanSeePlayer() == false)
         {
             MoveToNextWaypoint();
-            await UniTask.Delay(100, cancellationToken: _token);
+            await UniTask.Delay(100, cancellationToken: _tToken);
         }
     }
 }
@@ -421,11 +423,11 @@ public sealed class EnemyAI : MonoBehaviour
 public static async UniTask<T> WithTimeout<T>(
     UniTask<T> _task,
     float _fTimeoutSeconds,
-    CancellationToken _token)
+    CancellationToken _tToken)
 {
     int iWinnerIndex = await UniTask.WhenAny(
         _task,
-        UniTask.Delay(TimeSpan.FromSeconds(_fTimeoutSeconds), cancellationToken: _token)
+        UniTask.Delay(TimeSpan.FromSeconds(_fTimeoutSeconds), cancellationToken: _tToken)
             .ContinueWith(() => default(T))
     );
 
@@ -439,22 +441,22 @@ public static async UniTask<T> WithTimeout<T>(
 ### 디바운스된 입력
 
 ```csharp
-private async UniTask ProcessSearchInputAsync(TMP_InputField _refInput, CancellationToken _token)
+private async UniTask ProcessSearchInputAsync(TMP_InputField _refInput, CancellationToken _tToken)
 {
     string strPreviousText = string.Empty;
 
-    while (!_token.IsCancellationRequested)
+    while (_tToken.IsCancellationRequested == false)
     {
-        await UniTask.WaitUntilValueChanged(_refInput, _refI => _refI.text, cancellationToken: _token);
+        await UniTask.WaitUntilValueChanged(_refInput, _refI => _refI.text, cancellationToken: _tToken);
 
         // 디바운스: 마지막 변경 후 300ms 대기
-        await UniTask.Delay(300, cancellationToken: _token);
+        await UniTask.Delay(300, cancellationToken: _tToken);
 
         string strCurrentText = _refInput.text;
         if (strCurrentText != strPreviousText)
         {
             strPreviousText = strCurrentText;
-            await PerformSearchAsync(strCurrentText, _token);
+            await PerformSearchAsync(strCurrentText, _tToken);
         }
     }
 }
@@ -471,8 +473,8 @@ public async void OnButtonClicked() { ... }
 // 좋은 예
 public async UniTaskVoid OnButtonClickedAsync()
 {
-    CancellationToken token = this.GetCancellationTokenOnDestroy();
-    await HandleClickAsync(token);
+    CancellationToken tToken = this.GetCancellationTokenOnDestroy();
+    await HandleClickAsync(tToken);
 }
 ```
 
@@ -487,9 +489,9 @@ public async UniTask BadMethod()
 }
 
 // 좋은 예
-public async UniTask GoodMethod(CancellationToken _token)
+public async UniTask GoodMethod(CancellationToken _tToken)
 {
-    await UniTask.Delay(5000, cancellationToken: _token);
+    await UniTask.Delay(5000, cancellationToken: _tToken);
     transform.position = Vector3.zero;
 }
 ```

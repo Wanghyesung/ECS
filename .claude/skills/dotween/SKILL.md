@@ -32,14 +32,14 @@ m_refRectTransform.DOAnchorPos(Vector2.zero, 0.3f);   // UI 위치
 // 머티리얼 트윈 — renderer.material은 절대 사용하지 마라 (머티리얼을 복제해 배칭을 깨뜨린다).
 // 인스턴스별 변경에는 MaterialPropertyBlock을 사용하고, 모든 인스턴스가 트윈을 공유한다면 공유 머티리얼을 트윈하라.
 private static readonly int ColorId = Shader.PropertyToID("_Color");
-private MaterialPropertyBlock m_propBlock;
+private MaterialPropertyBlock m_refPropBlock;
 
 Color colorFrom = Color.black;
 DOTween.To(() => colorFrom, _color =>
 {
     colorFrom = _color;
-    m_propBlock.SetColor(ColorId, _color);
-    m_refRenderer.SetPropertyBlock(m_propBlock);
+    m_refPropBlock.SetColor(ColorId, _color);
+    m_refRenderer.SetPropertyBlock(m_refPropBlock);
 }, Color.white, 0.1f);
 
 // 임의의 값 트윈
@@ -52,41 +52,41 @@ DOTween.To(() => fValue, _fValue => fValue = _fValue, 10f, 1f);
 Sequence를 사용하면 여러 트윈을 체이닝하고, 겹치고, 하나의 단위로 오케스트레이션할 수 있다.
 
 ```csharp
-Sequence seq = DOTween.Sequence();
+Sequence refSeq = DOTween.Sequence();
 
 // Append — 이전 트윈이 끝난 뒤에 재생된다
-seq.Append(transform.DOMove(targetPos, 0.5f));
-seq.Append(transform.DOScale(Vector3.one * 1.2f, 0.3f));
+refSeq.Append(transform.DOMove(vTargetPos, 0.5f));
+refSeq.Append(transform.DOScale(Vector3.one * 1.2f, 0.3f));
 
 // Join — 이전 트윈과 동시에 재생된다
-seq.Append(transform.DOMove(targetPos, 0.5f));
-seq.Join(transform.DORotate(new Vector3(0, 360, 0), 0.5f));
+refSeq.Append(transform.DOMove(vTargetPos, 0.5f));
+refSeq.Join(transform.DORotate(new Vector3(0, 360, 0), 0.5f));
 
 // Insert — 시퀀스 내 특정 시간 위치에서 재생된다
-seq.Insert(0.2f, m_refCanvasGroup.DOFade(1f, 0.3f));
+refSeq.Insert(0.2f, m_refCanvasGroup.DOFade(1f, 0.3f));
 
 // 인터벌과 콜백
-seq.PrependInterval(0.5f);                             // 시퀀스 시작 전 딜레이
-seq.AppendInterval(0.2f);                              // 트윈 사이의 정지
-seq.AppendCallback(() => Debug.Log("Done!"));
-seq.InsertCallback(1f, () => PlaySound());
+refSeq.PrependInterval(0.5f);                             // 시퀀스 시작 전 딜레이
+refSeq.AppendInterval(0.2f);                              // 트윈 사이의 정지
+refSeq.AppendCallback(() => Debug.Log("Done!"));
+refSeq.InsertCallback(1f, () => PlaySound());
 
 // 시퀀스 설정
-seq.SetLoops(3, LoopType.Yoyo);
-seq.SetUpdate(true);                                   // 언스케일 타임 사용
-seq.OnComplete(() => Destroy(gameObject));
+refSeq.SetLoops(3, LoopType.Yoyo);
+refSeq.SetUpdate(true);                                   // 언스케일 타임 사용
+refSeq.OnComplete(() => Destroy(gameObject));
 ```
 
 ### 중첩 시퀀스 (Nested Sequences)
 
 ```csharp
-Sequence innerSeq = DOTween.Sequence();
-innerSeq.Append(transform.DOScale(1.2f, 0.15f));
-innerSeq.Append(transform.DOScale(1f, 0.15f));
+Sequence refInnerSeq = DOTween.Sequence();
+refInnerSeq.Append(transform.DOScale(1.2f, 0.15f));
+refInnerSeq.Append(transform.DOScale(1f, 0.15f));
 
-Sequence outerSeq = DOTween.Sequence();
-outerSeq.Append(transform.DOMove(targetPos, 0.5f));
-outerSeq.Append(innerSeq);
+Sequence refOuterSeq = DOTween.Sequence();
+refOuterSeq.Append(transform.DOMove(vTargetPos, 0.5f));
+refOuterSeq.Append(refInnerSeq);
 ```
 
 ## 이징 (Easing)
@@ -94,9 +94,9 @@ outerSeq.Append(innerSeq);
 이징은 보간 곡선을 제어한다. 원하는 느낌에 맞춰 선택하라.
 
 ```csharp
-transform.DOMove(target, 0.5f).SetEase(Ease.OutBounce);
+transform.DOMove(vTarget, 0.5f).SetEase(Ease.OutBounce);
 transform.DOScale(1.2f, 0.2f).SetEase(Ease.OutBack);          // 팝/오버슈트
-transform.DOMove(target, 1f).SetEase(Ease.InOutQuad);          // 부드러운 시작/정지
+transform.DOMove(vTarget, 1f).SetEase(Ease.InOutQuad);          // 부드러운 시작/정지
 m_refCanvasGroup.DOFade(0f, 0.3f).SetEase(Ease.InQuad);        // 가속하며 사라짐
 ```
 
@@ -115,8 +115,8 @@ m_refCanvasGroup.DOFade(0f, 0.3f).SetEase(Ease.InQuad);        // 가속하며 �
 ### 커스텀 이징 커브
 
 ```csharp
-[SerializeField] private AnimationCurve m_customEase;
-transform.DOMove(target, 1f).SetEase(m_customEase);
+[SerializeField] private AnimationCurve m_refCustomEase;
+transform.DOMove(vTarget, 1f).SetEase(m_refCustomEase);
 ```
 
 ## 중요: 트윈 생명주기와 킬 전략
@@ -126,13 +126,13 @@ transform.DOMove(target, 1f).SetEase(m_customEase);
 ```csharp
 public sealed class AnimatedElement : MonoBehaviour
 {
-    private Tween m_activeTween;
+    private Tween m_refActiveTween;
 
     public void PlayAnimation()
     {
         // 새 트윈을 시작하기 전에 기존 트윈을 종료한다
-        m_activeTween?.Kill();
-        m_activeTween = transform.DOScale(1.2f, 0.3f)
+        m_refActiveTween?.Kill();
+        m_refActiveTween = transform.DOScale(1.2f, 0.3f)
             .SetEase(Ease.OutBack);
     }
 
@@ -145,7 +145,7 @@ public sealed class AnimatedElement : MonoBehaviour
         // DOTween.Kill(this);
 
         // 또는 저장해 둔 특정 트윈을 종료한다:
-        // m_activeTween?.Kill();
+        // m_refActiveTween?.Kill();
     }
 }
 ```
@@ -158,7 +158,7 @@ transform.DOKill(true);              // 종료하면서 강제로 완료 처리
 DOTween.Kill(this);                  // 이 오브젝트를 ID로 가진 트윈을 종료
 DOTween.Kill("myTween");             // 문자열 ID를 가진 트윈을 종료
 DOTween.KillAll();                   // 극단적 선택 — 모든 트윈을 종료
-tween.Kill();                        // 특정 트윈 참조를 종료
+refTween.Kill();                        // 특정 트윈 참조를 종료
 ```
 
 ## 트윈 ID
@@ -166,8 +166,8 @@ tween.Kill();                        // 특정 트윈 참조를 종료
 타겟팅된 조작을 위해 트윈에 ID를 태깅하라.
 
 ```csharp
-transform.DOMove(target, 1f).SetId(this);          // 오브젝트 ID
-transform.DOMove(target, 1f).SetId("uiTransition"); // 문자열 ID
+transform.DOMove(vTarget, 1f).SetId(this);          // 오브젝트 ID
+transform.DOMove(vTarget, 1f).SetId("uiTransition"); // 문자열 ID
 
 // 이후: ID로 종료, 일시정지, 재생
 DOTween.Kill("uiTransition");
@@ -180,11 +180,11 @@ DOTween.Play(this);
 기본적으로 트윈은 완료 시 자동으로 파괴된다. 재사용 가능한 트윈을 만들려면 이를 비활성화하라.
 
 ```csharp
-private Tween m_bounceTween;
+private Tween m_refBounceTween;
 
 private void Awake()
 {
-    m_bounceTween = transform.DOScale(1.2f, 0.15f)
+    m_refBounceTween = transform.DOScale(1.2f, 0.15f)
         .SetEase(Ease.OutBack)
         .SetAutoKill(false)
         .SetLoops(2, LoopType.Yoyo)
@@ -193,12 +193,12 @@ private void Awake()
 
 public void Bounce()
 {
-    m_bounceTween.Restart();         // 처음부터 다시 재생
+    m_refBounceTween.Restart();         // 처음부터 다시 재생
 }
 
 private void OnDestroy()
 {
-    m_bounceTween?.Kill();           // AutoKill이 꺼져 있으므로 수동으로 종료해야 한다
+    m_refBounceTween?.Kill();           // AutoKill이 꺼져 있으므로 수동으로 종료해야 한다
 }
 ```
 
@@ -304,18 +304,18 @@ public sealed class ScreenTransition : MonoBehaviour
         m_refCanvasGroup.alpha = 0f;
         m_refPanel.anchoredPosition = new Vector2(0, -50f);
 
-        Sequence seq = DOTween.Sequence();
-        seq.Append(m_refCanvasGroup.DOFade(1f, 0.25f));
-        seq.Join(m_refPanel.DOAnchorPos(Vector2.zero, 0.3f).SetEase(Ease.OutQuad));
-        return seq;
+        Sequence refSeq = DOTween.Sequence();
+        refSeq.Append(m_refCanvasGroup.DOFade(1f, 0.25f));
+        refSeq.Join(m_refPanel.DOAnchorPos(Vector2.zero, 0.3f).SetEase(Ease.OutQuad));
+        return refSeq;
     }
 
     public Tween Hide()
     {
-        Sequence seq = DOTween.Sequence();
-        seq.Append(m_refCanvasGroup.DOFade(0f, 0.2f));
-        seq.Join(m_refPanel.DOAnchorPos(new Vector2(0, 50f), 0.25f).SetEase(Ease.InQuad));
-        return seq;
+        Sequence refSeq = DOTween.Sequence();
+        refSeq.Append(m_refCanvasGroup.DOFade(0f, 0.2f));
+        refSeq.Join(m_refPanel.DOAnchorPos(new Vector2(0, 50f), 0.25f).SetEase(Ease.InQuad));
+        return refSeq;
     }
 
     private void OnDestroy()
@@ -332,10 +332,10 @@ public sealed class ScreenTransition : MonoBehaviour
 public void FlashDamage(SpriteRenderer _refSpriteRenderer)
 {
     _refSpriteRenderer.DOKill();
-    Sequence seq = DOTween.Sequence();
-    seq.Append(_refSpriteRenderer.DOColor(Color.red, 0.05f));
-    seq.Append(_refSpriteRenderer.DOColor(Color.white, 0.15f));
-    seq.SetId(_refSpriteRenderer);
+    Sequence refSeq = DOTween.Sequence();
+    refSeq.Append(_refSpriteRenderer.DOColor(Color.red, 0.05f));
+    refSeq.Append(_refSpriteRenderer.DOColor(Color.white, 0.15f));
+    refSeq.SetId(_refSpriteRenderer);
 }
 ```
 
@@ -344,11 +344,11 @@ public void FlashDamage(SpriteRenderer _refSpriteRenderer)
 ```csharp
 public void PlayCollectAnimation(Transform _refItem, Vector3 _vTargetUIPos)
 {
-    Sequence seq = DOTween.Sequence();
-    seq.Append(_refItem.DOScale(1.3f, 0.15f).SetEase(Ease.OutBack));
-    seq.Append(_refItem.DOMove(_vTargetUIPos, 0.4f).SetEase(Ease.InBack));
-    seq.Join(_refItem.DOScale(0f, 0.3f).SetEase(Ease.InQuad));
-    seq.OnComplete(() => Destroy(_refItem.gameObject));
+    Sequence refSeq = DOTween.Sequence();
+    refSeq.Append(_refItem.DOScale(1.3f, 0.15f).SetEase(Ease.OutBack));
+    refSeq.Append(_refItem.DOMove(_vTargetUIPos, 0.4f).SetEase(Ease.InBack));
+    refSeq.Join(_refItem.DOScale(0f, 0.3f).SetEase(Ease.InQuad));
+    refSeq.OnComplete(() => Destroy(_refItem.gameObject));
 }
 ```
 
@@ -360,15 +360,15 @@ public void PlayCollectAnimation(Transform _refItem, Vector3 _vTargetUIPos)
 // 나쁜 예 — 매 프레임 새 트윈을 생성해 심각한 누수를 일으킨다
 private void Update()
 {
-    transform.DOMove(target.position, 0.5f);
+    transform.DOMove(m_refTargetTr.position, 0.5f);
 }
 
 // 좋은 예 — 한 번만 생성하고, 타겟만 다르게 갱신한다
-private Tween m_moveTween;
+private Tween m_refMoveTween;
 public void MoveTo(Vector3 _vTarget)
 {
-    m_moveTween?.Kill();
-    m_moveTween = transform.DOMove(_vTarget, 0.5f);
+    m_refMoveTween?.Kill();
+    m_refMoveTween = transform.DOMove(_vTarget, 0.5f);
 }
 ```
 
@@ -393,10 +393,10 @@ transform.DORotate(new Vector3(0, 360, 0), 2f, RotateMode.FastBeyond360)
     .SetLoops(-1, LoopType.Restart);
 
 // 좋은 예 — 참조를 저장해 두고 OnDestroy에서 종료한다
-private Tween m_spinTween;
+private Tween m_refSpinTween;
 private void Start()
 {
-    m_spinTween = transform.DORotate(new Vector3(0, 360, 0), 2f, RotateMode.FastBeyond360)
+    m_refSpinTween = transform.DORotate(new Vector3(0, 360, 0), 2f, RotateMode.FastBeyond360)
         .SetLoops(-1, LoopType.Restart)
         .SetId(this);
 }
@@ -406,7 +406,7 @@ private void OnDestroy() => DOTween.Kill(this);
 ## 콜백
 
 ```csharp
-transform.DOMove(target, 1f)
+transform.DOMove(vTarget, 1f)
     .OnStart(() => Debug.Log("Started"))
     .OnUpdate(() => Debug.Log("Updating"))
     .OnComplete(() => Debug.Log("Done"))
@@ -417,15 +417,15 @@ transform.DOMove(target, 1f)
 ## 트윈 제어
 
 ```csharp
-Tween tween = transform.DOMove(target, 1f);
+Tween refTween = transform.DOMove(vTarget, 1f);
 
-tween.Pause();
-tween.Play();
-tween.Restart();
-tween.Rewind();
-tween.Complete();             // 끝으로 점프
-tween.Goto(0.5f, true);      // 특정 시간으로 점프한 뒤 재생
-tween.PlayForward();
-tween.PlayBackwards();
-tween.Flip();                 // 방향 반전
+refTween.Pause();
+refTween.Play();
+refTween.Restart();
+refTween.Rewind();
+refTween.Complete();             // 끝으로 점프
+refTween.Goto(0.5f, true);      // 특정 시간으로 점프한 뒤 재생
+refTween.PlayForward();
+refTween.PlayBackwards();
+refTween.Flip();                 // 방향 반전
 ```
