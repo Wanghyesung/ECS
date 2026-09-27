@@ -8,7 +8,7 @@ public interface IPoolable
 
     public void SetPoolKey(SOPoolData _refPoolData);
     public void Push();
-    public void Pop();
+    public void Pop(); //enable 되기 전에 실행
 }
 
 
