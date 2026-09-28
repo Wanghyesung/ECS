@@ -57,10 +57,12 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
             return;
 
         int iCost = GetCost(m_refSelectData);
-        if (PlayerCurrency.TrySpend(iCost) == false)
+        // 강화 후 변경된 골드와 영구 스탯 파일만 저장한다.
+        if (ProfileSave.m_Instance.Currency.TrySpend(iCost, false) == false)
             return;
 
-        PlayerPreLoadData.AddStat(m_refSelectData.AddValue.Type, m_refSelectData.AddValue.Value);
+        ProfileSave.m_Instance.PreLoad.AddStat(m_refSelectData.AddValue.Type, m_refSelectData.AddValue.Value);
+        ProfileSave.m_Instance.Save(ProfileSave.m_Instance.Currency);
 
         RefreshSelected();
         m_refContainer.BindData(m_refContainer.CurrentCategoryIdx);
@@ -75,14 +77,14 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
         int iCost = GetCost(m_refSelectData);
 
         m_refDetailView.Show(m_refSelectData.Icon, m_refSelectData.DisplayName, GetDisplayValue(m_refSelectData), iLevel);
-        m_refUpgradeView.Show(iCost, PlayerCurrency.Amount.CurrentValue >= iCost);
+        m_refUpgradeView.Show(iCost, ProfileSave.m_Instance.Currency.Amount.CurrentValue >= iCost);
     }
 
     // HP는 기본값+보너스 합계로, 그 외 스탯은 진짜 기본값이 무기/이동 등에 흩어져
     // 있어 로비에서 알 수 없으므로 장비/강화로 얻은 보너스 합계만 표시한다.
     private string GetDisplayValue(SOStatUpgradeData _refData)
     {
-        float fBonus = PlayerPreLoadData.GetPendingTotal(_refData.AddValue.Type);
+        float fBonus = ProfileSave.m_Instance.PreLoad.GetPendingTotal(_refData.AddValue.Type);
         if (_refData.AddValue.Type == eStatType.HP)
             return ((long)(m_refBaseInfo.MaxHP + fBonus)).ToString();
 
@@ -91,7 +93,7 @@ public sealed class PlayerStatUI : MonoBehaviour, ICountable
 
     private int GetLevel(SOStatUpgradeData _refData)
     {
-        return Mathf.RoundToInt(PlayerPreLoadData.GetPendingTotal(_refData.AddValue.Type) / _refData.AddValue.Value);
+        return Mathf.RoundToInt(ProfileSave.m_Instance.PreLoad.GetPermanentTotal(_refData.AddValue.Type) / _refData.AddValue.Value);
     }
 
     private int GetCost(SOStatUpgradeData _refData)

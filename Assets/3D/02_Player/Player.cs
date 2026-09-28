@@ -62,6 +62,11 @@ public class ObjectInfo
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
 
+/*///////////////////////////////////////////
+                Player
+목적 : 플레이어의 전투 상태와 행동을 관리한다. 런 시작 시 기본 상태를 초기화하고
+      ProfileSave.Progress의 영구 성장·장착 보너스를 적용한다.
+ *///////////////////////////////////////////
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
@@ -181,7 +186,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             m_listDrone[i].gameObject.SetActive(m_arrDroneDefaultActive[i]);
 
         // 3) 영구 성장(로비 강화·장비)만 다시 얹는다 — 기본값 위에 리스트 전체를 적용하므로 런을 거듭해도 중복 누적 없음
-        PlayerPreLoadData.ApplyTo(this);
+        ProfileSave.m_Instance.PreLoad.ApplyTo(this);
 
         // 4) 장비 HP 보너스까지 포함해 만땅으로 시작 (기존엔 SO값으로 먼저 채워 100/120 상태로 시작했음)
         m_refObjectInfo.State = eEntityState.Idle;

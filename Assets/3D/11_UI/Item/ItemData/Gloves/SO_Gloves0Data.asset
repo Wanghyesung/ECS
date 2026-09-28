@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_strDescription: UP Player Attack 10
   m_sprIcon: {fileID: 21300008, guid: 7ebc7aa5db1f2c4e311590699fc9cc1b, type: 3}
+  m_strSaveId: gloves_0
   m_eEquipType: 1
   m_listValue:
   - Type: 1

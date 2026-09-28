@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 /*///////////////////////////////////////////
                 DungeonManager
-기능 : 던전 한 판의 진행(몬스터 스폰 예약, 보스 등장, 클리어)을 책임지는 매니저.
+목적 : 던전의 몬스터 스폰·보스 등장·종료를 관리하고 종료 시 프로필 저장을 요청한다.
  *///////////////////////////////////////////
 public class DungeonManager : MonoBehaviour
 {
@@ -186,6 +186,7 @@ public class DungeonManager : MonoBehaviour
 
     private async UniTaskVoid ClearStage()
     {
+        ProfileSave.m_Instance.Save();
         m_refSpawner.Clear();   // 런 종료 — 남은 예약이 씬 전환 뒤 파괴된 풀을 건드리지 않게 (검증 중 실제 발생: 스포너 루프 사망 → 다음 런 몬스터 0)
         await UniTask.WaitForSeconds(5);
         GameSceneManager.m_Instance.LoadFirstScene();
