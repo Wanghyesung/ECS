@@ -13,10 +13,8 @@ public sealed class PlayerCurrency : ISaveLoadable
     [Serializable]
     private sealed class CurrencyData
     {
-        [SerializeField] private int m_iVersion = 1;
         [SerializeField] private int m_iGold = START_AMOUNT;
 
-        public int Version => m_iVersion;
         public int Gold { get => m_iGold; set => m_iGold = value; }
     }
 
@@ -41,6 +39,8 @@ public sealed class PlayerCurrency : ISaveLoadable
         m_rpAmount.Value -= _iCost;
         if (_bSaveImmediately)
             m_refSaveManager.Save(this);
+        else
+            m_refSaveManager.MarkDirty(this);
         return true;
     }
 
@@ -54,23 +54,22 @@ public sealed class PlayerCurrency : ISaveLoadable
         m_refSaveManager.Save(this);
     }
 
-    public eSaveLoadResult Load(string _strJson)
+    public bool Load(string _strJson)
     {
         try
         {
-            CurrencyData refData = JsonUtility.FromJson<CurrencyData>(_strJson);
-            if (refData == null || refData.Version < 1 || refData.Gold < 0)
-                return eSaveLoadResult.Invalid;
-            if (refData.Version > 1)
-                return eSaveLoadResult.UnsupportedVersion;
+            CurrencyData refData = new CurrencyData { Gold = -1 };
+            JsonUtility.FromJsonOverwrite(_strJson, refData);
+            if (refData.Gold < 0)
+                return false;
 
             m_refData = refData;
             m_rpAmount.Value = refData.Gold;
-            return eSaveLoadResult.Loaded;
+            return true;
         }
         catch (Exception)
         {
-            return eSaveLoadResult.Invalid;
+            return false;
         }
     }
 
@@ -78,11 +77,6 @@ public sealed class PlayerCurrency : ISaveLoadable
     {
         m_refData.Gold = m_rpAmount.Value;
         return JsonUtility.ToJson(m_refData);
-    }
-
-    public void LoadLegacy(int _iGold)
-    {
-        m_rpAmount.Value = _iGold;
     }
 
     public void Dispose()

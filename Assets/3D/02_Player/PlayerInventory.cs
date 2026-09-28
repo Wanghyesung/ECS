@@ -13,11 +13,9 @@ public sealed class PlayerInventory : ISaveLoadable
     [Serializable]
     private sealed class InventoryData
     {
-        [SerializeField] private int m_iVersion = 1;
         [SerializeField] private List<string> m_listInventoryItemIds = new List<string>();
         [SerializeField] private string[] m_arrEquippedItemIds = new string[(int)eEquipType.Shoes + 1];
 
-        public int Version => m_iVersion;
         public List<string> InventoryItemIds { get => m_listInventoryItemIds; set => m_listInventoryItemIds = value; }
         public string[] EquippedItemIds { get => m_arrEquippedItemIds; set => m_arrEquippedItemIds = value; }
     }
@@ -49,32 +47,37 @@ public sealed class PlayerInventory : ISaveLoadable
         }
     }
 
-    public eSaveLoadResult Load(string _strJson)
+    public bool Load(string _strJson)
     {
-        InventoryData refData;
+        if (_strJson == null || _strJson.IndexOf("\"m_listInventoryItemIds\"", StringComparison.Ordinal) < 0)
+            return false;
+        if (_strJson.IndexOf("\"m_arrEquippedItemIds\"", StringComparison.Ordinal) < 0)
+            return false;
+
+        InventoryData refData = new InventoryData
+        {
+            InventoryItemIds = null,
+            EquippedItemIds = null,
+        };
         try
         {
-            refData = JsonUtility.FromJson<InventoryData>(_strJson);
+            JsonUtility.FromJsonOverwrite(_strJson, refData);
         }
         catch (Exception)
         {
-            return eSaveLoadResult.Invalid;
+            return false;
         }
 
-        if (refData == null)
-            return eSaveLoadResult.Invalid;
-        if (refData.Version > 1)
-            return eSaveLoadResult.UnsupportedVersion;
-        if (refData.Version != 1 || refData.InventoryItemIds == null)
-            return eSaveLoadResult.Invalid;
+        if (refData.InventoryItemIds == null)
+            return false;
         if (refData.EquippedItemIds == null || refData.EquippedItemIds.Length != m_arrEquippedItemIds.Length)
-            return eSaveLoadResult.Invalid;
+            return false;
 
         m_listInventoryItemIds.Clear();
         m_listInventoryItemIds.AddRange(refData.InventoryItemIds);
         Array.Copy(refData.EquippedItemIds, m_arrEquippedItemIds, m_arrEquippedItemIds.Length);
         ApplyEquipmentStats();
-        return eSaveLoadResult.Loaded;
+        return true;
     }
 
     public string Save()
@@ -82,15 +85,6 @@ public sealed class PlayerInventory : ISaveLoadable
         m_refData.InventoryItemIds = m_listInventoryItemIds;
         m_refData.EquippedItemIds = m_arrEquippedItemIds;
         return JsonUtility.ToJson(m_refData);
-    }
-
-    public void LoadLegacy(IReadOnlyList<string> _listItemIds, string[] _arrEquippedItemIds)
-    {
-        m_listInventoryItemIds.Clear();
-        for (int i = 0; i < _listItemIds.Count; ++i)
-            m_listInventoryItemIds.Add(_listItemIds[i]);
-        Array.Copy(_arrEquippedItemIds, m_arrEquippedItemIds, m_arrEquippedItemIds.Length);
-        ApplyEquipmentStats();
     }
 
     public bool CanRegisterItem(SOEqipData _refItem)

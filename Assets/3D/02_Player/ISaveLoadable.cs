@@ -4,16 +4,9 @@
       ProfileSave가 변경된 대상만 저장하거나 시작 시 목록 전체를 로드할 때 사용한다.
  *///////////////////////////////////////////
 
-public enum eSaveLoadResult
-{
-    Loaded,
-    Invalid,
-    UnsupportedVersion,
-}
-
 public interface ISaveLoadable
 {
     string FileName { get; }
-    eSaveLoadResult Load(string _strJson);
+    bool Load(string _strJson);
     string Save();
 }

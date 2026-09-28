@@ -13,10 +13,8 @@ public sealed class PlayerPreLoadData : ISaveLoadable
     [Serializable]
     private sealed class ProgressData
     {
-        [SerializeField] private int m_iVersion = 1;
         [SerializeField] private List<tStatValue> m_listPermanentStats = new List<tStatValue>();
 
-        public int Version => m_iVersion;
         public List<tStatValue> PermanentStats { get => m_listPermanentStats; set => m_listPermanentStats = value; }
     }
 
@@ -44,48 +42,34 @@ public sealed class PlayerPreLoadData : ISaveLoadable
         AddStatRange(_listValue);
     }
 
-    public eSaveLoadResult Load(string _strJson)
+    public bool Load(string _strJson)
     {
-        ProgressData refData;
+        if (_strJson == null || _strJson.IndexOf("\"m_listPermanentStats\"", StringComparison.Ordinal) < 0)
+            return false;
+
+        ProgressData refData = new ProgressData { PermanentStats = null };
         try
         {
-            refData = JsonUtility.FromJson<ProgressData>(_strJson);
+            JsonUtility.FromJsonOverwrite(_strJson, refData);
         }
         catch (Exception)
         {
-            return eSaveLoadResult.Invalid;
+            return false;
         }
 
-        if (refData == null)
-            return eSaveLoadResult.Invalid;
-        if (refData.Version > 1)
-            return eSaveLoadResult.UnsupportedVersion;
-        if (refData.Version != 1 || refData.PermanentStats == null)
-            return eSaveLoadResult.Invalid;
+        if (refData.PermanentStats == null)
+            return false;
 
         m_listPermanentStat.Clear();
         m_listPermanentStat.AddRange(refData.PermanentStats);
         m_listEquipmentStat.Clear();
-        return eSaveLoadResult.Loaded;
+        return true;
     }
 
     public string Save()
     {
         m_refData.PermanentStats = m_listPermanentStat;
         return JsonUtility.ToJson(m_refData);
-    }
-
-    public void LoadLegacy(IReadOnlyList<tStatValue> _listPermanentStats)
-    {
-        m_listPermanentStat.Clear();
-        AddPermanentStats(_listPermanentStats);
-        m_listEquipmentStat.Clear();
-    }
-
-    private void AddPermanentStats(IReadOnlyList<tStatValue> _listPermanentStats)
-    {
-        for (int i = 0; i < _listPermanentStats.Count; ++i)
-            m_listPermanentStat.Add(_listPermanentStats[i]);
     }
 
     // 로비 스탯 강화창처럼 한 번에 한 스탯만 추가할 때, 배열로 감싸지 않고 바로 쓰기 위한 편의 메서드

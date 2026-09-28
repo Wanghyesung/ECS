@@ -6,7 +6,7 @@ using UnityEngine;
 목적 : 로비 옵션 탭에서 여는 플레이어 능력치 강화창의 Presenter(오케스트레이터).
       DungeonManager가 스폰을 ObjectSpawner에 위임하듯, 실제 표시는
       StatDetailView/UpgradeButtonView 두 View 컴포넌트에 위임하고
-      이 클래스는 "무엇을 언제 보여줄지"(선택/계산/트랜잭션)만 담당한다.
+      이 클래스는 "무엇을 언제 보여줄지"(선택/계산/강화 처리)만 담당한다.
  *///////////////////////////////////////////
 public sealed class PlayerStatUI : MonoBehaviour, ICountable
 {
