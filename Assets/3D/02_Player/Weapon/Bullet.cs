@@ -225,6 +225,7 @@ public class Bullet : MonoBehaviour, IAttackObject
         m_refPoolObj?.SetAliveTime(_refAttackInfo.AliveTime);
         ActivateMoveJob();
 
+        return;
         UpdateLine();
     }
 

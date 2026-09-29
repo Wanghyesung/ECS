@@ -24,7 +24,6 @@ public sealed class Beam : MonoBehaviour, IAttackObject
     private List<SOBulletAction> m_listWeaponHitActions;
 
     private int m_iMoveManagerIndex = -1;
-    private Vector3 m_vStartPosition;
 
     // 매 발사마다 재사용 - GC Alloc 없음
     private readonly List<CircleCollider> m_listHitBuffer = new List<CircleCollider>(16);
@@ -61,7 +60,6 @@ public sealed class Beam : MonoBehaviour, IAttackObject
         m_refTrailRenderer.time = m_fTrailFadeTime;   // 이동 속도(Speed)와 무관하게 도착 후 꼬리가 사라지는 시간을 짧게 고정
         m_refTrailRenderer.emitting = true;
 
-        m_vStartPosition = transform.position;
         BulletMoveManager.m_Instance.Activate(m_iMoveManagerIndex, m_tShotInfo.Speed);
         
     }

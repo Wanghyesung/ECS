@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>오비탈 | itch.io 페이지 디자인 미리보기</title>
+  <style>
+    :root { color-scheme: dark; --cyan: #63ecff; --pink: #ff74cd; --gold: #ffc95a; --white: #effaff; --muted: #afc6d3; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--white); background: #071426 url('background.jpg') center top / cover fixed; font-family: 'Malgun Gothic', 'Segoe UI', sans-serif; line-height: 1.68; }
+    body::before { content: ''; position: fixed; inset: 0; z-index: -1; background: linear-gradient(90deg, #07142644, #07142600 30%, #07142600 70%, #07142644); pointer-events: none; }
+    a { color: var(--cyan); }
+    .page { max-width: 1010px; margin: 42px auto 80px; background: #06101edb; border: 1px solid #4cbbd167; box-shadow: 0 20px 90px #000a, 0 0 50px #33cce51d; }
+    .hero { display: block; width: 100%; height: auto; }
+    .columns { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 28px; padding: 32px 34px 42px; }
+    .eyebrow { color: var(--cyan); font: 700 12px 'Segoe UI', sans-serif; letter-spacing: .22em; text-transform: uppercase; }
+    h1 { font-size: clamp(27px, 3vw, 37px); line-height: 1.25; margin: 10px 0 15px; letter-spacing: -.05em; }
+    .lead { font-size: 17px; color: #d5eaf2; margin-top: 0; }
+    h2 { font-size: 19px; color: var(--cyan); margin: 38px 0 12px; padding-bottom: 7px; border-bottom: 1px solid #4cbbd163; }
+    p { margin: 10px 0 18px; }
+    ul { padding-left: 22px; margin-top: 6px; }
+    li { margin: 8px 0; }
+    li::marker { color: var(--cyan); }
+    .accent { color: var(--gold); font-weight: 700; }
+    .badge { display: inline-block; font-size: 12px; color: var(--gold); border: 1px solid #ffc95a99; background: #ffc95a16; padding: 3px 10px; margin: 0 6px 9px 0; letter-spacing: .05em; }
+    .aside-label { color: var(--cyan); font: 700 12px 'Segoe UI', sans-serif; letter-spacing: .19em; text-transform: uppercase; margin: 0 0 10px; }
+    figure { margin: 0 0 13px; background: #06101e; border: 1px solid #62ddec73; }
+    figure img { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; }
+    figcaption { font-size: 12px; padding: 7px 10px; color: var(--muted); }
+    .placeholder { aspect-ratio: 16/9; border: 1px dashed #66d7e785; background: linear-gradient(135deg,#133d5b,#0b182b 55%,#471d4a); display: grid; place-content: center; text-align: center; color: var(--muted); font-size: 13px; }
+    .placeholder b { color: var(--white); font-size: 17px; }
+    .download { border: 1px solid #5cdde5a0; background: #1a3e53a8; padding: 18px; margin-top: 24px; }
+    .download h2 { margin: 0 0 12px; }
+    .button { display: inline-block; color: #042033; background: var(--cyan); padding: 8px 28px; font-weight: 800; text-decoration: none; border-radius: 3px; }
+    .small { font-size: 12px; color: var(--muted); }
+    .note { border-left: 3px solid var(--pink); padding-left: 13px; color: #d4c6d6; font-size: 13px; }
+    @media (max-width: 720px) { .page { margin: 0; border: 0; } .columns { display: block; padding: 22px; } .aside { margin-top: 35px; } body { background-attachment: scroll; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <img class="hero" src="header.png" alt="오비탈: 우주 보스전 장면을 사용한 타이틀 배너">
+    <div class="columns">
+      <article>
+        <div class="eyebrow">3D ROGUELITE SHOOTER · WINDOWS</div>
+        <h1>쏘고, 고르고, 다시 건다.</h1>
+        <p class="lead">몰려오는 적을 돌파하며 카드를 고르세요. 안전하게 성장할 수도 있고, 조커에 한 번 더 걸어 더 강한 빌드를 노릴 수도 있습니다.</p>
+        <span class="badge">슈팅</span><span class="badge">레벨업 3택</span><span class="badge">조커 카드</span>
+        <h2>이번 런의 선택</h2>
+        <p>오비탈은 짧게 반복되는 전투와 카드 성장에 집중한 3D 슈팅 로그라이트입니다. 적을 쓰러뜨리고 경험치를 모아 세 장의 후보 중 하나를 선택하세요.</p>
+        <p>더 큰 보상을 원한다면 <span class="accent">조커 카드 도박</span>에 도전하세요. 연속 성공하면 더 좋은 카드를 노릴 수 있지만, 실패하면 쌓아 둔 카드와 이미 얻은 카드까지 잃을 수 있습니다.</p>
+        <h2>플레이 특징</h2>
+        <ul>
+          <li>몰려오는 적과 보스를 상대하는 3D 슈팅 전투</li>
+          <li>레벨업마다 카드 3장 중 하나를 고르는 성장</li>
+          <li>도전, 누적, 확정 또는 손실로 이어지는 조커 카드 시스템</li>
+          <li>매 런 다른 조합을 만드는 장비와 카드 빌드</li>
+        </ul>
+        <p><strong>한 번 더 걸 것인가, 지금 살아남을 것인가.</strong></p>
+        <div class="download">
+          <h2>Download</h2>
+          <p>Windows 데모 빌드가 준비되면 이곳에 itch.io의 실제 다운로드 버튼이 표시됩니다.</p>
+          <span class="button" aria-disabled="true">다운로드 영역 예시</span>
+          <p class="small">디자인 미리보기 · 실제 파일 업로드 전</p>
+        </div>
+        <h2>설치 안내</h2>
+        <p>Windows ZIP 파일의 압축을 풀고 게임 실행 파일을 실행하세요. 첫 배포 전 실제 빌드의 실행 파일 이름과 조작법을 여기에 추가하세요.</p>
+        <p class="note">이 미리보기는 현재 저장소 자료로 만든 디자인 시안입니다. 출시 버전, 최소 사양, 조작법, 링크는 빌드 테스트 후 확정하세요.</p>
+      </article>
+      <aside class="aside">
+        <p class="aside-label">Gameplay / 실제 게임 화면</p>
+        <div class="placeholder"><b>트레일러 자리</b><span>공개 영상 URL을 추가하면 itch.io에서 표시</span></div>
+        <figure><img src="../Screenshots/boss.png" alt="오비탈 보스전"><figcaption>보스전 · 광선과 탄막</figcaption></figure>
+        <figure><img src="../Screenshots/levelup-pick3.png" alt="카드 선택 화면"><figcaption>성장 · 카드 선택</figcaption></figure>
+        <figure><img src="../Screenshots/joker-success.png" alt="조커 카드 성공 화면"><figcaption>조커 · 성공과 보상</figcaption></figure>
+        <figure><img src="../Screenshots/joker-fail.png" alt="조커 카드 실패 화면"><figcaption>조커 · 실패의 대가</figcaption></figure>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
