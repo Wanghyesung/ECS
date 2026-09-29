@@ -19,6 +19,7 @@ public sealed class ProfileSave : MonoBehaviour
     public PlayerCurrency Currency { get; private set; }
     public PlayerPreLoadData PreLoad { get; private set; }
     public PlayerInventory Inventory { get; private set; }
+    public PlayerLevel Level { get; private set; }
 
     private string GetSavePath(ISaveLoadable _refSaveable) =>
         Path.Combine(Application.persistentDataPath, _refSaveable.FileName);
@@ -51,10 +52,12 @@ public sealed class ProfileSave : MonoBehaviour
         Currency = new PlayerCurrency(this);
         PreLoad = new PlayerPreLoadData(this);
         Inventory = new PlayerInventory(this, PreLoad, refCatalog);
+        Level = new PlayerLevel(this);
         // Inventory.Load가 장착 보너스를 PreLoad에 반영하므로 PreLoad를 먼저 로드한다.
         m_listSaveables.Add(Currency);
         m_listSaveables.Add(PreLoad);
         m_listSaveables.Add(Inventory);
+        m_listSaveables.Add(Level);
         for (int i = 0; i < m_listSaveables.Count; ++i)
             m_hashDirty.Add(m_listSaveables[i]);
 

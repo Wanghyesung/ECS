@@ -90,17 +90,18 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public ObjectInfo ObjectInfo => m_refObjectInfo;
 
     // 런 시작 시 되돌릴 기본 활성 상태 — 씬에 배치된 그대로(BaseWeapon_0/1만 켜짐)가 곧 기본 로드아웃.
-    // 별도 [SerializeField] 없이 Awake 스냅샷으로 충분 (인스펙터에 같은 정보가 두 번 생기는 걸 피함)
+    
     private bool[] m_arrWeaponDefaultActive;
     private bool[] m_arrDroneDefaultActive;
 
     // 차지 무기는 WeaponCon(PlayerChargeController가 구동)이 붙어 있는 것으로 구분한다 — Weapon의 ChargeOnly 플래그를 대체.
-    // Fire()가 Update에서 도는 핫 루프라 TryGetComponent는 Awake에서 한 번만 (performance.md의 캐싱 규칙)
     private bool[] m_arrWeaponChargeDriven;
 
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
     [Header("Audio")]
     [SerializeField] private SOAudio m_SODeadAudio;
+    [SerializeField] private SOPoolData m_refDeadEffect;
+    private float m_fPlayerSize;
 
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
@@ -120,14 +121,25 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private bool TestLock = false;
     private void Awake()
     {
-        // 로비는 LoadSceneMode.Single로 매번 다시 로드되므로 씬의 MainPlayer가 런마다 또 Awake 된다.
-        // 가드가 없으면 새 인스턴스가 CurrentPlayer를 덮어써 DDOL 원본은 죽은 채로 남고 런마다 Player가 하나씩 는다 (검증 중 실제 발생).
-        // Destroy는 프레임 끝이라 그 전에 자식 Weapon.Start가 돌면 Init 안 된 AttackInfo로 빌드에선 Application.Quit — 먼저 꺼서 막는다
-        if (ThisPlayer != null && ThisPlayer != this) { gameObject.SetActive(false); Destroy(gameObject); return; }
+        if (ThisPlayer != null && ThisPlayer != this) 
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject); 
+            return;
+        }
 
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
         m_refAim = GetComponent<Aim>();
+
+        Renderer[] arrRenderers = GetComponentsInChildren<Renderer>();
+        if (arrRenderers.Length > 0)
+        {
+            Bounds tBounds = arrRenderers[0].bounds;
+            for (int i = 1; i < arrRenderers.Length; ++i)
+                tBounds.Encapsulate(arrRenderers[i].bounds);
+            m_fPlayerSize = tBounds.size.magnitude;
+        }
 
         ThisPlayer = this;
 
@@ -256,8 +268,14 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         CancelNockback();
         m_refObjectInfo.State = eEntityState.Dead;   // Update의 Fire 차단
         SoundManager.m_Instance.PlaySfx(m_SODeadAudio);
-        m_refMovement.enabled = false;               // PlayerMovement는 상태를 안 보므로 컴포넌트째 끔 (OnEnable에서 복구)
+        m_refMovement.enabled = false;            
+
+        GameObject refDeadEffect = ObjectPoolManager.m_Instance.GetObject(m_refDeadEffect, transform.position);
+        if (refDeadEffect != null)
+            refDeadEffect.GetComponent<HitEffect>().SetSize(m_fPlayerSize);
+
         m_subjectDied.OnNext(Unit.Default);
+        gameObject.SetActive(false);
     }
 
     public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
