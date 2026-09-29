@@ -93,8 +93,7 @@ public class ObjectSpawner : MonoBehaviour
        }
     }
 
-    // DungeonManager가 런 종료/시작 시 호출. 스포너는 DDOL(로비 소속)이라 씬이 바뀌어도 예약이 남고,
-    // 다음 씬에서 파괴된 풀을 건드려 MissingReference로 루프가 죽으면 그 뒤 런은 몬스터가 영영 안 나온다
+    // DungeonManager가 런 종료/시작 시 호출. 남은 예약을 씬 전환 전에 비운다.
     public void Clear()
     {
         m_PQObject.Clear();

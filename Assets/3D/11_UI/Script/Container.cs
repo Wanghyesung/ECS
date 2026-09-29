@@ -22,6 +22,7 @@ public class CategoryData
 
     [SerializeField] private bool m_bCanDuplication = true; //중복 허용할지(장비 템 창, 스킬 창)
     public bool IsCanDuplication => m_bCanDuplication;
+    public void SetCanDuplication(bool _bCanDuplication) => m_bCanDuplication = _bCanDuplication;
     public bool IsFull => m_iCurrentRemnantData <= 0;
 
     //이 카테고리가 보여줄 데이터의 카운트를 어디서 가져올지 (예: FeatureManager). 카테고리마다 다른 출처를 꽂을 수 있음
@@ -145,6 +146,7 @@ public class Container : BaseButtonUI , ISelectDataable
 
     public void Init()
     {
+        m_vViewOriginPos = m_refContentView.anchoredPosition;
         //TODO : 나중에 클래스 하나 따로 만들고 위에서 핸들 연결해주는걸로 수정
 
         //Feature 전용 컨테이너면 기능 흭득/레벨업 이벤트를 구독해서 슬롯에 자동 반영

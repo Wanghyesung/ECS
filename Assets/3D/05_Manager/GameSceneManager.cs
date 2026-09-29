@@ -22,7 +22,7 @@ public class GameSceneManager : MonoBehaviour
 
     //[SerializeField] private Image m_refProgressImage; //fillAmount로 로딩 진행률 표시
     [SerializeField] private LoadingOverlay m_refLoadingOverlay;
-    [SerializeField] private string m_strFirstSceneName = "LobyScene"; //Addressable이 아닌 Build Settings 등록 씬(로비/처음 씬)
+    [SerializeField] private string m_strFirstSceneName = "LobbyScene"; //Addressable이 아닌 Build Settings 등록 씬(로비/처음 씬)
 
     //로비는 SOSceneData를 거치지 않고 씬 이름으로 바로 로드되므로 배경음도 여기서 들고 있는다
     [SerializeField] private SOAudio m_SOLobyBgm;

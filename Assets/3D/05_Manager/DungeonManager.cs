@@ -1,22 +1,23 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using R3;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /*///////////////////////////////////////////
                 DungeonManager
-목적 : 던전의 몬스터 스폰·보스 등장·종료를 관리하고 종료 시 프로필 저장을 요청한다.
+목적 : 던전의 몬스터 스폰·보스 등장·클리어 보상과 종료를 관리한다.
  *///////////////////////////////////////////
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager m_Instance = null;
 
     [SerializeField] private ObjectSpawner m_refSpawner;
+    [SerializeField] private ClearStageUI m_refClearUI;
     //[SerializeField] private List<SOStage> m_listStage = new List<SOStage>();
 
     private SOStage m_SOTargetStage = null;
+    private readonly List<SOEqipData> m_listClearRewards = new List<SOEqipData>(16);
+    private bool m_bStageEnding;
 
     // 예약 수가 아니라 '실제로 스폰돼서 아직 살아있는 수
     private int m_iAliveMonsterCount = 0;
@@ -57,7 +58,7 @@ public class DungeonManager : MonoBehaviour
     {
         Monster.OnMonsterDied.Subscribe(MonsterDead).AddTo(ref m_bagEvents);
         m_refSpawner.OnSpawned.Subscribe(HandleSpawned).AddTo(ref m_bagEvents);
-        Player.OnPlayerDied.Subscribe(_ => ClearStage().Forget()).AddTo(ref m_bagEvents);   // 사망도 클리어와 같은 출구(5초 → 로비)
+        Player.OnPlayerDied.Subscribe(_ => FailStage().Forget()).AddTo(ref m_bagEvents);
     }
 
     private void OnDisable()
@@ -75,6 +76,8 @@ public class DungeonManager : MonoBehaviour
         }
 
         m_SOTargetStage = _SOStage;
+        m_bStageEnding = false;
+        m_refClearUI.Initialize();
 
         m_bBossSpawned = false;
 
@@ -82,7 +85,7 @@ public class DungeonManager : MonoBehaviour
         m_bBossRequested = false;
 
         m_listSpawnedMonster.Clear();
-        m_refSpawner.Clear();   // 이전 런 예약이 남아 있으면 안 됨 (스포너는 DDOL)
+        m_refSpawner.Clear();
         for (int i = 0; i < m_SOTargetStage.ListSpawnEntry.Count; ++i)
         {
             var tEntry = m_SOTargetStage.ListSpawnEntry[i];
@@ -126,7 +129,7 @@ public class DungeonManager : MonoBehaviour
         if (m_bBossSpawned == true)
         {
             // 한 판에 보스는 하나뿐이므로, 보스가 죽었다는 건 곧 던전 클리어
-            ClearStage().Forget();
+            ClearStage();
             return;
         }
 
@@ -184,11 +187,42 @@ public class DungeonManager : MonoBehaviour
     }
 
 
-    private async UniTaskVoid ClearStage()
+    private void ClearStage()
     {
+        if (m_bStageEnding == true)
+            return;
+
+        m_bStageEnding = true;
+        m_refSpawner.Clear();
+        TimeScaleManager.m_Instance.Pause(this);
+
+        SOClearReward refReward = m_SOTargetStage.ClearReward;
+        ProfileSave refSave = ProfileSave.m_Instance;
+        int iStartExp = refSave.Level.TotalExp;
+        refSave.Level.AddExp(refReward.ClearExp);
+        m_listClearRewards.Clear();
+        for (int i = 0; i < refReward.RewardCount; ++i)
+        {
+            SOEqipData refItem = refReward.Roll();
+            if (refSave.Inventory.AcquireItem(refItem) == false)
+                throw new System.InvalidOperationException($"{m_SOTargetStage.name}의 클리어 보상을 저장할 수 없습니다.");
+            m_listClearRewards.Add(refItem);
+        }
+
+        refSave.Save();
+        m_refClearUI.Show(GameSceneManager.m_Instance.SelectedStageIdx + 1,
+            iStartExp, refSave.Level.TotalExp, m_listClearRewards);
+    }
+
+    private async UniTaskVoid FailStage()
+    {
+        if (m_bStageEnding == true)
+            return;
+
+        m_bStageEnding = true;
         ProfileSave.m_Instance.Save();
-        m_refSpawner.Clear();   // 런 종료 — 남은 예약이 씬 전환 뒤 파괴된 풀을 건드리지 않게 (검증 중 실제 발생: 스포너 루프 사망 → 다음 런 몬스터 0)
-        await UniTask.WaitForSeconds(5);
+        m_refSpawner.Clear();
+        await UniTask.WaitForSeconds(5, cancellationToken: this.GetCancellationTokenOnDestroy());
         GameSceneManager.m_Instance.LoadFirstScene();
     }
 }

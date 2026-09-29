@@ -8926,6 +8926,7 @@ MonoBehaviour:
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
   m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
+  m_refDeadEffect: {fileID: 11400000, guid: d6c50c7fa9fb2644fb245df5f93564d0, type: 2}
   m_refTargetScnner: {fileID: 715353657}
   TestLock: 0
 --- !u!1 &715872778
@@ -24626,6 +24627,7 @@ MonoBehaviour:
       TickDamage: 0
   m_SOObjectInfo: {fileID: 11400000, guid: 83c321adaee37434cb7437ae8f6fec56, type: 2}
   m_SODeadAudio: {fileID: 11400000, guid: 8a46604b0b295b34da07ffaea37f4a67, type: 2}
+  m_refDeadEffect: {fileID: 11400000, guid: d6c50c7fa9fb2644fb245df5f93564d0, type: 2}
   m_refTargetScnner: {fileID: 4420039787527282766}
   TestLock: 0
 --- !u!114 &4420039787527282766
