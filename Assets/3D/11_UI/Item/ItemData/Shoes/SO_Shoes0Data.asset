@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b138ac33d0d27f74b862bdd05714ec36, type: 3}
   m_Name: SO_Shoes0Data
   m_EditorClassIdentifier: 
-  m_strDescription: UP Player Attack 10
+  m_strDescription: Movement speed +5
   m_sprIcon: {fileID: 21300006, guid: ba70f807250caac419b9f8e27b225ab7, type: 3}
   m_strSaveId: shoes_0
   m_eEquipType: 3

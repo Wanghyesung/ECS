@@ -18,10 +18,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b39ec697f76aec04fb8081c0c4f6dbae, type: 3}
   - {fileID: 8300000, guid: 6c641842185384646b603322cc7e7559, type: 3}
   m_refOutputGroup: {fileID: 5783306332505341378, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
-  m_fVolume: 0.6
+  m_fVolume: 0.5
   m_fPitchMin: 0.95
   m_fPitchMax: 1.05
   m_fSpatialBlend: 0
-  m_fMinInterval: 0.1
+  m_fMinInterval: 0.25
   m_iPriority: 150
   m_bLoop: 0

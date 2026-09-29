@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class SOClearReward : ScriptableObject
 {
     [Serializable]
-    public sealed class tWeightedItem
+    public sealed class RewardItem
     {
         [SerializeField] private SOEqipData m_refItem;
         [SerializeField, Min(1)] private int m_iWeight = 1;
@@ -16,7 +16,7 @@ public sealed class SOClearReward : ScriptableObject
 
     [SerializeField, Min(1)] private int m_iRewardCount = 4;
     [SerializeField, Min(0)] private int m_iClearExp = 100;
-    [SerializeField] private List<tWeightedItem> m_listEntries = new List<tWeightedItem>();
+    [SerializeField] private List<RewardItem> m_listEntries = new List<RewardItem>();
 
     public int RewardCount => Mathf.Clamp(m_iRewardCount, 1, 16);
     public int ClearExp => Mathf.Max(0, m_iClearExp);
@@ -34,7 +34,7 @@ public sealed class SOClearReward : ScriptableObject
         int iRoll = UnityEngine.Random.Range(0, iTotalWeight);
         for (int i = 0; i < m_listEntries.Count; ++i)
         {
-            tWeightedItem tEntry = m_listEntries[i];
+            RewardItem tEntry = m_listEntries[i];
             if (tEntry.Item == null)
                 continue;
             iRoll -= tEntry.Weight;

@@ -129,7 +129,7 @@ public class DungeonManager : MonoBehaviour
         if (m_bBossSpawned == true)
         {
             // 한 판에 보스는 하나뿐이므로, 보스가 죽었다는 건 곧 던전 클리어
-            ClearStage();
+            ClearStage().Forget();
             return;
         }
 
@@ -187,14 +187,13 @@ public class DungeonManager : MonoBehaviour
     }
 
 
-    private void ClearStage()
+    private async UniTaskVoid ClearStage()
     {
         if (m_bStageEnding == true)
             return;
 
         m_bStageEnding = true;
         m_refSpawner.Clear();
-        TimeScaleManager.m_Instance.Pause(this);
 
         SOClearReward refReward = m_SOTargetStage.ClearReward;
         ProfileSave refSave = ProfileSave.m_Instance;
@@ -210,6 +209,11 @@ public class DungeonManager : MonoBehaviour
         }
 
         refSave.Save();
+        // 클리어 순간 정지한 게임 시간과 무관하게 3초 뒤 결과 화면을 연다.
+        await UniTask.WaitForSeconds(3f, ignoreTimeScale: true,
+            cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        TimeScaleManager.m_Instance.Pause(this);
         m_refClearUI.Show(GameSceneManager.m_Instance.SelectedStageIdx + 1,
             iStartExp, refSave.Level.TotalExp, m_listClearRewards);
     }
