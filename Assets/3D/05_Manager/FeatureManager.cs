@@ -53,10 +53,10 @@ public class FeatureManager : MonoBehaviour, ICountable
 
     private void Start()
     {
-        TestCode().Forget();
+        StartApplyFeature().Forget();
     }
 
-    private async UniTaskVoid TestCode()
+    private async UniTaskVoid StartApplyFeature()
     {
         // 2초 고정 대기였음 — 풀 로딩이 2초를 넘기면 Player.ResetRun(OnEnable)이 그 뒤에 돌아 여기서 얹은 프리로드 카드를 지워버린다.
         // '런 시작(활성화)' 자체를 기다리면 ResetRun 다음 프레임에 적용됨이 보장된다

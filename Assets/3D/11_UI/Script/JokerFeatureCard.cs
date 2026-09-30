@@ -48,9 +48,9 @@ public class JokerFeatureCard : RandomFeatureCard
 
         Sequence refSeq = DOTween.Sequence();
         m_refResultSequence = refSeq;
+        refSeq.AppendCallback(StartShakeAudio);
         refSeq.Append(refRect.DOAnchorPos(_refCenterAnchor.anchoredPosition, m_fMoveTime).SetEase(Ease.OutQuad));
         refSeq.Join(refRect.DOScale(m_vRevealScale, m_fMoveTime).SetEase(Ease.OutQuad));
-        refSeq.AppendCallback(StartShakeAudio);
         refSeq.Append(refRect.DOShakeAnchorPos(m_fShakeTime, m_vShakeStrength, m_iShakeVibrato, m_fShakeRandomness));
         refSeq.AppendCallback(StopShakeAudio);
         refSeq.SetUpdate(true); // Time.timeScale = 0(카드 UI 노출 중)에서도 재생

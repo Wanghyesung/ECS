@@ -64,6 +64,10 @@ public class Charge : MonoBehaviour
         m_bCompleted = true;
     }
 
+    private void OnDisable()
+    {
+        SoundManager.m_Instance.StopSfx(m_tSoundHandle);
+    }
     public void Update()
     {
         if (m_bCompleted == true)

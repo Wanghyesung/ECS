@@ -11,7 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 21ac3d78272a1b74fbdbc742fd18ec39, type: 3}
   m_Name: SO_MainStage0
-  m_refClearReward: {fileID: 11400000, guid: ea13c96b9b06b244c8bc06646fcdeab9, type: 2}
   m_EditorClassIdentifier: 
   ListSpawnEntry:
   - fSpawnTime: 2
@@ -106,5 +105,6 @@ MonoBehaviour:
     vPosition: {x: -169.86, y: 5.41, z: 990.88}
   BossPrefab: {fileID: 11400000, guid: 37cd5468d564b844a8ccf64d32b9df29, type: 2}
   BossSpawnPosition: {x: -122.8, y: 83.3, z: 857.1}
-  BossShowDistance: 150
-  BossShowHeight: 50
+  BossShowDistance: 132
+  BossShowHeight: 55
+  m_refClearReward: {fileID: 11400000, guid: ea13c96b9b06b244c8bc06646fcdeab9, type: 2}
