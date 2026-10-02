@@ -27,6 +27,7 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Telegraph")]
     public float TelegraphDuration = 0f; // 0이면 예고선 없이 즉시 판정 시작 (기존 동작과 동일)
+    public float BulletLineDuration = 0f; // 0이면 BulletLine의 기본 수명 사용
 
     [Header("Knockback / Stun")]
     public float KnockbackForce = 3f;
@@ -54,6 +55,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.MaxHitCount = HitCount;
         refAttackInfo.HitStep = HitStep;
         refAttackInfo.LineDuration = TelegraphDuration;
+        refAttackInfo.BulletLineDuration = BulletLineDuration;
 
         refAttackInfo.AliveTime = AliveTime;
         refAttackInfo.Speed = Speed;
@@ -85,6 +87,7 @@ public class AttackInfo
     public int AttackPower;
     public float AliveTime;
     public float Speed;
+    public float BulletLineDuration;
 
     [Header("Hit Count")]
     public int MaxHitCount;

@@ -1,4 +1,5 @@
 using R3;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,6 +36,20 @@ public class BaseButtonUI : MonoBehaviour,
     public Observable<Unit> OnDragEvt => m_subjectDrag;
     public Observable<Unit> OnEndDragEvt => m_subjectEndDrag;
     public Observable<Unit> OnClickEvt => m_subjectClick;
+
+    // 로비 탭이 인스펙터의 기존 SetActive(true) 연결을 창 그룹으로 재사용한다.
+    public void CopyClickActivationTargets(List<GameObject> _listTargets)
+    {
+        int iCount = OnClickUEvt.GetPersistentEventCount();
+        for (int i = 0; i < iCount; ++i)
+        {
+            if (OnClickUEvt.GetPersistentMethodName(i) != nameof(GameObject.SetActive))
+                continue;
+
+            if (OnClickUEvt.GetPersistentTarget(i) is GameObject refTarget)
+                _listTargets.Add(refTarget);
+        }
+    }
 
     // 인스펙터 바인딩용 
     [SerializeField] private UnityEvent OnEnterUEvt;

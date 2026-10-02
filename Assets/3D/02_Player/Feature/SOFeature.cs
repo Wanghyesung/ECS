@@ -25,6 +25,7 @@ public enum eFeatureID
     AddMissileBulletCount,
     AddMissileCount,
     AddBeamCount,
+    ChargeShot,
     End,
 
     //AttackUp,

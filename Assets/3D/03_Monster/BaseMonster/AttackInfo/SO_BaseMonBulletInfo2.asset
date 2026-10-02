@@ -15,12 +15,13 @@ MonoBehaviour:
   Description: 
   Damage: 20
   AttackPower: 10
-  Speed: 70
-  SpeedOffset: 4
+  Speed: 105
+  SpeedOffset: 6
   AliveTime: 4
   HitCount: 1
   HitStep: 1
   TelegraphDuration: 0
+  BulletLineDuration: 0.67
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0

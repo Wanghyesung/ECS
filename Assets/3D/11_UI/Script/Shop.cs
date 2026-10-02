@@ -3,8 +3,7 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 Shop
-목적 : 상점의 장비 선택·획득 UI를 처리하고 획득한 장비를 PlayerInventory에 전달한다.
-      현재는 가격 차감 기능이 없어 장비 획득과 프로필 저장만 처리한다.
+목적 : 상점의 장비 선택·구매 UI를 처리하고 획득한 장비를 PlayerInventory에 전달한다.
  *///////////////////////////////////////////
 
 public class Shop : MonoBehaviour
@@ -40,23 +39,33 @@ public class Shop : MonoBehaviour
         m_refSelectDescUI.Show(_refData);
     }
 
-    //TODO : 재화에 맞게 
     private void BuyItem()
     {
         if (m_refSelectData is not SOEqipData refItem)
             return;
 
-        if (ProfileSave.m_Instance.Inventory.CanRegisterItem(refItem) == false)
+        ProfileSave refProfile = ProfileSave.m_Instance;
+        if (refProfile.Inventory.CanRegisterItem(refItem) == false)
+            return;
+        if (refProfile.Currency.Amount.CurrentValue < refItem.Price)
             return;
         if (m_refInventoryContainer.AddData(refItem) == false)
             return;
 
-        if (ProfileSave.m_Instance.Inventory.AcquireItem(refItem) == false)
+        if (refProfile.Currency.TrySpend(refItem.Price, false) == false)
         {
             m_refInventoryContainer.DeleteData(refItem);
             return;
         }
+        if (refProfile.Inventory.AcquireItem(refItem) == false)
+        {
+            m_refInventoryContainer.DeleteData(refItem);
+            refProfile.Currency.Add(refItem.Price);
+            return;
+        }
+
+        refProfile.Save(refProfile.Currency);
         m_refSelectDescUI.Show(null);
-        //SOData as SO
+        m_refSelectData = null;
     }
 }

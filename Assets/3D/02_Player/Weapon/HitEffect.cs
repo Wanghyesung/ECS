@@ -21,7 +21,9 @@ public class HitEffect : MonoBehaviour
     }
     private void OnEnable()
     {
-        m_refParticle?.Play();
+        transform.localScale = m_vBaseScale;
+        if (m_refParticle != null)
+            m_refParticle.Play();
     }
 
     // 몬스터의 Renderer bounds 크기(_fSize)에 비례해 이펙트 크기 조정.
@@ -33,6 +35,17 @@ public class HitEffect : MonoBehaviour
 
         float fRatio = Mathf.Clamp(_fSize / m_fReferenceSize, m_fMinSizeRatio, m_fMaxSizeRatio);
         transform.localScale = m_vBaseScale * fRatio;
+    }
+
+    // 몬스터 사망 연출은 메시 크기와 무관하게 SO에서 지정한 배율을 사용한다.
+    public void SetScale(float _fScale)
+    {
+        transform.localScale = m_vBaseScale * Mathf.Max(0.1f, _fScale);
+        if (m_refParticle != null)
+        {
+            m_refParticle.Clear(true);
+            m_refParticle.Play(true);
+        }
     }
 
     private void OnParticleSystemStopped()

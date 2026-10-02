@@ -15,6 +15,7 @@ MonoBehaviour:
   m_strDescription: Movement speed +5
   m_sprIcon: {fileID: 21300006, guid: ba70f807250caac419b9f8e27b225ab7, type: 3}
   m_strSaveId: shoes_0
+  m_iPrice: 100
   m_eEquipType: 3
   m_listValue:
   - Type: 3

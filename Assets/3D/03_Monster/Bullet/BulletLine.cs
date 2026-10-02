@@ -10,6 +10,8 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(PoolObject))]
 public sealed class BulletLine : MonoBehaviour
 {
+    public const float DEFAULT_LIFETIME = 1f;
+
     [Header("에디터 테스트용 (런타임에는 Bullet이 SetLine을 직접 호출함)")]
     [SerializeField] private Vector3 m_vTestDirection = Vector3.forward;
     [SerializeField] private float m_fTestDistance = 5f;

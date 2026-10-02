@@ -231,7 +231,8 @@ public class Bullet : MonoBehaviour, IAttackObject
     // 이 직선 근사가 실제 경로와 안 맞으므로 Missiles/GuidedBullet에서 타겟 방향 기준으로 오버라이드함
     protected virtual void UpdateLine()
     {
-        m_refLineDrawer?.SetLine(transform.position, m_tShotInfo.MoveDir, m_tShotInfo.Speed * m_refAttackInfo.AliveTime);
+        m_refLineDrawer?.SetLine(transform.position, m_tShotInfo.MoveDir,
+            m_tShotInfo.Speed * m_refAttackInfo.AliveTime, m_refAttackInfo.BulletLineDuration);
     }
 
 

@@ -16,8 +16,8 @@ MonoBehaviour:
     \uACF5\uACA9"
   Damage: 70
   AttackPower: 0
-  Speed: 30
-  SpeedOffset: 8
+  Speed: 45
+  SpeedOffset: 12
   AliveTime: 10
   HitCount: 1
   HitStep: 1

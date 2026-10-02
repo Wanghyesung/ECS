@@ -232,6 +232,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     // 스페이스 입력 시 z축 기준 360도 배럴롤 연출과 함께 이동속도를 순간적으로 올렸다가 서서히 되돌림
     private void MoveRoll()
     {
+        if (TimeScaleManager.m_Instance.IsPaused.CurrentValue == true)
+            return;
+
         float fCurTime = Time.time - m_fLastRollTime;
         if (fCurTime < m_fRollTime)
             return;

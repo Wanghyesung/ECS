@@ -15,6 +15,7 @@ MonoBehaviour:
   m_strDescription: Attack +5
   m_sprIcon: {fileID: 21300022, guid: ba70f807250caac419b9f8e27b225ab7, type: 3}
   m_strSaveId: weapon_1
+  m_iPrice: 100
   m_eEquipType: 0
   m_listValue:
   - Type: 1

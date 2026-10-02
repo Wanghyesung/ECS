@@ -3,10 +3,10 @@
 Unity(URP)로 제작 중인 **3D 슈팅 게임**입니다.
 레벨업 3택 위에 등급형 조커 카드 도박이라는 하이 리스크 성장 계층을 더해, "한 번 더 걸어볼까 여기서 멈출까"를 매 레벨업마다 반복시키는 것이 이 게임의 정체성입니다.
 
-> 데모 영상: https://1drv.ms/v/c/d9470e8558d46727/IQDRxPH4D6wsSbxzpUsYRbMAAa-4UNTq2dzK-Ku9exJmX_k?e=UdO4O4
+> 데모 영상: [YouTube에서 보기](https://youtu.be/Y0OCYpNK0yg?si=TUrVmDRfxRQ6aauJ)
 
 ## 플레이 사진
-![플레이 사진](Docs/Screenshots/boss.png)
+![플레이 사진](Docs/Screenshots/gameplay-main.png)
 
 
 ## 게임 소개
@@ -52,19 +52,31 @@ Unity(URP)로 제작 중인 **3D 슈팅 게임**입니다.
 
 ## 프로젝트 구조
 
+주요 폴더와 역할은 다음과 같습니다.
+
 ```
 Assets/
+├─ 00_Scene/               로비(Loby), 전투·테스트 씬
+├─ 2D/01_Resource/         우주 배경, 스프라이트 리소스
 ├─ 3D/
-│  ├─ 02_Player/     플레이어 이동, 무기, 장비
-│  ├─ 03_Monster/    몬스터 AI(Behavior Tree), 스폰
-│  ├─ 04_Map/        던전/맵 구성
-│  ├─ 05_Manager/    DungeonManager, BattleManager, FeatureManager 등
-│  ├─ 06_Input/      New Input System 액션 에셋
-│  ├─ 07_Render/     URP 렌더 파이프라인 세팅
-│  └─ 08_Effect/     이펙트, VFX
-├─ 2D/               2D UI 리소스
-├─ 00_Scene/         로비/전투 씬
-└─ Plugins/          UniTask, DOTween 등 서드파티
+│  ├─ 01_Assets/           공용 머티리얼·메시
+│  ├─ 02_Player/           플레이어, 무기·탄환, 드론, 능력(SOFeature)
+│  ├─ 03_Monster/          일반·보스 몬스터, Behavior Tree, 적 탄환
+│  ├─ 04_Map/              맵, 스카이박스, 경계 ForceField
+│  ├─ 05_Manager/          던전·전투·조커 카드 진행, 충돌 판정, 오브젝트 풀
+│  ├─ 06_Input/            InputManager, PlayerAction 입력 액션
+│  ├─ 07_Render/           URP 렌더 설정
+│  ├─ 08_Effect/           피격·폭발 VFX
+│  ├─ 10_Option/           공격 정보 ScriptableObject
+│  ├─ 11_UI/               카드, 장비·상점, HUD·레이더 UI
+│  ├─ 12_MainResource/     모델·프리팹·셰이더·텍스처
+│  ├─ 13_Uti/              스폰·타이머 등 공용 유틸리티
+│  └─ 14_Sound/            BGM·효과음과 SOAudio 데이터
+├─ AddressableAssetsData/  Addressables 그룹·빌드 설정
+├─ Plugins/                UniTask, DOTween
+└─ Tests/Editor/           입력·충돌 판정 EditMode 테스트
+Docs/
+└─ Screenshots/            README 스크린샷
 ```
 
 ## 스크린샷
@@ -77,6 +89,10 @@ Assets/
 
 ![레벨업 3택](Docs/Screenshots/levelup-pick3.png)
 
+### 조커 카드 — 선택
+
+![조커 카드 선택](Docs/Screenshots/joker-select.png)
+
 ### 조커 카드 — 성공
 
 ![조커 카드 성공](Docs/Screenshots/joker-success.png)
@@ -85,12 +101,44 @@ Assets/
 
 ![조커 카드 실패](Docs/Screenshots/joker-fail.png)
 
-### 조커 카드 - 보상
+### 조커 카드 — 보상
 
-![조커 카드 보상 (보상 선택 (커먼 , 레어 카드 택)](Docs/Screenshots/Reward.png)
+![조커 카드 보상](Docs/Screenshots/Reward.png)
+
+### 무기별 발사 장면
+
+#### 유도탄
+
+![유도탄 발사 장면](Docs/Screenshots/weapon-homing.png)
+
+#### 산탄총
+
+![산탄총 발사 장면](Docs/Screenshots/weapon-shotgun.png)
+
+#### 미사일
+
+![미사일 발사 장면](Docs/Screenshots/weapon-missile.png)
+
+#### 레이저
+
+![레이저 발사 장면](Docs/Screenshots/weapon-beam.jpg)
+
+#### 차지샷
+
+![차지샷 발사 장면](Docs/Screenshots/weapon-charge.jpg)
+
+#### 드론
+
+![드론 공격 장면](Docs/Screenshots/weapon-drone.png)
 
 ### 보스전
 
-![보스전](Docs/Screenshots/boss.png)
+![보스 등장 경고](Docs/Screenshots/boss-warning.png)
 
+![보스전 후반부](Docs/Screenshots/boss-late.jpg)
 
+### 핵폭탄
+
+![핵폭탄 발사 장면](Docs/Screenshots/nuke-projectile.png)
+
+![핵폭탄 폭발 장면](Docs/Screenshots/nuke-blast.png)

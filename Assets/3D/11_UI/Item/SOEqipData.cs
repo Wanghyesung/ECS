@@ -42,6 +42,9 @@ public class SOEqipData : SOData
     [SerializeField] private string m_strSaveId;
     public string SaveId => m_strSaveId;
 
+    [SerializeField, Min(0)] private int m_iPrice = 100;
+    public int Price => m_iPrice;
+
     [SerializeField] private eEquipType m_eEquipType = eEquipType.End;
     public override int SubDataType => (int)m_eEquipType;
     public eEquipType EquipType => m_eEquipType;
