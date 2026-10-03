@@ -1,57 +1,49 @@
-# ORBITAL
+## Open fire. Build your odds.
 
-**Open fire. Build your odds.**
+**ORBITAL is a 3D space roguelite shooter.** Fly through enemy swarms, combine weapons, and take your build into boss battles. Choose your upgrades carefully, or push your luck with Joker cards.
 
-Fight through swarms in deep space. Combine weapons, choose your cards, and decide how much of your build to risk for the next reward.
+## Build your arsenal
 
-ORBITAL is a **3D space roguelite shooter for Windows**. Steer through enemy fire, collect experience, and build a loadout from weapon and upgrade cards. Take your choices into boss encounters, then return to the lobby to manage equipment before the next run.
+Combine different weapons in the same run. Each new card can add another way to fight.
 
-## Six weapons. More ways to fight.
+- **Basic fire** — A steady stream of shots to keep enemies under pressure.
+- **Shotgun** — A wide spread of pellets for close-range attacks.
+- **Charge shot** — Hold to charge a blue energy shot, then release to fire.
+- **Laser** — A yellow beam that pierces through enemies.
+- **Missiles** — Red missile fire to add to your ship's attacks.
+- **Homing shots** — Guided projectiles that track enemies while you steer.
 
-- **Basic fire** — Keep a steady stream of shots on enemies while you fly.
-- **Shotgun** — Fire a spread of pellets. Get close to land more of them on one target.
-- **Charge shot** — Hold the left mouse button to build a blue energy shot, then release it when your target is lined up.
-- **Laser** — Pierce enemies with a bright yellow beam. Line up targets to make the most of each attack.
-- **Missiles** — Add red missile fire to your loadout and keep pressure on larger enemies and bosses.
-- **Homing shots** — Guided projectiles track enemies while you concentrate on steering.
+## Bring backup. Make an impact.
 
-Different weapon types can work together in the same run. Your cards determine which attacks join your loadout.
+**Support drone:** A companion that follows your ship, tracks nearby enemies, and fires blue projectiles automatically.
 
-## Bring a drone
+**Nuclear strike:** Claim the legendary card to launch a nuclear missile. Follow its descent before the camera pulls back for the blast.
 
-Your support drone follows the ship, tracks nearby enemies, and fires independently. Look above and to the right of your ship for its extra stream of blue projectiles.
+## Take the reward. Or risk another roll.
 
-## Unleash a nuclear strike
+Each regular level-up offers **three cards**. Add weapons, bring in support, or improve your stats.
 
-Claim the legendary nuclear strike card to launch a missile into the battlefield. The camera follows its descent, then pulls back for the explosion. The strike activates when you claim the card; it is not a repeatedly fired weapon.
+**Joker cards** let you gamble for higher-tier cards and more choices. Claim your pending rewards, or roll again.
 
-## Take the reward. Or take another chance.
+A failed roll clears pending rewards and can also remove upgrades you have already claimed. Know when to stop.
 
-Each regular level-up offers three cards to choose from. Add a weapon, bring in support, or improve your stats.
+## Face the next wave
 
-The **Joker card system** lets you push further. Successful rolls can offer higher-tier cards and more choices. Keep gambling to build up your pending rewards, or claim them while you can.
+Fight through enemy swarms and boss attack patterns. Keep moving while your weapons and drone keep firing.
 
-A failed roll clears pending rewards and can also take away upgrades you have already claimed.
-
-**The stronger your run becomes, the harder it is to walk away.**
-
-## Put your build to the test
-
-- Fight through enemy waves and boss attack patterns.
-- Combine weapons, support, and stat upgrades in each run.
-- Visit the lobby shop, manage your inventory, and equip items between runs.
-- Choose when to take another Joker gamble and when to keep your rewards.
+Between runs, visit the lobby shop, manage your inventory, and equip items that improve your stats.
 
 ## Controls
 
-| Input | Action |
-| --- | --- |
-| W / A / S / D | Move your ship |
-| Mouse | Turn and aim |
-| Space | Barrel roll |
-| Hold / release left mouse button | Charge / fire a charge shot once acquired |
-| Automatic | Standard weapons fire while you fly |
+- **W / A / S / D** — Move
+- **Mouse** — Turn and aim
+- **Space** — Barrel roll
+- **Hold / release left mouse button** — Charge / fire a charge shot once acquired
 
-## Running a Windows build
+Standard weapons fire automatically. The nuclear strike activates when you claim its card.
 
-Extract the entire ZIP into a folder, then launch the game executable. Keep the accompanying data folder and supporting files together.
+## How to play
+
+**Windows · Keyboard and mouse**
+
+Download and extract the entire ZIP, then run the game executable. Keep the data folder and supporting files together.

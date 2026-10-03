@@ -9,7 +9,10 @@ Open `preview.html` to view the English game page. It contains six weapon entrie
 | `preview.html` | Responsive English page with a playable video and chapter buttons |
 | `serve.py` | Local preview server with HTTP byte ranges for video seeking |
 | `description-en.md` | English game description for reuse in the store editor |
-| `description-en.html` | The same description as a simple HTML fragment |
+| `description-en.html` | Table-based image-and-text description for itch.io; no custom CSS required |
+| `description-table-preview.html` | Local reference showing the table layout with actual pictures filled in |
+| `image-placement-guide.md` | Mapping of all 14 PHOTO markers to local image files and upload instructions |
+| `description-en-copy.txt` | The same HTML as plain text, ready to open in Notepad and copy into Description HTML mode |
 | `media/orbital-showcase.mp4` | Web-sized 720p copy of the v9 showcase, including the corrected drone audio |
 | `media/drone.jpg` | Actual drone gameplay frame from the showcase |
 | `background.jpg` | Existing background used by the preview |
@@ -39,7 +42,9 @@ The video has native playback, volume, seeking, and fullscreen controls. Chapter
 
 ## Reusing the description
 
-Use `description-en.md` for the text, or `description-en.html` for an HTML-capable editor. Add the gameplay images using the destination editor's media controls. The complete `preview.html` is a local layout preview, not an itch.io theme upload.
+Use `description-en-copy.txt`: copy its entire contents into **Edit game > Description > <>**. It matches `description-en.html`. Return to visual editing and replace all 14 PHOTO markers using the image upload button; see `image-placement-guide.md` for the exact files. Keep each replacement inside its existing paragraph or table cell. Save and inspect the real page, including mobile width. The template uses two-column weapon/gallery tables and a controls table, while the trailer and screenshot sidebar remain on the right (Screenshots: Auto or Sidebar). It contains no custom CSS, scripts, local image paths, or invented public image URLs. The local `description-table-preview.html` shows the arrangement with actual pictures; it is a reference only. `description-en.md` retains the earlier compact text-only version.
+
+The complete `preview.html` remains a separate local layout preview, not an itch.io theme upload. Upload a banner through Edit theme only if you want a graphic to replace the default page title; a banner is optional.
 
 The smaller page video is derived from `C:/Users/왕혜성/Videos/Orbital_Gameplay_Demo_v9_1080p.mp4`. Use that 1080p master for publishing the full-quality trailer. Its drone effects are 13.5 dB louder than v8; the music, picture, and 84-second duration are unchanged.
 

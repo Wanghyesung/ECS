@@ -73,7 +73,6 @@ public sealed class SoundManager : MonoBehaviour
 
     public void PlayBgm(SOAudio _refAudio)
     {
-        return;
         if (_refAudio == null)
             return;
 
