@@ -13,5 +13,7 @@ public class SOSceneData : ScriptableObject
 
     public IReadOnlyList<SOPoolData> ScenePoolDataList => m_listScenePoolData;
 
-    public SOStage Stage; 
+    public SOStage Stage;
+
+    public SOAudio Bgm;   //이 씬에 들어갈 때 틀 배경음 (Loop SO). 비우면 이전 곡이 계속 재생됨
 }

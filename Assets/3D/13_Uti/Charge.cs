@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using static UnityEngine.ParticleSystem;
-
+using static SoundManager;
 
 
 /*///////////////////////////////////////////
@@ -17,8 +17,10 @@ public class Charge : MonoBehaviour
     [SerializeField] private ParticleSystem m_refParticleSystem;
 
     [SerializeField] private UnityEvent OnChargeComplete;
+    [SerializeField] private SOAudio m_refChargeSound;
     [SerializeField] private float m_fStartEventOffset;
 
+    private SoundHandle m_tSoundHandle;
     private float m_fStartEventTime;
     private float m_fCurTime = 0.0f;
 
@@ -48,7 +50,7 @@ public class Charge : MonoBehaviour
 
         //var mainModule = m_refParticleSystem.main;
         //mainModule.startLifetime = new ParticleSystem.MinMaxCurve(_fDuration);
-
+        m_tSoundHandle = SoundManager.m_Instance.PlaySfx(m_refChargeSound);
         m_refParticleSystem.Play();
     }
 
@@ -57,10 +59,15 @@ public class Charge : MonoBehaviour
         if (m_refParticleSystem == null)
             return;
 
+        SoundManager.m_Instance.StopSfx(m_tSoundHandle);
         m_refParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         m_bCompleted = true;
     }
 
+    private void OnDisable()
+    {
+        SoundManager.m_Instance.StopSfx(m_tSoundHandle);
+    }
     public void Update()
     {
         if (m_bCompleted == true)

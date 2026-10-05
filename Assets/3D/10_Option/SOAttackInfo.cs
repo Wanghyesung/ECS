@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /*///////////////////////////////////////////
                 SOAttackInfo
@@ -26,6 +27,7 @@ public class SOAttackInfo : ScriptableObject
 
     [Header("Telegraph")]
     public float TelegraphDuration = 0f; // 0이면 예고선 없이 즉시 판정 시작 (기존 동작과 동일)
+    public float BulletLineDuration = 0f; // 0이면 BulletLine의 기본 수명 사용
 
     [Header("Knockback / Stun")]
     public float KnockbackForce = 3f;
@@ -40,7 +42,8 @@ public class SOAttackInfo : ScriptableObject
     public LayerMask HitLayers = ~0;
 
     [Header("Audio")]
-    public AudioClip HitSound;
+    [FormerlySerializedAs("HitSound")]
+    public SOAudio HitAudio;
 
     // SOHomingAttackInfo 가 오버라이드해 HomingAttackInfo 를 만든다
     public virtual AttackInfo MakeAttackInfo()
@@ -52,6 +55,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.MaxHitCount = HitCount;
         refAttackInfo.HitStep = HitStep;
         refAttackInfo.LineDuration = TelegraphDuration;
+        refAttackInfo.BulletLineDuration = BulletLineDuration;
 
         refAttackInfo.AliveTime = AliveTime;
         refAttackInfo.Speed = Speed;
@@ -60,6 +64,7 @@ public class SOAttackInfo : ScriptableObject
         refAttackInfo.KnockbackDuration = KnockbackDuration;
 
         refAttackInfo.HitLayers = HitLayers;
+        refAttackInfo.HitAudio = HitAudio;
         return refAttackInfo;
     }
 }
@@ -82,6 +87,7 @@ public class AttackInfo
     public int AttackPower;
     public float AliveTime;
     public float Speed;
+    public float BulletLineDuration;
 
     [Header("Hit Count")]
     public int MaxHitCount;
@@ -96,6 +102,7 @@ public class AttackInfo
 
     [Header("Tem")]
     public LayerMask HitLayers = ~0;
+    public SOAudio HitAudio;
 }
 
 /*///////////////////////////////////////////

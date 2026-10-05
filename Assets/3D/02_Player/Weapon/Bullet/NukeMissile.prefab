@@ -125,8 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 123f3e690a42ce4449b9d6d4c38d760c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fFallHeight: 300
   m_fFallTime: 2
+  m_SONukeSound: {fileID: 11400000, guid: a1d8bec86479b664b960f3169a8a7e01, type: 2}
   m_arrArriveActions:
   - {fileID: 11400000, guid: 71611a5c1bf65c942bdc434e815cb078, type: 2}
   - {fileID: 11400000, guid: 1c3fdb18107692c4e9ea5670fa9c1393, type: 2}

@@ -15,12 +15,13 @@ MonoBehaviour:
   Description: "\uC911\uC704 \uD2F0\uC5B4(Mon5~Mon6) \uBAAC\uC2A4\uD130 \uAE30\uBCF8\uD0C4"
   Damage: 32
   AttackPower: 14
-  Speed: 78
-  SpeedOffset: 4
+  Speed: 117
+  SpeedOffset: 6
   AliveTime: 4
   HitCount: 1
   HitStep: 1
   TelegraphDuration: 0
+  BulletLineDuration: 0.67
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0
@@ -28,4 +29,4 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  HitSound: {fileID: 0}
+  HitAudio: {fileID: 11400000, guid: 57df745bf70e40e4bba519620ec1642e, type: 2}

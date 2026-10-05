@@ -15,12 +15,13 @@ MonoBehaviour:
   Description: 
   Damage: 20
   AttackPower: 10
-  Speed: 70
-  SpeedOffset: 4
+  Speed: 105
+  SpeedOffset: 6
   AliveTime: 4
   HitCount: 1
   HitStep: 1
   TelegraphDuration: 0
+  BulletLineDuration: 0.67
   KnockbackForce: 0
   KnockbackDuration: 0
   StunDuration: 0
@@ -28,4 +29,4 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  HitSound: {fileID: 0}
+  HitAudio: {fileID: 11400000, guid: a6f39519d513ad441b8524e9e210cccf, type: 2}

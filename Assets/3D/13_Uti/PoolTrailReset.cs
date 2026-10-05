@@ -31,7 +31,8 @@ public class PoolTrailReset : MonoBehaviour
 
     private void OnEnable()
     {
-        m_disposablePush = m_refPoolObj.OnPush.Subscribe(_ => m_refTrail.Clear());
+        m_disposablePush = m_refPoolObj.OnPush.Subscribe(_ =>
+        m_refTrail.Clear());
     }
 
     private void OnDisable()

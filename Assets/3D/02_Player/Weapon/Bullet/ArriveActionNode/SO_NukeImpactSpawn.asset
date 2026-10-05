@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: SO_NukeImpactSpawn
   m_EditorClassIdentifier: 
   m_refExplodeObj: {fileID: 11400000, guid: e574b933adc81ea49af4f9e6f49a45ae, type: 2}
+  m_SOExplodeAudio: {fileID: 11400000, guid: ba06a0d58c6c4cb4db4e4908dd771071, type: 2}

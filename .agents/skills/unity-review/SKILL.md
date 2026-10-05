@@ -9,7 +9,7 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 
 ## 에이전트 라우팅
 
-- 기본값: `unity-reviewer` 에이전트 사용 (현재 Codex 모델 설정 상속)
+- 기본값: `unity-reviewer` 에이전트 사용 (프로젝트 기본 `gpt-6-sol` / `medium` 상속)
 - `사용자 요청의 인자`에 `--thorough`가 포함된 경우: 현재 모델을 유지하고 더 깊은 아키텍처 분석을 수행
 - 에이전트에 전달하기 전에 인자에서 `--thorough` 플래그를 제거
 
@@ -35,9 +35,8 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 - Update/FixedUpdate/LateUpdate 내 GC 할당
 - 캐싱되지 않은 `GetComponent`, `Camera.main`, `FindObjectOfType`
 - 게임플레이 코드 내 LINQ
-- `CompareTag` 대신 사용된 `tag ==`
-- `SendMessage` / `BroadcastMessage`
-- 캐싱되지 않은 `WaitForSeconds`
+- `LayerMask` 대신 사용된 `tag ==`
+- `UniTask`대신 사용된 코루틴이 있는지
 - `static readonly`로 캐싱되지 않은 `Animator.StringToHash`
 - 인스펙터 필수 참조, `[RequireComponent]` 컴포넌트, 수명이 보장된 싱글톤에 반복되는 불필요한 null 방어
 

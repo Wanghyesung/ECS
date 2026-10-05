@@ -1,134 +1,95 @@
 ---
 name: object-pooling
-description: "이 프로젝트 전용 오브젝트 풀링 구조 — SOPoolData(SO) + PoolObject(IPoolable) + ObjectPool(싱글톤). Addressables 프리워밍, PriorityQueue 기반 자동반납, Generation 가드. 런타임 Instantiate/Destroy 오버헤드를 제거합니다."
+description: "이 프로젝트 전용 오브젝트 풀링 구조 — SOPoolData(데이터 SO) + PoolObject(IPoolable) + ObjectPoolManager(싱글톤). Addressables 프리워밍, 상시 풀/씬 풀 수명 분리, PriorityQueue 기반 자동반납, Generation 가드, ActiveCap. 탄·이펙트·몬스터 생성/반납 코드를 쓸 때 사용합니다."
 alwaysApply: true
 ---
 
-# 오브젝트 풀링 (Object Pooling)
+# 오브젝트 풀링 — SOPoolData + PoolObject + ObjectPoolManager
 
-`Instantiate()`를 호출할 때마다 메모리가 할당되고, `Destroy()`를 호출할 때마다 GC가 발생합니다. 자주 생성하고 파괴하는 오브젝트는 풀링하세요: 발사체, 파티클, 적, 픽업 아이템 등.
+탄, 이펙트, 몬스터처럼 자주 생기고 사라지는 오브젝트는 전부 이 풀을 거친다. `Instantiate`/`Destroy` 직접 호출 금지.
 
-> **이 프로젝트는 Unity 내장 `UnityEngine.Pool.ObjectPool<T>`를 쓰지 않습니다.** 아래 3개 클래스로 구성된 자체 풀링 구조(`Assets/3D/05_Manager/Pool/`)를 표준으로 사용하세요.
+## 구성
 
-## 구성 요소
+| 타입 | 역할 |
+|---|---|
+| `SOPoolData` (데이터 SO) | 풀 하나의 설정 — `PrefabRef`(Addressable), `PreLoad`(미리 만들 개수), `ActiveCap`(동시 활성 상한, 0 이하면 무제한), `Max`(미사용) |
+| `SOPoolDataSet` | 상시 풀 목록. `ObjectPoolManager` 인스펙터의 `m_refStaticPoolDataSet` |
+| `SOSceneData.ScenePoolDataList` | 그 씬에서만 쓰는 풀 목록 |
+| `PoolObject` (`IPoolable`) | 풀 대상 프리팹 루트에 붙는 컴포넌트. `PoolKey`, `PushCount`, `Generation`, `OnPush`/`OnPop` |
+| `ObjectPoolManager` | 싱글톤(DDOL). 로드·인출·반납·자동반납 예약 |
 
-### `SOPoolData` (ScriptableObject)
+- 풀 키는 `SOPoolData.PrefabRef.AssetGUID` **문자열**이다. 빌드에서 SO 사본이 여러 벌 생겨도 같은 키로 모인다
+- **상시 풀**(플레이어 탄 등)은 매니저 자식으로 남고, **씬 풀**은 씬 전환 때 파괴된다
 
-무엇을 얼마나 프리로드할지 정의하는 순수 데이터. `PrefabRef`는 반드시 Addressable이어야 합니다.
+## 로드 흐름
+
+`GameSceneManager.LoadSceneAsync`가 이 순서로 부른다:
 
 ```csharp
-[CreateAssetMenu(fileName = "SO_PoolData", menuName = "Game/Load/PoolData")]
-public class SOPoolData : ScriptableObject
+ObjectPoolManager.m_Instance.SceneChange();                                          // 살아있는 상시 오브젝트 반납 + 씬 풀 정리
+await ObjectPoolManager.m_Instance.LoadStaticPoolDataAsync(tToken, refProgress);    // 상시 풀 (최초 1회)
+// ... 씬 로드 ...
+await ObjectPoolManager.m_Instance.ReplaceScenePoolsAsync(_refSceneData.ScenePoolDataList, tToken, refProgress);
+```
+
+테스트 씬처럼 목록만 바로 올릴 때는 `LoadPoolAsync(listPoolData, tToken)`.
+
+## 인출 · 반납
+
+```csharp
+[SerializeField] private SOPoolData m_refBulletPoolData;   // 풀 키는 m_ref (csharp-unity.md §2)
+
+GameObject refObj = ObjectPoolManager.m_Instance.GetObject(m_refBulletPoolData, vSpawnPos);
+if (refObj == null)
+    return;   // 풀 미등록이거나 고갈 — 새로 만들지 않고 조용히 실패한다
+
+ObjectPoolManager.m_Instance.PushObject(refObj);          // 즉시 반납 (중복 반납은 PushCount 로 걸러짐)
+m_refPoolObj.SetAliveTime(m_refAttackInfo.AliveTime);     // n초 뒤 자동 반납 예약
+```
+
+- `SetActive(false)`만 하면 풀로 돌아가지 않는다 — 반드시 `PushObject` 또는 `SetAliveTime`
+- 원본 프리팹 값(forward 등)이 필요하면 `GetPoolPrefab(SOPoolData)` → 프리팹의 `PoolObject`
+- 남은 개수는 `GetObjectCount(SOPoolData)` (-1 = 미등록)
+
+## 자동 반납과 Generation
+
+- `PoolObject.m_fAliveTime`(인스펙터, 기본 3초)이 0보다 크면 `Pop()` 때 자동 반납이 예약된다. **0 이하 = 수동 반납만**
+- 예약은 `PriorityQueue`에 "이 시각에 반납"으로만 들어가고, 매니저가 맨 앞만 확인한다 (오브젝트마다 타이머를 돌리지 않음)
+- `Pop()` / `SetAliveTime()` / `SuspendLifetime()`은 `Generation`을 올린다. 예약 당시 Generation 과 다르면 그 예약은 버려진다 — 반납 후 재사용된 오브젝트를 옛 예약이 잘못 반납하지 않게
+- 발사 준비 중처럼 자동 반납을 잠시 막아야 하면 `SuspendLifetime()` (`Weapon.cs` 참고)
+
+## OnPush / OnPop 구독 (R3)
+
+반납·인출 시점에 초기화를 끼워 넣을 때. 구독은 `OnEnable`↔`OnDisable` 짝으로.
+
+```csharp
+private IDisposable m_disposablePush;
+
+private void OnEnable()
 {
-    public AssetReferenceGameObject PrefabRef;
-    public int PreLoad = 8; // 씬 진입 시 미리 인스턴스화할 개수
-    public int Max = 12;    // 아직 사용하지 않음
+    m_disposablePush = m_refPoolObj.OnPush.Subscribe(_ => m_refTrail.Clear());
+}
+
+private void OnDisable()
+{
+    m_disposablePush?.Dispose();
 }
 ```
 
-### `PoolObject` (MonoBehaviour, `IPoolable`)
+구독이 여러 개면 `DisposableBag m_bagEvents` + `AddTo(ref m_bagEvents)` + `OnDisable`에서 `m_bagEvents.Clear()` (`Bullet.cs` 참고).
 
-풀링 대상 프리팹의 루트에 부착합니다. `Push()`/`Pop()`이 풀 반납/인출 생명주기이며, `Generation` 카운터로 "낡은 자동반납 예약"을 무시합니다.
+## ActiveCap
 
-```csharp
-public interface IPoolable
-{
-    public PoolObject PoolKey { get; }
-    public int PushCount { get; }
-    public void SetOriginalPoolObj(PoolObject _refOriginObj);
-    public void Push();
-    public void Pop();
-}
-```
+`SOPoolData.ActiveCap > 0`이면 활성 개수가 상한에 닿았을 때 **가장 오래된 활성 인스턴스를 강제로 반납**하고 자리를 만든다. 피격 이펙트처럼 폭주하면 프레임이 무너지는 풀에 건다.
 
-- `PoolKey`는 **원본 프리팹의 `PoolObject`**를 가리킵니다(인스턴스 자신이 아님) — `ObjectPool`이 `Dictionary<PoolObject, Queue<GameObject>>`를 원본 프리팹 기준으로 관리하기 때문입니다.
-- `m_fAliveTime` (기본 3초)이 0보다 크면 `Pop()` 시점에 자동으로 `ObjectPool.m_Instance.ScheduleTime(this, m_fAliveTime)`이 예약됩니다. **0 이하로 설정하면 "수동으로만 반납"하겠다는 의도**이므로 자동 예약이 걸리지 않습니다.
-- `OnPush`/`OnPop` C# 이벤트로 풀 반납/인출 시점에 부가 동작(트레일 초기화, 이펙트 리셋 등)을 끼워 넣으세요. 아래 확장 예시 참고.
+## 새 풀 추가 순서
 
-### `ObjectPoolManager` (싱글톤, DontDestroyOnLoad)
+1. 프리팹 루트에 `PoolObject`를 붙이고 Addressable 로 등록
+2. `SO_<이름>` `SOPoolData` 에셋 생성 — `PrefabRef`, `PreLoad`(동시에 필요한 최대 수), 필요하면 `ActiveCap`
+3. 상시 풀이면 `SOPoolDataSet`에, 씬 전용이면 그 씬의 `SOSceneData` 목록에 추가 — 빠뜨리면 `GetObject`가 항상 null
+4. 쓰는 쪽에 `[SerializeField] private SOPoolData m_ref<이름>PoolData;`
 
-```csharp
-public class ObjectPoolManager : MonoBehaviour
-{
-    public static ObjectPool m_Instance = null;
-    private Dictionary<PoolObject, Queue<GameObject>> m_hashPool = new();
-    private Dictionary<PoolObject, AsyncOperationHandle> m_hashHandle = new();
-    private PriorityQueue<tTimeData> m_PQTimer; // 자동반납 예약
-    // ...
-}
-```
+## 주의
 
-- Addressables + UniTask로 프리팹을 비동기 로드하고, `InstantiateAsync`로 `PreLoad` 개수만큼 프레임 분산 인스턴스화합니다.
-- 자동반납은 오브젝트마다 매 프레임 카운트다운하지 않습니다. **PriorityQueue에 "이 시각에 반납"만 예약**해두고, 매 프레임 큐 맨 앞(가장 이른 만료 시각) 하나만 확인합니다 — `ObjectSpawner`와 동일한 패턴. 오브젝트 수가 늘어도 매 프레임 비용이 늘지 않습니다.
-- 예약 시점에 저장해둔 `Generation`이 실제 오브젝트의 현재 `Generation`과 다르면 그 예약은 버려집니다 — 예약 이후 수동으로 Push→Pop이 다시 일어나 이미 새 생애가 시작된 경우, 낡은 예약이 새 생애를 잘못 반납시키는 것을 막기 위함입니다.
-
-## 사용 흐름
-
-1. 풀링할 프리팹 루트에 `PoolObject` 컴포넌트를 붙이고 `m_fAliveTime`을 설정합니다 (자동반납이면 양수, 수동반납이면 0 이하).
-2. `SO_PoolData` 에셋을 만들어 `PrefabRef`(Addressable)와 `PreLoad` 개수를 지정합니다.
-3. 씬 진입 시 (보통 SceneController에서) `SOPoolData` 목록을 모아 프리워밍합니다:
-   ```csharp
-   await ObjectPool.m_Instance.LoadPoolAsync(listPoolData, token, progress);
-   ```
-4. 스폰할 때는 **원본 프리팹의 `PoolObject`**를 키로 넘겨 꺼냅니다:
-   ```csharp
-   GameObject refBullet = ObjectPool.m_Instance.GetObject(m_refBulletPoolKey, vSpawnPos);
-   ```
-5. 반납은 `m_fAliveTime`에 의한 자동 반납을 기본으로 쓰고, 즉시 반납이 필요하면 직접 호출합니다:
-   ```csharp
-   ObjectPool.m_Instance.PushObject(refGameObj);
-   ```
-   `PushObject`는 이미 반납된 오브젝트(`PushCount > 0`)를 걸러내므로 중복 반납은 안전합니다.
-
-## `OnPush`/`OnPop`으로 확장하기
-
-풀 반납/인출 부가 동작은 `PoolObject`를 상속하거나 수정하지 말고, 별도 컴포넌트에서 이벤트를 구독하세요. 실제 예시 (`Assets/3D/13_Uti/PoolTrailReset.cs`) — 반납되는 순간 `TrailRenderer`를 비워 잔상을 방지합니다:
-
-```csharp
-public class PoolTrailReset : MonoBehaviour
-{
-    private PoolObject m_refPoolObj;
-    private TrailRenderer m_refTrail;
-
-    private void Awake()
-    {
-        m_refPoolObj = GetComponentInChildren<PoolObject>();
-        m_refTrail = GetComponentInChildren<TrailRenderer>();
-    }
-
-    private void OnEnable() => m_refPoolObj.OnPush += m_refTrail.Clear;
-    private void OnDisable() => m_refPoolObj.OnPush -= m_refTrail.Clear;
-}
-```
-
-같은 패턴으로 이펙트 상태 초기화, 데미지 플래그 리셋, 타이머 초기화 등을 필요한 컴포넌트마다 나눠서 구독하세요.
-
-## 규칙
-
-- **`Destroy()`를 직접 호출하지 마세요** — 풀링 대상은 `ObjectPool.PushObject`로만 반납합니다. `Destroy`는 `ClearPool()`(씬 전환 시 풀 전체 해제)에서만 일어납니다.
-- **풀 키는 항상 원본 프리팹의 `PoolObject`** — 인스턴스마다 다른 `PoolObject`를 키로 쓰면 `m_hashPool`에서 찾지 못합니다. `SetOriginalPoolObj`로 인스턴스 생성 시 자동 연결됩니다.
-- **`m_fAliveTime` 재설정은 `SetAliveTime()`으로** — 직접 필드를 바꾸지 말고 `SetAliveTime()`을 호출해야 `Generation`이 올라가면서 기존 예약이 무효화되고 새 시간으로 재예약됩니다.
-- **`OnPush`/`OnPop` 구독은 반드시 `OnEnable`/`OnDisable`로 짝을 맞추세요** — 다른 C# 이벤트 규칙과 동일합니다.
-- Addressables 핸들은 `ObjectPool`이 `m_hashHandle`로 소유·해제합니다. 개별 스크립트에서 별도로 `Addressables.Release`를 호출하지 마세요.
-
-## 언제 풀링해야 하는가
-
-**풀링해야 하는 것:**
-- 발사체 (총알, 화살, 미사일)
-- 파티클 이펙트
-- 웨이브 기반 게임의 적
-- 픽업 아이템
-- 데미지 숫자 / 플로팅 텍스트
-- 트레일 렌더러를 쓰는 오브젝트
-
-**풀링하지 말아야 하는 것:**
-- 일회성 오브젝트 (보스, 고유 NPC)
-- 한 번만 생성되는 작은 오브젝트 (데이터 컨테이너)
-- 씬 전체 동안 살아있는 오브젝트
-
-## 풀 크기 설정
-
-- **`PreLoad`는 작게 시작하세요** — 대부분은 8~20개면 충분합니다.
-- **모니터링하세요** — 게임플레이 중 `GetObjectCount`가 자주 0에 가까워지면(즉 풀 고갈) `PreLoad`를 늘리세요. `GetObject`는 풀이 비어있으면 `null`을 반환하고 새로 생성하지 않으므로, 고갈 시 스폰 자체가 조용히 실패합니다.
-- **`Max`는 아직 구현되어 있지 않습니다** — 현재는 상한 없이 `Queue`에 계속 쌓입니다. 향후 상한 로직 추가 전까지는 `PreLoad` 설계로 사실상 크기를 관리하세요.
-- 레벨/웨이브별로 필요한 `PreLoad` 값이 다를 수 있습니다.
+- 풀 대상에 `Destroy()` 금지 — 파괴는 매니저의 풀 정리(`SceneChange`/`ClearPool`)에서만 일어난다
+- `GetObject`의 null 을 무시하면 스폰이 에러 없이 사라진다. 고갈이 잦으면 `PreLoad`를 늘린다

@@ -1,6 +1,11 @@
 using R3;
 using UnityEngine;
 
+/*///////////////////////////////////////////
+                Shop
+목적 : 상점의 장비 선택·구매 UI를 처리하고 획득한 장비를 PlayerInventory에 전달한다.
+ *///////////////////////////////////////////
+
 public class Shop : MonoBehaviour
 {
     [SerializeField] private Container m_refShopContainer;
@@ -16,6 +21,7 @@ public class Shop : MonoBehaviour
     {
         m_refShopContainer.Init();
         m_refInventoryContainer.Init();
+        ProfileSave.m_Instance.Inventory.RestoreInventory(m_refInventoryContainer);
 
         m_refShopContainer.OnSelectEvt.Subscribe(ShowItem).AddTo(ref m_bagEvents);
         m_refBuyButton.OnClickEvt.Subscribe(_ => BuyItem()).AddTo(ref m_bagEvents);
@@ -33,14 +39,33 @@ public class Shop : MonoBehaviour
         m_refSelectDescUI.Show(_refData);
     }
 
-    //TODO : 재화에 맞게 
     private void BuyItem()
     {
-        if (m_refSelectData == null)
+        if (m_refSelectData is not SOEqipData refItem)
             return;
 
-        m_refInventoryContainer.AddData(m_refSelectData);
+        ProfileSave refProfile = ProfileSave.m_Instance;
+        if (refProfile.Inventory.CanRegisterItem(refItem) == false)
+            return;
+        if (refProfile.Currency.Amount.CurrentValue < refItem.Price)
+            return;
+        if (m_refInventoryContainer.AddData(refItem) == false)
+            return;
+
+        if (refProfile.Currency.TrySpend(refItem.Price, false) == false)
+        {
+            m_refInventoryContainer.DeleteData(refItem);
+            return;
+        }
+        if (refProfile.Inventory.AcquireItem(refItem) == false)
+        {
+            m_refInventoryContainer.DeleteData(refItem);
+            refProfile.Currency.Add(refItem.Price);
+            return;
+        }
+
+        refProfile.Save(refProfile.Currency);
         m_refSelectDescUI.Show(null);
-        //SOData as SO
+        m_refSelectData = null;
     }
 }

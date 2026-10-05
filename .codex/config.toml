@@ -1,3 +1,5 @@
+model = "gpt-6-sol"
+
 [mcp_servers.UnityMCP]
 url = "http://127.0.0.1:8080/mcp"
 

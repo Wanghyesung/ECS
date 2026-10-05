@@ -4,10 +4,8 @@ using UnityEngine;
 
 /*///////////////////////////////////////////
                 EquipController
-기능 : 아이템(SOEqipData) 보관/적용을 담당하는 매니저. 로비에서만 조작이 일어나지만
-      스테이지에서 얻은 아이템을 역추적 없이 바로 반영할 수 있도록 씬 전환에 걸쳐 유지된다.
-      인벤토리(보관) Container / 장착(적용) Container를 각각 직렬화로 받아
-      OnSelectEvt를 구독해 보관/적용 로직을 처리한다
+목적 : 로비의 보유·장착 UI를 PlayerInventory 상태로 복원하고 장착 입력을 처리한다.
+      장착이 확정되면 PlayerInventory에 변경을 전달해 프로필 저장으로 이어준다.
  *///////////////////////////////////////////
 
 public class EquipController : MonoBehaviour
@@ -40,10 +38,11 @@ public class EquipController : MonoBehaviour
     private void Start()
     {
         m_refInventoryContainer.Init();
+        ProfileSave.m_Instance.Inventory.RestoreInventory(m_refInventoryContainer);
+        ProfileSave.m_Instance.Inventory.RestoreEquipment(m_refEquipInterface);
 
         m_refInventoryContainer.OnSelectSlotView.Subscribe(PickInventorySlot).AddTo(this);
         m_refPlusButton.OnClickEvt.Subscribe(_ => PushInterface()).AddTo(this);
-        m_refEquipInterface.OnAddData.Subscribe(PushAndApply).AddTo(this);
     }
 
     private void OnEnable()
@@ -57,24 +56,26 @@ public class EquipController : MonoBehaviour
         m_refInventoryContainer.AddData(_refSOData, _iCount);
     }
 
-    private void PushAndApply(SOData _refSOData)
-    {
-        SOEqipData refItemData = _refSOData as SOEqipData;
-        if (refItemData == null)
-            return;
-
-        PlayerPreLoadData.AddStatRange(refItemData.ListValue);
-    }
-
     private void PushInterface()
     {
         m_refPlusButton.gameObject.SetActive(false);
 
+        if (m_refInventoryPick == null || ProfileSave.m_Instance.Inventory.CanEquipItem(m_refInventoryPick) == false)
+            return;
+        if (m_refEquipInterface.FindDataIdx(m_refInventoryPick) < 0)
+            return;
+
         //기존에 잡은 데이터 원본 컨테이너에서 지우고 인터페이스에 저장
-        m_refInventoryContainer.DeleteData(m_refInventoryPick);
-        SOData SOPreData = m_refEquipInterface.AddSwapData(m_refInventoryPick);
-        if(SOPreData != null)
-            m_refInventoryContainer.AddData(SOPreData);
+        if (m_refInventoryContainer.DeleteData(m_refInventoryPick) == false)
+            return;
+
+        SOEqipData refPrevious = m_refEquipInterface.AddSwapData(m_refInventoryPick) as SOEqipData;
+        if (refPrevious != null)
+            m_refInventoryContainer.AddData(refPrevious);
+
+        if (ProfileSave.m_Instance.Inventory.EquipItem(m_refInventoryPick, refPrevious) == false)
+            Debug.LogError("장비 교체를 프로필에 반영하지 못했습니다.");
+        m_refInventoryPick = null;
     }
 
     //private void SelectInterfaceView(SlotView _refClickView)

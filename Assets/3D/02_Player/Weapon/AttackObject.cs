@@ -102,6 +102,7 @@ public class AttackObject : MonoBehaviour, IAttackObject
     public void SetAttack(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
     {
         m_refAttackInfo.Damage = _refAttackInfo.Damage; //SO로 추가 딜 가능
+        m_refAttackInfo.HitAudio = _refAttackInfo.HitAudio;
         //m_refPoolObj.SetAliveTime(m_refAttackInfo.AliveTime);
 
         m_tShotInfo = _refShotInfo;

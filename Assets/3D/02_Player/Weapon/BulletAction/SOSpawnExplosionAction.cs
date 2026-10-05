@@ -9,9 +9,14 @@ using UnityEngine;
 public class SOSpawnExplosionAction : SOBulletAction
 {
     [SerializeField] private SOPoolData m_refExplodeObj;
+    [SerializeField] private SOAudio m_SOExplodeAudio;
 
     public override void Execute(IAttackObject _refOwner)
     {
+        Vector3 vPos = _refOwner.transform.position;
+
+        SoundManager.m_Instance.PlaySfx(m_SOExplodeAudio, vPos);
+
         if (m_refExplodeObj == null)
             return;
 
@@ -19,6 +24,6 @@ public class SOSpawnExplosionAction : SOBulletAction
         if (refExObject == null)
             return;
 
-        refExObject.transform.position = _refOwner.transform.position;
+        refExObject.transform.position = vPos;
     }
 }

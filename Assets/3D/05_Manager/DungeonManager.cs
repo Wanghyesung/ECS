@@ -1,25 +1,23 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using R3;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /*///////////////////////////////////////////
                 DungeonManager
-기능 : 던전 한 판의 진행(몬스터 스폰 예약, 보스 등장, 클리어)을 책임지는 매니저.
-       m_listStage는 '순서대로 도는 코스'가 아니라 로비(SelectStage)에서 고르는
-       난이도 목록이다 - StartStage(idx)로 그 하나만 시작하고, 잡몹을 전부 처치하면
-       그 스테이지의 보스가 등장, 보스를 잡으면 한 판이 끝나 로비로 돌아간다.
+목적 : 던전의 몬스터 스폰·보스 등장·클리어 보상과 종료를 관리한다.
  *///////////////////////////////////////////
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager m_Instance = null;
 
     [SerializeField] private ObjectSpawner m_refSpawner;
+    [SerializeField] private ClearStageUI m_refClearUI;
     //[SerializeField] private List<SOStage> m_listStage = new List<SOStage>();
 
     private SOStage m_SOTargetStage = null;
+    private readonly List<SOEqipData> m_listClearRewards = new List<SOEqipData>(16);
+    private bool m_bStageEnding;
 
     // 예약 수가 아니라 '실제로 스폰돼서 아직 살아있는 수
     private int m_iAliveMonsterCount = 0;
@@ -28,9 +26,12 @@ public class DungeonManager : MonoBehaviour
     private bool m_bBossRequested = false;
     private bool m_bBossSpawned = false;
 
-    // 스포너가 꺼낸 몬스터 목록(보스 포함). 스폰 담당인 이쪽이 들고 있어야 Monster 클래스가 자기 개체수를
-    // 몰라도 된다. 죽은(풀 반납=비활성) 몬스터는 CollectAliveMonsters에서 걸러내며 지연 제거
+    // 스포너가 꺼낸 몬스터 목록(보스 포함)
     private List<Monster> m_listSpawnedMonster = new List<Monster>();
+
+    // 보스 등장 컷신 진행 중 여부. 시작/끝을 한 스트림으로 알려야 View가 컷신 동안만 경고를 띄울 수 있음
+    private readonly ReactiveProperty<bool> m_rpIsBossCutscene = new ReactiveProperty<bool>(false);
+    public ReadOnlyReactiveProperty<bool> IsBossCutscene => m_rpIsBossCutscene;
 
     private void Awake()
     {
@@ -57,7 +58,7 @@ public class DungeonManager : MonoBehaviour
     {
         Monster.OnMonsterDied.Subscribe(MonsterDead).AddTo(ref m_bagEvents);
         m_refSpawner.OnSpawned.Subscribe(HandleSpawned).AddTo(ref m_bagEvents);
-        Player.OnPlayerDied.Subscribe(_ => ClearStage().Forget()).AddTo(ref m_bagEvents);   // 사망도 클리어와 같은 출구(5초 → 로비)
+        Player.OnPlayerDied.Subscribe(_ => FailStage().Forget()).AddTo(ref m_bagEvents);
     }
 
     private void OnDisable()
@@ -75,6 +76,8 @@ public class DungeonManager : MonoBehaviour
         }
 
         m_SOTargetStage = _SOStage;
+        m_bStageEnding = false;
+        m_refClearUI.Initialize();
 
         m_bBossSpawned = false;
 
@@ -82,7 +85,7 @@ public class DungeonManager : MonoBehaviour
         m_bBossRequested = false;
 
         m_listSpawnedMonster.Clear();
-        m_refSpawner.Clear();   // 이전 런 예약이 남아 있으면 안 됨 (스포너는 DDOL)
+        m_refSpawner.Clear();
         for (int i = 0; i < m_SOTargetStage.ListSpawnEntry.Count; ++i)
         {
             var tEntry = m_SOTargetStage.ListSpawnEntry[i];
@@ -160,15 +163,25 @@ public class DungeonManager : MonoBehaviour
         // 등장 연출 방향은 스폰된 인스턴스가 아니라 원본 프리팹의 forward를 그대로 씀
         PoolObject refBossPoolObj = ObjectPoolManager.m_Instance.GetPoolPrefab(m_SOTargetStage.BossPrefab);
         Vector3 vBossForward = refBossPoolObj != null ? refBossPoolObj.transform.forward : Vector3.forward;
-        Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition + (vBossForward.normalized * m_SOTargetStage.BossShowDistance);
-        Quaternion qCamTargetRot = Quaternion.LookRotation(-vBossForward.normalized);
+        Vector3 vCamTargetPos = m_SOTargetStage.BossSpawnPosition
+                              + (vBossForward.normalized * m_SOTargetStage.BossShowDistance)
+                              + (Vector3.up * m_SOTargetStage.BossShowHeight);
+        Quaternion qCamTargetRot = Quaternion.LookRotation(m_SOTargetStage.BossSpawnPosition - vCamTargetPos);
 
         // 등장 컷신 동안 정지. 컷신 중 레벨업 카드가 열리고 닫혀도 여기 Pause 가 남아 있어 컷신이 끝나기 전엔 풀리지 않는다
         // (카메라는 시간을 건드리지 않으므로 복귀도 여기서 - 예전엔 MoveToPoint 가 끝에서 timeScale=1 을 대신 썼다)
         TimeScaleManager.m_Instance.Pause(this);
+        m_rpIsBossCutscene.Value = true;
 
-        await CameraManager.m_Instance.MoveToPoint(
-            this.GetCancellationTokenOnDestroy(), vCamTargetPos, qCamTargetRot, 3.0f, 2.0f);
+        try
+        {
+            await CameraManager.m_Instance.MoveToPoint(
+                this.GetCancellationTokenOnDestroy(), vCamTargetPos, qCamTargetRot, 3.0f, 2.0f);
+        }
+        finally
+        {
+            m_rpIsBossCutscene.Value = false;
+        }
 
         TimeScaleManager.m_Instance.Resume(this);
     }
@@ -176,8 +189,44 @@ public class DungeonManager : MonoBehaviour
 
     private async UniTaskVoid ClearStage()
     {
-        m_refSpawner.Clear();   // 런 종료 — 남은 예약이 씬 전환 뒤 파괴된 풀을 건드리지 않게 (검증 중 실제 발생: 스포너 루프 사망 → 다음 런 몬스터 0)
-        await UniTask.WaitForSeconds(5);
+        if (m_bStageEnding == true)
+            return;
+
+        m_bStageEnding = true;
+        m_refSpawner.Clear();
+
+        SOClearReward refReward = m_SOTargetStage.ClearReward;
+        ProfileSave refSave = ProfileSave.m_Instance;
+        int iStartExp = refSave.Level.TotalExp;
+        refSave.Level.AddExp(refReward.ClearExp);
+        m_listClearRewards.Clear();
+        for (int i = 0; i < refReward.RewardCount; ++i)
+        {
+            SOEqipData refItem = refReward.Roll();
+            if (refSave.Inventory.AcquireItem(refItem) == false)
+                throw new System.InvalidOperationException($"{m_SOTargetStage.name}의 클리어 보상을 저장할 수 없습니다.");
+            m_listClearRewards.Add(refItem);
+        }
+
+        refSave.Save();
+        // 클리어 순간 정지한 게임 시간과 무관하게 3초 뒤 결과 화면을 연다.
+        await UniTask.WaitForSeconds(3f, ignoreTimeScale: true,
+            cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        TimeScaleManager.m_Instance.Pause(this);
+        m_refClearUI.Show(GameSceneManager.m_Instance.SelectedStageIdx + 1,
+            iStartExp, refSave.Level.TotalExp, m_listClearRewards);
+    }
+
+    private async UniTaskVoid FailStage()
+    {
+        if (m_bStageEnding == true)
+            return;
+
+        m_bStageEnding = true;
+        ProfileSave.m_Instance.Save();
+        m_refSpawner.Clear();
+        await UniTask.WaitForSeconds(5, cancellationToken: this.GetCancellationTokenOnDestroy());
         GameSceneManager.m_Instance.LoadFirstScene();
     }
 }

@@ -1,5 +1,7 @@
 # Codex 이전 기록
 
+다른 Unity 프로젝트에 재사용할 Codex 기술 설정은 루트 [`codex-unity-harness/`](../codex-unity-harness/README.md)에 별도 템플릿과 설치 스크립트로 정리했다. 이 프로젝트의 게임 기획·밸런스·개인 PR/Slack 설정은 템플릿에 포함하지 않는다.
+
 ## 추가 설정: workflow_view GitHub PR 리뷰
 
 대화형 `workflow_view`는 이제 검증 후 `awaiting-review`로 두고 GitHub PR을 생성/갱신한다. 설정은 `.codex/review-workflow.json`, 절차는 `.agents/skills/workflow_view/references/pr-review.md`에 있다. 지정된 Slack 대상에게 PR 링크를 알리고 사용자 승인/병합 확인 후 `done`으로 변경한다. `codex/*` 브랜치의 `git -c codex.workflow=pr-review commit --file ".codex/state/commit-message.txt"`만 일반 커밋 금지의 예외로 허용한다. 기존 야간 autopilot의 실행·결과 규칙은 유지한다.

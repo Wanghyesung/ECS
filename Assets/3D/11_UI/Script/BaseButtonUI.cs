@@ -1,4 +1,5 @@
 using R3;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,6 +37,20 @@ public class BaseButtonUI : MonoBehaviour,
     public Observable<Unit> OnEndDragEvt => m_subjectEndDrag;
     public Observable<Unit> OnClickEvt => m_subjectClick;
 
+    // 로비 탭이 인스펙터의 기존 SetActive(true) 연결을 창 그룹으로 재사용한다.
+    public void CopyClickActivationTargets(List<GameObject> _listTargets)
+    {
+        int iCount = OnClickUEvt.GetPersistentEventCount();
+        for (int i = 0; i < iCount; ++i)
+        {
+            if (OnClickUEvt.GetPersistentMethodName(i) != nameof(GameObject.SetActive))
+                continue;
+
+            if (OnClickUEvt.GetPersistentTarget(i) is GameObject refTarget)
+                _listTargets.Add(refTarget);
+        }
+    }
+
     // 인스펙터 바인딩용 
     [SerializeField] private UnityEvent OnEnterUEvt;
     [SerializeField] private UnityEvent OnExitUEvt;
@@ -46,8 +61,8 @@ public class BaseButtonUI : MonoBehaviour,
     [SerializeField] private UnityEvent OnEndDragUEvt;
     [SerializeField] private UnityEvent OnClickUEvt;
 
-    //[SerializeField] private SOAudio m_pClickAudio;
-    //[SerializeField] private SOAudio m_pDownAudio;
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SOClickAudio;   // 비워두면 무음 - 버튼별로 다른 소리/무음 가능
 
    
     virtual public void OnPointerExit(PointerEventData e)
@@ -62,8 +77,6 @@ public class BaseButtonUI : MonoBehaviour,
     }
     public void OnPointerUp(PointerEventData _eventData)
     {
-        //if (m_pDownAudio != null)
-        //    SoundManager.m_Instance.PlaySfx(m_pDownAudio, null);
         OnUpUEvt?.Invoke();
         m_subjectUp.OnNext(Unit.Default);
     }
@@ -87,8 +100,16 @@ public class BaseButtonUI : MonoBehaviour,
     }
     virtual public void OnPointerClick(PointerEventData e)
     {
+        PlayClickAudio();
         OnClickUEvt?.Invoke();
         m_subjectClick.OnNext(Unit.Default);
+    }
+
+    // base.OnPointerClick 을 부르지 않는 파생(SlotView)도 소리만 낼 수 있게 분리
+    protected void PlayClickAudio()
+    {
+        if (m_SOClickAudio != null)
+            SoundManager.m_Instance.PlaySfx(m_SOClickAudio);
     }
 
     public void OnPointerDown(PointerEventData eventData)

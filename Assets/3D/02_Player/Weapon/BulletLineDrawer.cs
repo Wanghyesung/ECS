@@ -14,7 +14,7 @@ public sealed class BulletLineDrawer
 
     private PoolObject m_refActiveLinePoolObj; // 현재 떠 있는 라인 인스턴스 (조기 종료 대상)
 
-    public void SetLine(Vector3 _vStart, Vector3 _vDir, float _fDistance)
+    public void SetLine(Vector3 _vStart, Vector3 _vDir, float _fDistance, float _fDuration = 0f)
     {
         CutLine(); // 이전에 떠 있던 라인이 있으면 먼저 끊고 새로 그림
 
@@ -29,6 +29,8 @@ public sealed class BulletLineDrawer
         refLine.SetLine(_vStart, _vDir, _fDistance, m_refVisualMeshFilter);
 
         m_refActiveLinePoolObj = refLineObj.GetComponent<PoolObject>();
+        float fDuration = _fDuration > 0f ? _fDuration : BulletLine.DEFAULT_LIFETIME;
+        m_refActiveLinePoolObj.SetAliveTime(fDuration);
     }
 
     // 현재 떠 있는 라인을 즉시 반납 - AliveTime을 0으로 재예약해 다음 체크 때 바로 풀로 돌아가게 함

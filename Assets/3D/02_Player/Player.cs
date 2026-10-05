@@ -62,6 +62,11 @@ public class ObjectInfo
     public EffectEntry[] Effects = new EffectEntry[(int)eStatusEffect.End];
 }
 
+/*///////////////////////////////////////////
+                Player
+목적 : 플레이어의 전투 상태와 행동을 관리한다. 런 시작 시 기본 상태를 초기화하고
+      ProfileSave.Progress의 영구 성장·장착 보너스를 적용한다.
+ *///////////////////////////////////////////
 public class Player : MonoBehaviour, IDamageable, IChangeInfoable
 {
     [SerializeField] private List<Weapon> m_listWeapon = null;
@@ -85,11 +90,18 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     public ObjectInfo ObjectInfo => m_refObjectInfo;
 
     // 런 시작 시 되돌릴 기본 활성 상태 — 씬에 배치된 그대로(BaseWeapon_0/1만 켜짐)가 곧 기본 로드아웃.
-    // 별도 [SerializeField] 없이 Awake 스냅샷으로 충분 (인스펙터에 같은 정보가 두 번 생기는 걸 피함)
+    
     private bool[] m_arrWeaponDefaultActive;
     private bool[] m_arrDroneDefaultActive;
 
+    // 차지 무기는 WeaponCon(PlayerChargeController가 구동)이 붙어 있는 것으로 구분한다 — Weapon의 ChargeOnly 플래그를 대체.
+    private bool[] m_arrWeaponChargeDriven;
+
     [SerializeField] private SOObjectInfo m_SOObjectInfo = null;
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SODeadAudio;
+    [SerializeField] private SOPoolData m_refDeadEffect;
+    private float m_fPlayerSize;
 
 
     [SerializeField] private TargetScanner m_refTargetScnner = null;
@@ -109,20 +121,35 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     [SerializeField] private bool TestLock = false;
     private void Awake()
     {
-        // 로비는 LoadSceneMode.Single로 매번 다시 로드되므로 씬의 MainPlayer가 런마다 또 Awake 된다.
-        // 가드가 없으면 새 인스턴스가 CurrentPlayer를 덮어써 DDOL 원본은 죽은 채로 남고 런마다 Player가 하나씩 는다 (검증 중 실제 발생).
-        // Destroy는 프레임 끝이라 그 전에 자식 Weapon.Start가 돌면 Init 안 된 AttackInfo로 빌드에선 Application.Quit — 먼저 꺼서 막는다
-        if (ThisPlayer != null && ThisPlayer != this) { gameObject.SetActive(false); Destroy(gameObject); return; }
+        if (ThisPlayer != null && ThisPlayer != this) 
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject); 
+            return;
+        }
 
         m_refRigidbody = GetComponent<Rigidbody>();
         m_refMovement = GetComponent<PlayerMovement>();
         m_refAim = GetComponent<Aim>();
 
+        Renderer[] arrRenderers = GetComponentsInChildren<Renderer>();
+        if (arrRenderers.Length > 0)
+        {
+            Bounds tBounds = arrRenderers[0].bounds;
+            for (int i = 1; i < arrRenderers.Length; ++i)
+                tBounds.Encapsulate(arrRenderers[i].bounds);
+            m_fPlayerSize = tBounds.size.magnitude;
+        }
+
         ThisPlayer = this;
 
         m_arrWeaponDefaultActive = new bool[m_listWeapon.Count];
+        m_arrWeaponChargeDriven = new bool[m_listWeapon.Count];
         for (int i = 0; i < m_listWeapon.Count; ++i)
+        {
             m_arrWeaponDefaultActive[i] = m_listWeapon[i].gameObject.activeSelf;
+            m_arrWeaponChargeDriven[i] = m_listWeapon[i].TryGetComponent(out WeaponCon _);
+        }
         m_arrDroneDefaultActive = new bool[m_listDrone.Count];
         for (int i = 0; i < m_listDrone.Count; ++i)
             m_arrDroneDefaultActive[i] = m_listDrone[i].gameObject.activeSelf;
@@ -171,7 +198,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             m_listDrone[i].gameObject.SetActive(m_arrDroneDefaultActive[i]);
 
         // 3) 영구 성장(로비 강화·장비)만 다시 얹는다 — 기본값 위에 리스트 전체를 적용하므로 런을 거듭해도 중복 누적 없음
-        PlayerPreLoadData.ApplyTo(this);
+        ProfileSave.m_Instance.PreLoad.ApplyTo(this);
 
         // 4) 장비 HP 보너스까지 포함해 만땅으로 시작 (기존엔 SO값으로 먼저 채워 100/120 상태로 시작했음)
         m_refObjectInfo.State = eEntityState.Idle;
@@ -205,6 +232,9 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     // 스페이스 입력 시 z축 기준 360도 배럴롤 연출과 함께 이동속도를 순간적으로 올렸다가 서서히 되돌림
     private void MoveRoll()
     {
+        if (TimeScaleManager.m_Instance.IsPaused.CurrentValue == true)
+            return;
+
         float fCurTime = Time.time - m_fLastRollTime;
         if (fCurTime < m_fRollTime)
             return;
@@ -227,7 +257,7 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
             if (m_listWeapon[i].gameObject.activeSelf == false)
                 continue;
 
-            if (m_listWeapon[i].ChargeOnly == true)   // 차지 전용 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
+            if (m_arrWeaponChargeDriven[i] == true)   // 차지 무기는 좌클릭 릴리즈(PlayerChargeController)가 발사
                 continue;
 
             if (m_listWeapon[i].CheckTime() == true)
@@ -240,8 +270,15 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
     {
         CancelNockback();
         m_refObjectInfo.State = eEntityState.Dead;   // Update의 Fire 차단
-        m_refMovement.enabled = false;               // PlayerMovement는 상태를 안 보므로 컴포넌트째 끔 (OnEnable에서 복구)
+        SoundManager.m_Instance.PlaySfx(m_SODeadAudio);
+        m_refMovement.enabled = false;            
+
+        GameObject refDeadEffect = ObjectPoolManager.m_Instance.GetObject(m_refDeadEffect, transform.position);
+        if (refDeadEffect != null)
+            refDeadEffect.GetComponent<HitEffect>().SetSize(m_fPlayerSize);
+
         m_subjectDied.OnNext(Unit.Default);
+        gameObject.SetActive(false);
     }
 
     public void TakeDamage(AttackInfo _refAttackInfo, tShotInfo _refShotInfo)
@@ -254,6 +291,8 @@ public class Player : MonoBehaviour, IDamageable, IChangeInfoable
         m_refObjectInfo.State = eEntityState.Hit;
 
         int iFinalDamage = (int)Mathf.Max(_refAttackInfo.Damage - m_refObjectInfo.Defense, 0f);
+        if (iFinalDamage > 0)
+            SoundManager.m_Instance.PlaySfx(_refAttackInfo.HitAudio, transform.position);
         m_refObjectInfo.CurrentHP.Value -= iFinalDamage;
         if (m_refObjectInfo.State == eEntityState.Dead)   // 위 대입에서 Dead()가 동기 호출됨 — 넉백을 시작하면 끝에서 State=Idle로 되살아난다
             return;

@@ -29,7 +29,7 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 256
-  HitSound: {fileID: 0}
+  HitAudio: {fileID: 0}
   BaseRotationSpeed: 60
   MaxRotationSpeed: 720
   RotationAccelRate: 40

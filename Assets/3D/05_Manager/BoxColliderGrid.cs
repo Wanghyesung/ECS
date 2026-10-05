@@ -47,7 +47,7 @@ public sealed class BoxColliderGrid
     private NativeArray<int> m_arrCellItems;
 
     // 재구성용 스크래치 - 아이템별 소속 셀 인덱스 / 셀별 다음 삽입 위치 커서
-    private NativeArray<int> m_arrScratchCellIndexPerItem;
+    private NativeArray<int> m_arrItemToCell;
     private NativeArray<int> m_arrScratchCursor;
 
     private Vector3 m_vOrigin;
@@ -76,20 +76,20 @@ public sealed class BoxColliderGrid
 
     // 이 그리드를 소유한 레이어(콜라이더 목록)의 실제 분포로 그리드 범위를 딱 한 번 정한다("정적 분할").
     // 셀 크기는 그 시점 최대 BoundingRadius*2 - 이웃 1겹 검사만으로 놓치지 않기 위한 하한
-    public void Build(List<BaseCollider> _listOwnerCollider)
+    public void Build(List<BaseCollider> _listCollider)
     {
         m_bBuilt = false;
-        if (_listOwnerCollider == null || _listOwnerCollider.Count == 0)
+        if (_listCollider == null || _listCollider.Count == 0)
             return;
 
         //가장 큰 바운더리 값을 가진 Collider를 기준으로 셀 나누기
-        Vector3 vMin = _listOwnerCollider[0].CachedCenter;
+        Vector3 vMin = _listCollider[0].CachedCenter;
         Vector3 vMax = vMin;
         float fMaxRadius = 0f;
 
-        for (int i = 0; i < _listOwnerCollider.Count; ++i)
+        for (int i = 0; i < _listCollider.Count; ++i)
         {
-            BaseCollider refCollider = _listOwnerCollider[i];
+            BaseCollider refCollider = _listCollider[i];
             float fRadius = refCollider.BoundingRadius;
             Vector3 vCenter = refCollider.CachedCenter;
             Vector3 vRadiusVec = Vector3.one * fRadius;
@@ -151,7 +151,7 @@ public sealed class BoxColliderGrid
 
         int iCell = FlattenIndex(iX, iY, iZ, m_iCountX, m_iCountY);
 
-        m_arrScratchCellIndexPerItem[_iIdx] = iCell; //내 콜라이더가 어느 셀에 있는지
+        m_arrItemToCell[_iIdx] = iCell; //내 콜라이더가 어느 셀에 있는지
         m_arrCellCount[iCell] += 1; //해당 셀에 속한 콜라이더 수
 
         // 호출부는 0부터 순서대로 넘기지만, 순서가 어긋나도 EndRebuild가 전 구간을 훑도록 상한을 잡는다
@@ -168,14 +168,14 @@ public sealed class BoxColliderGrid
         int iRunning = 0;
         for (int i = 0; i < m_iTotalCell; ++i)
         {
-            m_arrCellStart[i] = iRunning;   //해당 셀에 존재하는 콜라이더 수 (오프셋)
-            m_arrScratchCursor[i] = iRunning;//작업용 커서 - 시작 위치로 초기화
-            iRunning += m_arrCellCount[i]; // 다음 셀의 콜라이더 시작 위치
+            m_arrCellStart[i] = iRunning;       //해당 셀에 존재하는 콜라이더 수 (오프셋)
+            m_arrScratchCursor[i] = iRunning;   //작업용 커서 - 시작 위치로 초기화
+            iRunning += m_arrCellCount[i];      // 다음 셀의 콜라이더 시작 위치
         }
 
         for (int i = 0; i < m_iColliderCount; ++i)
         {
-            int iCell = m_arrScratchCellIndexPerItem[i]; //ColliderID에 맞는 Cell위치
+            int iCell = m_arrItemToCell[i];              //ColliderID에 맞는 Cell위치
             int iSlot = m_arrScratchCursor[iCell];       //셀의 위치의 작업 시작 위치
             m_arrCellItems[iSlot] = i;
             m_arrScratchCursor[iCell] = iSlot + 1;       //셀의 다음 작업 시작 위치
@@ -188,8 +188,8 @@ public sealed class BoxColliderGrid
 
         if (m_arrCellItems.IsCreated)
             m_arrCellItems.Dispose();
-        if (m_arrScratchCellIndexPerItem.IsCreated)
-            m_arrScratchCellIndexPerItem.Dispose();
+        if (m_arrItemToCell.IsCreated)
+            m_arrItemToCell.Dispose();
 
         m_bBuilt = false;
         m_iColliderCount = 0;
@@ -229,11 +229,11 @@ public sealed class BoxColliderGrid
 
         if (m_arrCellItems.IsCreated)
             m_arrCellItems.Dispose();
-        if (m_arrScratchCellIndexPerItem.IsCreated)
-            m_arrScratchCellIndexPerItem.Dispose();
+        if (m_arrItemToCell.IsCreated)
+            m_arrItemToCell.Dispose();
 
         m_arrCellItems = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
-        m_arrScratchCellIndexPerItem = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
+        m_arrItemToCell = new NativeArray<int>(iNewCapacity, Allocator.Persistent);
     }
 
     private void DisposeCellArrays()

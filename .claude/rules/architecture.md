@@ -26,7 +26,7 @@ UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치
 
 - **몬스터 Behavior Tree:** Sequence / Selector / Action 노드.
 - **SO 기반 Action:** 각 Action 로직은 ScriptableObject — 인스펙터에서 할당/교체.
-- **Blackboard:** 몬스터 상태·타겟·동적 변수 공유용. `[Serializable]` 클래스로 `Monster`/`BehaviorTree`가 필드로 소유, BT 노드의 `Execute(BlackBoard _refBB)`로 전달. 파일은 `BlackBoard.cs`로 분리.
+- **Blackboard:** 몬스터 상태·타겟·동적 변수 공유용. `[Serializable]` 데이터 클래스(public PascalCase 필드)로 `Monster`/`BehaviorTree`가 필드로 소유, BT 노드의 `Execute(BlackBoard _refBB)`로 전달. `BehaviorTree.cs` 안에 함께 둔다 (관련 타입은 한 파일 — `csharp-unity.md` §6).
 - **데이터 분리 (최우선):** SO는 '데이터와 에디터 세팅'만. 런타임 인스턴스별 상태는 **반드시 Blackboard나 런타임 노드 인스턴스**에. 예외: BT 진입 시 `Instantiate`로 몬스터별 클론되는 Composite 노드(Sequence/Select)는 클론 인스턴스에 한해 인덱스/타이머를 들고 있어도 됨. 클론되지 않는 leaf Action은 절대 상태를 갖지 말 것.
 - **Object Pool:** Bullet/FX/Enemy 필수 — [[object-pooling]] (`SOPoolData` + `PoolObject` + `ObjectPoolManager`).
 - **Event System:** 점수/피격/게임오버/레벨업 UI/조커 카드 UI 등 UI↔시스템 느슨한 결합은 R3 `Subject<T>`/`Observable<T>`. 인스펙터 바인딩이 필요한 UI 클릭은 `UnityEvent` 허용.
@@ -35,15 +35,29 @@ UniTask/R3/DOTween 의 시그니처·오버로드·예제가 기억에 확실치
 
 - **허용:** 씬에 하나만 있어야 하고 여러 시스템이 공통 참조하는 매니저급 — `InputManager`, `ObjectPoolManager`, `AudioManager`, `CameraManager` 등
 - **금지:** `PlayerSystem`/`ScoreSystem`처럼 기능 하나짜리 클래스의 습관적 싱글톤화 (→ `[SerializeField]` 직접 참조), 모든 걸 다 가진 `GameManager`(→ 갓 오브젝트 금지)
-- `public static T m_Instance { get; private set; }` **프로퍼티**로 선언한다. `public static T m_Instance;` 처럼 raw 필드로 노출하지 말 것 — 외부에서 실수로 재할당할 수 있다. 이름은 프로젝트 전반(`BattleManager`, `FeatureManager`, `ObjectPoolManager` 등)과 통일해 `m_Instance` 를 쓴다
-- Awake 가드에서 **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `m_Instance`를 덮어쓴다:
+- `public static T m_Instance = null;` **필드**로 선언한다 (`BattleManager`, `DungeonManager`, `FeatureManager` 등 프로젝트 전반과 통일). `{ get; private set; }` 프로퍼티로 바꾸지 않는다
+- Awake 가드는 여러 줄 블록으로, **`return;` 필수** — `Destroy`는 프레임 끝까지 지연되므로 없으면 파괴 예정 인스턴스가 `m_Instance`를 덮어쓴다
+- `OnDestroy`에서 자기 자신일 때만 `m_Instance = null`
 
 ```csharp
+public static DungeonManager m_Instance = null;
+
 private void Awake()
 {
-    if (m_Instance != null && m_Instance != this) { Destroy(gameObject); return; }
+    if (m_Instance != null)
+    {
+        Destroy(gameObject);
+        return;
+    }
+
     m_Instance = this;
     DontDestroyOnLoad(gameObject);   // 루트 오브젝트에서만 동작 — 자식이면 조용히 무시됨 (known-issues 참고)
+}
+
+private void OnDestroy()
+{
+    if (m_Instance == this)
+        m_Instance = null;
 }
 ```
 
@@ -67,7 +81,7 @@ public sealed class BattleManager : MonoBehaviour
 
 - 구독 수명은 셋 중 하나로 반드시 묶는다: 오브젝트 수명 = `.AddTo(this)` / `OnEnable`↔`OnDisable` = `IDisposable` 필드(여러 개면 `DisposableBag` + `Clear()`) / `CancellationToken` = `RegisterTo(ct)`
 - 인자 없는 알림은 `Subject<Unit>` + `OnNext(Unit.Default)`, 인자 2개 이상은 명명 튜플 `Subject<(SOData refData, SlotView refSlot)>`
-- 매니저 싱글톤 직접 호출(`ObjectPoolManager.m_Instance.Get(...)`)은 허용 — Observable 은 "발행자가 구독자를 몰라야 할 때"만
+- 매니저 싱글톤 직접 호출(`ObjectPoolManager.m_Instance.GetObject(...)`)은 허용 — Observable 은 "발행자가 구독자를 몰라야 할 때"만
 
 ## 값 바인딩 — R3
 
@@ -82,7 +96,7 @@ private readonly CancellationTokenSource m_cts = new();
 
 private async UniTaskVoid StartSpawning()               // fire-and-forget 은 UniTaskVoid, 대기 가능하면 UniTask
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; ++i)
     {
         await SpawnWave(i, m_cts.Token);
         await UniTask.Delay(TimeSpan.FromSeconds(5), cancellationToken: m_cts.Token);
@@ -92,7 +106,7 @@ private async UniTaskVoid StartSpawning()               // fire-and-forget 은 U
 private void OnDestroy() => m_cts.Cancel();
 ```
 
-- 항상 `CancellationToken` 전달 (`this.GetCancellationTokenOnDestroy()` 또는 자체 CTS)
+- 항상 `CancellationToken` 전달 (`this.GetCancellationTokenOnDestroy()` 또는 자체 CTS). 매개변수 이름은 `_tToken`
 - 병렬은 `UniTask.WhenAll`, 백그라운드에서 복귀는 `UniTask.SwitchToMainThread()`
 
 ## 상속보다 조합
@@ -110,10 +124,10 @@ public sealed class PlayerStatUI : MonoBehaviour
     [SerializeField] private StatDetailView m_refDetailView;      // 선택 스탯 표시 전담
     [SerializeField] private UpgradeButtonView m_refUpgradeView;  // 비용/재화 비교/알파 전담
 
-    private void Awake()
+    private void Start()
     {
-        m_refContainer.OnSelectEvt += m_refDetailView.Show;
-        m_refContainer.OnSelectEvt += m_refUpgradeView.Bind;
+        m_refContainer.OnSelectEvt.Subscribe(SelectStat).AddTo(this);
+        m_refUpgradeView.OnClickEvt.Subscribe(_ => TryUpgrade()).AddTo(this);
     }
 }
 ```
@@ -143,7 +157,7 @@ public sealed class PlayerStatUI : MonoBehaviour
 ```csharp
 public sealed class InputManager : MonoBehaviour
 {
-    public static InputManager m_Instance { get; private set; }
+    public static InputManager m_Instance = null;
 
     private PlayerAction m_refActions;                 // 생성된 클래스
     public Vector2 MoveDir { get; private set; }       // 연속 입력: 캐싱해서 노출
@@ -152,7 +166,12 @@ public sealed class InputManager : MonoBehaviour
 
     private void Awake()
     {
-        if (m_Instance != null && m_Instance != this) { Destroy(gameObject); return; }
+        if (m_Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         m_Instance = this;
         DontDestroyOnLoad(gameObject);
     }

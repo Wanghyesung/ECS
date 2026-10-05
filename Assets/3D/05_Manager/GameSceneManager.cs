@@ -9,9 +9,9 @@ using UnityEngine.UI;
 
 /*///////////////////////////////////////////
                 GameSceneManager
-기능 : 로비(SelectStage)에서 고른 스테이지 idx에 대응하는 SOSceneData를 찾아
+목적 : 로비(SelectStage)에서 고른 스테이지 idx에 대응하는 SOSceneData를 찾아
       Addressable 씬을 비동기로 로드하고, 진행률을 이미지(fillAmount)로 보여준다.
-      씬이 바뀔 때 TimeScaleManager 의 정지를 통째로 해제하고, 게임 종료(QuitGame)도 여기서 맡는다.
+      씬이 바뀔 때 TimeScaleManager의 정지를 해제하고 종료 전 프로필을 저장한다.
  *///////////////////////////////////////////
 public class GameSceneManager : MonoBehaviour
 {
@@ -22,7 +22,10 @@ public class GameSceneManager : MonoBehaviour
 
     //[SerializeField] private Image m_refProgressImage; //fillAmount로 로딩 진행률 표시
     [SerializeField] private LoadingOverlay m_refLoadingOverlay;
-    [SerializeField] private string m_strFirstSceneName = "LobyScene"; //Addressable이 아닌 Build Settings 등록 씬(로비/처음 씬)
+    [SerializeField] private string m_strFirstSceneName = "LobbyScene"; //Addressable이 아닌 Build Settings 등록 씬(로비/처음 씬)
+
+    //로비는 SOSceneData를 거치지 않고 씬 이름으로 바로 로드되므로 배경음도 여기서 들고 있는다
+    [SerializeField] private SOAudio m_SOLobyBgm;
 
     public int SelectedStageIdx { get; private set; } = 0;
 
@@ -41,6 +44,12 @@ public class GameSceneManager : MonoBehaviour
 
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.gameObject.SetActive(false);
+    }
+
+    //게임을 로비에서 시작하면 LoadFirstScene을 거치지 않으므로 여기서 한 번 틀어준다
+    private void Start()
+    {
+        PlayBgm(m_SOLobyBgm);
     }
 
     private void OnDestroy()
@@ -87,6 +96,8 @@ public class GameSceneManager : MonoBehaviour
 
         await ObjectPoolManager.m_Instance.ReplaceScenePoolsAsync(_refSceneData.ScenePoolDataList, tDestroyToken, refScenePoolProgress);
 
+        PlayBgm(_refSceneData.Bgm);
+
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.gameObject.SetActive(false);
 
@@ -94,6 +105,15 @@ public class GameSceneManager : MonoBehaviour
 
         Player.CurrentPlayer.gameObject.SetActive(true);
         //Debug.Log("로딩완료");
+    }
+
+    //SoundManager는 같은 클립이면 다시 틀지 않으므로 같은 씬을 재진입해도 곡이 끊기지 않는다
+    private void PlayBgm(SOAudio _SOBgm)
+    {
+        if (_SOBgm == null || SoundManager.m_Instance == null)
+            return;
+
+        SoundManager.m_Instance.PlayBgm(_SOBgm);
     }
 
     private void SetProgress(float _fPercent)
@@ -123,6 +143,8 @@ public class GameSceneManager : MonoBehaviour
         await SceneManager.LoadSceneAsync(m_strFirstSceneName, LoadSceneMode.Single)
             .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
 
+        PlayBgm(m_SOLobyBgm);
+
         if (m_refLoadingOverlay != null)
             m_refLoadingOverlay.CompletedLoading();
         Player.CurrentPlayer.gameObject.SetActive(false);
@@ -131,6 +153,7 @@ public class GameSceneManager : MonoBehaviour
     // 게임 종료. 에디터에선 Application.Quit 이 무시되므로 Play 모드를 끈다
     public void QuitGame()
     {
+        ProfileSave.m_Instance.Save();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

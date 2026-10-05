@@ -36,30 +36,30 @@ public sealed class AddressableLoader : MonoBehaviour
 {
     [SerializeField] private AssetReference m_refPrefab;
 
-    private AsyncOperationHandle<GameObject> m_loadHandle;
+    private AsyncOperationHandle<GameObject> m_tLoadHandle;
     private GameObject m_refInstance;
 
     public async void LoadAndInstantiate()
     {
-        m_loadHandle = Addressables.LoadAssetAsync<GameObject>(m_refPrefab);
-        await m_loadHandle.Task;
+        m_tLoadHandle = Addressables.LoadAssetAsync<GameObject>(m_refPrefab);
+        await m_tLoadHandle.Task;
 
-        if (m_loadHandle.Status == AsyncOperationStatus.Succeeded)
+        if (m_tLoadHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            m_refInstance = Instantiate(m_loadHandle.Result);
+            m_refInstance = Instantiate(m_tLoadHandle.Result);
         }
         else
         {
-            Debug.LogError($"Failed to load addressable: {m_loadHandle.OperationException}");
+            Debug.LogError($"Failed to load addressable: {m_tLoadHandle.OperationException}");
         }
     }
 
     // 중요: 메모리 누수를 막기 위해 핸들은 반드시 해제할 것
     private void OnDestroy()
     {
-        if (m_loadHandle.IsValid())
+        if (m_tLoadHandle.IsValid())
         {
-            Addressables.Release(m_loadHandle);
+            Addressables.Release(m_tLoadHandle);
         }
 
         if (m_refInstance != null)
@@ -76,14 +76,14 @@ public sealed class AddressableLoader : MonoBehaviour
 public sealed class AddressableInstantiator : MonoBehaviour
 {
     [SerializeField] private AssetReference m_refPrefab;
-    private AsyncOperationHandle<GameObject> m_instanceHandle;
+    private AsyncOperationHandle<GameObject> m_tInstanceHandle;
 
     public async void SpawnObject(Vector3 _vPosition, Quaternion _qRotation)
     {
-        m_instanceHandle = Addressables.InstantiateAsync(m_refPrefab, _vPosition, _qRotation);
-        await m_instanceHandle.Task;
+        m_tInstanceHandle = Addressables.InstantiateAsync(m_refPrefab, _vPosition, _qRotation);
+        await m_tInstanceHandle.Task;
 
-        if (m_instanceHandle.Status != AsyncOperationStatus.Succeeded)
+        if (m_tInstanceHandle.Status != AsyncOperationStatus.Succeeded)
         {
             Debug.LogError("Failed to instantiate addressable");
         }
@@ -92,9 +92,9 @@ public sealed class AddressableInstantiator : MonoBehaviour
     private void OnDestroy()
     {
         // ReleaseInstance는 오브젝트를 파괴함과 동시에 핸들도 해제함
-        if (m_instanceHandle.IsValid())
+        if (m_tInstanceHandle.IsValid())
         {
-            Addressables.ReleaseInstance(m_instanceHandle);
+            Addressables.ReleaseInstance(m_tInstanceHandle);
         }
     }
 }
@@ -121,33 +121,33 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public sealed class AddressableManager : MonoBehaviour
 {
-    private readonly List<AsyncOperationHandle> m_listHandles = new();
+    private readonly List<AsyncOperationHandle> m_listHandle = new();
 
     public AsyncOperationHandle<T> LoadAsset<T>(object _key)
     {
-        var refHandle = Addressables.LoadAssetAsync<T>(_key);
-        m_listHandles.Add(refHandle);
-        return refHandle;
+        var tHandle = Addressables.LoadAssetAsync<T>(_key);
+        m_listHandle.Add(tHandle);
+        return tHandle;
     }
 
     public AsyncOperationHandle<GameObject> InstantiateAsset(AssetReference _refReference,
         Vector3 _vPosition = default, Quaternion _qRotation = default)
     {
-        var refHandle = Addressables.InstantiateAsync(_refReference, _vPosition, _qRotation);
-        m_listHandles.Add(refHandle);
-        return refHandle;
+        var tHandle = Addressables.InstantiateAsync(_refReference, _vPosition, _qRotation);
+        m_listHandle.Add(tHandle);
+        return tHandle;
     }
 
     public void ReleaseAll()
     {
-        foreach (var refHandle in m_listHandles)
+        foreach (var tHandle in m_listHandle)
         {
-            if (refHandle.IsValid())
+            if (tHandle.IsValid())
             {
-                Addressables.Release(refHandle);
+                Addressables.Release(tHandle);
             }
         }
-        m_listHandles.Clear();
+        m_listHandle.Clear();
     }
 
     private void OnDestroy()
@@ -243,27 +243,29 @@ public void LeakyLoad()
 // 나쁜 예: 너무 일찍 해제함
 public async void TooEarlyRelease()
 {
-    var refHandle = Addressables.LoadAssetAsync<GameObject>("enemy");
-    await refHandle.Task;
-    var refInstance = Instantiate(refHandle.Result);
-    Addressables.Release(refHandle); // 인스턴스가 아직 에셋을 사용 중인데 해제해버림!
+    var tHandle = Addressables.LoadAssetAsync<GameObject>("enemy");
+    await tHandle.Task;
+    var refInstance = Instantiate(tHandle.Result);
+    Addressables.Release(tHandle); // 인스턴스가 아직 에셋을 사용 중인데 해제해버림!
 }
 
 // 좋은 예: 올바른 생명주기 관리
-private AsyncOperationHandle<GameObject> m_handle;
+private AsyncOperationHandle<GameObject> m_tHandle;
 private GameObject m_refInstance;
 
 public async void ProperLoad()
 {
-    m_handle = Addressables.LoadAssetAsync<GameObject>("enemy");
-    await m_handle.Task;
-    m_refInstance = Instantiate(m_handle.Result);
+    m_tHandle = Addressables.LoadAssetAsync<GameObject>("enemy");
+    await m_tHandle.Task;
+    m_refInstance = Instantiate(m_tHandle.Result);
 }
 
 private void OnDestroy()
 {
-    if (m_refInstance != null) Destroy(m_refInstance);
-    if (m_handle.IsValid()) Addressables.Release(m_handle);
+    if (m_refInstance != null)
+        Destroy(m_refInstance);
+    if (m_tHandle.IsValid())
+        Addressables.Release(m_tHandle);
 }
 ```
 
@@ -278,12 +280,12 @@ public sealed class CatalogUpdater : MonoBehaviour
 {
     public async void CheckForUpdates()
     {
-        var refCheckHandle = Addressables.CheckForCatalogUpdates(false);
-        await refCheckHandle.Task;
+        var tCheckHandle = Addressables.CheckForCatalogUpdates(false);
+        await tCheckHandle.Task;
 
-        if (refCheckHandle.Status == AsyncOperationStatus.Succeeded)
+        if (tCheckHandle.Status == AsyncOperationStatus.Succeeded)
         {
-            List<string> listCatalogs = refCheckHandle.Result as List<string>;
+            List<string> listCatalogs = tCheckHandle.Result as List<string>;
             if (listCatalogs != null && listCatalogs.Count > 0)
             {
                 Debug.Log($"Found {listCatalogs.Count} catalog updates");
@@ -293,7 +295,7 @@ public sealed class CatalogUpdater : MonoBehaviour
                 Addressables.Release(refUpdateHandle);
             }
         }
-        Addressables.Release(refCheckHandle);
+        Addressables.Release(tCheckHandle);
     }
 }
 ```
@@ -317,9 +319,9 @@ public sealed class AssetPreloader : MonoBehaviour
 
         foreach (var refAssetRef in m_listAssetsToPreload)
         {
-            var refHandle = Addressables.LoadAssetAsync<Object>(refAssetRef);
-            m_listPreloadHandles.Add(refHandle);
-            listTasks.Add(refHandle.Task);
+            var tHandle = Addressables.LoadAssetAsync<Object>(refAssetRef);
+            m_listPreloadHandles.Add(tHandle);
+            listTasks.Add(tHandle.Task);
         }
 
         await System.Threading.Tasks.Task.WhenAll(listTasks);
@@ -328,21 +330,23 @@ public sealed class AssetPreloader : MonoBehaviour
 
     public float GetProgress()
     {
-        if (m_listPreloadHandles.Count == 0) return 0f;
+        if (m_listPreloadHandles.Count == 0)
+            return 0f;
 
         float fTotal = 0f;
-        foreach (var refHandle in m_listPreloadHandles)
+        foreach (var tHandle in m_listPreloadHandles)
         {
-            fTotal += refHandle.PercentComplete;
+            fTotal += tHandle.PercentComplete;
         }
         return fTotal / m_listPreloadHandles.Count;
     }
 
     private void OnDestroy()
     {
-        foreach (var refHandle in m_listPreloadHandles)
+        foreach (var tHandle in m_listPreloadHandles)
         {
-            if (refHandle.IsValid()) Addressables.Release(refHandle);
+            if (tHandle.IsValid())
+                Addressables.Release(tHandle);
         }
         m_listPreloadHandles.Clear();
     }
@@ -361,17 +365,17 @@ using UnityEngine.AddressableAssets;
 public sealed class AddressableUniTaskLoader : MonoBehaviour
 {
     public async UniTask<GameObject> LoadPrefab(string _strAddress,
-        System.Threading.CancellationToken _token = default)
+        System.Threading.CancellationToken _tToken = default)
     {
-        var refHandle = Addressables.LoadAssetAsync<GameObject>(_strAddress);
-        var refResult = await refHandle.ToUniTask(cancellationToken: _token);
+        var tHandle = Addressables.LoadAssetAsync<GameObject>(_strAddress);
+        var refResult = await tHandle.ToUniTask(cancellationToken: _tToken);
         return refResult;
     }
 
     public async UniTask<T> LoadAsset<T>(AssetReferenceT<T> _refReference,
-        System.Threading.CancellationToken _token = default) where T : Object
+        System.Threading.CancellationToken _tToken = default) where T : Object
     {
-        return await _refReference.LoadAssetAsync<T>().ToUniTask(cancellationToken: _token);
+        return await _refReference.LoadAssetAsync<T>().ToUniTask(cancellationToken: _tToken);
     }
 }
 ```

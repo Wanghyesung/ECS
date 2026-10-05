@@ -18,6 +18,7 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
 {
     [Header("Fall")]
     [SerializeField] private float m_fFallTime = 2f;
+    [SerializeField] private SOAudio m_SONukeSound;
 
     // 프리팹 고유 착탄 동작. 인스펙터에서 조합, 런타임에 안 건드림 (Bullet/AttackObject과 동일한 관례)
     [SerializeField] private SOBulletAction[] m_arrArriveActions;
@@ -25,6 +26,7 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
     private PoolObject m_refPoolObj;
     private AttackInfo m_refAttackInfo;
     private tShotInfo m_tShotInfo;
+    private SoundManager.SoundHandle m_tFlySoundHandle;
 
     public AttackInfo AttackInfo => m_refAttackInfo;
     public float FallTime => m_fFallTime;
@@ -38,6 +40,7 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
     {
         // 낙하 도중 풀 반납/씬 전환 시 트윈이 비활성 트랜스폼을 계속 밀지 않도록
         transform.DOKill();
+        StopFlySound();
     }
 
     // Bullet.SpawnAttackObject가 호출. 시작 위치는 그쪽에서 이미 잡혀 있고, _refShotInfo.TargetPos = 착탄 지점
@@ -45,6 +48,9 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
     {
         m_refAttackInfo = _refAttackInfo;
         m_tShotInfo = _refShotInfo;
+        StopFlySound();
+        if (SoundManager.m_Instance != null)
+            m_tFlySoundHandle = SoundManager.m_Instance.PlaySfx(m_SONukeSound);
 
         // 자동 반납 없이 착탄 후 직접 반납 (프리팹 AliveTime은 0으로 두는 것이 전제)
         FallAsync(this.GetCancellationTokenOnDestroy()).Forget();
@@ -59,11 +65,22 @@ public sealed class NukeMissile : MonoBehaviour, IAttackObject
         transform.DOMove(vTarget, m_fFallTime).SetEase(Ease.InQuad).SetUpdate(true);
         await UniTask.Delay(TimeSpan.FromSeconds(m_fFallTime), ignoreTimeScale: true, cancellationToken: _token);
 
+        StopFlySound();
         m_tShotInfo.HitPosition = vTarget;
         for (int i = 0; i < m_arrArriveActions.Length; ++i)
             m_arrArriveActions[i]?.Execute(this);
 
         ObjectPoolManager.m_Instance.PushObject(gameObject);
+    }
+
+    private void StopFlySound()
+    {
+        if (m_tFlySoundHandle.IsValid == false)
+            return;
+
+        if (SoundManager.m_Instance != null)
+            SoundManager.m_Instance.StopSfx(m_tFlySoundHandle);
+        m_tFlySoundHandle = default;
     }
 
     // IAttackObject 계약. 핵은 충돌 명중이 없어 무기 부여 명중 액션을 쓸 일이 없음 - 인터페이스 충족용 no-op

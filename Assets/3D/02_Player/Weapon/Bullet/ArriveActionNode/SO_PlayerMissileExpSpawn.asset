@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: SO_PlayerMissileExpSpawn
   m_EditorClassIdentifier: 
   m_refExplodeObj: {fileID: 11400000, guid: ce49b6bd690378a40baf9974d391807a, type: 2}
+  m_SOExplodeAudio: {fileID: 11400000, guid: 65bc2ba9e7ee6d14b964c28c2c56deba, type: 2}

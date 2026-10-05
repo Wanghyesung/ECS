@@ -1,0 +1,6 @@
+interface:
+  display_name: "Unity Project Orchestrator"
+  short_description: "Unity 병렬 기능 구현과 안전한 통합 작업을 조율합니다"
+  default_prompt: "Use $unity-project-orchestrator to split this Unity project-sized feature into owned parallel work items and integrate the results."
+policy:
+  allow_implicit_invocation: true

@@ -18,12 +18,15 @@ public class CardCreator : MonoBehaviour
     [SerializeField] private JokerFeatureCard m_refJokerCard; //조커카드 전용 슬롯
     [SerializeField] private SOJokerCard m_SOJokerCard;        //조커카드 표시 데이터(아이콘 등)
     [SerializeField] private RectTransform m_refCenterAnchor; //결과 연출 시 이동할 화면 중앙 위치
+    [Header("Audio")]
+    [SerializeField] private SOAudio m_SOJokerRotateAudio;
 
     [SerializeField] private TextMeshProUGUI m_refJokerSuccessText;
     [SerializeField] private TextMeshProUGUI m_refCurrentLevel;
 
     // ShowChoices()에서 재사용하는 등급별 배율 버퍼 (호출마다 알록 방지, 인덱스 = eFeatureTier)
     private float[] m_arrTierMultiplierBuffer = new float[(int)eFeatureTier.End];
+    private SoundManager.SoundHandle m_tJokerRotateHandle;
     //[SerializeField] private
     private void Start()
     {
@@ -33,8 +36,13 @@ public class CardCreator : MonoBehaviour
         }
 
         if (m_refJokerCard != null)
+        {
             m_refJokerCard.OnCardClicked.Subscribe(HandleJokerCardClicked).AddTo(this);
+            m_refJokerCard.OnRotationCompleted.Subscribe(_ => StopJokerRotateAudio()).AddTo(this);
+        }
     }
+
+    private void OnDisable() => StopJokerRotateAudio();
 
     private void OnEnable()
     {
@@ -63,7 +71,11 @@ public class CardCreator : MonoBehaviour
             m_arrCard[i].Setup(listChoices[i]);
 
         if (m_refJokerCard != null)
+        {
+            StopJokerRotateAudio();
+            m_tJokerRotateHandle = SoundManager.m_Instance.PlaySfx(m_SOJokerRotateAudio);
             m_refJokerCard.Setup(m_SOJokerCard);
+        }
     }
 
     private void HandleCardClicked(SOData _SOData)
@@ -88,7 +100,14 @@ public class CardCreator : MonoBehaviour
         //연출(성공/실패 애니메이션)에 결과가 필요하므로 애니메이션 재생 전에 판정부터 수행
         bool bSuccess = JokerCardManager.m_Instance.RollGamble(SOJoker);
 
-        await m_refJokerCard.PlayResultAnimation(m_refCenterAnchor, bSuccess);
+        try
+        {
+            await m_refJokerCard.PlayResultAnimation(m_refCenterAnchor, bSuccess);
+        }
+        catch (System.OperationCanceledException)
+        {
+            return;
+        }
 
         if (bSuccess == true)
             JokerCardManager.m_Instance.ApplySuccess();
@@ -105,6 +124,17 @@ public class CardCreator : MonoBehaviour
     private void Close()
     {
         gameObject.SetActive(false);
+    }
+
+    private void StopJokerRotateAudio()
+    {
+        if (m_tJokerRotateHandle.IsValid == false)
+            return;
+
+        if (SoundManager.m_Instance != null)
+            SoundManager.m_Instance.StopSfx(m_tJokerRotateHandle);
+
+        m_tJokerRotateHandle = default;
     }
 }
 

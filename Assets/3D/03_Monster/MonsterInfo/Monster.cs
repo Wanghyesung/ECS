@@ -79,8 +79,6 @@ public class Monster : MonoBehaviour, IDamageable
     //몬스터가 죽을 때 생성되는 연출
     [SerializeField] private SOPoolData m_refDeadEffect;
 
-    // DeadEffect 크기 비례용 - 모듈형 파츠(Wing/MainBody 등) 전체 Renderer를 합산한 바운드 크기.
-    private float m_fMonsterSize = 0f;
     // BattleManager가 구독해서 EXP 누적에 사용 (HP는 각 몬스터 인스턴스가 전담, 사망 알림만 정적으로 공유)
     private static readonly Subject<int> m_subjectDied = new();
     public static Observable<int> OnMonsterDied => m_subjectDied;
@@ -108,20 +106,6 @@ public class Monster : MonoBehaviour, IDamageable
         for(int i = 0; i< m_listSpawn.Count; ++i)
             m_listSpawn[i].Weapon.Init();
 
-        CacheMonsterSize();
-    }
-
-    private void CacheMonsterSize()
-    {
-        Renderer[] arrRenderers = GetComponentsInChildren<Renderer>();
-        if (arrRenderers.Length == 0)
-            return;
-
-        Bounds tBounds = arrRenderers[0].bounds;
-        for (int i = 1; i < arrRenderers.Length; ++i)
-            tBounds.Encapsulate(arrRenderers[i].bounds);
-
-        m_fMonsterSize = tBounds.size.magnitude;
     }
     
     private void OnEnable()
@@ -186,6 +170,8 @@ public class Monster : MonoBehaviour, IDamageable
             return;
 
         m_refBlackBoard.ObjInfo.CurrentHP.Value -= _refAttackInfo.Damage;
+        if (_refAttackInfo.Damage > 0)
+            SoundManager.m_Instance.PlaySfx(_refAttackInfo.HitAudio, transform.position);
         if (MonsterHPBar.m_Instance != null)
             MonsterHPBar.m_Instance.Show(this);
 
@@ -199,7 +185,7 @@ public class Monster : MonoBehaviour, IDamageable
             {
                 HitEffect refHitEffect = refDeadEffect.GetComponent<HitEffect>();
                 if (refHitEffect != null)
-                    refHitEffect.SetSize(m_fMonsterSize);
+                    refHitEffect.SetScale(m_SOMonsterInfo.DeadEffectScale);
             }
 
             return;
@@ -225,6 +211,8 @@ public class Monster : MonoBehaviour, IDamageable
 
         ChangeState(eEntityState.Dead);
         m_subjectDied.OnNext(m_SOMonsterInfo.ExpReward);
+
+        SoundManager.m_Instance.PlaySfx(m_SOMonsterInfo.DeadAudio, transform.position);
 
         if (m_refPoolObj != null)
             ObjectPoolManager.m_Instance.PushObject(gameObject);

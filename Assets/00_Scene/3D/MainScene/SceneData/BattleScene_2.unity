@@ -1682,6 +1682,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2137093618}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2421,6 +2422,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 170092594}
   m_eType: 1
   m_refContainerView: {fileID: 170092597}
@@ -3220,6 +3222,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1199527647}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4023,7 +4026,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1159727318342513867, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 790
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1159727318342513867, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4073,9 +4076,57 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232960920560608886, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7638108675635739000, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
       propertyPath: m_Name
       value: SODataTooltip
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737304700983559021, guid: 46d247f3bf7b1cd4e9efa27c09be81a9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4376,6 +4427,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 638513091}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -6373,6 +6425,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 750132855}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -7535,6 +7588,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 506354083}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -8875,6 +8929,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1374523386}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -9422,6 +9477,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 624567972}
   m_eType: 1
   m_refContainerView: {fileID: 624567971}
@@ -9584,6 +9640,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 0}
   m_refRectMask: {fileID: 628230776}
   m_eType: 1
   m_refContainerView: {fileID: 628230775}
@@ -10269,6 +10326,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &668520142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10676,6 +10734,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 170407678}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -10857,6 +10916,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2047251043}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -12575,6 +12635,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1469693678}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -13113,6 +13174,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1784722380}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -13342,6 +13404,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1934833007}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14378,6 +14441,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 961147057}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14761,6 +14825,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1505262321}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16365,6 +16430,7 @@ GameObject:
   - component: {fileID: 1010915757}
   - component: {fileID: 1010915756}
   - component: {fileID: 1010915755}
+  - component: {fileID: 1010915758}
   m_Layer: 0
   m_Name: JokerCard
   m_TagString: Untagged
@@ -16429,12 +16495,16 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 21300010, guid: 4de414ff7f352df35d94b81e9a9c7a44, type: 3}
   m_refOriginSprite: {fileID: 21300010, guid: 4de414ff7f352df35d94b81e9a9c7a44, type: 3}
   m_refImage: {fileID: 858471876}
   m_refSlotImage: {fileID: 0}
   m_fShowTime: 2
   m_refAnimTable: {fileID: 1204814389}
+  m_SOShakeAudio: {fileID: 11400000, guid: f727b940fa2c6d44ca2bb71f977ac794, type: 2}
+  m_SOSuccessAudio: {fileID: 11400000, guid: 9aff784e639bb0a4c8980a4f9757b410, type: 2}
+  m_SOFailAudio: {fileID: 11400000, guid: e6404572ad917e648ab6080aa85a7677, type: 2}
   m_fMoveTime: 0.3
   m_vRevealScale: {x: 1.5, y: 1.5, z: 1.5}
   m_fShakeTime: 2
@@ -16479,6 +16549,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010915753}
   m_CullTransparentMesh: 1
+--- !u!114 &1010915758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010915753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aed791552fc71e4ba713df4fa245677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1011287664
 GameObject:
   m_ObjectHideFlags: 0
@@ -16694,6 +16776,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1795638524}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -16949,6 +17032,7 @@ GameObject:
   - component: {fileID: 1034853114}
   - component: {fileID: 1034853113}
   - component: {fileID: 1034853112}
+  - component: {fileID: 1034853115}
   m_Layer: 0
   m_Name: Card2
   m_TagString: Untagged
@@ -17012,6 +17096,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 1459714299}
@@ -17055,6 +17140,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034853110}
   m_CullTransparentMesh: 1
+--- !u!114 &1034853115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034853110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aed791552fc71e4ba713df4fa245677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1035813360
 GameObject:
   m_ObjectHideFlags: 0
@@ -17142,6 +17239,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1368318663}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -18538,6 +18636,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1102099504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19244,6 +19343,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1166388291}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -21124,6 +21224,7 @@ MonoBehaviour:
   m_refJokerCard: {fileID: 1010915755}
   m_SOJokerCard: {fileID: 11400000, guid: fb94cd05be044ec4a861998a8fc227db, type: 2}
   m_refCenterAnchor: {fileID: 1711387974}
+  m_SOJokerRotateAudio: {fileID: 11400000, guid: c29deca2f8f096146bc5b7514b758ea3, type: 2}
   m_refJokerSuccessText: {fileID: 1887610824}
   m_refCurrentLevel: {fileID: 997698068}
 --- !u!1 &1251586362
@@ -21544,6 +21645,7 @@ GameObject:
   - component: {fileID: 1276269595}
   - component: {fileID: 1276269594}
   - component: {fileID: 1276269593}
+  - component: {fileID: 1276269596}
   m_Layer: 0
   m_Name: Card1
   m_TagString: Untagged
@@ -21607,6 +21709,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 2049492716}
@@ -21650,6 +21753,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1276269591}
   m_CullTransparentMesh: 1
+--- !u!114 &1276269596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276269591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aed791552fc71e4ba713df4fa245677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1277868790
 GameObject:
   m_ObjectHideFlags: 0
@@ -22168,6 +22283,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1698783896}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -22617,6 +22733,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1966795422}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -23022,6 +23139,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1858557992}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -23665,6 +23783,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 193745826}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -26256,6 +26375,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 646604643}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -26763,6 +26883,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 510639330}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -27028,6 +27149,7 @@ GameObject:
   - component: {fileID: 1505262101}
   - component: {fileID: 1505262100}
   - component: {fileID: 1505262099}
+  - component: {fileID: 1505262102}
   m_Layer: 0
   m_Name: Card3
   m_TagString: Untagged
@@ -27091,6 +27213,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refTargetSprite: {fileID: 0}
   m_refOriginSprite: {fileID: 21300000, guid: df199e17abfbe134d9cca069a7ac9248, type: 3}
   m_refImage: {fileID: 277363678}
@@ -27134,6 +27257,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1505262097}
   m_CullTransparentMesh: 1
+--- !u!114 &1505262102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505262097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aed791552fc71e4ba713df4fa245677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1505262319
 GameObject:
   m_ObjectHideFlags: 0
@@ -27539,6 +27674,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 129939683}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -28733,6 +28869,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1190654018}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -30326,6 +30463,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1251586364}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -32091,6 +32229,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2111222570}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -33217,6 +33356,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5c3a6337f392f1e4981568266f33c344, type: 2}
   - {fileID: 11400000, guid: bf03e53b30df81841b6af47039ba9e31, type: 2}
   - {fileID: 11400000, guid: 24dc7a082f684d65b4e0a1a4aea997c8, type: 2}
+  - {fileID: 11400000, guid: 887aa9988b437384980a624f220ac61d, type: 2}
   m_listPreLoadFeautre: []
 --- !u!1 &1898668830
 GameObject:
@@ -34479,6 +34619,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 1410432854}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -35306,6 +35447,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &1997860535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35671,6 +35813,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
 --- !u!114 &2034413159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36302,6 +36445,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 2088859627}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}
@@ -37061,6 +37205,7 @@ MonoBehaviour:
   OnClickUEvt:
     m_PersistentCalls:
       m_Calls: []
+  m_SOClickAudio: {fileID: 11400000, guid: cc8a2a068473f6b4f8a16fba949fbd24, type: 2}
   m_refIcon: {fileID: 415054882}
   m_refCountBadgeText: {fileID: 0}
   m_tStartColor: {r: 1, g: 1, b: 1, a: 1}

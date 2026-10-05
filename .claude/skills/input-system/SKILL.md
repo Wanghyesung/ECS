@@ -48,45 +48,45 @@ using UnityEngine.InputSystem;
 
 public sealed class PlayerController : MonoBehaviour
 {
-    private PlayerControls m_controls;
+    private PlayerControls m_refControls;
     private Vector2 m_vMoveInput;
 
     private void Awake()
     {
-        m_controls = new PlayerControls();
+        m_refControls = new PlayerControls();
     }
 
     private void OnEnable()
     {
-        m_controls.Player.Enable();
+        m_refControls.Player.Enable();
 
-        m_controls.Player.Move.performed += OnMove;
-        m_controls.Player.Move.canceled += OnMove;
-        m_controls.Player.Jump.performed += OnJump;
-        m_controls.Player.Attack.performed += OnAttack;
+        m_refControls.Player.Move.performed += OnMove;
+        m_refControls.Player.Move.canceled += OnMove;
+        m_refControls.Player.Jump.performed += OnJump;
+        m_refControls.Player.Attack.performed += OnAttack;
     }
 
     private void OnDisable()
     {
-        m_controls.Player.Move.performed -= OnMove;
-        m_controls.Player.Move.canceled -= OnMove;
-        m_controls.Player.Jump.performed -= OnJump;
-        m_controls.Player.Attack.performed -= OnAttack;
+        m_refControls.Player.Move.performed -= OnMove;
+        m_refControls.Player.Move.canceled -= OnMove;
+        m_refControls.Player.Jump.performed -= OnJump;
+        m_refControls.Player.Attack.performed -= OnAttack;
 
-        m_controls.Player.Disable();
+        m_refControls.Player.Disable();
     }
 
-    private void OnMove(InputAction.CallbackContext _ctx)
+    private void OnMove(InputAction.CallbackContext _tContext)
     {
-        m_vMoveInput = _ctx.ReadValue<Vector2>();
+        m_vMoveInput = _tContext.ReadValue<Vector2>();
     }
 
-    private void OnJump(InputAction.CallbackContext _ctx)
+    private void OnJump(InputAction.CallbackContext _tContext)
     {
         // 점프 로직
     }
 
-    private void OnAttack(InputAction.CallbackContext _ctx)
+    private void OnAttack(InputAction.CallbackContext _tContext)
     {
         // 공격 로직
     }
@@ -137,15 +137,16 @@ public sealed class PlayerInputHandler : MonoBehaviour
         m_refPlayerInput.onActionTriggered -= OnActionTriggered;
     }
 
-    private void OnActionTriggered(InputAction.CallbackContext _ctx)
+    private void OnActionTriggered(InputAction.CallbackContext _tContext)
     {
-        switch (_ctx.action.name)
+        switch (_tContext.action.name)
         {
             case "Move":
-                HandleMove(_ctx.ReadValue<Vector2>());
+                HandleMove(_tContext.ReadValue<Vector2>());
                 break;
             case "Jump":
-                if (_ctx.performed) HandleJump();
+                if (_tContext.performed)
+                    HandleJump();
                 break;
         }
     }
@@ -160,9 +161,9 @@ public sealed class PlayerInputHandler : MonoBehaviour
 ### 콜백 단계
 
 ```csharp
-refAction.started += _ctx => { };   // 입력 시작됨 (버튼을 누르기 시작)
-refAction.performed += _ctx => { }; // 입력 완료됨 (버튼이 완전히 눌림)
-refAction.canceled += _ctx => { };  // 입력이 해제됨
+refAction.started += _tContext => { };   // 입력 시작됨 (버튼을 누르기 시작)
+refAction.performed += _tContext => { }; // 입력 완료됨 (버튼이 완전히 눌림)
+refAction.canceled += _tContext => { };  // 입력이 해제됨
 ```
 
 ### Update에서 폴링하기 (대안)
@@ -171,10 +172,10 @@ refAction.canceled += _ctx => { };  // 입력이 해제됨
 private void Update()
 {
     // 폴링 방식 — 더 단순하지만 이벤트 기반보다 덜 반응적임
-    Vector2 vMove = m_controls.Player.Move.ReadValue<Vector2>();
-    bool bJumpPressed = m_controls.Player.Jump.WasPressedThisFrame();
-    bool bJumpReleased = m_controls.Player.Jump.WasReleasedThisFrame();
-    bool bJumpHeld = m_controls.Player.Jump.IsPressed();
+    Vector2 vMove = m_refControls.Player.Move.ReadValue<Vector2>();
+    bool bJumpPressed = m_refControls.Player.Jump.WasPressedThisFrame();
+    bool bJumpReleased = m_refControls.Player.Jump.WasReleasedThisFrame();
+    bool bJumpHeld = m_refControls.Player.Jump.IsPressed();
 }
 ```
 
@@ -183,25 +184,25 @@ private void Update()
 ```csharp
 public sealed class InputMapSwitcher : MonoBehaviour
 {
-    private PlayerControls m_controls;
+    private PlayerControls m_refControls;
 
     public void SwitchToUI()
     {
-        m_controls.Player.Disable();
-        m_controls.UI.Enable();
+        m_refControls.Player.Disable();
+        m_refControls.UI.Enable();
     }
 
     public void SwitchToGameplay()
     {
-        m_controls.UI.Disable();
-        m_controls.Player.Enable();
+        m_refControls.UI.Disable();
+        m_refControls.Player.Enable();
     }
 
     public void SwitchToMenu()
     {
-        m_controls.Player.Disable();
-        m_controls.UI.Disable();
-        m_controls.Menu.Enable();
+        m_refControls.Player.Disable();
+        m_refControls.UI.Disable();
+        m_refControls.Menu.Enable();
     }
 }
 ```
@@ -324,7 +325,7 @@ public sealed class InputBuffer : MonoBehaviour
     // 점프가 가능한 시점에 이동/물리 코드에서 호출됨
     public bool ConsumeJumpBuffer()
     {
-        if (m_fJumpBufferTimer > 0f && !m_bJumpConsumed)
+        if (m_fJumpBufferTimer > 0f && m_bJumpConsumed == false)
         {
             m_bJumpConsumed = true;
             m_fJumpBufferTimer = 0f;
@@ -359,7 +360,8 @@ public sealed class DeviceDetector : MonoBehaviour
 
     private void OnActionChange(object _refObj, InputActionChange _eChange)
     {
-        if (_eChange != InputActionChange.ActionPerformed) return;
+        if (_eChange != InputActionChange.ActionPerformed)
+            return;
 
         var refAction = (InputAction)_refObj;
         var refDevice = refAction.activeControl?.device;

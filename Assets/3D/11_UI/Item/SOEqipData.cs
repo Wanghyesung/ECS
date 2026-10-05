@@ -30,16 +30,20 @@ public struct tStatValue
 
 /*///////////////////////////////////////////
                 SOEqipData
-기능 : 아이템의 공용 데이터(SOData: 설명, 아이콘)를 확장한 아이템 전용 데이터.
-      순수 데이터만 가지며, 실제 적용/사용 기능은 Inventory/PlayerInterface가 담당.
-      능력치는 (eStatType, 값) 쌍의 리스트로 가져서, 적용부(PlayerInterface)가
-      아이템 종류별 분기 없이 리스트를 순회하며 공용으로 처리할 수 있게 한다.
+목적 : 장비의 설명·아이콘·고유 저장 ID·스탯을 담는 ScriptableObject 데이터.
+      PlayerInventory가 ID로 장비를 복원하고 PlayerPreLoadData가 장착 스탯을 적용한다.
  *///////////////////////////////////////////
 
 [CreateAssetMenu(fileName = "SO_EquipData", menuName = "Game/Item/SOEquipData")]
 public class SOEqipData : SOData
 {
     public override eDataType DataType => eDataType.Equip;
+
+    [SerializeField] private string m_strSaveId;
+    public string SaveId => m_strSaveId;
+
+    [SerializeField, Min(0)] private int m_iPrice = 100;
+    public int Price => m_iPrice;
 
     [SerializeField] private eEquipType m_eEquipType = eEquipType.End;
     public override int SubDataType => (int)m_eEquipType;

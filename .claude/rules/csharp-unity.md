@@ -1,107 +1,158 @@
-# C# 스타일 — Unity 컨벤션
+# C# 스타일 — 이 프로젝트 컨벤션
 
-## 필드 선언
+## 1. 위치별 접두사
 
-- 필드 네이밍: 멤버 변수는 m_ 접두사 사용 (예: m_vMoveSpeed)
-- 매개변수는 '_' 사용 예시 ('Function(_fSpeed)))
-- 변수 앞에 접두사 float(f), int (i), Vector2,3 (v), List (list), Queue (que), dobudle (d), string (str), Dictionary (hash), struct(t), enum(e)
-- 매개변수는 '_' + 타입 접두사를 조합해서 사용 (예: `enum eFeatureTier`를 받는 매개변수는 `_eTier`, `struct Color`를 받는 매개변수는 `_tColor`)
-- 클래스/메서드 네이밍: PascalCase 사용 (예: PlayerController)
+| 위치 | 규칙 | 예 |
+|---|---|---|
+| 멤버 필드 | `m_` + 타입 접두사 | `m_fMoveSpeed`, `m_refRigidbody`, `m_SOAttackInfo` |
+| 매개변수 | `_` + 타입 접두사 | `_fSpeed`, `_refBB`, `_eTier`, `_tToken` |
+| 로컬 변수 | 타입 접두사만 | `vLookDir`, `qRot`, `refObj`, `iLast` |
+| 데이터 컨테이너의 public 필드 | 접두사 없는 PascalCase (§4) | `Damage`, `PoolPrefab`, `TargetTr` |
+| const | `SCREAMING_SNAKE` | `GOLDEN_ANGLE_DEG` |
+| static readonly 해시/ID | PascalCase | `JumpHash`, `ColorId` |
+| 클래스 · 메서드 · 프로퍼티 | PascalCase, 프로퍼티는 접두사 없음 | `WeaponType`, `FireTransform` |
+| 싱글톤 | `m_Instance` — 선언 형태는 `architecture.md` | |
 
+## 2. 타입 접두사
+
+| 접두사 | 타입 | 예 |
+|---|---|---|
+| `f` `i` `l` `d` `b` | float, int, long, double, bool | `m_fCooldown`, `_iValue`, `lDamage`, `m_bLookTarget` |
+| `v` | Vector2 / Vector3 | `m_vOffset`, `_vTargetPos` |
+| `q` | Quaternion | `qRot`, `_qBase` |
+| `str` | string | `strPath` |
+| `e` | enum 값 | `m_eWeaponType`, `_eState` |
+| `t` | struct 값 — 직접 만든 `t*` 와 Unity/시스템 struct (`Color`, `LayerMask`, `Rect`, `Bounds`, `Ray`, `JobHandle`, `CancellationToken`) | `m_tShotInfo`, `m_tHitLayer`, `m_tHandle`, `_tToken` |
+| `ref` | 클래스 참조 전반 — 컴포넌트, Transform, 일반 클래스, Tween/Sequence | `m_refFireTr`, `refSeq`, `_refBB` |
+| `SO` | 이 클래스가 읽어서 자기 상태를 만드는 데이터 본체 SO | `m_SOAttackInfo`, `_SOData` |
+| `list` | `List<T>`, `NativeList<T>` | `m_listWeapon`, `m_listSpeed` |
+| `arr` | 배열, `NativeArray<T>` | `m_arrSfxSource`, `m_arrCenter` |
+| `hash` | `Dictionary<K,V>`, `HashSet<T>` | `m_hashPool` |
+| `que` | `Queue<T>` | `m_queResult` |
+| `PQ` | `PriorityQueue<T>` | `m_PQTimer` |
+| `subject` / `rp` | R3 `Subject<T>` / `ReactiveProperty<T>` | `m_subjectDied`, `m_rpExp` |
+| `disposable` / `bag` | `IDisposable` 구독 핸들 / `DisposableBag` | `m_disposableHit`, `m_bagEvents` |
+| `cts` | `CancellationTokenSource` | `m_cts`, `m_ctsNockback` |
+
+- **Transform 변수 이름은 `Tr`로 끝낸다**: `m_refFireTr`, `TargetTr`, `refOwnerTr`
+- `TransformAccessArray` 는 `m_transformArray`
+- CancellationToken 매개변수는 `_tToken` (`_token`, `_ct` 아님)
 
 ```csharp
-[SerializeField] private float m_fMoveSpeed = 5f;
-[SerializeField] private Transform m_refSpawnPoint;
+// SO 참조는 두 갈래
+[SerializeField] private SOAttackInfo m_SOAttackInfo;     // 이 클래스가 읽는 데이터 본체
+[SerializeField] private SOPoolData m_refBulletPoolData;  // 남을 찾아가는 열쇠 (풀 키, BT 루트, 선행 카드)
 
-private Rigidbody m_refRigidbody;
-private static readonly int JumpHash = Animator.StringToHash("Jump");
-private const int MAX_JUMP_COUNT = 3;
+// ReactiveProperty 는 백킹과 노출을 분리
+private readonly ReactiveProperty<int> m_rpExp = new ReactiveProperty<int>(0);
+public ReadOnlyReactiveProperty<int> Exp => m_rpExp;
 ```
 
-## 캡슐화 (타협 불가)
+## 3. 타입 이름
 
-**최소 가시성 원칙: 증명되지 않는 한 모든 것은 `private`입니다.**
+| 종류 | 패턴 | 예 |
+|---|---|---|
+| enum | `e*` | `eWeaponType`, `eNodeState` |
+| struct | `t*` | `tShotInfo`, `tSpawnData` |
+| ScriptableObject | `SO*` | `SOAttackInfo`, `SOStrafeNode` |
+| Job struct | `*Job` (`t` 안 붙임) | `MoveJob`, `GridOverlapJob` |
+| interface | `I*` | `IPoolable`, `IAttackObject` |
 
-- 필드: 기본적으로 `private`. 인스펙터에서 반드시 설정해야 하는 필드에만 `[SerializeField] private`을 사용하세요. `[SerializeField]`를 미리 추측해서 추가하지 마세요 — 디자이너/개발자가 실제로 인스펙터에서 그 값을 조정해야 할 때만 사용하세요.
-- 메서드: 기본적으로 `private`. 다른 클래스가 실제로 호출할 때만 `public`으로 만드세요. "나중에 쓸모 있을지도 모른다"는 이유가 되지 않습니다.
-- 프로퍼티: 기본적으로 `private`. 다른 클래스가 읽을 때만 public getter를 노출하세요. 다른 클래스가 쓸 때만 public setter를 노출하세요.
-- 중첩 타입: 외부 접근이 필요하지 않으면 `private`.
+SO 생성 메뉴는 `[CreateAssetMenu(fileName = "SO_<이름>", menuName = "Game/<분류>/<이름>")]` — 예: `menuName = "Game/Monster/ActionNode/StrafeNode"`, `"Game/Load/PoolData"`
 
-**테스트 방법:** 무언가를 non-private으로 만들기 전에, 호출자를 특정하세요. 현재 코드베이스에서 구체적인 호출자를 명시할 수 없다면, `private`으로 남겨두세요. 에이전트는 추측성 public API 표면을 생성해서는 안 됩니다.
+## 4. 필드는 두 종류 — 데이터 컨테이너 vs 행동 클래스
 
-```csharp
-// 나쁜 예 — "혹시 몰라서" 모든 것을 public으로 만듦
-public class EnemySystem
-{
-    public EnemyModel Model;                    // private이어야 함
-    public void Initialize() { }                // 내부에서만 호출됨
-    public int CalculateDamage() { return 5; }  // 내부에서만 호출됨
-    public void TakeDamage(int amount) { }      // 실제로 CombatSystem이 호출함 — 이건 괜찮음
-}
-
-// 좋은 예 — 최소한의 실질적인 가시성
-public sealed class EnemySystem
-{
-    private readonly EnemyModel m_refModel;
-
-    private void Initialize() { }
-    private int CalculateDamage() => 5;
-    public void TakeDamage(int _iAmount) { }  // CombatSystem이 이걸 호출함
-}
-```
-
-**`[SerializeField]` 규율:**
-```csharp
-// 나쁜 예 — 인스펙터 노출이 필요 없는 필드를 직렬화함
-[SerializeField] private int m_iCurrentHealth;           // 런타임 상태이지, 설정값이 아님 — 직렬화하지 마세요
-[SerializeField] private bool m_bIsInitialized;          // 내부 플래그 — 직렬화하지 마세요
-[SerializeField] private Transform m_refCachedTransform; // 캐싱된 참조 — 직렬화하지 마세요
-
-// 좋은 예 — 디자이너가 설정하는 것만 직렬화함
-[SerializeField] private float m_fMoveSpeed = 5f;         // 디자이너가 인스펙터에서 조정함
-[SerializeField] private GameObject m_refBulletPrefab;      // 인스펙터 참조로 설정됨
-private int m_iCurrentHealth;                             // 런타임 상태 — 그냥 private
-private bool m_bIsInitialized;                            // 내부 플래그 — 그냥 private
-```
-
-## 타입과 네이밍
-
-- 오른쪽 값에서 타입이 명백할 때는 `var`를 사용하세요. 명백하지 않으면 명시적 타입을 사용하세요
-- 파일당 하나의 타입 — 파일 이름은 반드시 주요 클래스/구조체 이름과 일치해야 합니다 (MonoBehaviour에 대한 Unity의 요구사항)
-- 기본적으로 `sealed` — 상속이 명시적으로 설계된 경우에만 봉인을 해제하세요
-- 모든 것에 명시적 접근 제한자를 붙이세요 — 암묵적 `private`은 사용하지 마세요
-
-## 구조 순서
+**데이터 컨테이너** — 데이터 SO, `[Serializable]` 데이터 class/struct, Job struct:
+`public` PascalCase 필드, 접두사 없음, `[Header]`로 묶는다. 로직은 변환 메서드(`MakeAttackInfo()`) 정도만.
+예: `SOAttackInfo`, `SOPoolData`, `SOStage`, `SOObjectInfo`, `BlackBoard`, `AttackInfo`, `tShotInfo`
 
 ```csharp
-public sealed class PlayerController : MonoBehaviour
+[CreateAssetMenu(fileName = "SO_Stage", menuName = "Game/Dungeon/Stage")]
+public sealed class SOStage : ScriptableObject
 {
-    // 1. 직렬화된 필드
-    // 2. private 필드 / 캐싱된 참조
-    // 3. 프로퍼티
-    // 4. Unity 생명주기: Awake, OnEnable, Start, FixedUpdate, Update, LateUpdate, OnDisable, OnDestroy
-    // 5. public 메서드
-    // 6. private 메서드
+    [Header("Boss")]
+    public SOPoolData BossPrefab;
+    public Vector3 BossSpawnPosition;
+    public float BossShowDistance;
 }
 ```
 
-## 제어 흐름
+**행동 클래스** — MonoBehaviour, 로직을 가진 SO(BT 노드, Feature, BulletAction):
+`[SerializeField] private m_*` + 외부에서 읽는 것만 프로퍼티 (§5).
 
-- 한 줄짜리 `if`는 중괄호를 사용하지 마세요
-- 핫 패스(Update, FixedUpdate)에서는 `foreach`보다 `for`를 사용하세요
-- 축약된 루프 변수를 쓰세요 — `for (int i = 0; ...)`
-- 매직 스트링을 쓰지 마세요 — `nameof()`, `Animator.StringToHash()`, `Shader.PropertyToID()`를 사용하세요
+## 5. 캡슐화 — 최소 가시성 (행동 클래스)
 
-## 기타
+- 필드·메서드·프로퍼티·중첩 타입은 기본 `private`. 다른 클래스가 **실제로** 호출/읽기/쓰기 할 때만 연다
+- 테스트: non-private 으로 만들기 전에 현재 코드베이스의 호출자를 특정한다. 못 하면 `private`
+- `[SerializeField]`는 인스펙터에서 실제로 조정하는 값·참조에만. 런타임 상태, 내부 플래그, 캐싱된 참조는 그냥 `private`
 
-- 게임플레이 코드에서는 LINQ를 사용하지 마세요
-- 문자열을 조합할 때는 `StringBuilder`를 사용하세요
-- tag 보다는 layermask를 사용하세요
-- using 밑에 부분에 해당 클래스의 목적을 서술하세요
-```using System ...
+```csharp
+[SerializeField] private float m_fMoveSpeed = 5.0f;    // 인스펙터에서 조정
+[SerializeField] private Transform m_refFireTr = null; // 인스펙터 참조
+public Transform FireTransform => m_refFireTr;         // Drone 이 읽음
+private int m_iCurrentHP;                              // 런타임 상태 — 직렬화 안 함
+```
+
+## 6. 파일 구조
+
+### 헤더 블록
+using 아래, 어트리뷰트 위. 제목은 가운데, 본문은 **`기능 :`**. 이 타입이 무엇을/왜 담당하는지만 쓴다 — "Update 없음", "할당 없음" 같은 부가 설명은 넣지 않는다.
+
+```csharp
+using UnityEngine;
+
 /*///////////////////////////////////////////
-                BulletLine
-목적 : 원통형 메쉬를 시작점~끝점 사이에 걸치도록 Transform을 맞춰
-       볼렛 예고선(텔레그래프)으로 사용하는 오브젝트
+            SOStrafeNode
+기능 : 일정 시간마다 방향을 반전하며 횡이동
+       타이머/방향은 BlackBoard에 저장 (SO 데이터 오염 방지)
  *///////////////////////////////////////////
+
+[CreateAssetMenu(fileName = "SO_StrafeNode", menuName = "Game/Monster/ActionNode/StrafeNode")]
+public sealed class SOStrafeNode : SONode
 ```
+
+### 한 파일에 여러 타입
+파일 이름 = 주 클래스 이름 (MonoBehaviour/ScriptableObject 는 Unity 요구사항). 그 클래스와 붙어 다니는 enum · struct · `[Serializable]` 데이터 클래스는 **같은 파일**에 두고 각자 헤더를 단다.
+예: `BehaviorTree.cs` = `eNodeState` + `SONode` + `SOListNode` + `BlackBoard` + `BehaviorTree`, `SOAttackInfo.cs` = `SOAttackInfo` + `AttackInfo` + `tShotInfo`.
+여러 시스템이 따로 쓰는 독립 개념이 되면 그때 파일을 나눈다.
+
+### sealed
+새로 만드는 타입은 기본 `sealed` — 상속을 의도해 설계한 베이스(`SONode`, `Bullet`, `RandomFeatureCard`)만 푼다. 기존 파일의 `public class` 선언은 그 작업 범위가 아니면 바꾸지 않는다.
+
+### 멤버 순서
+- 필드는 **기능 묶음(`[Header]`) 단위**로 놓는다. 한 묶음 안에 직렬화/비직렬화 필드가 섞여도 된다
+- 프로퍼티는 **백킹 필드 바로 아래** (`m_refFireTr` 다음 줄에 `FireTransform`)
+- 메서드는 Unity 생명주기 → 진입점 메서드 → 그 메서드가 부르는 private 헬퍼를 바로 아래. public/private 끼리 몰아서 정렬하지 않는다
+
+## 7. 제어 흐름 · 포맷
+
+- 중괄호는 항상 다음 줄 (Allman)
+- 한 줄짜리 `if` / `else` / `for` 는 중괄호 없이, **본문을 다음 줄**에 들여쓴다. 조건과 같은 줄에 붙이지 않는다
+- 블록이 필요하면 여러 줄로 연다 — `{ Destroy(gameObject); return; }` 같은 한 줄 블록 금지
+- bool 은 **`== true` / `== false`로 명시**한다. `!`는 메서드 호출 결과(`TryGetValue`, `ContainsKey`)에만 쓴다
+- `for` 증가는 **`++i`** (전위). 핫 패스(`Update`, `FixedUpdate`)에서는 `foreach` 대신 인덱스 `for`
+- 모든 멤버에 명시적 접근 제한자 — 암묵적 `private` 금지
+- `var`는 오른쪽에서 타입이 보일 때만
+- 매직 스트링 금지 — `nameof()`, `Animator.StringToHash()`, `Shader.PropertyToID()`
+- 게임플레이 코드에서 LINQ 금지, 문자열 조합은 `StringBuilder`, tag 대신 layermask
+
+```csharp
+for (int i = 0; i < m_listWeapon.Count; ++i)
+{
+    if (m_listWeapon[i].gameObject.activeSelf == false)
+        continue;
+
+    if (m_listWeapon[i].CheckTime() == true)
+        m_listWeapon[i].Fire(vTargetPos, m_refTargetScnner.Target);
+}
+
+if (m_bHorizontaol == true)
+    _refBB.StrafeDir = _refBB.Owner.transform.right;
+else
+    _refBB.StrafeDir = _refBB.Owner.transform.up;
+```
+
+## 8. 주석 · 어트리뷰트
+
+- 주석은 한국어. 헤더 블록은 항상 쓰고, 그 밖에는 코드만 봐서는 안 보이는 **"왜"**만 남긴다
+- `[Header("English")]`, `[Tooltip("한국어 설명")]`

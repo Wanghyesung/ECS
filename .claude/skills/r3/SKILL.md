@@ -121,7 +121,7 @@ public Observable<Unit> OnFire => m_subjectFire;          // Subject<Unit> 필�
 public Observable<Vector2> Move => Observable.EveryUpdate().Select(_ => m_refActions.Player.Move.ReadValue<Vector2>());
 
 // WeaponSystem: 연타 스로틀은 여기서
-InputManager.Instance.OnFire
+InputManager.m_Instance.OnFire
     .ThrottleFirst(TimeSpan.FromSeconds(m_fFireInterval))
     .Subscribe(_ => Fire())
     .AddTo(this);
@@ -143,9 +143,9 @@ m_refButton.OnClickAsObservable().Subscribe(_ => Open()).AddTo(this);
 
 ```csharp
 m_refModel.LevelUp
-    .SubscribeAwait(async (_iLevel, _ct) =>
+    .SubscribeAwait(async (_iLevel, _tToken) =>
     {
-        await m_refCardUI.ShowAsync(_iLevel, _ct);      // UniTask 를 그대로 await
+        await m_refCardUI.ShowAsync(_iLevel, _tToken);      // UniTask 를 그대로 await
     }, AwaitOperation.Drop)                             // 연출 중 들어온 레벨업은 버림
     .AddTo(this);
 ```

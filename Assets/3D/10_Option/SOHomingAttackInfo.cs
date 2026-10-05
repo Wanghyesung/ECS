@@ -25,6 +25,7 @@ public class SOHomingAttackInfo : SOAttackInfo
         refHomingInfo.MaxHitCount = HitCount;
         refHomingInfo.HitStep = HitStep;
         refHomingInfo.LineDuration = TelegraphDuration;
+        refHomingInfo.BulletLineDuration = BulletLineDuration;
 
         refHomingInfo.AliveTime = AliveTime;
         refHomingInfo.Speed = Speed;
@@ -33,6 +34,7 @@ public class SOHomingAttackInfo : SOAttackInfo
         refHomingInfo.KnockbackDuration = KnockbackDuration;
 
         refHomingInfo.HitLayers = HitLayers;
+        refHomingInfo.HitAudio = HitAudio;
 
         refHomingInfo.RotationSpeed = BaseRotationSpeed;
         refHomingInfo.MaxRotationSpeed = MaxRotationSpeed;

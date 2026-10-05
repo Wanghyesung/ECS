@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5867a539ce1f16349885ed669debc82f, type: 3}
+  m_Name: SO_MainStage7_ClearReward
+  m_iRewardCount: 4
+  m_iClearExp: 100
+  m_listEntries:
+  - m_refItem: {fileID: 11400000, guid: 6715c3b06bda22748ba612b478dfa55f, type: 2}
+    m_iWeight: 1
+  - m_refItem: {fileID: 11400000, guid: 598e8289322b9c1439a217a335be2fe1, type: 2}
+    m_iWeight: 1
+  - m_refItem: {fileID: 11400000, guid: c48c08e0e4ab84a4398fcaf402a45c50, type: 2}
+    m_iWeight: 1
+  - m_refItem: {fileID: 11400000, guid: 71b8567f9dfb75245aad42d5ec65c0a2, type: 2}
+    m_iWeight: 1
+  - m_refItem: {fileID: 11400000, guid: 127e5c096f79bf242924e682e46e74ff, type: 2}
+    m_iWeight: 1
+  - m_refItem: {fileID: 11400000, guid: a3115ff96cc0c9640a52b36ef38b3b38, type: 2}
+    m_iWeight: 1

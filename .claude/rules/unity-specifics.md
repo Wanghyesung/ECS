@@ -28,9 +28,13 @@ using UnityEditor;
 Unity는 파괴된 오브젝트를 `== null`로 감지하도록 `==`를 오버라이드한다. `?.`와 `is null`은 C# 참조 비교라 파괴된 오브젝트에서 그대로 메서드를 호출한다.
 
 ```csharp
-m_refTarget?.TakeDamage(10);                   // 위험 — 파괴된 오브젝트에도 호출됨
-if (m_refTarget != null) m_refTarget.TakeDamage(10);  // 안전
+m_refTarget?.TakeDamage(10);        // 위험 — 파괴된 오브젝트에도 호출됨
+
+if (m_refTarget != null)            // 안전
+    m_refTarget.TakeDamage(10);
 ```
+
+`?.`는 Unity 오브젝트가 아닌 순수 C# 객체(`List`, `Tween`, `IDisposable` 등)에는 써도 된다.
 
 ## 생명주기 순서
 

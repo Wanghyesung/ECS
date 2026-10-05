@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c7cefd5eeceecc4895a4dddc57fca9a, type: 3}
+  m_Name: SO_Audio_Hit_BaseMonBullet
+  m_EditorClassIdentifier: 
+  m_listClips:
+  - {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
+  - {fileID: 8300000, guid: e11a5a019377fbd4c81caa0adcb4c236, type: 3}
+  m_refOutputGroup: {fileID: 5783306332505341378, guid: f0fbab319f84aa4488c9c645bc405904, type: 2}
+  m_fVolume: 0.55
+  m_fPitchMin: 1
+  m_fPitchMax: 1
+  m_fSpatialBlend: 0.6
+  m_fMinInterval: 0.08
+  m_iPriority: 160
+  m_bLoop: 0

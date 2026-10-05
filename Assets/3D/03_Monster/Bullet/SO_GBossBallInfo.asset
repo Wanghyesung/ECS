@@ -16,8 +16,8 @@ MonoBehaviour:
     \uACF5\uACA9"
   Damage: 70
   AttackPower: 0
-  Speed: 30
-  SpeedOffset: 8
+  Speed: 45
+  SpeedOffset: 12
   AliveTime: 10
   HitCount: 1
   HitStep: 1
@@ -29,4 +29,4 @@ MonoBehaviour:
   HitLayers:
     serializedVersion: 2
     m_Bits: 8
-  HitSound: {fileID: 0}
+  HitAudio: {fileID: 11400000, guid: 308ce179988d92d4d8e730e081365dbd, type: 2}

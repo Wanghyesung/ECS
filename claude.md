@@ -6,14 +6,13 @@
 
 ## 프로젝트 개요
 
-| 속성 | 값 |
-|------|-----|
+| 항목 | 내용 |
+|---|---|
 | **Unity 버전** | 2022.3.62f2 · URP · 주 타겟 Windows, 부 타겟 Android |
-| **패키지** | Addressables, AI Navigation, Cinemachine, Input System, TextMeshPro, Test Framework, Unity MCP |
-| **비동기/반응형/트윈** | **UniTask**(`Assets/Plugins/UniTask`, 코루틴 전면 대체 — 필수) · **DOTween**(`Assets/Plugins/Demigiant`) · **R3**(Cysharp — 프로젝트 표준 Reactive. **아직 미설치**: 사용 전 `Packages/manifest.json`에 `com.cysharp.r3` 있는지 확인, 없으면 `r3` 스킬의 설치 안내를 사용자에게 제시하고 코드를 쓰지 말 것) |
-| **안 쓰는 것** | VContainer(DI), UniRx(→R3), 코루틴, 레거시 Input, MessagePipe |
+| **패키지** | Addressables, AI Navigation, Cinemachine, Input System, TextMeshPro, Test Framework, Burst/Collections(Jobs), Unity MCP |
+| **비동기/반응형/트윈** | **UniTask**(`Assets/Plugins/UniTask`, 코루틴 전면 대체 — 필수) · **DOTween**(`Assets/Plugins/Demigiant`) · **R3**(Cysharp — 프로젝트 표준 Reactive, 설치됨: `com.cysharp.r3` + NuGet `R3`) |
 
-**게임 기획:** 3D 슈팅 · 로그라이트. 컨셉/게임 루프/조커 카드 시스템은 `.claude/docs/game-design.md`, 밸런스는 `.claude/docs/balance-guide.md`.
+**게임 기획:** `.claude/docs/game-design.md`, 밸런스는 `.claude/docs/balance-guide.md`.
 
 ---
 
@@ -26,7 +25,6 @@
 - 슬래시 커맨드 없이 채팅으로 기능을 요청받아도, 코드를 쓰기 전에 ① 비슷한 기존 코드 검색 결과 ② Update/FixedUpdate 등 핫 루프 성능 영향 ③ SO/이벤트로 확장 가능한 지점, 이 세 가지를 한 줄씩 먼저 보여줄 것. (`workflow_view` 스킬이 이 흐름을 PRD까지 확장함)
 - 씬(.unity)의 실제 GameObject 인스턴스는 프리팹과 다를 수 있음. 컴포넌트 존재 여부는 프리팹만 보고 판단하지 말고 필요하면 MCP로 실제 씬 인스턴스를 확인할 것.
 - 기능 계획을 제시할 때는 관련 기존 필드/메서드/최적화를 구체적으로 인용할 것(예: "Laser.cs의 HitStep/MaxHitCount가 이미 이 역할을 한다").
-- 서브에이전트는 사용자가 시키거나 커맨드가 명시할 때만. 기본은 이 세션이 직접 한다 (`unity-reviewer`는 독립 리뷰용으로 예외).
 
 ---
 
@@ -46,15 +44,16 @@
 
 ## 아키텍처
 
-게임 시스템(BT, SO Action, Blackboard, Object Pool, C# 이벤트, R3 바인딩, UniTask, MVP UI, 입력 시스템) 규칙은 `.claude/rules/architecture.md`. 자체 asmdef는 아직 없음(Plugins의 UniTask만 있음).
-
-**입력 결정(2026-09-14):** `InputManager` 싱글톤은 유지하되 내부를 `List<InputActionReference>`에서 **생성 C# 클래스(`PlayerAction`)**로 전환하기로 함 — 기존 `Assets/3D/06_Input/InputManager.cs` 마이그레이션은 별도 PRD.
+게임 시스템(Object Pool, R3 알림·바인딩, UniTask, MVP UI, 입력 시스템, 싱글톤) 규칙은 `.claude/rules/architecture.md`. 자체 asmdef 없음.
 
 ---
 
 ## 컨벤션
 
-- `.claude/rules/` 필수: `csharp-unity.md`(`m_` + 타입 헝가리안, 매개변수 `_` 접두사, 최소 가시성), `performance.md`, `serialization.md`, `unity-specifics.md`, `architecture.md`
+- `.claude/rules/` 필수: `csharp-unity.md`, `performance.md`, `serialization.md`, `unity-specifics.md`, `architecture.md`
+- 코드 스타일 핵심(`csharp-unity.md`): `m_`/`_` + 타입 접두사, 데이터 컨테이너(데이터 SO·`[Serializable]`)는 public PascalCase, 헤더 블록 `기능 :`, 한 줄 if 본문은 다음 줄, bool 은 `== false`, `++i`, 새 타입 `sealed`
+- 싱글톤은 `public static T m_Instance = null;` + 여러 줄 Awake 가드 (`architecture.md`)
+- 충돌 판정 대상이 1500개를 넘거나 판정이 무거우면 PhysX 대신 자체 Collider (`collider-system` 스킬)
 - 컴포넌트 참조는 `Awake()`에서 캐싱, 핫 루프에서 `GetComponent` 금지
 - 직렬화 에셋은 Unity YAML(Force Text)
 - 기능 설계의 흐름/상태는 Mermaid로(`architecture.md`의 규칙)
@@ -63,7 +62,7 @@
 
 ## 스킬
 
-프로젝트 전용: `object-pooling`(이 프로젝트 풀 구조 — Bullet/FX/Enemy 필수), `r3`, `workflow_view`, `unity-project-orchestrator`, `deep-interview`, `unity-mcp-patterns`. 패키지별: `unitask`, `dotween`, `addressables`, `input-system`, `cinemachine`, `navmesh`, `urp-pipeline`, `textmeshpro`, `animation`, `physics`, `event-systems`, `scriptable-objects`.
+프로젝트 구조 전용: `object-pooling`(`SOPoolData`+`PoolObject`+`ObjectPoolManager`), `collider-system`(자체 충돌 판정), `jobs-burst`(MoveManager + Job), `bt-node`(Behavior Tree 노드), `event-systems`(R3 알림 선택), `scriptable-objects`, `r3`. 워크플로: `workflow_view`, `unity-project-orchestrator`, `deep-interview`, `unity-mcp-patterns`, `commit`. 패키지별: `unitask`, `dotween`, `addressables`, `input-system`, `urp-pipeline`, `textmeshpro`, `animation`, `physics`, `cinemachine`·`navmesh`(이 프로젝트에선 미사용).
 
 ---
 
