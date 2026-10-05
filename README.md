@@ -3,7 +3,7 @@
 Unity(URP)로 제작 중인 **3D 슈팅 게임**입니다.
 레벨업 3택 위에 등급형 조커 카드 도박이라는 하이 리스크 성장 계층을 더해, "한 번 더 걸어볼까 여기서 멈출까"를 매 레벨업마다 반복시키는 것이 이 게임의 정체성입니다.
 
-> 데모 영상: [YouTube에서 보기](https://youtu.be/Y0OCYpNK0yg?si=TUrVmDRfxRQ6aauJ)
+> 데모 영상: [YouTube에서 보기](https://youtu.be/steticrGBRY)
 
 ## 플레이 사진
 ![플레이 사진](Docs/Screenshots/gameplay-main.png)
@@ -84,6 +84,18 @@ Docs/
 ### 로비
 
 ![로비](Docs/Screenshots/lobby.png)
+
+### 플레이어 스탯 업그레이드
+
+![플레이어 스탯 업그레이드 화면](Docs/Screenshots/lobby-stats-upgrade.png)
+
+### 플레이어 장비 선택
+
+![플레이어 장비 선택 화면](Docs/Screenshots/lobby-equipment.png)
+
+### 아이템 샵
+
+![아이템 샵 화면](Docs/Screenshots/lobby-item-shop.png)
 
 ### 레벨업 3택
 

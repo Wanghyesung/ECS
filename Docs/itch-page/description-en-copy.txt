@@ -14,36 +14,36 @@
 <tbody>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 01: BASIC FIRE]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTI4LnBuZw==/original/cMwQJQ.png" alt="Basic fire during a space battle"></p>
 <h3>Basic fire</h3>
 <p>Keep a steady stream of shots on enemies while you fly.</p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 02: SHOTGUN]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTQyLnBuZw==/original/oFDf6u.png" alt="Shotgun firing during a space battle"></p>
 <h3>Shotgun</h3>
 <p>Fire a spread of pellets. Close the gap to land more shots.</p>
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 03: CHARGE SHOT]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTQ2LnBuZw==/original/Pf9idd.png" alt="Blue charge shot in combat"></p>
 <h3>Charge shot</h3>
 <p>Hold the left mouse button to charge a blue energy shot. Release to fire.</p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 04: LASER]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTU0LnBuZw==/original/ieSOu5.png" alt="Laser piercing enemies"></p>
 <h3>Laser</h3>
 <p>Pierce enemies with a bright yellow beam.</p>
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 05: MISSILES]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTU2LnBuZw==/original/YQTc6o.png" alt="Missiles firing during combat"></p>
 <h3>Missiles</h3>
 <p>Add red missile fire to your growing arsenal.</p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 06: HOMING SHOTS]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTY1LnBuZw==/original/IwqePf.png" alt="Homing shots tracking enemies"></p>
 <h3>Homing shots</h3>
 <p>Launch guided projectiles that track enemies while you steer.</p>
 </td>
@@ -52,7 +52,7 @@
 </table>
 
 <h2>Bring a wingman.</h2>
-<p><em>[PHOTO 07: SUPPORT DRONE]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTcyLnBuZw==/original/B18K3P.png" alt="Support drone attacking alongside the player"></p>
 <p>Your drone follows your ship, tracks nearby enemies, and fires blue projectiles automatically. Look above and to the right of your ship to see it in action.</p>
 
 <h2>Make a bigger impact.</h2>
@@ -60,11 +60,11 @@
 <tbody>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 08: NUCLEAR LAUNCH]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTgxLnBuZw==/original/tv6R0l.png" alt="Nuclear missile descending toward the battlefield"></p>
 <p><strong>The descent.</strong></p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 09: NUCLEAR BLAST]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTg3LnBuZw==/original/5QrTCh.png" alt="Nuclear blast expanding across the battlefield"></p>
 <p><strong>The detonation.</strong></p>
 </td>
 </tr>
@@ -73,17 +73,17 @@
 <p>Claim the <strong>legendary nuclear strike card</strong> to launch a missile into the battlefield. The camera follows its descent, then pulls back for the blast.</p>
 
 <h2>Take the reward.<br>Or take another chance.</h2>
-<p><em>[PHOTO 10: CARD REWARDS]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTkzLnBuZw==/original/pBNmbF.png" alt="Card rewards after a Joker roll"></p>
 <p>Regular level-ups offer three cards. The <strong>Joker</strong> adds another decision: claim your pending rewards, or roll again for higher-tier cards and more choices.</p>
 <table width="100%" cellpadding="10">
 <tbody>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 11: JOKER SUCCESS]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MTk5LnBuZw==/original/AyevFm.png" alt="Successful Joker roll"></p>
 <p><strong>A successful roll opens up rewards.</strong></p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 12: JOKER FAILURE]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MjM4LnBuZw==/original/H9r%2Byt.png" alt="Failed Joker roll"></p>
 <p><strong>A failed roll has a cost.</strong></p>
 </td>
 </tr>
@@ -97,18 +97,39 @@
 <tbody>
 <tr>
 <td width="50%" valign="top">
-<p><em>[PHOTO 13: BOSS BARRAGE]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5NDU4LnBuZw==/original/m%2F3iLm.png" alt="Player fighting through a boss barrage"></p>
 <p><strong>Fight through the barrage.</strong></p>
 </td>
 <td width="50%" valign="top">
-<p><em>[PHOTO 14: BOSS ARRIVAL]</em></p>
+<p><img src="https://img.itch.zone/aW1nLzMwNDk5MzAyLnBuZw==/original/HbOWXS.png" alt="Boss arrival warning"></p>
 <p><strong>A new threat arrives.</strong></p>
 </td>
 </tr>
 </tbody>
 </table>
 <p>Keep moving through boss attack patterns while your weapons and drone keep firing.</p>
-<p>Between runs, visit the lobby shop, manage your inventory, and equip items that improve your stats.</p>
+
+<h2>Prepare for your next run.</h2>
+<p>Between runs, return to the lobby to upgrade your stats, choose equipment, and shop for items.</p>
+<table width="100%" cellpadding="10">
+<tbody>
+<tr>
+<td width="50%" valign="top">
+<p><em>[PHOTO 15: PLAYER STAT UPGRADES]</em></p>
+<h3>Upgrade your stats</h3>
+<p>Spend your currency to improve your ship before the next run.</p>
+</td>
+<td width="50%" valign="top">
+<p><em>[PHOTO 16: EQUIPMENT SELECTION]</em></p>
+<h3>Choose your equipment</h3>
+<p>Pick gear from your inventory to shape your loadout.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><em>[PHOTO 17: ITEM SHOP]</em></p>
+<h3>Visit the item shop</h3>
+<p>Browse items and choose what to buy with your currency.</p>
 
 <h2>Take control.</h2>
 <table width="100%" cellpadding="8">
