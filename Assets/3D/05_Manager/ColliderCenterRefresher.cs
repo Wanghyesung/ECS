@@ -5,19 +5,7 @@ using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Jobs;
 
-/*///////////////////////////////////////////
-              ColliderCenterRefresher
-목적 : 콜라이더의 위치/축(transform.position/rotation) 갱신만 전담한다 - "충돌 판정"과
-       분리된 "이동 추적" 관심사. TransformAccessArray + Burst Job으로 transform 읽기를
-       워커 스레드에 흩뿌려서, 관리형↔네이티브 경계를 매번 넘는 메인스레드 가상 호출 비용을 없앤다.
-
-       Bullet/Missile/GuidedMoveManager와 같은 TransformAccessArray+Job 패턴이지만, 그것들처럼
-       "풀에 영구 등록 + 활성 플래그만 토글"하지 않는다 - Obstacle/Monster/Player 등 실제로
-       Destroy될 수 있는 콜라이더까지 다루므로 Register/Unregister로 스왑백 등록/해제한다
-       (파괴 전에 반드시 빼야 다음 Job이 죽은 Transform을 참조하는 사고를 막을 수 있다).
-
-       ColliderManager가 소유하는 순수 C# 클래스(BoxColliderGrid와 동일 패턴).
- *///////////////////////////////////////////
+// TransformAccessArray와 Burst Job으로 동적 충돌체의 중심과 축을 갱신한다.
 public sealed class ColliderCenterRefresher
 {
     private const int MIN_CAPACITY = 64;
@@ -28,9 +16,7 @@ public sealed class ColliderCenterRefresher
     private readonly List<int> m_listColliderIdBySlot = new List<int>();
     private TransformAccessArray m_transformArray;
 
-    // Offset은 등록 시점에 한 번만 채워지는 입력값이라 배열이 자랄 때 기존 내용을 복사해서
-    // 보존해야 한다(다른 배열과 다른 유일한 이유). Center/AxisX/Y/Z는 Job이 매 프레임 통째로
-    // 덮어쓰는 순수 출력이라 보존 불필요
+    // Offset은 확장 시 보존한다. 중심과 축은 매 프레임 덮어쓴다.
     private NativeArray<Vector3> m_arrOffset;
     private NativeArray<Vector3> m_arrCenter;
     private NativeArray<Vector3> m_arrAxisX;
@@ -181,8 +167,7 @@ public sealed class ColliderCenterRefresher
             m_arrAxisZ.Dispose();
     }
 
-    // TransformAccess.rotation은 이미 추출된 값이라 Circle/Box 가리지 않고 축까지 매번 계산해도
-    // 싸다(추가 네이티브 호출이 아니라 Burst 쿼터니언 곱셈일 뿐) - Circle 슬롯의 Axis는 안 읽히고 버려짐
+    // 캐싱한 회전으로 축을 계산한다. Circle의 축 결과는 사용하지 않는다.
     [BurstCompile]
     private struct RefreshCenterJob : IJobParallelForTransform
     {
