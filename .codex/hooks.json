@@ -1,0 +1,53 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(apply_patch|Edit|Write)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/codex-hook.sh\" pre-edit",
+            "commandWindows": "powershell.exe -NoProfile -Command \"$r = git rev-parse --show-toplevel; & 'C:/Program Files/Git/bin/bash.exe' -l ($r + '/.codex/hooks/codex-hook.sh') pre-edit; exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "^(Bash|exec_command)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/codex-hook.sh\" bash",
+            "commandWindows": "powershell.exe -NoProfile -Command \"$r = git rev-parse --show-toplevel; & 'C:/Program Files/Git/bin/bash.exe' -l ($r + '/.codex/hooks/codex-hook.sh') bash; exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^(apply_patch|Edit|Write)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/codex-hook.sh\" post-edit",
+            "commandWindows": "powershell.exe -NoProfile -Command \"$r = git rev-parse --show-toplevel; & 'C:/Program Files/Git/bin/bash.exe' -l ($r + '/.codex/hooks/codex-hook.sh') post-edit; exit $LASTEXITCODE\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/codex-hook.sh\" stop",
+            "commandWindows": "powershell.exe -NoProfile -Command \"$r = git rev-parse --show-toplevel; & 'C:/Program Files/Git/bin/bash.exe' -l ($r + '/.codex/hooks/codex-hook.sh') stop; exit $LASTEXITCODE\"",
+            "timeout": 150
+          }
+        ]
+      }
+    ]
+  }
+}

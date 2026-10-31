@@ -1,43 +1,18 @@
 ---
 name: unity-fix
-description: "Unity 버그를 진단하고 수정합니다 — 콘솔 오류를 읽고, 일반적인 원인을 확인하고, 타겟 수정을 적용하고, MCP를 통해 검증합니다."
+description: "Unity 버그 진단·수정 — 콘솔 오류를 읽고 근본 원인을 추적해 최소 수정 후 MCP로 검증합니다."
 user-invocable: true
 args: bug_description
 ---
 
 # /unity-fix — 버그 진단 및 수정
 
-사용자가 설명한 문제를 수정합니다: **$ARGUMENTS**
+대상: **$ARGUMENTS**
 
-## 에이전트 라우팅
+이 세션이 직접 수행한다 (서브에이전트 없음).
 
-- 기본값: `unity-fixer` 에이전트 사용(opus — 심층 조사)
-- `$ARGUMENTS`에 `--quick`이 포함된 경우: `unity-fixer-lite` 에이전트 사용(sonnet — 명백한 수정용)
-- 에이전트에 전달하기 전에 인자에서 `--quick` 플래그를 제거합니다.
-
-## 워크플로
-
-선택된 픽서 에이전트를 사용하여 다음을 수행합니다:
-
-1. **증거 수집:**
-   - `read_console` MCP를 통해 Unity 콘솔에서 오류, 경고, 스택 트레이스를 읽습니다.
-   - 오류 메시지 또는 관련 코드에 대해 코드베이스를 검색합니다.
-   - 사용자가 오류를 붙여넣은 경우, 파일명, 줄 번호, 오류 유형을 파싱합니다.
-
-2. **진단** — 다음의 일반적인 Unity 원인들을 순서대로 확인합니다:
-   - NullReferenceException → 누락된 참조, 파괴된 오브젝트, 실행 순서
-   - Missing Script → 파일/클래스 이름 불일치, asmdef 문제
-   - 직렬화 데이터 손실 → FormerlySerializedAs 없이 필드 이름 변경
-   - 코루틴 중단 → SetActive(false) 또는 Destroy
-   - 물리가 작동하지 않음 → 잘못된 레이어, 누락된 콜라이더/리지드바디
-   - 빌드 실패 → 런타임에서의 UnityEditor, 플랫폼 정의
-
-3. **수정** — 최소한의 타겟 수정을 적용합니다. 주변 코드는 리팩터링하지 않습니다.
-
-4. **검증:**
-   - `read_console`을 통해 콘솔을 확인합니다 — 오류가 사라졌어야 합니다.
-   - 직렬화 문제였던 경우, 재구성이 필요할 수 있는 데이터에 대해 경고합니다.
-   - 빌드 문제였던 경우, 검증을 위해 `/unity-build` 실행을 제안합니다.
-
-5. 버그의 원인과 이 수정이 재발을 어떻게 방지하는지 **설명**합니다.
-</content>
+1. **증거 수집** — `read_console`(error/warning + stacktrace), 사용자가 붙여넣은 에러의 파일/줄/유형 파싱, 관련 코드 Grep. 씬 인스턴스가 관련되면 프리팹만 보지 말고 MCP `find_gameobjects`/`manage_components`로 실제 씬을 본다.
+2. **근본 원인** — CLAUDE.md 규칙: "오류가 있다"로 끝내지 말고 (1) 왜 발생하는지 코드/씬 구조까지 추적 (2) 실제 문제를 구체적으로 짚고 (3) 해결 방법 제시. 흔한 원인 순서: NullReference(미할당/파괴/실행 순서) → Missing Script(파일명≠클래스명) → 직렬화 손실(FormerlySerializedAs) → 풀 키 불일치(SOPoolData 참조) → 물리(레이어/콜라이더) → 빌드(UnityEditor 누출, 플랫폼 define). 증상만 고치지 말고 **모든 호출자를 grep**해서 공유 지점 하나를 고친다.
+3. **수정** — 최소한의 타겟 수정. 주변 리팩터링 금지. 고치지 않기로 한 진단은 `.claude/docs/known-issues.md`에 기록(훅이 사용자 승인을 요구함).
+4. **검증** — `refresh_unity(compile: request)` → `read_console` 에러 0. 직렬화 문제였으면 재설정이 필요한 데이터 경고, 빌드 문제였으면 `/unity-build` 제안.
+5. **설명** — 원인과 이 수정이 재발을 막는 이유.

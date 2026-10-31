@@ -1,13 +1,13 @@
 ---
 name: unity-review
-description: "Unity를 완전히 인지하는 코드 리뷰 — 직렬화 안전성, 성능, 아키텍처, Unity 특유의 함정을 점검합니다."
+description: "Unity를 완전히 인지하는 코드 리뷰 — 직렬화 안전성, 성능, 프로젝트 코드 스타일, 아키텍처, Unity 특유의 함정을 점검합니다."
 user-invocable: true
 args: scope
 ---
 
 # /unity-review — Unity 코드 리뷰
 
-Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니다.
+Unity 특유의 점검과 프로젝트 코드 스타일(`rules/csharp-unity.md`) 점검을 포함한 종합적인 코드 리뷰를 수행합니다.
 
 ## 에이전트 라우팅
 
@@ -18,44 +18,47 @@ Unity 특유의 점검을 포함한 종합적인 코드 리뷰를 수행합니�
 ## 범위
 
 사용자가 범위를 지정한 경우: **$ARGUMENTS**를 리뷰
-범위가 지정되지 않은 경우: 최근에 변경된 파일 (`git diff` 또는 `Assets/Scripts/`의 모든 `.cs` 파일)을 리뷰
+범위가 지정되지 않은 경우: 커밋되지 않은 `.cs` 변경 (`git diff --name-only HEAD -- '*.cs'` + `git ls-files --others --exclude-standard -- '*.cs'`). 변경이 없으면 그렇다고 말하고 끝낸다 — 폴더 전체를 훑지 않는다.
 
 ## 워크플로우
 
-`unity-reviewer` 에이전트를 사용하여 다음을 점검합니다.
+`unity-reviewer` 에이전트의 체크리스트로 다음을 점검합니다.
 
 ### 1. 심각한 문제 (반드시 수정)
 - `[FormerlySerializedAs]` 없이 이름이 변경된 `[SerializeField]` 필드
-- Unity 오브젝트에 `?.` 또는 `is null` 사용 (반드시 `== null`을 사용해야 함)
+- Unity 오브젝트에 `?.` 또는 `is null` 사용 (반드시 `== null`)
 - `#if UNITY_EDITOR` 없이 런타임 코드에 포함된 `UnityEditor` 네임스페이스
-- MonoBehaviour 클래스 이름이 파일 이름과 일치하지 않음
+- MonoBehaviour/ScriptableObject 클래스 이름이 파일 이름과 다름
 - `OnDestroy`에서 종료되지 않은 DOTween
-- 구독 해제가 짝을 이루지 않는 이벤트 구독
-- 처리되지 않은 `async void` 메서드
+- 해제 짝이 없는 R3 구독 (`AddTo`/`Dispose`/`DisposableBag` 없음)
+- `async void`, CancellationToken 누락
 
 ### 2. 성능 문제 (수정하는 것이 좋음)
-- Update/FixedUpdate/LateUpdate 내 GC 할당
-- 캐싱되지 않은 `GetComponent`, `Camera.main`, `FindObjectOfType`
-- 게임플레이 코드 내 LINQ
-- `CompareTag` 대신 사용된 `tag ==`
-- `SendMessage` / `BroadcastMessage`
-- 캐싱되지 않은 `WaitForSeconds`
-- `static readonly`로 캐싱되지 않은 `Animator.StringToHash`
+- Update/FixedUpdate/LateUpdate 내 GC 할당, 캐싱되지 않은 `GetComponent`/`Camera.main`/`FindObjectOfType`
+- 게임플레이 코드 내 LINQ, `tag ==`, `SendMessage`
+- 코루틴·`WaitForSeconds` (UniTask 로)
+- 풀 대상의 `Instantiate`/`Destroy` 직접 호출
+- 할당하는 PhysX 쿼리 — 판정 대상이 1500개를 넘으면 자체 Collider (collider-system)
+- `static readonly`로 캐싱되지 않은 `Animator.StringToHash`/`Shader.PropertyToID`
 
-### 3. 아키텍처 제안 (고려 사항)
-- 2단계보다 깊은 MonoBehaviour 상속
-- 너무 많은 일을 하는 갓 클래스(God class)
-- 시스템 간의 강한 결합
-- `[SerializeField] private`로 바뀌어야 하는 public 필드
-- 누락된 `[RequireComponent]` 속성
+### 3. 스타일 위반 (rules/csharp-unity.md)
+- 접두사(`m_`/`_`/타입), Transform `Tr`, `_tToken`
+- 같은 줄 if 본문, 한 줄 블록, `!` 대신 `== false`, `++i`
+- 싱글톤 형태, 새 파일 헤더(`기능 :`)·`sealed`·CreateAssetMenu 형식
+- 데이터 컨테이너의 public PascalCase 필드는 위반이 아니다
 
-### 4. Unity 특유의 경고
-- 코루틴 생명주기 문제
-- 객체 간 실행 순서 의존성
+### 4. 아키텍처 제안 (고려 사항)
+- 2단계보다 깊은 MonoBehaviour 상속, 갓 클래스
+- 발행자가 구독자를 알 필요가 없는데 직접 참조 (매니저 싱글톤 호출은 허용)
+- 행동 클래스의 public 필드
+- SO 에 런타임 상태 쓰기, leaf BT 노드의 상태 필드
+
+### 5. Unity 특유의 경고
+- 객체 간 실행 순서 의존성 (`Awake`에서 다른 싱글톤 접근 등)
 - 폴백 없는 플랫폼 정의
-- FixedUpdate 내 Time.deltaTime
+- FixedUpdate 내 `Time.deltaTime`
 
 ## 출력
 
 구체적인 file:line 참조와 제안된 수정 사항과 함께 심각도별로 그룹화된 결과를 제시합니다.
-마지막에 요약을 덧붙입니다: 심각 X건, 성능 Y건, 제안 Z건.
+마지막에 요약을 덧붙입니다: 심각 X건, 성능 Y건, 스타일 S건, 제안 Z건.

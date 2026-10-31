@@ -1,180 +1,116 @@
 ---
 name: scriptable-objects
-description: "ScriptableObject 아키텍처 패턴 — 이벤트 채널, 변수 참조, 런타임 세트, 팩토리 패턴, 데이터 컨테이너. 데이터 기반 Unity 아키텍처의 근간입니다."
+description: "ScriptableObject 패턴 — 데이터 컨테이너 SO(public PascalCase 필드), 로직을 가진 SO(BT 노드·Feature·BulletAction, [SerializeField] private m_), SO → 런타임 복사본, CreateAssetMenu 규칙, 런타임 상태를 SO 에 쓰지 않는 규칙. SO 를 새로 만들거나 고칠 때 사용합니다."
 alwaysApply: true
 ---
 
-# ScriptableObject 아키텍처
+# ScriptableObject
 
-ScriptableObject(SO)는 Unity에서 가장 강력한 아키텍처 도구입니다. 씬 밖에 존재하는 에셋 기반 데이터 컨테이너로, 데이터 기반 설계와 느슨한 결합, 디자이너 친화적인 워크플로우를 가능하게 합니다.
+SO 는 **데이터와 에디터 세팅만** 담는다. 런타임에 바뀌는 값은 절대 SO 에 쓰지 않는다 — Model, Blackboard, 매니저 쪽에 둔다.
 
-## 패턴 1: 데이터 컨테이너
+## 1. 데이터 컨테이너 SO — public PascalCase
 
-가장 단순하고 흔한 사용법 — 게임 데이터를 에셋으로 정의합니다.
+순수 데이터는 접두사 없는 `public` 필드로, `[Header]`로 묶는다 (`csharp-unity.md` §4).
 
 ```csharp
-[CreateAssetMenu(fileName = "NewWeapon", menuName = "Game/Weapon Definition")]
-public sealed class WeaponDefinition : ScriptableObject
+using UnityEngine;
+
+/*///////////////////////////////////////////
+                SOAttackInfo
+기능 : 탄 한 종류의 정적 데이터. 발사할 때 AttackInfo 런타임 복사본을 만든다
+ *///////////////////////////////////////////
+
+[CreateAssetMenu(fileName = "SO_AttackInfo", menuName = "Game/Weapon/AttackInfo")]
+public sealed class SOAttackInfo : ScriptableObject
 {
-    [Header("Identity")]
-    [SerializeField] private string m_strDisplayName;
-    [SerializeField] private Sprite m_refIcon;
     [TextArea]
-    [SerializeField] private string m_strDescription;
+    public string Description;
 
     [Header("Stats")]
-    [SerializeField] private float m_fDamage = 10f;
-    [SerializeField] private float m_fFireRate = 0.5f;
-    [SerializeField] private int m_iAmmoCapacity = 30;
-    [SerializeField] private GameObject m_refPrefab;
+    public int Damage = 10;
+    public float Speed = 12.0f;
+    public float AliveTime = 0.2f;
 
-    public string DisplayName => m_strDisplayName;
-    public Sprite Icon => m_refIcon;
-    public float Damage => m_fDamage;
-    public float FireRate => m_fFireRate;
-    public int AmmoCapacity => m_iAmmoCapacity;
-    public GameObject Prefab => m_refPrefab;
-}
-```
+    [Header("Targeting")]
+    public LayerMask HitLayers = ~0;
 
-**용도:** 아이템, 어빌리티, 적 설정, 레벨 데이터, 오디오 이벤트, UI 테마 등.
-
-## 패턴 2: 이벤트 채널
-
-시스템 간 결합을 아예 없애는 통신 방식입니다. 직접 참조가 필요 없습니다.
-
-```csharp
-[CreateAssetMenu(fileName = "NewVoidEvent", menuName = "Events/Void Event")]
-public sealed class VoidEventChannel : ScriptableObject
-{
-    private System.Action m_onRaised;
-
-    public void Raise()
+    public AttackInfo MakeAttackInfo()
     {
-        m_onRaised?.Invoke();
-    }
-
-    public void Subscribe(System.Action _listener)
-    {
-        m_onRaised += _listener;
-    }
-
-    public void Unsubscribe(System.Action _listener)
-    {
-        m_onRaised -= _listener;
+        AttackInfo refAttackInfo = new AttackInfo();
+        refAttackInfo.Damage = Damage;
+        refAttackInfo.Speed = Speed;
+        refAttackInfo.AliveTime = AliveTime;
+        refAttackInfo.HitLayers = HitLayers;
+        return refAttackInfo;
     }
 }
+```
 
-// 값을 전달하는 이벤트를 위한 제네릭 버전
-[CreateAssetMenu(fileName = "NewIntEvent", menuName = "Events/Int Event")]
-public sealed class IntEventChannel : ScriptableObject
+## 2. SO → 런타임 복사본
+
+레벨업·카드로 값이 바뀌는 데이터는 SO 원본을 건드리지 않고 복사본을 만들어 그걸 고친다. SO 는 여러 오브젝트가 공유하는 에셋이라 원본을 고치면 전부 오염되고, 에디터에서는 플레이를 멈춰도 값이 남는다.
+
+```csharp
+[SerializeField] private SOAttackInfo m_SOAttackInfo;   // 데이터 본체는 m_SO
+private AttackInfo m_refAttackInfo;                     // 런타임 복사본
+
+public void Init()
 {
-    private System.Action<int> m_onRaised;
+    m_refAttackInfo = m_SOAttackInfo.MakeAttackInfo();
+}
 
-    public void Raise(int _iValue) => m_onRaised?.Invoke(_iValue);
-    public void Subscribe(System.Action<int> _listener) => m_onRaised += _listener;
-    public void Unsubscribe(System.Action<int> _listener) => m_onRaised -= _listener;
+public void AddAttackDamage(int _iValue)
+{
+    m_refAttackInfo.Damage += _iValue;                  // 원본 SO 는 그대로
 }
 ```
 
-**사용 예:**
-```csharp
-// 발행자 (예: ScoreSystem)
-[SerializeField] private IntEventChannel m_SOOnScoreChanged;
-m_SOOnScoreChanged.Raise(iNewScore);
+## 3. 로직을 가진 SO — [SerializeField] private m_
 
-// 구독자 (예: ScoreUI) — 인스펙터에서 발행자와 동일한 SO 에셋을 연결
-[SerializeField] private IntEventChannel m_SOOnScoreChanged;
-private void OnEnable() => m_SOOnScoreChanged.Subscribe(UpdateDisplay);
-private void OnDisable() => m_SOOnScoreChanged.Unsubscribe(UpdateDisplay);
-```
-
-## 패턴 3: 변수 참조
-
-인스펙터에서 조정 가능하며, 여러 곳에서 공유하거나 인스턴스별로 오버라이드할 수 있는 값입니다.
+BT 노드, Feature(카드 효과), BulletAction 처럼 "실행"되는 SO 는 행동 클래스 규칙을 따른다. **인스턴스별 상태를 필드로 들지 않는다** — 상태는 매개변수로 받은 Blackboard/런타임 객체에 쓴다.
 
 ```csharp
-[System.Serializable]
-public sealed class FloatReference
+[CreateAssetMenu(fileName = "SO_StrafeNode", menuName = "Game/Monster/ActionNode/StrafeNode")]
+public sealed class SOStrafeNode : SONode
 {
-    [SerializeField] private bool m_bUseConstant = true;
-    [SerializeField] private float m_fConstantValue;
-    [SerializeField] private FloatVariable m_SOVariable;
+    [SerializeField] private float m_fMinTime = 1.0f;   // 에디터 세팅
+    [SerializeField] private float m_fMaxTime = 3.0f;
 
-    public float Value => m_bUseConstant ? m_fConstantValue : m_SOVariable.Value;
-}
-
-[CreateAssetMenu(fileName = "NewFloatVar", menuName = "Variables/Float")]
-public sealed class FloatVariable : ScriptableObject
-{
-    [SerializeField] private float m_fValue;
-    public float Value { get => m_fValue; set => m_fValue = value; }
-}
-```
-
-**용도:** 플레이어 체력, 이동 속도, 중력 등 — 디자이너가 조정하고 여러 시스템이 읽는 값.
-
-## 패턴 4: 런타임 세트
-
-FindObjectsOfType 없이 특정 타입의 모든 활성 인스턴스를 추적합니다.
-
-```csharp
-[CreateAssetMenu(fileName = "NewRuntimeSet", menuName = "Sets/Transform Set")]
-public sealed class TransformRuntimeSet : ScriptableObject
-{
-    private readonly List<Transform> m_listItems = new();
-
-    public IReadOnlyList<Transform> Items => m_listItems;
-    public int Count => m_listItems.Count;
-
-    public void Add(Transform _refItem)
+    public override eNodeState Execute(BlackBoard _refBB)
     {
-        if (!m_listItems.Contains(_refItem))
-        {
-            m_listItems.Add(_refItem);
-        }
-    }
-
-    public void Remove(Transform _refItem)
-    {
-        m_listItems.Remove(_refItem);
+        _refBB.StrafeTimer -= Time.deltaTime;          // 상태는 Blackboard 에
+        // ...
+        return eNodeState.Success;
     }
 }
-
-// 사용 예: 적이 스스로를 등록한다
-public sealed class Enemy : MonoBehaviour
-{
-    [SerializeField] private TransformRuntimeSet m_SOEnemySet;
-
-    private void OnEnable() => m_SOEnemySet.Add(transform);
-    private void OnDisable() => m_SOEnemySet.Remove(transform);
-}
 ```
 
-## 패턴 5: 팩토리 설정
+예외: 여러 몬스터가 공유하면 안 되는 Composite 노드는 BT 진입 시 `Instantiate`로 클론해서 쓰고, 클론에 한해 인덱스/타이머를 들 수 있다 (`architecture.md`).
+
+## 4. 목록 SO
+
+여러 에셋을 묶는 SO 도 데이터 컨테이너다.
 
 ```csharp
-[CreateAssetMenu(fileName = "NewSpawnConfig", menuName = "Game/Spawn Config")]
-public sealed class SpawnConfiguration : ScriptableObject
+[CreateAssetMenu(fileName = "SO_WaveData", menuName = "Game/Dungeon/WaveData")]
+public sealed class SOWaveData : ScriptableObject
 {
-    [SerializeField] private GameObject m_refPrefab;
-    [SerializeField] private int m_iPoolSize = 10;
-    [SerializeField] private float m_fSpawnRate = 2f;
-    [SerializeField] private float m_fSpawnRadius = 15f;
-
-    public GameObject Prefab => m_refPrefab;
-    public int PoolSize => m_iPoolSize;
-    public float SpawnRate => m_fSpawnRate;
-    public float SpawnRadius => m_fSpawnRadius;
+    public float StartDelay = 1.0f;
+    public List<SOPoolData> MonsterPoolList = new List<SOPoolData>();
 }
 ```
+
+## CreateAssetMenu
+
+`[CreateAssetMenu(fileName = "SO_<이름>", menuName = "Game/<분류>/<이름>")]` — 에셋 파일 이름도 `SO_`로 시작한다.
+
+## 쓰지 않는 패턴
+
+SO 이벤트 채널, SO 변수 참조(FloatVariable), SO 런타임 세트는 쓰지 않는다. 알림은 R3 `Subject`/`ReactiveProperty`([[event-systems]]), 활성 목록은 그걸 관리하는 매니저가 `List`로 든다 (`DungeonManager.GetMonsters`).
 
 ## 안티패턴
 
-1. **플레이 세션 간 초기화되지 않는 가변 상태** — SO는 에디터 안에서 플레이 세션을 넘어 값이 유지됩니다. 런타임에 SO에 값을 쓰면 플레이를 멈춰도 그 값이 그대로 남습니다. `OnEnable`이나 `OnDisable`에서 초기화하거나, 별도의 런타임 복사본을 사용하세요.
-
-2. **싱글톤처럼 사용되는 SO** — `Resources.Load`로 SO를 전역에서 접근하지 마세요. `[SerializeField]` 참조나 DI를 사용하세요.
-
-3. **SO에 지나치게 많은 로직** — SO는 데이터와 이벤트를 위한 것입니다. 복잡한 로직은 시스템/서비스 쪽에 두세요.
-
-4. **순환 SO 참조** — SO A가 SO B를 참조하고, SO B가 다시 SO A를 참조하는 경우입니다. 직렬화 과정에서 무한 루프를 일으킬 수 있습니다.
+1. **런타임에 SO 필드를 씀** — 공유 오염 + 에디터에서 값이 남는다. 복사본(§2)이나 Blackboard 로
+2. **`Resources.Load`로 SO 를 전역 접근** — `[SerializeField]` 참조로
+3. **SO 에 시스템 로직을 몰아넣음** — SO 는 데이터 + 실행 단위 하나(노드, 카드 효과)까지. 흐름 제어는 System 쪽
+4. **SO 끼리 순환 참조** — 직렬화가 꼬인다

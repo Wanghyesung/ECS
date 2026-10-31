@@ -62,25 +62,26 @@ public sealed class OutlineRendererFeature : ScriptableRendererFeature
     [System.Serializable]
     public sealed class OutlineSettings
     {
-        public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
-        public Material outlineMaterial;
-        public LayerMask layerMask;
-        [Range(1, 4)] public int downSample = 1;
+        public RenderPassEvent PassEvent = RenderPassEvent.AfterRenderingOpaques;
+        public Material OutlineMaterial;
+        public LayerMask OutlineLayer;
+        [Range(1, 4)] public int DownSample = 1;
     }
 
-    public OutlineSettings settings = new OutlineSettings();
-    private OutlineRenderPass m_outlinePass;
+    [SerializeField] private OutlineSettings m_refSettings = new OutlineSettings();
+    private OutlineRenderPass m_refOutlinePass;
 
     public override void Create()
     {
-        m_outlinePass = new OutlineRenderPass(settings);
-        m_outlinePass.renderPassEvent = settings.renderPassEvent;
+        m_refOutlinePass = new OutlineRenderPass(m_refSettings);
+        m_refOutlinePass.renderPassEvent = m_refSettings.PassEvent;
     }
 
-    public override void AddRenderPasses(ScriptableRenderer _refRenderer, ref RenderingData _renderingData)
+    public override void AddRenderPasses(ScriptableRenderer _refRenderer, ref RenderingData _tRenderingData)
     {
-        if (settings.outlineMaterial == null) return;
-        _refRenderer.EnqueuePass(m_outlinePass);
+        if (m_refSettings.OutlineMaterial == null)
+            return;
+        _refRenderer.EnqueuePass(m_refOutlinePass);
     }
 }
 ```
@@ -93,32 +94,32 @@ using UnityEngine.Rendering.Universal;
 
 public sealed class OutlineRenderPass : ScriptableRenderPass
 {
-    private readonly OutlineRendererFeature.OutlineSettings m_settings;
+    private readonly OutlineRendererFeature.OutlineSettings m_refSettings;
     private RTHandle m_refTempTexture;
 
-    public OutlineRenderPass(OutlineRendererFeature.OutlineSettings _settings)
+    public OutlineRenderPass(OutlineRendererFeature.OutlineSettings _refSettings)
     {
-        m_settings = _settings;
+        m_refSettings = _refSettings;
         profilingSampler = new ProfilingSampler("OutlinePass");
     }
 
-    public override void OnCameraSetup(CommandBuffer _refCmd, ref RenderingData _renderingData)
+    public override void OnCameraSetup(CommandBuffer _refCmd, ref RenderingData _tRenderingData)
     {
-        var desc = _renderingData.cameraData.cameraTargetDescriptor;
-        desc.depthBufferBits = 0;
-        RenderingUtils.ReAllocateIfNeeded(ref m_refTempTexture, desc, name: "_TempOutline");
+        var tDesc = _tRenderingData.cameraData.cameraTargetDescriptor;
+        tDesc.depthBufferBits = 0;
+        RenderingUtils.ReAllocateIfNeeded(ref m_refTempTexture, tDesc, name: "_TempOutline");
     }
 
-    public override void Execute(ScriptableRenderContext _context, ref RenderingData _renderingData)
+    public override void Execute(ScriptableRenderContext _tContext, ref RenderingData _tRenderingData)
     {
         CommandBuffer refCmd = CommandBufferPool.Get();
         using (new ProfilingScope(refCmd, profilingSampler))
         {
-            var refSource = _renderingData.cameraData.renderer.cameraColorTargetHandle;
-            Blitter.BlitCameraTexture(refCmd, refSource, m_refTempTexture, m_settings.outlineMaterial, 0);
+            var refSource = _tRenderingData.cameraData.renderer.cameraColorTargetHandle;
+            Blitter.BlitCameraTexture(refCmd, refSource, m_refTempTexture, m_refSettings.OutlineMaterial, 0);
             Blitter.BlitCameraTexture(refCmd, m_refTempTexture, refSource);
         }
-        _context.ExecuteCommandBuffer(refCmd);
+        _tContext.ExecuteCommandBuffer(refCmd);
         CommandBufferPool.Release(refCmd);
     }
 

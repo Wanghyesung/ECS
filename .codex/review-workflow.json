@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "repository": "Wanghyesung/ECS",
+  "remote": "origin",
+  "github_provider": "auto",
+  "base_branch": null,
+  "draft": false,
+  "slack_provider": "reminder",
+  "slack_reminder_delay_minutes": 1
+}
