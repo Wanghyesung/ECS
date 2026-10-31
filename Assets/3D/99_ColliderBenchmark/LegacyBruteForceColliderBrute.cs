@@ -17,6 +17,7 @@ public abstract class LegacyBruteForceColliderBrute : MonoBehaviour
     public event Action<LegacyBruteForceColliderBrute> OnHitTargetExit;
 
     private static int s_iNextId = 0;
+    [SerializeField, Range(0, 31)] private int m_iSceneLayer;
 
     public int Layer { get; private set; }
     public int ID { get; private set; }
@@ -28,6 +29,7 @@ public abstract class LegacyBruteForceColliderBrute : MonoBehaviour
     protected virtual void Awake()
     {
         ID = s_iNextId++;
+        Layer = m_iSceneLayer;
     }
 
     protected virtual void Start()
@@ -63,6 +65,7 @@ public abstract class LegacyBruteForceColliderBrute : MonoBehaviour
     public void SetLayer(int _iLayer)
     {
         Layer = _iLayer;
+        m_iSceneLayer = _iLayer;
     }
 
     public virtual void RefreshCenter() { }
